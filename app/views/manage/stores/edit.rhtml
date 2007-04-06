@@ -1,0 +1,6 @@
+<h2>Editing store</h2>
+
+<%= render :partial => "form", :locals => { :submit => "Update", :submit_url => store_path(:id => @store.id), :form_method => :put } %>
+
+<%= link_to 'Show', store_path(@store) %> |
+<%= link_to 'Back', stores_path %>
