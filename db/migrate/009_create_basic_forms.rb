@@ -35,7 +35,7 @@ class CreateBasicForms < ActiveRecord::Migration
       t.column :encounter_form_number,              :string
       t.column :provider_name,                      :string
       t.column :referring_provider_name,            :string
-      t.column :location,                           :string  #Virtual Enum: Office, Inpatient, Outpatient, Other (explain)
+      t.column :location,                           :string  #Virtual Enum: Office, Incustomer, Outcustomer, Other (explain)
 
       t.column :accident,                           :string  #Virtual Enum: [nil], Auto, Work, Home, Other Responsible Party, Sporting, Other
       t.column :accident_date,                      :date
@@ -46,7 +46,7 @@ class CreateBasicForms < ActiveRecord::Migration
       t.column :last_menstrual_period,              :date
 
       t.column :authorization_number,               :string
-      t.column :new_patient,                        :boolean
+      t.column :new_customer,                        :boolean
       t.column :emergency,                          :boolean
       t.column :anesthesia_start_time,              :datetime
       t.column :anesthesia_stop_time,               :datetime

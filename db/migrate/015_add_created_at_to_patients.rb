@@ -1,13 +1,13 @@
-class AddCreatedAtToPatients < ActiveRecord::Migration
+class AddCreatedAtToCustomers < ActiveRecord::Migration
   def self.up
-    add_column :patients, :created_at,     :datetime
-    Patient.find(:all).each do |p|
+    add_column :customers, :created_at,     :datetime
+    Customer.find(:all).each do |p|
       p.created_at = 24.hours.ago
       p.save
     end
   end
 
   def self.down
-    remove_column :patients, :created_at
+    remove_column :customers, :created_at
   end
 end

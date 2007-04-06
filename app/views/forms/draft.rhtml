@@ -4,7 +4,7 @@
 <%= error_messages_for :basic_form %>
 <% remote_form_for(@form_type, :html => {:id => 'form_'+@form_type.fromCamelCase}, :url => formatted_store_forms_path(:form_type => @form_type, :action => 'update', :form_id => @form.id, :format => 'js')) do |f| %>
 
-	<%= hidden_field_tag :patient_id, @patient.id %>
+	<%= hidden_field_tag :customer_id, @customer.id %>
 	<%= render :partial => @form_type.fromCamelCase, :locals => {:f => f, :view => false} %>
 	<br />
 	<%= hidden_field "form_instance", "status", :value => @form.instance.status %>

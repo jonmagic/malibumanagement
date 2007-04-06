@@ -50,7 +50,7 @@ ActionController::Routing::Routes.draw do |map|
   map.store_profile '/stores/:domain/manage/profile/:action', :controller => 'stores', :action => 'profile'
 
   map.resources :users, :path_prefix => '/stores/:domain/manage', :collection => { :register => :any, :activate => :any, :live_search => :any, :search => :any }, :member => { :unactivate => :any }
-  map.resources :patients, :path_prefix => '/stores/:domain', :collection => { :live_search => :any, :search => :any }
+  map.resources :customers, :path_prefix => '/stores/:domain', :collection => { :live_search => :any, :search => :any }
   map.user_account '/stores/:domain/myaccount/:action', :controller => 'users', :action => 'show'
 
   map.store_search_forms      '/stores/:domain/forms/search',      :controller => 'forms', :action => 'search'

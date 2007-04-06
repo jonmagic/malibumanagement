@@ -1,8 +1,8 @@
 <% view = view.nil? ? true : view -%>
 <% f = nil if view -%>
-<% @patient ||= @form if !@form.nil? -%>
+<% @customer ||= @form if !@form.nil? -%>
 <ul class="form">
-<%= render :partial => 'patients/patient_information', :locals => {:view => view, :f => f} %>
+<%= render :partial => 'customers/customer_information', :locals => {:view => view, :f => f} %>
 	<li><h4>Primary Insurance Information - <a href="javascript:Effect.Combo('primary_insurance');">Show/Hide Section</a></h4></li>
 	<li><div id="primary_insurance" style="display:none">
 		<table>

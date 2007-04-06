@@ -9,8 +9,8 @@ class CreateFormInstances < ActiveRecord::Migration
       t.column :form_data_type,                   :string
 #has_one :store
       t.column :store_id,                        :integer
-#has_one :patient
-      t.column :patient_id,                       :integer
+#has_one :customer
+      t.column :customer_id,                       :integer
 #has_one :user
       t.column :user_id,                          :integer #effectively 'created_by'
 #Other attributes

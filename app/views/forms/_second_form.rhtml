@@ -1,6 +1,6 @@
 <% view = view.nil? ? true : view -%>
 <% f = nil if view -%>
-<% @patient ||= @form if !@form.nil? -%>
+<% @customer ||= @form if !@form.nil? -%>
 <ul class="form">
 	<li><h4>General Client Information - <a href="javascript:Effect.Combo('general_information');">Show/Hide Section</a></h4></li>
 	<li><div id="general_information">
@@ -107,8 +107,8 @@
 			</tr>
 	
 			<tr>
-			<td class="leftcolumn"><label for="new_patient">New Patient</label></td>
-			<td class="rightcolumn"><%= !view ? f.text_field(:new_patient, :value => @values.new_record?) : @form.new_record? %></td>
+			<td class="leftcolumn"><label for="new_customer">New Customer</label></td>
+			<td class="rightcolumn"><%= !view ? f.text_field(:new_customer, :value => @values.new_record?) : @form.new_record? %></td>
 			</tr>
 		</table>
 		<p><a href="javascript:Effect.Combo('general_information');"><%= image_tag "up_arrow.gif", :border => 0 %> Hide Section</a></p>

@@ -1,6 +1,6 @@
-class CreatePatients < ActiveRecord::Migration
+class CreateCustomers < ActiveRecord::Migration
   def self.up
-    create_table :patients do |t|
+    create_table :customers do |t|
       t.column :store_id,                          :integer
       t.column :account_number,                     :string
       t.column :last_name,                          :string   #CMS 2a
@@ -21,7 +21,7 @@ class CreatePatients < ActiveRecord::Migration
 
       t.column :provider_name,                      :string
       t.column :referring_provider_name,            :string
-      t.column :location,                           :string  #Virtual Enum: Office, Inpatient, Outpatient, Other (explain)
+      t.column :location,                           :string  #Virtual Enum: Office, Incustomer, Outcustomer, Other (explain)
 
       t.column :authorization_number,               :string
 
@@ -76,6 +76,6 @@ class CreatePatients < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :patients
+    drop_table :customers
   end
 end

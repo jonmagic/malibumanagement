@@ -1,4 +1,4 @@
-class Patient < ActiveRecord::Base
+class Customer < ActiveRecord::Base
   belongs_to :store
   has_many :form_instances, :dependent => :destroy
   has_many :drafts, :class_name => 'FormInstance', :conditions => "status_number=1"
@@ -12,7 +12,7 @@ class Patient < ActiveRecord::Base
   attr_accessible :tertiary_insurance_company, :tertiary_address, :tertiary_city, :tertiary_state, :tertiary_zipcode, :tertiary_telephone, :tertiary_first_name, :tertiary_middle_initial, :tertiary_last_name, :tertiary_relationship, :tertiary_birth_date, :tertiary_social_security_number, :tertiary_contract_number, :tertiary_plan_number, :tertiary_group_number
 
   def find_best_identifier
-    (!self.first_name.nil? && self.first_name.length > 1) ? ((!self.last_name.nil? && self.last_name.length > 1) ? "#{self.last_name}, #{self.first_name}" : ((!self.account_number.nil? && self.account_number.length > 1) ? "#{self.first_name}, ##{self.account_number}" : self.first_name)) : ((!self.last_name.nil? && self.last_name.length > 1) ? ((!self.account_number.nil? && self.account_number.length > 1) ? "#{self.last_name}, ##{self.account_number}" : "#{self.last_name}") : ((!self.account_number.nil? && self.account_number.length > 1) ? "patient ##{self.account_number}" : "(new patient)"))
+    (!self.first_name.nil? && self.first_name.length > 1) ? ((!self.last_name.nil? && self.last_name.length > 1) ? "#{self.last_name}, #{self.first_name}" : ((!self.account_number.nil? && self.account_number.length > 1) ? "#{self.first_name}, ##{self.account_number}" : self.first_name)) : ((!self.last_name.nil? && self.last_name.length > 1) ? ((!self.account_number.nil? && self.account_number.length > 1) ? "#{self.last_name}, ##{self.account_number}" : "#{self.last_name}") : ((!self.account_number.nil? && self.account_number.length > 1) ? "customer ##{self.account_number}" : "(new customer)"))
   end
 
   def has_essentials?
