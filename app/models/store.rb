@@ -1,5 +1,5 @@
 require 'digest/sha1'
-class Doctor < ActiveRecord::Base
+class Store < ActiveRecord::Base
   has_many :users, :dependent => :destroy, :conditions => 'username<>"#{self.alias}"'
   has_one  :admin, :class_name => 'User', :conditions => 'username="#{self.alias}"', :dependent => :destroy
   has_many :patients, :dependent => :destroy
@@ -24,32 +24,32 @@ class Doctor < ActiveRecord::Base
   #This is the proxy method to the form data records
   def form_model(form_type_name)
     type = FormType.find_by_name(form_type_name)
-    # logger.error "Attempted unpermitted FormType access: Doctor includes " + (self.form_type_ids.join(', ')) + ", but NOT #{type}?" unless self.form_types.include?(type)
+    # logger.error "Attempted unpermitted FormType access: Store includes " + (self.form_type_ids.join(', ')) + ", but NOT #{type}?" unless self.form_types.include?(type)
     return nil unless self.form_types.include?(type)
     type.nil? ? nil : type.name.constantize
   end
 
-  def self.exists?(doc_alias)
-    !Doctor.find_by_alias(doc_alias).blank?
+  def self.exists?(stor_alias)
+    !Store.find_by_alias(stor_alias).blank?
   end
 
-  def self.id_of_alias(doc_alias)
-    doc = Doctor.find_by_alias(doc_alias)
-    doc.nil? ? nil : doc.id
+  def self.id_of_alias(stor_alias)
+    stor = Store.find_by_alias(stor_alias)
+    stor.nil? ? nil : stor.id
   end
 
   def forms_with_status(status)
 # logger.error "Finding by #{self.alias} (#{self.id}) and #{status} (#{status.as_status.number})."
-    FormInstance.find_all_by_doctor_id_and_status_number(self.id, status.as_status.number)
+    FormInstance.find_all_by_store_id_and_status_number(self.id, status.as_status.number)
   end
 
   protected
     def validate_on_create
-      errors.add(:alias, "cannot be set to <em>\"#{self.alias}\"</em>. Please choose another alias.") if ['pages', 'login', 'logout', 'manage', 'sixsigma'].include?(self.alias)
+      errors.add(:alias, "cannot be set to <em>\"#{self.alias}\"</em>. Please choose another alias.") if ['pages', 'login', 'logout', 'manage', 'malibu'].include?(self.alias)
     end
 
     def validate_on_update
-      old_doctor = Doctor.find_by_id(id)
+      old_store = Store.find_by_id(id)
 #      if operation == 'activate' #Activate
 #        if activation_code_valid
 #          errors.add(:username, "can't be blank") if username.blank? && old_user.username.blank?
@@ -66,9 +66,9 @@ class Doctor < ActiveRecord::Base
 #          
 #        end
 #      end
-      if !old_doctor.blank?
-        errors.add_to_base("Only SixSigma Admin users can modify your assigned forms.") if !form_type_ids.blank? && !old_doctor.form_type_ids.blank? && !(form_type_ids == old_doctor.form_type_ids)
-        errors.add(:alias, "cannot be changed once created!") if !self.alias.blank? && !old_doctor.alias.blank? && !(self.alias == old_doctor.alias)
+      if !old_store.blank?
+        errors.add_to_base("Only Malibu Admin users can modify your assigned forms.") if !form_type_ids.blank? && !old_store.form_type_ids.blank? && !(form_type_ids == old_store.form_type_ids)
+        errors.add(:alias, "cannot be changed once created!") if !self.alias.blank? && !old_store.alias.blank? && !(self.alias == old_store.alias)
       end
     end
 
