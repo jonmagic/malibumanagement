@@ -1,7 +1,7 @@
 yomagrat:
   id: 1
   friendly_name: Yoma Grat Admin
-  doctor_id: 2
+  store_id: 2
   username: yomagrat
   email: yomagrat@example.com
   salt: 7e3041ebc2fc05a40c60028e2c4901a81035d3cd
@@ -11,7 +11,7 @@ yomagrat:
 alphago:
   id: 2
   friendly_name: Alpha Go Admin
-  doctor_id: 1
+  store_id: 1
   username: alphago
   email: alphago@example.com
   created_at: <%= 5.days.ago.to_s :db %>
@@ -19,7 +19,7 @@ alphago:
 quentin:
   id: 3
   friendly_name: Quentin Slusher
-  doctor_id: 1
+  store_id: 1
   username: quentin
   email: quentin@example.com
   salt: 7e3041ebc2fc05a40c60028e2c4901a81035d3cd
@@ -29,7 +29,7 @@ quentin:
 aron:
   id: 4
   friendly_name: Aaron Bogus
-  doctor_id: 2
+  store_id: 2
   email: aaron@example.com
   created_at: <%= 1.days.ago.to_s :db %>
   activation_code: 8f24789ae988411ccfehixhnc30fe9106fabeasda 

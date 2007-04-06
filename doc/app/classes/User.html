@@ -139,7 +139,7 @@ Virtual attribute for the unencrypted password
 
         <div class="method-heading">
           <a href="#M000020" class="method-signature">
-          <span class="method-name">authenticate</span><span class="method-args">(username, password, doctor)</span>
+          <span class="method-name">authenticate</span><span class="method-args">(username, password, store)</span>
           </a>
         </div>
       
@@ -153,10 +153,10 @@ the user or nil.
           <div class="method-source-code" id="M000020-source">
 <pre>
     <span class="ruby-comment cmt"># File app/models/user.rb, line 41</span>
-41:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">authenticate</span>(<span class="ruby-identifier">username</span>, <span class="ruby-identifier">password</span>, <span class="ruby-identifier">doctor</span>)
-42:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">username</span> <span class="ruby-operator">||</span> <span class="ruby-operator">!</span><span class="ruby-identifier">password</span> <span class="ruby-operator">||</span> <span class="ruby-operator">!</span><span class="ruby-identifier">doctor</span>
+41:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">authenticate</span>(<span class="ruby-identifier">username</span>, <span class="ruby-identifier">password</span>, <span class="ruby-identifier">store</span>)
+42:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">username</span> <span class="ruby-operator">||</span> <span class="ruby-operator">!</span><span class="ruby-identifier">password</span> <span class="ruby-operator">||</span> <span class="ruby-operator">!</span><span class="ruby-identifier">store</span>
 43: <span class="ruby-comment cmt">#    u = find :first, :conditions =&gt; ['username = ? and activated_at IS NOT NULL', username] # need to get the salt</span>
-44:     <span class="ruby-identifier">doc</span> = <span class="ruby-constant">Doctor</span>.<span class="ruby-identifier">find_by_url_name</span>(<span class="ruby-identifier">doctor</span>)
+44:     <span class="ruby-identifier">doc</span> = <span class="ruby-constant">Store</span>.<span class="ruby-identifier">find_by_url_name</span>(<span class="ruby-identifier">store</span>)
 45:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">nil?</span>
 46:     <span class="ruby-identifier">u</span> = <span class="ruby-identifier">find</span> <span class="ruby-identifier">:first</span>, <span class="ruby-identifier">:conditions</span> =<span class="ruby-operator">&gt;</span> [<span class="ruby-value str">'username = ? and business_id = ?'</span>, <span class="ruby-identifier">username</span>, <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">id</span>] <span class="ruby-comment cmt"># :first, :conditions =&gt; ['username = ?', username] # need to get the salt</span>
 47:     <span class="ruby-identifier">u</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">u</span>.<span class="ruby-identifier">authenticated?</span>(<span class="ruby-identifier">password</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">u</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>
@@ -284,7 +284,7 @@ Activates the user in the database.
 <pre>
     <span class="ruby-comment cmt"># File app/models/user.rb, line 32</span>
 32:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">domain</span>
-33:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">doctor</span>.<span class="ruby-identifier">url_name</span>
+33:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">store</span>.<span class="ruby-identifier">url_name</span>
 34:   <span class="ruby-keyword kw">end</span>
 </pre>
           </div>

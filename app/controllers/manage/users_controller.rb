@@ -5,21 +5,21 @@ class Manage::UsersController < ApplicationController
 
   def index
     restrict('allow only admins') or begin
-      @doctor = Doctor.find_by_id(params[:doctor_id])
-      @users = User.find_all_by_doctor_id(params[:doctor_id])
+      @store = Store.find_by_id(params[:store_id])
+      @users = User.find_all_by_store_id(params[:store_id])
     end
   end
 
   def new
     restrict('allow only admins') or begin
-      @doctor = Doctor.find_by_id(params[:doctor_id])
+      @store = Store.find_by_id(params[:store_id])
       @user = User.find_by_id(params[:id])
     end
   end
 
   def show
     restrict('allow only admins') or begin
-      @doctor = Doctor.find_by_id(params[:doctor_id])
+      @store = Store.find_by_id(params[:store_id])
       @user = User.find_by_id(params[:id])
     end
   end
@@ -29,7 +29,7 @@ class Manage::UsersController < ApplicationController
       @user = User.new
       @user.friendly_name = params[:user][:friendly_name]
       @user.email = params[:user][:email]
-      @user.doctor = Doctor.find_by_id(params[:doctor_id])
+      @user.store = Store.find_by_id(params[:store_id])
       if @user.save
         redirect_back_or_default(manage_users_url)
         flash[:notice] = "User #{@user.friendly_name} has been created."

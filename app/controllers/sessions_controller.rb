@@ -1,9 +1,9 @@
 # This controller handles the login/logout function of the site.  
-class SessionsController < ApplicationController  # layout 'doctor'
+class SessionsController < ApplicationController  # layout 'store'
 
   # render new.rhtml
   def new
-#Could check for a valid doctor (params[:domain]) and show an alternative login form (using email address) if not found.
+#Could check for a valid store (params[:domain]) and show an alternative login form (using email address) if not found.
     render :layout => 'default'
   end
 
@@ -33,14 +33,14 @@ logger.error "User: #{self.current_user.friendly_name} #{self.current_user.domai
       self.current_user = User.authenticate(params[:username], params[:password], params[:domain])
       if logged_in?
         flash[:notice] = "Welcome " + self.current_user.friendly_name + "."
-        redirect_back_or_default doctor_dashboard_url(self.current_user.doctor.alias)
+        redirect_back_or_default store_dashboard_url(self.current_user.store.alias)
       else
         flash[:notice] = "Failed to log in. If you have forgotten your password, please have the admin at your place reset your password for you."
-        render :action => 'new_user', :layout => 'doctor'
+        render :action => 'new_user', :layout => 'store'
       end
     else
       flash[:notice] = "Invalid username." if params[:username]
-      render :action => 'new_user', :layout => 'doctor'
+      render :action => 'new_user', :layout => 'store'
     end
   end
 
@@ -49,7 +49,7 @@ logger.error "User: #{self.current_user.friendly_name} #{self.current_user.domai
       dom = self.current_user.domain
 logger.error "Domain: #{self.current_user.domain}"
       flash[:notice] = "You have been logged out."
-       redirect_to dom == 'sixsigma' ? admin_login_url : doctor_login_url(dom)
+       redirect_to dom == 'malibu' ? admin_login_url : store_login_url(dom)
     else
       redirect_to page_url
     end

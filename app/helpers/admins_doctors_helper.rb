@@ -1,2 +1,2 @@
-module AdminsDoctorsHelper
+module AdminsStoresHelper
 end

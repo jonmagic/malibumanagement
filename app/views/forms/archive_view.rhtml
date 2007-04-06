@@ -1,4 +1,4 @@
-<%= form_tag(doctor_search_forms_path, { :onSubmit => "Element.show('search_loading');", :id => 'forms_live_search_form' }) %>
+<%= form_tag(store_search_forms_path, { :onSubmit => "Element.show('search_loading');", :id => 'forms_live_search_form' }) %>
 <!-- I want to include some tickler text (gray, dissappearing text) in the search box, indicated by a local :tickler_text -->
 <p><b>Live Search:</b></p>
 <div>
@@ -14,6 +14,6 @@ for Patient: <%= text_field_tag  'patient_field', '', :size => 13 %>&nbsp;&nbsp;
                 :update => 'result_or_latest',
                 :loading => "Element.show('search_loading')",
                 :complete => "Element.hide('search_loading')",
-								:url => doctor_live_search_forms_path %>
+								:url => store_live_search_forms_path %>
 <div style="height:19px"><img alt="loading..." id="search_loading" src="/images/ajax/barloader.gif" style="display:none;" /></div>
 <div id="result_or_latest"><em>Loading archive...</em></div>

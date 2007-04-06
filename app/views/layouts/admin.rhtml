@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<meta name="description" content="Six Sigma Management: HipForms, a HIPAA compliant form completion tool" />
+		<meta name="description" content="Malibu Management: HipForms, a HIPAA compliant form completion tool" />
 		<meta name="keywords" content="" />
-		<meta name="author" content="Six Sigma Management" />
-		<title>Six Sigma Management: <%= current_domain %></title>
+		<meta name="author" content="Malibu Management" />
+		<title>Malibu Management: <%= current_domain %></title>
 		<%= stylesheet_link_tag 'common' %>
-		<%= stylesheet_link_tag 'doctor' %>
+		<%= stylesheet_link_tag 'store' %>
 		<%= stylesheet_link_tag 'tabs' %>		
 		<%= stylesheet_link_tag 'date-picker' %>
 		<%= javascript_include_tag 'prototype' %>
@@ -46,7 +46,7 @@
 	</head>
 	<body>
 		<div id="header">
-			<h1>Six Sigma Management Form Processor</h1>
+			<h1>Malibu Management Form Processor</h1>
 			<h2>Welcome <em><%= current_user.friendly_name %></em></h2>
 			<ul>
 				<li>
@@ -58,8 +58,8 @@
 						<%= link_to 'My Account', admin_account_path %>
 						/
 					<% if params[:action] == 'forms' or params[:controller] == 'manage/forms' -%>
-						<%= link_to 'Manage', doctors_path %>
-					<% elsif params[:action] == 'management' or params[:controller] == 'manage/doctors' or params[:controller] == 'manage/pages' or (params[:controller] == 'manage/admins' and !(params[:action] == 'dashboard')) -%>
+						<%= link_to 'Manage', stores_path %>
+					<% elsif params[:action] == 'management' or params[:controller] == 'manage/stores' or params[:controller] == 'manage/pages' or (params[:controller] == 'manage/admins' and !(params[:action] == 'dashboard')) -%>
 						<%= link_to 'Forms', admin_forms_by_status_path('submitted') %>
 					<% end -%>
 			<% else -%>
@@ -77,7 +77,7 @@
 				<li><%= tab_link_to 4.as_status.word('uppercase short singular'), admin_forms_by_status_path(4.as_status.text) %></li>
 				<% else -%>
 				<li><%= tab_link_to "My Account", admin_account_path %></li>
-				<li><%= tab_link_to 'Doctors', doctors_path %></li>
+				<li><%= tab_link_to 'Stores', stores_path %></li>
 				<li><%= tab_link_to 'Admins', admins_path %></li>
 				<li><%= tab_link_to 'Pages', manage_pages_path %></li>
 				<% end -%>

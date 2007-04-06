@@ -46,10 +46,10 @@ class UserTest < Test::Unit::TestCase
     end
   end
 
-  def test_should_require_doctor_id
+  def test_should_require_store_id
     assert_no_difference User, :count do
-      u = create_user(:doctor_id => nil)
-      assert u.errors.on(:doctor_id)
+      u = create_user(:store_id => nil)
+      assert u.errors.on(:store_id)
     end
   end
 
@@ -63,16 +63,16 @@ class UserTest < Test::Unit::TestCase
     assert_equal users(:quentin), User.authenticate('quentin2', 'test', 'alphago')
   end
 
-  def test_should_authenticate_user_with_proper_doctor
+  def test_should_authenticate_user_with_proper_store
     assert_equal users(:quentin), User.authenticate('quentin', 'test', 'alphago')
   end
 
-  def test_should_not_authenticate_user_with_improper_doctor
+  def test_should_not_authenticate_user_with_improper_store
     assert_not_equal users(:quentin), User.authenticate('quentin', 'test', 'yomagrat')
   end
 
   protected
     def create_user(options = {})
-      User.create({ :username => 'quire', :friendly_name => 'Quire Buddy', :doctor_id => 2, :email => 'quire@example.com', :password => 'quire', :password_confirmation => 'quire' }.merge(options))
+      User.create({ :username => 'quire', :friendly_name => 'Quire Buddy', :store_id => 2, :email => 'quire@example.com', :password => 'quire', :password_confirmation => 'quire' }.merge(options))
     end
 end

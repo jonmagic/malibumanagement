@@ -1,7 +1,7 @@
 class FormType < ActiveRecord::Base
   serialize :required_fields, Array
   has_many :form_instances
-  has_and_belongs_to_many :doctors
+  has_and_belongs_to_many :stores
 
   validates_presence_of :friendly_name, :name
 

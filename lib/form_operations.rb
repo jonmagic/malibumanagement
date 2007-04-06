@@ -6,8 +6,8 @@ module FormOperations
   def patient
     self.patients[0]
   end
-  def doctor
-    self.doctors[0]
+  def store
+    self.stores[0]
   end
 
 end

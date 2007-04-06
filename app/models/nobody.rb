@@ -2,20 +2,20 @@ class Nobody
   def friendly_name
     'Please log in'
   end
-  def is_doctor?
+  def is_store?
     false
   end
   def is_admin?
     false
   end
-  def is_doctor_or_admin?
+  def is_store_or_admin?
     false
   end
-  def is_doctor_user?
+  def is_store_user?
     false
   end
-  def doctor
-    Doctor.new
+  def store
+    Store.new
   end
   def drafts(load=false)
     []

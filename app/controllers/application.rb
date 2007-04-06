@@ -3,7 +3,7 @@
 
 class ApplicationController < ActionController::Base
   # Pick a unique cookie name to distinguish our session data from others'
-  session :session_key => '_sixsigma_session_id'
+  session :session_key => '_malibu_session_id'
   include AuthenticatedSystem
   include RouteObjectMapping
   include AccessControl
@@ -18,9 +18,9 @@ class ApplicationController < ActionController::Base
   end
 
   def add_default_restrictions
-    add_restriction('allow only doctor admins', current_user.is_doctor?) {flash[:notice] = "Only Doctor Admins can access this. Please login with Doctor Admin credentials."; store_location; redirect_to doctor_login_path(accessed_domain)}
-    add_restriction('allow only admins or doctor admins', current_user.is_doctor_or_admin?) {flash[:notice] = "Only Doctor Admins can access this. Please login with Doctor Admin credentials."; store_location; redirect_to doctor_login_path(accessed_domain)}
-    add_restriction('allow only doctor users', current_user.is_doctor_user?) {flash[:notice] = "Only Doctor Users can access this. Please login."; store_location; redirect_to doctor_login_path(accessed_domain)}
+    add_restriction('allow only store admins', current_user.is_store?) {flash[:notice] = "Only Store Admins can access this. Please login with Store Admin credentials."; store_location; redirect_to store_login_path(accessed_domain)}
+    add_restriction('allow only admins or store admins', current_user.is_store_or_admin?) {flash[:notice] = "Only Store Admins can access this. Please login with Store Admin credentials."; store_location; redirect_to store_login_path(accessed_domain)}
+    add_restriction('allow only store users', current_user.is_store_user?) {flash[:notice] = "Only Store Users can access this. Please login."; store_location; redirect_to store_login_path(accessed_domain)}
     add_restriction('allow only admins', current_user.is_admin?) {flash[:notice] = "Only Admins can access this. Please login."; store_location; redirect_to(admin_login_path)}
   end
 
@@ -51,7 +51,7 @@ class ApplicationController < ActionController::Base
   end
 
   private
-    # If logged in, teleport to own doctor, If not logged in, teleport to accessed_doctor's login page
+    # If logged in, teleport to own store, If not logged in, teleport to accessed_store's login page
     def go_to_where_you_belong
       
     end

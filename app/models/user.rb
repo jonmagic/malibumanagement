@@ -1,6 +1,6 @@
 require 'digest/sha1'
 class User < ActiveRecord::Base
-  belongs_to :doctor
+  belongs_to :store
   has_many :form_instances
   has_many :drafts,    :class_name => 'FormInstance', :conditions => "status_number=1"
   has_many :submitted, :class_name => 'FormInstance', :conditions => "status_number=2"
@@ -14,7 +14,7 @@ class User < ActiveRecord::Base
   attr_accessor :password
   attr_accessor :operation #for the status of activating to enable the activation validations
 
-  validates_presence_of     :email, :doctor_id, :friendly_name
+  validates_presence_of     :email, :store_id, :friendly_name
   validates_length_of       :email, :within => 3..100,           :if => :email_present?
   validates_uniqueness_of   :email, :case_sensitive => false
   validates_length_of       :username, :within => 3..40,         :if => :username_present?
@@ -33,23 +33,23 @@ class User < ActiveRecord::Base
   end
 
   def domain
-    self.doctor.alias
+    self.store.alias
   end
   
-  def self.is_doctor?(user)
-    user.doctor.alias == user.username
+  def self.is_store?(user)
+    user.store.alias == user.username
   end
-  def is_doctor?
-    self.class.is_doctor?(self)
+  def is_store?
+    self.class.is_store?(self)
   end
   def is_admin?
     false
   end
-  def is_doctor_user?
+  def is_store_user?
     true
   end
-  def is_doctor_or_admin?
-    is_doctor?
+  def is_store_or_admin?
+    is_store?
   end
 
   def self.valid_username?(username)
@@ -58,13 +58,13 @@ class User < ActiveRecord::Base
   end
 
   def others_form_instances
-    FormInstance.find(:all, :conditions => ['doctor_id=? AND user_id!=?', self.doctor.id, self.id])
+    FormInstance.find(:all, :conditions => ['store_id=? AND user_id!=?', self.store.id, self.id])
   end
   def forms_with_status(status)
     FormInstance.find_all_by_user_id_and_status_number(self.id, status.as_status.number)
   end
   def others_forms_with_status(status)
-    FormInstance.find(:all, :conditions => ['doctor_id=? AND user_id!=? AND status_number=?', self.doctor.id, self.id, status.as_status.number])
+    FormInstance.find(:all, :conditions => ['store_id=? AND user_id!=? AND status_number=?', self.store.id, self.id, status.as_status.number])
   end
 
   # Returns true if the user has just been activated.
@@ -75,10 +75,10 @@ class User < ActiveRecord::Base
     @email_changed
   end
   # Authenticates a user by their username and unencrypted password.  Returns the user or nil.
-  def self.authenticate(username, password, doc_alias)
-    return nil if !username || !password || !doc_alias
+  def self.authenticate(username, password, stor_alias)
+    return nil if !username || !password || !stor_alias
 #    u = find :first, :conditions => ['username = ? and activated_at IS NOT NULL', username] # need to get the salt
-    u = find :first, :conditions => ['username = ? and doctor_id = ?', username, Doctor.id_of_alias(doc_alias)] # :first, :conditions => ['username = ?', username] # need to get the salt
+    u = find :first, :conditions => ['username = ? and store_id = ?', username, Store.id_of_alias(stor_alias)] # :first, :conditions => ['username = ?', username] # need to get the salt
     return u && u.authenticated?(password) ? u : nil
   end
 

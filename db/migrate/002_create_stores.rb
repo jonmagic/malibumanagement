@@ -1,6 +1,6 @@
-class CreateDoctors < ActiveRecord::Migration
+class CreateStores < ActiveRecord::Migration
   def self.up
-    create_table :doctors do |t|
+    create_table :stores do |t|
       t.column :alias,                     :string, :limit => 25
       t.column :friendly_name,             :string, :limit => 50
       t.column :address,                   :string
@@ -13,6 +13,6 @@ class CreateDoctors < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :doctors
+    drop_table :stores
   end
 end

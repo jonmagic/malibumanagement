@@ -82,8 +82,8 @@ class Manage::AdminsController < ApplicationController
     end
   end
 
-  # GET /doctors/1
-  # GET /doctors/1.xml
+  # GET /stores/1
+  # GET /stores/1.xml
   def show
     restrict 'allow only admins' or begin
       @admin = Admin.find_by_id(params[:id]) || current_user
@@ -94,9 +94,9 @@ class Manage::AdminsController < ApplicationController
     end
   end
 
-  # GET /SixSigma/dashboard
+  # GET /Malibu/dashboard
   def dashboard
-    #To keep someone from getting a page that doesn't map to a real doctor, anonymous will be expelled from this action to the login page, and anyone logged in will be redirected to their respective doctor
+    #To keep someone from getting a page that doesn't map to a real store, anonymous will be expelled from this action to the login page, and anyone logged in will be redirected to their respective store
     restrict 'allow only admins'
   end
 

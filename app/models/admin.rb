@@ -29,22 +29,22 @@ class Admin < ActiveRecord::Base
   end
 
   def domain
-    'sixsigma'
+    'malibu'
   end
-  def doctor
+  def store
     domain
   end
 
   def is_admin?
     true
   end
-  def is_doctor?
+  def is_store?
     false
   end
-  def is_doctor_user?
+  def is_store_user?
     false
   end
-  def is_doctor_or_admin?
+  def is_store_or_admin?
     true
   end
 

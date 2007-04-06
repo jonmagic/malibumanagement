@@ -8,8 +8,8 @@
 <br />
 <h3>New Claim</h3>
 <ul>
-	<% current_user.doctor.form_types.each do |ft| -%>
-	<li><a href="<%= doctor_draft_path(:form_status => 'draft', :form_type => ft.name, :patient_id => @patient.id) %>">+ <%= ft.friendly_name %></a></li>
+	<% current_user.store.form_types.each do |ft| -%>
+	<li><a href="<%= store_draft_path(:form_status => 'draft', :form_type => ft.name, :patient_id => @patient.id) %>">+ <%= ft.friendly_name %></a></li>
 	<% end -%>
 </ul>
 <p>&nbsp;</p>

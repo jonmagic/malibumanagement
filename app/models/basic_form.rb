@@ -1,8 +1,8 @@
 class BasicForm < ActiveRecord::Base
   has_one :instance, :as => :form_data, :class_name => 'FormInstance' # Looks for form_data_id in form_instances, calls it self.instance
-# These should be looking for form_data_id == self.id and form_data_type == BasicForm in form_instances, in order to match up with doctor_id/patient_id/form_type_id
+# These should be looking for form_data_id == self.id and form_data_type == BasicForm in form_instances, in order to match up with store_id/patient_id/form_type_id
 #These are actually not necessary!!
-  has_many :doctors, :finder_sql => 'SELECT doctors.* FROM doctors,form_instances fi WHERE fi.form_data_id=#{id} AND fi.form_data_type="BasicForm" AND doctors.id=fi.doctor_id'
+  has_many :stores, :finder_sql => 'SELECT stores.* FROM stores,form_instances fi WHERE fi.form_data_id=#{id} AND fi.form_data_type="BasicForm" AND stores.id=fi.store_id'
   has_many :patients, :finder_sql => 'SELECT patients.* FROM patients,form_instances fi WHERE fi.form_data_id=#{id} AND fi.form_data_type="BasicForm" AND patients.id=fi.patient_id'
   has_many :form_types, :finder_sql => 'SELECT form_types.* FROM form_types,form_instances fi WHERE fi.form_data_id=#{id} AND fi.form_data_type="BasicForm" AND form_types.id=fi.form_type_id'
   has_many :notes, :finder_sql => 'SELECT notes.* FROM notes,form_instances fi WHERE fi.form_data_id=#{id} AND fi.form_data_type="BasicForm" AND AND notes.form_instance_id=fi.id'

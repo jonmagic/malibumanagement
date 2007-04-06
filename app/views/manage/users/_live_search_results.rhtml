@@ -1,5 +1,5 @@
 <% for user in @results %>
-  <tr<%= " class='doctor_admin'" if user.is_doctor? %>>
+  <tr<%= " class='store_admin'" if user.is_store? %>>
     <td><%= user.friendly_name %></td>
     <td><%= user.username %></td>
     <td>&nbsp;

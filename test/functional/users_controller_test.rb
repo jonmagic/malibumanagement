@@ -10,7 +10,7 @@ class UsersControllerTest < Test::Unit::TestCase
   include AuthenticatedTestHelper
 
   fixtures :users
-  fixtures :doctors
+  fixtures :stores
 
   def setup
     @controller = UsersController.new
@@ -28,7 +28,7 @@ class UsersControllerTest < Test::Unit::TestCase
 # requires username
 # requires password
 # requires password_confirmation
-# cannot change username if doctor_admin
+# cannot change username if store_admin
 #Request re-activate
 # requires username
 # requires email
@@ -59,16 +59,16 @@ class UsersControllerTest < Test::Unit::TestCase
   def test_should_activate_user
     assert_no_difference User, :count do
       assert_nil User.authenticate('aaronla', 'test', 'yomagrat')
-      post :activate, {:user => {:username => 'aaronla', :password => 'toast', :password_confirmation => 'toast', :activation_code => users(:aron).activation_code}, :doctor_alias => 'yomagrat'}
+      post :activate, {:user => {:username => 'aaronla', :password => 'toast', :password_confirmation => 'toast', :activation_code => users(:aron).activation_code}, :store_alias => 'yomagrat'}
       assert flash[:notice] == "Signup complete! aaronla is ready for login.", "User was not activated."
       assert_equal users(:aron), User.authenticate('aaronla', 'toast', 'yomagrat')
       assert_response :redirect
     end
   end 
 
-  def activation_should_not_allow_username_change_for_doctor_admins
+  def activation_should_not_allow_username_change_for_store_admins
     assert_no_difference User, :count do
-     post :activate, {:user => {:username => 'boyning', :password => 'test1', :password_confirmation => 'test1', :activation_code => users(:alphago).activation_code}, :doctor_alias => 'alphago'}
+     post :activate, {:user => {:username => 'boyning', :password => 'test1', :password_confirmation => 'test1', :activation_code => users(:alphago).activation_code}, :store_alias => 'alphago'}
       assert_not_equal users(:alphago), User.authenticate('boyning', 'test1', 'alphago')
       assert_equal users(:alphago), User.authenticate('alphago', 'test', 'alphago')
     end
@@ -76,7 +76,7 @@ class UsersControllerTest < Test::Unit::TestCase
 
   protected
     def create_user(options = {})
-      post :create, {:doctor_alias => 'yomagrat', :user => { :email => 'quire@example.com', 
+      post :create, {:store_alias => 'yomagrat', :user => { :email => 'quire@example.com', 
         :friendly_name => 'Quire Quigley' }.merge(options)}
     end
 end

@@ -12,11 +12,11 @@ class Log < ActiveRecord::Base
           if log.data[:old_attributes].has_key?('status_number')
             case
               when log.data[:old_attributes]['status_number']==1 && log.data[:new_attributes]['status_number']==2
-                "#{log.agent.friendly_name} submitted the form to SixSigma."
+                "#{log.agent.friendly_name} submitted the form to Malibu."
               when log.data[:old_attributes]['status_number']==2 && log.data[:new_attributes]['status_number']==3
                 "#{log.agent.friendly_name} is reviewing the form."
               when log.data[:old_attributes]['status_number']==2 && log.data[:new_attributes]['status_number']==1
-                "#{log.agent.friendly_name} sent form BACK to #{log.object.doctor.friendly_name}."
+                "#{log.agent.friendly_name} sent form BACK to #{log.object.store.friendly_name}."
             end
           else
             "Form Instance Updated by #{log.agent.friendly_name}: changed (#{log.data[:old_attributes].keys.join(', ')}) from (#{log.data[:old_attributes].values.join(', ')}) to (#{log.data[:new_attributes].values.join(', ')})."

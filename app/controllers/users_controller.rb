@@ -1,11 +1,11 @@
 class UsersController < ApplicationController
   in_place_edit_for :user, 'friendly_name'
   in_place_edit_for :user, 'email'
-  layout 'doctor'
+  layout 'store'
 
   # render show.rhtml
   def show
-    restrict('allow only doctor users') or begin
+    restrict('allow only store users') or begin
       @user = get_user
       respond_to do |format|
         format.html # show.rhtml
@@ -65,7 +65,7 @@ class UsersController < ApplicationController
 
 #This needs to be locked down to do only what it should be allowed to do
   def update
-    restrict('allow only doctor users') or begin
+    restrict('allow only store users') or begin
       @user = get_user
       respond_to do |format|
         if @user.update_attributes(params[:user])
@@ -84,8 +84,8 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.xml
   def index
-    restrict('allow only doctor admins') or begin
-      @users = User.find_all_by_doctor_id(Doctor.id_of_alias(params[:domain]))
+    restrict('allow only store admins') or begin
+      @users = User.find_all_by_store_id(Store.id_of_alias(params[:domain]))
       respond_to do |format|
         format.html # index.rhtml
         format.js
@@ -96,16 +96,16 @@ class UsersController < ApplicationController
 
   # render new.rhtml
   def new
-    restrict('allow only doctor admins') or begin
+    restrict('allow only store admins') or begin
       @user = User.new
-      @user.doctor_id = Doctor.id_of_alias(params[:domain])
+      @user.store_id = Store.id_of_alias(params[:domain])
     end
   end
 
 # Need to create a search action in case user hits enter on the live_search box, or else disable hard-submit on the form.
 
   def live_search
-    restrict('allow only doctor admins') or begin
+    restrict('allow only store admins') or begin
       @phrase = (request.raw_post || request.query_string).slice(/[^=]+/)
       if @phrase.blank?
         render :nothing => true
@@ -119,11 +119,11 @@ class UsersController < ApplicationController
   end
 
   def create
-    restrict('allow only doctor admins') or begin
+    restrict('allow only store admins') or begin
       @user = User.new
       @user.friendly_name = params[:user][:friendly_name]
       @user.email = params[:user][:email]
-      @user.doctor = Doctor.find_by_alias(params[:domain])
+      @user.store = Store.find_by_alias(params[:domain])
       if @user.save
         redirect_back_or_default(users_path)
         flash[:notice] = "User #{@user.friendly_name} has been created."
@@ -134,7 +134,7 @@ class UsersController < ApplicationController
   end
 
   def unactivate
-    restrict('allow only doctor admins') or begin
+    restrict('allow only store admins') or begin
       @user = User.find_by_id(params[:id])
       respond_to do |format|
         if @user.unactivate
@@ -151,7 +151,7 @@ class UsersController < ApplicationController
   # DELETE /users/1.xml
   def destroy
 # THIS NEEDS TO USE THE ACTS_AS_DELETED PLUGIN!!
-    restrict('allow only doctor admins') or begin
+    restrict('allow only store admins') or begin
       @user = User.find_by_id(params[:id])
       @user.destroy
       respond_to do |format|
@@ -163,6 +163,6 @@ class UsersController < ApplicationController
 
   private
     def get_user
-      current_user.is_doctor_or_admin? ? User.find_by_id(params[:id]) || current_user : current_user
+      current_user.is_store_or_admin? ? User.find_by_id(params[:id]) || current_user : current_user
     end
 end

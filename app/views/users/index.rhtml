@@ -1,4 +1,4 @@
-<h1><%= Doctor.find_by_alias(params[:domain]).friendly_name %>'s users</h1>
+<h1><%= Store.find_by_alias(params[:domain]).friendly_name %>'s users</h1>
 
 <table>
 	<thead>
@@ -9,7 +9,7 @@
 	</thead>
   
 <% for user in @users %>
-  <tr<%= " class='doctor_admin'" if user.is_doctor? %>>
+  <tr<%= " class='store_admin'" if user.is_store? %>>
     <td><%= user.friendly_name %></td>
     <td><%= user.username %></td>
     <td>&nbsp;

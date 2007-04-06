@@ -13,11 +13,11 @@ module AuthenticatedSystem
       if(!given_activation_code.nil?)
         @current_user ||= User.find_by_activation_code(given_activation_code) || Admin.find_by_activation_code(given_activation_code)
       elsif session[:user]
-        @current_user ||= session[:domain] == 'sixsigma' ? Admin.find_by_id(session[:user]) : User.find_by_id(session[:user])
+        @current_user ||= session[:domain] == 'malibu' ? Admin.find_by_id(session[:user]) : User.find_by_id(session[:user])
       else
         Nobody.new
       end
-      # @current_user ||= ((session[:user] || given_activation_code) && (current_domain == 'sixsigma' ? (Admin.find_by_id(session[:user]) || Admin.find_by_activation_code(given_activation_code)) : (User.find_by_id(session[:user]) || User.find_by_activation_code(given_activation_code)))) || Nobody.new
+      # @current_user ||= ((session[:user] || given_activation_code) && (current_domain == 'malibu' ? (Admin.find_by_id(session[:user]) || Admin.find_by_activation_code(given_activation_code)) : (User.find_by_id(session[:user]) || User.find_by_activation_code(given_activation_code)))) || Nobody.new
     end
     
     # Store the given user in the session.
@@ -43,7 +43,7 @@ module AuthenticatedSystem
     #
     def login_required
       username, passwd = get_auth_data
-      self.current_user ||= (session[:domain] != 'sixsigma' ? User.authenticate(username, passwd) : Admin.authenticate(username, passwd)) || :false if username && passwd
+      self.current_user ||= (session[:domain] != 'malibu' ? User.authenticate(username, passwd) : Admin.authenticate(username, passwd)) || :false if username && passwd
       logged_in? && authorized? ? true : access_denied
     end
     

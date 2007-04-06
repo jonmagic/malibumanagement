@@ -1,15 +1,15 @@
 require File.dirname(__FILE__) + '/../test_helper'
-require 'doctors_controller'
+require 'stores_controller'
 
 # Re-raise errors caught by the controller.
-class DoctorsController; def rescue_action(e) raise e end; end
+class StoresController; def rescue_action(e) raise e end; end
 
-class DoctorsControllerTest < Test::Unit::TestCase
-  fixtures :doctors
+class StoresControllerTest < Test::Unit::TestCase
+  fixtures :stores
   fixtures :users
 
   def setup
-    @controller = DoctorsController.new
+    @controller = StoresController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
   end
@@ -25,7 +25,7 @@ class DoctorsControllerTest < Test::Unit::TestCase
   def test_should_get_index
     get :index
     assert_response :success
-    assert assigns(:doctors)
+    assert assigns(:stores)
   end
 
   def test_should_get_new
@@ -33,16 +33,16 @@ class DoctorsControllerTest < Test::Unit::TestCase
     assert_response :success
   end
   
-  def test_should_create_doctor
-    old_count = Doctor.count
-    post :create, :doctor => { :alias => 'gramit', :friendly_name => "Gramit", :address => "278 Art Buelevard", :telephone => "7681234567" }, :user => { :email => "test@exampl.com", :friendly_name => "Thomas Aquinas" }
+  def test_should_create_store
+    old_count = Store.count
+    post :create, :store => { :alias => 'gramit', :friendly_name => "Gramit", :address => "278 Art Buelevard", :telephone => "7681234567" }, :user => { :email => "test@exampl.com", :friendly_name => "Thomas Aquinas" }
 
-    assert_equal old_count+1, Doctor.count
+    assert_equal old_count+1, Store.count
     
-    assert_redirected_to doctor_path(assigns(:doctor))
+    assert_redirected_to store_path(assigns(:store))
   end
 
-  def test_should_show_doctor
+  def test_should_show_store
     get :show, :id => 1
     assert_response :success
   end
@@ -52,16 +52,16 @@ class DoctorsControllerTest < Test::Unit::TestCase
     assert_response :success
   end
   
-  def test_should_update_doctor
-    put :update, :id => 1, :doctor => { }
-    assert_redirected_to doctor_path(assigns(:doctor))
+  def test_should_update_store
+    put :update, :id => 1, :store => { }
+    assert_redirected_to store_path(assigns(:store))
   end
   
-  def test_should_destroy_doctor
-    old_count = Doctor.count
+  def test_should_destroy_store
+    old_count = Store.count
     delete :destroy, :id => 1
-    assert_equal old_count-1, Doctor.count
+    assert_equal old_count-1, Store.count
     
-    assert_redirected_to doctors_path
+    assert_redirected_to stores_path
   end
 end
