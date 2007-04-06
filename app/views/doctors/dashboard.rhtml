@@ -4,7 +4,7 @@
 <h3>Store Assistant Dashboard</h3>
 <% end -%>
 
-<%= render :partial => 'shared/live_search_form', :locals => { :label => 'Find Customer', :post_url => search_customers_url, :live_url => live_search_customers_url, :results_div => 'result_or_new' } %>
+<p>Change this view to show the latest 5 forms?</p>
 <div id="result_or_new"><%= render(:partial => 'forms/new_form') %></div>
 
 <% if current_user.drafts(true).count > 0 -%>
