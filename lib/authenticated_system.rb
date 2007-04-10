@@ -13,7 +13,7 @@ module AuthenticatedSystem
       if(!given_activation_code.nil?)
         @current_user ||= User.find_by_activation_code(given_activation_code) || Admin.find_by_activation_code(given_activation_code)
       elsif session[:user]
-        @current_user ||= session[:domain] == 'malibu' ? Admin.find_by_id(session[:user]) : User.find_by_id(session[:user])
+        @current_user ||= session[:domain] == 'malibu' ? Admin.find_by_id(session[:user]) : User.find_by_id(session[:user]) || Nobody.new
       else
         Nobody.new
       end

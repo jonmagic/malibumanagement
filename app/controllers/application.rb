@@ -18,9 +18,9 @@ class ApplicationController < ActionController::Base
   end
 
   def add_default_restrictions
-    add_restriction('allow only store admins', current_user.is_store?) {flash[:notice] = "Only Store Admins can access this. Please login with Store Admin credentials."; store_location; redirect_to store_login_path(accessed_domain)}
-    add_restriction('allow only admins or store admins', current_user.is_store_or_admin?) {flash[:notice] = "Only Store Admins can access this. Please login with Store Admin credentials."; store_location; redirect_to store_login_path(accessed_domain)}
-    add_restriction('allow only store users', current_user.is_store_user?) {flash[:notice] = "Only Store Users can access this. Please login."; store_location; redirect_to store_login_path(accessed_domain)}
+    add_restriction('allow only store admins', current_user.is_store_admin? && current_user.store == accessed_store) {flash[:notice] = "Only Store Admins can access this. Please login with Store Admin credentials."; store_location; redirect_to store_login_path(accessed_domain)}
+    add_restriction('allow only admins or store admins', current_user.is_store_admin_or_admin?) {flash[:notice] = "Only Store Admins can access this. Please login with Store Admin credentials."; store_location; redirect_to store_login_path(accessed_domain)}
+    add_restriction('allow only store users', current_user.is_store_user? && current_user.store == accessed_store) {flash[:notice] = "Only Store Users can access this. Please login."; store_location; redirect_to store_login_path(accessed_domain)}
     add_restriction('allow only admins', current_user.is_admin?) {flash[:notice] = "Only Admins can access this. Please login."; store_location; redirect_to(admin_login_path)}
   end
 

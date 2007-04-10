@@ -1,8 +1,7 @@
-<h4>New Customer</h4>
+<h4>Current Forms</h4>
 <ul>
-	<% current_user.store.form_types.each do |ft| -%>
-
+	<% current_user.store.form_types.concat(current_user.form_types).each do |ft| -%>
   <!-- map.store_forms '/stores/:domain/forms/:form_type/:action/:form_id', :controller => 'forms', :action => 'new' -->
-		<li><%= link_to ft.friendly_name, store_draft_path(:form_status => 'draft', :action => 'new', :form_type => ft.name) %></li>
+		<li><%= link_to current_store.drafts_of_type(ft.name).count > 0 ? current_store.drafts_of_type(ft.name)[0].visual_identifier : ft.friendly_name + " &gt; New", store_draft_path(:form_status => 'draft', :action => 'new', :form_type => ft.name) %></li>
 	<% end -%>
 </ul>

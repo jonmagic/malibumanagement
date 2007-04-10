@@ -13,30 +13,6 @@ class Manage::StoresController < ApplicationController
     end
   end
 
-# Need to create a search action in case user hits enter on the live_search box, or else disable hard-submit on the form.
-  def search(live = false)
-    restrict('allow only admins') or begin
-      @phrase = (request.raw_post || request.query_string).slice(/[^=]+/)
-      if @phrase.blank?
-        render :nothing => true
-      else
-        if @phrase == 'all'
-          @results = Store.find(:all)
-        else
-          @sqlphrase = "%" + @phrase.to_s + "%"
-          @results = Store.find(:all, :conditions => [ "friendly_name LIKE ? OR alias LIKE ? OR telephone LIKE ?", @sqlphrase, @sqlphrase, @sqlphrase])
-        end
-        @search_entity = @results.length == 1 ? "Store" : "Stores"
-        logger.error "#{@results.length} results."
-        render(:partial => 'shared/live_search_results') if live
-      end
-    end
-  end
-
-  def live_search
-    search(true)
-  end
-
   # GET /stores/1
   # GET /stores/1.xml
   def show
@@ -53,8 +29,9 @@ class Manage::StoresController < ApplicationController
   # GET /stores/new
   def new
     restrict('allow only admins') or begin
-      @store = Store.new
-      @user   = User.new
+      @user   = User.new(:form_type_ids => [2])
+      @store = Store.new(:form_type_ids => [1], :admin => @user)
+      @user.store = @store
     end
   end
 
@@ -98,12 +75,11 @@ class Manage::StoresController < ApplicationController
   def update
     restrict('allow only admins') or begin
       @store = Store.find(params[:id])
-      @user   = @store.admin
       respond_to do |format|
   #This doesn't update the FormTypes association if all of them are unchecked...?
-        if (@store.valid? & @user.valid?) &&  @store.update_attributes(params[:store]) && @user.update_attributes(params[:user])
+        if @store.valid? && @store.update_attributes(params[:store])
           flash[:notice] = "Store was successfully updated."
-          format.html { redirect_to store_url(@store) }
+          format.html { redirect_to stores_url }
           format.xml  { head :ok }
         else
           format.html { render :action => "edit" }

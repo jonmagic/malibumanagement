@@ -3,6 +3,18 @@
 Username: <em><%= @user.username %></em></small></p>
 <p>Full Name<a href="javascript:void(0)" id="edit_friendly_name_<%= @user.id %>">(edit)</a>:<br />
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= in_place_editor_field :user, 'friendly_name', {}, :rows => 1, :external_control => "edit_friendly_name_#{@user.id}", :url => {:store_id => @user.store.id, :action => 'set_user_friendly_name', :id => @user.id} %></p>
-<p>Email<a href="javascript:void(0)" id="edit_email_<%= @user.id %>">(edit)</a>:<br />
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= in_place_editor_field :user, 'email', {}, :rows => 1, :external_control => "edit_email_#{@user.id}", :url => {:store_id => @user.store.id, :action => 'set_user_email'} %></p>
-<p><%= link_to 'Register!', register_users_path(@user.store.alias)+"?activation_code="+@user.activation_code if !@user.activation_code.blank? %>&nbsp;</p>
+<% if current_user.is_admin? -%>
+<% form_for :user, :url => { :action => 'update', :id => @user.id }, :html => {:method => :update} do |f| -%>
+<%= hidden_field 'user', 'operation', :value => 'attr_update' %>
+<p><label for="form_types">Explicitly Assigned Form Types</label><br/>
+	<ul>
+	<% FormType.find(:all).each do |t| -%>
+	<% unless @user.store.form_type_ids.include?(t.id.to_s) -%>
+	   <li><input type="checkbox" name="user[form_type_ids][]" value="<%= t.id %>" <%= 'checked="checked"' if @user.form_type_ids.include?(t.id.to_s) %> /><%= t.friendly_name %><%= ' (store-wide)' if @user.store.form_type_ids.include?(t.id.to_s) %></li>
+	<% end -%>
+	<% end -%>
+	</ul>
+</p>
+<p><%= submit_tag 'Update' %></p>
+<% end -%>
+<% end -%>

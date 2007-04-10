@@ -1,12 +1,14 @@
 class NotesController < ApplicationController
   # before_filter :validate_store_and_form_type
 
+# SECURITY: This model is not 100% secure when it comes to allowing only the RIGHT users to access things. I need to put in the appropriate security checks...
+
   # GET /notes
   # GET /notes.xml
   def index
     restrict('allow only store users') or begin
-      @form_instance = FormInstance.find_by_form_type_and_form_id(params[:form_type], params[:form_id])
-      @notes = Note.find_by_form_instance_id(@form_instance.id)
+      @form_instance = FormInstance.find_by_id(params[:form_id])
+      @notes = Note.find_all_by_form_instance_id(@form_instance.id)
       respond_to do |format|
         format.html # index.rhtml
         format.xml  { render :xml => @notes.to_xml }
@@ -52,10 +54,21 @@ class NotesController < ApplicationController
       @note = Note.new(params[:note])
       @note.form_instance = current_form_instance
       @note.author = current_user
+      # Save uploaded file if there is one
+      #****
       respond_to do |format|
         if @note.save
           format.html { redirect_to store_forms_url(:form_status => @note.form_instance.status, :action => 'draft', :form_type => params[:form_type], :form_id => params[:form_id]) }
-          format.js   {}
+          format.js do
+            responds_to_parent do
+              render :update do |page|
+                page.insert_html :bottom, 'notes_container', :partial => 'notes/show_note', :locals => { :note => @note }
+                page['new_note_text_area'].value = ''
+                page['note_attachment_temp'].value = ''
+                page['note_attachment'].value = ''
+              end # render
+            end # responds_to_parent
+          end # wants
           format.xml  { head :created, :location => store_forms_url(:form_status => @note.form_instance.status, :action => 'draft', :form_type => params[:form_type], :form_id => params[:form_id]) }
         else
           format.html { render :action => "new" }
@@ -99,6 +112,13 @@ class NotesController < ApplicationController
         format.js   {}
         format.xml  { head :ok }
       end
+    end
+  end
+
+  def attachment
+    restrict('allow only store users') or begin
+      @note = Note.find_by_id(params[:id])
+      send_file @note.attachment, :type => Mime::Type.lookup_by_extension(@note.attachment).to_str, :disposition => 'inline'
     end
   end
 

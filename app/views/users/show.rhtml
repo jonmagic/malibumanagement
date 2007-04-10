@@ -3,6 +3,15 @@
 <p>Username: <em><%= @user.username %></em></p>
 <p>Full Name<a href="javascript:void(0)" id="edit_friendly_name_<%= @user.id %>">(edit)</a>:<br />
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= in_place_editor_field :user, 'friendly_name', {}, :rows => 1, :external_control => "edit_friendly_name_#{@user.id}" %></p>
-<p>Email<a href="javascript:void(0)" id="edit_email_<%= @user.id %>">(edit)</a>:<br />
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= in_place_editor_field :user, 'email', {}, :rows => 1, :external_control => "edit_email_#{@user.id}" %></p>
-<p><%= link_to 'Register!', register_users_path(@user.store.alias)+"?activation_code="+@user.activation_code if !@user.activation_code.blank? %>&nbsp;</p>
+<% if current_user.id == @user.id -%>
+<p><%= link_to_function 'Change Password', visual_effect(:toggle_blind, :change_password_form, :duration => 0.5) %></p>
+<% form_for :user, :url => { :action => 'update', :id => @user.id }, :html => {:method => :update, :id => 'change_password_form', :style => 'display:none'} do |f| -%>
+<%= hidden_field 'user', 'operation', :value => 'changing_password' %>
+<p><label for="password">Change Password</label><br/>
+<%= f.password_field :password %></p>
+
+<p><label for="password_confirmation">Confirm Password</label><br/>
+<%= f.password_field :password_confirmation %></p>
+<p><%= submit_tag 'Change Password' %></p>
+<% end -%>
+<% end -%>

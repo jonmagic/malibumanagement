@@ -4,18 +4,18 @@ class RemoveSixSigmaForms < ActiveRecord::Migration
     execute 'DELETE FROM form_types WHERE name="BasicForm"'
     drop_table :second_forms
     execute 'DELETE FROM form_types WHERE name="SecondForm"'
-    drop_table :account_setups
+    # drop_table :account_setups
     execute 'DELETE FROM form_types WHERE name="AccountSetup"'
   end
 
   def self.down
-    create_table :basic_forms do |t|
+    create_table :basic_forms, :force => true do |t|
     end
     execute 'INSERT INTO form_types(friendly_name, name, can_have_notes) VALUES("CMS-1500", "BasicForm", 1)'
-    create_table :second_forms do |t|
+    create_table :second_forms, :force => true do |t|
     end
     execute 'INSERT INTO form_types(friendly_name, name, can_have_notes) VALUES("CMS-1500", "SecondForm", 1)'
-    create_table :account_setups do |t|
+    create_table :account_setups, :force => true do |t|
     end
     execute 'INSERT INTO form_types(friendly_name, name, can_have_notes) VALUES("Account Setup", "AccountSetup", 1)'
   end

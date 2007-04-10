@@ -24,9 +24,9 @@ ActionController::Routing::Routes.draw do |map|
 #* * * * * * *
 
   map.admin_dashboard                        '/malibu',        :controller => 'manage/forms',   :action => 'index'
-  map.resources :admins,     :path_prefix => '/malibu/manage', :controller => 'manage/admins',  :collection => { :register => :any, :activate => :any, :unactivate => :any, :live_search => :any, :search => :any, :set_user_friendly_name => :any, :set_user_email => :any }
-  map.resources :stores,    :path_prefix => '/malibu/manage', :controller => 'manage/stores', :collection => { :live_search => :any, :search => :any } do |store|
-    store.resources :users, :name_prefix => 'manage_',          :controller => 'manage/users',   :collection => { :live_search => :any, :search => :any, :set_user_friendly_name => :any, :set_user_email => :any }, :member => { :unactivate => :any }
+  map.resources :admins,     :path_prefix => '/malibu/manage', :controller => 'manage/admins',  :collection => { :live_search => :any, :search => :any, :set_admin_friendly_name => :any }, :member => { :update => :update }
+  map.resources :stores,    :path_prefix => '/malibu/manage', :controller => 'manage/stores' do |store|
+    store.resources :users, :name_prefix => 'manage_',          :controller => 'manage/users',   :collection => { :live_search => :any, :search => :any, :set_user_friendly_name => :any }, :member => { :update => :update }
   end
   map.resources :pages, :path_prefix => '/malibu/manage',   :controller => 'manage/pages', :name_prefix => 'manage_'
   map.admin_account   '/malibu/manage/myaccount/:action',   :controller => 'manage/admins', :action => 'show'
@@ -49,13 +49,13 @@ ActionController::Routing::Routes.draw do |map|
   map.store_login '/stores/:domain/login', :controller => 'sessions', :action => 'create_user'
   map.store_profile '/stores/:domain/manage/profile/:action', :controller => 'stores', :action => 'profile'
 
-  map.resources :users, :path_prefix => '/stores/:domain/manage', :collection => { :register => :any, :activate => :any, :live_search => :any, :search => :any }, :member => { :unactivate => :any }
+  map.resources :users, :path_prefix => '/stores/:domain/manage', :collection => { :live_search => :any, :search => :any }, :member => { :update => :update }
   map.user_account '/stores/:domain/myaccount/:action', :controller => 'users', :action => 'show'
 
   map.store_search_forms      '/stores/:domain/forms/search',      :controller => 'forms', :action => 'search'
   map.store_live_search_forms '/stores/:domain/forms/live_search', :controller => 'forms', :action => 'live_search'
   map.store_forms_by_status '/stores/:domain/forms/:form_status/:action',                     :controller => 'forms',       :action => 'index', :form_status => nil
-  map.resources :notes, :path_prefix => '/stores/:domain/forms/:form_status/:form_type/:form_id', :name_prefix => 'store_'
+  map.resources :notes, :path_prefix => '/stores/:domain/forms/:form_status/:form_type/:form_id', :name_prefix => 'store_', :member => {:attachment => :get}
   map.store_form_log '/stores/:domain/forms/:form_type/:form_id/logs', :controller => 'logs', :action => 'form_logs'
   map.formatted_store_forms '/stores/:domain/forms/:form_status/:form_type/:form_id/:action.:format', :controller => 'forms', :action => 'new', :format => 'html'
   map.store_draft '/stores/:domain/forms/draft/:form_type/new', :controller => 'forms', :action => 'new', :form_status => 'draft'

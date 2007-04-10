@@ -1,0 +1,16 @@
+<% if current_user.is_store_admin? -%>
+<h3>Store Admin Dashboard</h3>
+<% else -%>
+<h3>Store Assistant Dashboard</h3>
+<% end -%>
+
+<div><%= render(:partial => 'forms/new_form') %></div>
+<p>&nbsp;</p>
+<div>
+<h4>Recent Forms</h4>
+	<ul>
+<% for form in FormInstance.find_by_sql(["SELECT * FROM form_instances WHERE store_id=:store_id ORDER BY created_at DESC LIMIT 6", {:store_id => current_store.id}]) -%>
+<li><%= form.visual_identifier %></li>
+<% end -%>
+  </ul>
+</div>

@@ -1,7 +1,21 @@
 <h1>Manage Stores</h1>
 
-<%= render :partial => 'shared/live_search_form', :locals => { :post_url => search_stores_url, :live_url => live_search_stores_url, :tickler_text => "Start by finding stores...", :results_div => 'store_results' } %>
-<!-- show all -->
-<div id="store_results"></div>
+<table>
+  <thead>
+    <th>Name</th>
+    <th>Alias</th>
+    <th>Telephone</th>
+  </thead>
+<% for store in @stores %>
+  <tr>
+    <td><%= store.friendly_name %></td>
+    <td><em><%= store.alias %></em></td>
+    <td><%= store.telephone %></td>
+    <td><%= link_to 'Show', store_path(store) %></td>
+    <td><%= link_to 'Edit', edit_store_path(store) %></td>
+    <td><%= link_to 'Destroy', store_path(store), :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
 <br />
 <%= link_to 'New store', new_store_path %>

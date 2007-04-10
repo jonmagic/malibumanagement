@@ -17,18 +17,29 @@
   <%= f.text_field :contact_person %></p>
   <p><label for="telephone">Telephone</label><br/>
   <%= f.text_field :telephone %></p>
-  <p><label for="tax_id">Tax ID</label><br/>
-  <%= f.text_field :tax_id %></p>
   <% fields_for :user, @user do |g| %>
     <%= error_messages_for :user %>
-    <p><label for="friendly_name">Store's Full Name</label><br/>
-    <%= g.text_field :friendly_name %>
-    <p><%= g.error_message_on :email %><label for="email">Store Email</label><br/>
-    <%= g.text_field :email %>
+		<p><label for="friendly_name">Store Manager's Full Name</label><br/>
+		<%= g.text_field :friendly_name %></p>
+
+		<p><label for="password">Password</label><br/>
+		<%= g.password_field :password %></p>
+
+		<p><label for="password_confirmation">Confirm Password</label><br/>
+		<%= g.password_field :password_confirmation %></p>
+
+		<p><label for="form_types">Manager-only Form Types</label><br/>
+			<ul>
+			<% FormType.find(:all).each do |t| -%>
+			<% unless @user.store.form_type_ids.include?(t.id.to_s) -%>
+			   <li><input type="checkbox" name="user[form_type_ids][]" value="<%= t.id %>" <%= 'checked="checked"' if @user.form_type_ids.include?(t.id.to_s) %> /><%= t.friendly_name %><%= ' (store-wide)' if @user.store.form_type_ids.include?(t.id.to_s) %></li>
+			<% end -%>
+			<% end -%>
+			</ul>
+		</p>
   <% end -%>
   <% if current_user.is_admin? -%>
-  <p><label for="form_types">Assigned Form Types</label><br/>
-<!--  <%= select(:store, :form_type_ids, FormType.find(:all).collect {|p| [p.friendly_name, p.id]}, {}, { 'multiple size' => 3 }) %></p> -->
+  <p><label for="form_types">Store-wide Form Types</label><br/>
 <ul>
 <% FormType.find(:all).each do |t| -%>
    <li><input type="checkbox" name="store[form_type_ids][]" value="<%= t.id %>" <%= 'checked="checked"' if @store.form_type_ids.include?(t.id) %> /><%= t.friendly_name %></li>

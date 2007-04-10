@@ -2,145 +2,39 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 18) do
+ActiveRecord::Schema.define(:version => 29) do
+
+  create_table "account_setups", :force => true do |t|
+  end
 
   create_table "admins", :force => true do |t|
     t.column "username",         :string
     t.column "friendly_name",    :string,   :limit => 50
-    t.column "email",            :string
     t.column "crypted_password", :string,   :limit => 40
     t.column "salt",             :string,   :limit => 40
     t.column "created_at",       :datetime
     t.column "updated_at",       :datetime
-    t.column "activation_code",  :string,   :limit => 40
     t.column "activated_at",     :datetime
-  end
-
-  create_table "basic_forms", :force => true do |t|
-    t.column "account_number",                     :string
-    t.column "last_name",                          :string
-    t.column "first_name",                         :string
-    t.column "middle_initial",                     :string
-    t.column "sex",                                :string
-    t.column "marital_status",                     :string
-    t.column "birth_date",                         :date
-    t.column "social_security_number",             :string
-    t.column "address",                            :string
-    t.column "city",                               :string
-    t.column "state",                              :string
-    t.column "zipcode",                            :string
-    t.column "telephone",                          :string
-    t.column "work_telephone",                     :string
-    t.column "work_status",                        :string
-    t.column "employment_school",                  :string
-    t.column "responsible_last_name",              :string
-    t.column "responsible_first_name",             :string
-    t.column "responsible_middle_initial",         :string
-    t.column "responsible_birth_date",             :date
-    t.column "responsible_social_security_number", :string
-    t.column "responsible_address",                :string
-    t.column "responsible_city",                   :string
-    t.column "responsible_state",                  :string
-    t.column "responsible_zipcode",                :string
-    t.column "responsible_telephone",              :string
-    t.column "responsible_work_telephone",         :string
-    t.column "responsible_work_status",            :string
-    t.column "responsible_employment_school",      :string
-    t.column "encounter_form_number",              :string
-    t.column "provider_name",                      :string
-    t.column "referring_provider_name",            :string
-    t.column "location",                           :string
-    t.column "accident",                           :string
-    t.column "accident_date",                      :date
-    t.column "admit_date",                         :date
-    t.column "discharge_date",                     :date
-    t.column "onset_date",                         :date
-    t.column "last_menstrual_period",              :date
-    t.column "authorization_number",               :string
-    t.column "new_customer",                        :boolean
-    t.column "emergency",                          :boolean
-    t.column "anesthesia_start_time",              :datetime
-    t.column "anesthesia_stop_time",               :datetime
-    t.column "primary_insurance_company",          :string
-    t.column "primary_address",                    :string
-    t.column "primary_city",                       :string
-    t.column "primary_state",                      :string
-    t.column "primary_zipcode",                    :string
-    t.column "primary_telephone",                  :string
-    t.column "primary_first_name",                 :string
-    t.column "primary_middle_initial",             :string
-    t.column "primary_last_name",                  :string
-    t.column "primary_relationship",               :string
-    t.column "primary_birth_date",                 :string
-    t.column "primary_social_security_number",     :string
-    t.column "primary_contract_number",            :string
-    t.column "primary_plan_number",                :string
-    t.column "primary_group_number",               :string
-    t.column "secondary_insurance_company",        :string
-    t.column "secondary_address",                  :string
-    t.column "secondary_city",                     :string
-    t.column "secondary_state",                    :string
-    t.column "secondary_zipcode",                  :string
-    t.column "secondary_telephone",                :string
-    t.column "secondary_first_name",               :string
-    t.column "secondary_middle_initial",           :string
-    t.column "secondary_last_name",                :string
-    t.column "secondary_relationship",             :string
-    t.column "secondary_birth_date",               :string
-    t.column "secondary_social_security_number",   :string
-    t.column "secondary_contract_number",          :string
-    t.column "secondary_plan_number",              :string
-    t.column "secondary_group_number",             :string
-    t.column "tertiary_insurance_company",         :string
-    t.column "tertiary_address",                   :string
-    t.column "tertiary_city",                      :string
-    t.column "tertiary_state",                     :string
-    t.column "tertiary_zipcode",                   :string
-    t.column "tertiary_telephone",                 :string
-    t.column "tertiary_first_name",                :string
-    t.column "tertiary_middle_initial",            :string
-    t.column "tertiary_last_name",                 :string
-    t.column "tertiary_relationship",              :string
-    t.column "tertiary_birth_date",                :string
-    t.column "tertiary_social_security_number",    :string
-    t.column "tertiary_contract_number",           :string
-    t.column "tertiary_plan_number",               :string
-    t.column "tertiary_group_number",              :string
-  end
-
-  create_table "stores", :force => true do |t|
-    t.column "alias",          :string,   :limit => 25
-    t.column "friendly_name",  :string,   :limit => 50
-    t.column "encryption_key", :binary
-    t.column "address",        :string
-    t.column "contact_person", :string,   :limit => 25
-    t.column "telephone",      :string,   :limit => 20
-    t.column "tax_id",         :string
-    t.column "created_at",     :datetime
-    t.column "updated_at",     :datetime
-  end
-
-  create_table "stores_form_types", :id => false, :force => true do |t|
-    t.column "store_id",    :integer
-    t.column "form_type_id", :integer
   end
 
   create_table "form_instances", :force => true do |t|
     t.column "form_type_id",       :integer
     t.column "form_data_id",       :integer
     t.column "form_data_type",     :string
-    t.column "store_id",          :integer
-    t.column "customer_id",         :integer
+    t.column "store_id",           :integer
+    t.column "customer_id",        :integer
     t.column "user_id",            :integer
     t.column "status_number",      :integer,  :default => 1
     t.column "created_at",         :datetime
+    t.column "submitted",          :boolean
     t.column "has_been_submitted", :boolean,  :default => false
   end
 
   create_table "form_types", :force => true do |t|
-    t.column "friendly_name",  :string
-    t.column "name",           :string
-    t.column "can_have_notes", :boolean
+    t.column "friendly_name",            :string
+    t.column "name",                     :string
+    t.column "can_have_notes",           :boolean
+    t.column "can_have_multiple_drafts", :boolean
   end
 
   create_table "logs", :force => true do |t|
@@ -153,12 +47,35 @@ ActiveRecord::Schema.define(:version => 18) do
     t.column "agent_type",  :string
   end
 
+  create_table "manager_reports", :force => true do |t|
+    t.column "overview",                        :text
+    t.column "actual_debit",                    :integer
+    t.column "number_of_tans",                  :integer
+    t.column "total_sales",                     :integer
+    t.column "total_revenue",                   :integer
+    t.column "previous_year_sales",             :integer
+    t.column "previous_year_tans",              :integer
+    t.column "goal_for_month",                  :integer
+    t.column "action_plan_for_next_month",      :text
+    t.column "meetings_training_agenda",        :text
+    t.column "cash_error",                      :integer
+    t.column "payroll_percent_for_month",       :integer
+    t.column "store_inspection_grade",          :integer
+    t.column "employees",                       :string
+    t.column "maintenance_requests",            :string
+    t.column "suggestions",                     :text
+    t.column "store_needs",                     :text
+    t.column "inventory_items_error",           :string
+    t.column "action_plan_to_correct_problems", :string
+  end
+
   create_table "notes", :force => true do |t|
     t.column "form_instance_id", :integer
     t.column "author_type",      :string
     t.column "author_id",        :integer
     t.column "text",             :text
     t.column "created_at",       :datetime
+    t.column "attachment",       :string
   end
 
   create_table "pages", :force => true do |t|
@@ -167,182 +84,47 @@ ActiveRecord::Schema.define(:version => 18) do
     t.column "stub",  :string
   end
 
-  create_table "customers", :force => true do |t|
-    t.column "store_id",                        :integer
-    t.column "account_number",                   :string
-    t.column "last_name",                        :string
-    t.column "first_name",                       :string
-    t.column "middle_initial",                   :string
-    t.column "sex",                              :string
-    t.column "marital_status",                   :string
-    t.column "birth_date",                       :date
-    t.column "social_security_number",           :string
-    t.column "address",                          :string
-    t.column "city",                             :string
-    t.column "state",                            :string
-    t.column "zipcode",                          :string
-    t.column "telephone",                        :string
-    t.column "work_telephone",                   :string
-    t.column "work_status",                      :string
-    t.column "employment_school",                :string
-    t.column "provider_name",                    :string
-    t.column "referring_provider_name",          :string
-    t.column "location",                         :string
-    t.column "authorization_number",             :string
-    t.column "primary_insurance_company",        :string
-    t.column "primary_address",                  :string
-    t.column "primary_city",                     :string
-    t.column "primary_state",                    :string
-    t.column "primary_zipcode",                  :string
-    t.column "primary_telephone",                :string
-    t.column "primary_first_name",               :string
-    t.column "primary_middle_initial",           :string
-    t.column "primary_last_name",                :string
-    t.column "primary_relationship",             :string
-    t.column "primary_birth_date",               :string
-    t.column "primary_social_security_number",   :string
-    t.column "primary_contract_number",          :string
-    t.column "primary_plan_number",              :string
-    t.column "primary_group_number",             :string
-    t.column "secondary_insurance_company",      :string
-    t.column "secondary_address",                :string
-    t.column "secondary_city",                   :string
-    t.column "secondary_state",                  :string
-    t.column "secondary_zipcode",                :string
-    t.column "secondary_telephone",              :string
-    t.column "secondary_first_name",             :string
-    t.column "secondary_middle_initial",         :string
-    t.column "secondary_last_name",              :string
-    t.column "secondary_relationship",           :string
-    t.column "secondary_birth_date",             :string
-    t.column "secondary_social_security_number", :string
-    t.column "secondary_contract_number",        :string
-    t.column "secondary_plan_number",            :string
-    t.column "secondary_group_number",           :string
-    t.column "tertiary_insurance_company",       :string
-    t.column "tertiary_address",                 :string
-    t.column "tertiary_city",                    :string
-    t.column "tertiary_state",                   :string
-    t.column "tertiary_zipcode",                 :string
-    t.column "tertiary_telephone",               :string
-    t.column "tertiary_first_name",              :string
-    t.column "tertiary_middle_initial",          :string
-    t.column "tertiary_last_name",               :string
-    t.column "tertiary_relationship",            :string
-    t.column "tertiary_birth_date",              :string
-    t.column "tertiary_social_security_number",  :string
-    t.column "tertiary_contract_number",         :string
-    t.column "tertiary_plan_number",             :string
-    t.column "tertiary_group_number",            :string
-    t.column "created_at",                       :datetime
+  create_table "sales_reports", :force => true do |t|
+    t.column "store_daily_sales",       :integer
+    t.column "opening",                 :boolean
+    t.column "store_goal",              :boolean
+    t.column "total_revenue",           :integer
+    t.column "daily_cleaning",          :boolean
+    t.column "plus_minus_goal_for_day", :integer
+    t.column "employee_names",          :string
+    t.column "employee_sales",          :string
+    t.column "employee_ppa",            :string
+    t.column "employee_tans",           :string
+    t.column "store_ppa",               :integer
+    t.column "total_tans",              :integer
+    t.column "cash_error",              :integer
   end
 
-  create_table "second_forms", :force => true do |t|
-    t.column "account_number",                     :string
-    t.column "last_name",                          :string
-    t.column "first_name",                         :string
-    t.column "middle_initial",                     :string
-    t.column "sex",                                :string
-    t.column "marital_status",                     :string
-    t.column "birth_date",                         :date
-    t.column "social_security_number",             :string
-    t.column "address",                            :string
-    t.column "city",                               :string
-    t.column "state",                              :string
-    t.column "zipcode",                            :string
-    t.column "telephone",                          :string
-    t.column "work_telephone",                     :string
-    t.column "work_status",                        :string
-    t.column "employment_school",                  :string
-    t.column "responsible_last_name",              :string
-    t.column "responsible_first_name",             :string
-    t.column "responsible_middle_initial",         :string
-    t.column "responsible_birth_date",             :date
-    t.column "responsible_social_security_number", :string
-    t.column "responsible_address",                :string
-    t.column "responsible_city",                   :string
-    t.column "responsible_state",                  :string
-    t.column "responsible_zipcode",                :string
-    t.column "responsible_telephone",              :string
-    t.column "responsible_work_telephone",         :string
-    t.column "responsible_work_status",            :string
-    t.column "responsible_employment_school",      :string
-    t.column "encounter_form_number",              :string
-    t.column "provider_name",                      :string
-    t.column "referring_provider_name",            :string
-    t.column "location",                           :string
-    t.column "accident",                           :string
-    t.column "accident_date",                      :date
-    t.column "admit_date",                         :date
-    t.column "discharge_date",                     :date
-    t.column "onset_date",                         :date
-    t.column "last_menstrual_period",              :date
-    t.column "authorization_number",               :string
-    t.column "new_customer",                        :boolean
-    t.column "emergency",                          :boolean
-    t.column "anesthesia_start_time",              :datetime
-    t.column "anesthesia_stop_time",               :datetime
-    t.column "primary_insurance_company",          :string
-    t.column "primary_address",                    :string
-    t.column "primary_city",                       :string
-    t.column "primary_state",                      :string
-    t.column "primary_zipcode",                    :string
-    t.column "primary_telephone",                  :string
-    t.column "primary_first_name",                 :string
-    t.column "primary_middle_initial",             :string
-    t.column "primary_last_name",                  :string
-    t.column "primary_relationship",               :string
-    t.column "primary_birth_date",                 :string
-    t.column "primary_social_security_number",     :string
-    t.column "primary_contract_number",            :string
-    t.column "primary_plan_number",                :string
-    t.column "primary_group_number",               :string
-    t.column "secondary_insurance_company",        :string
-    t.column "secondary_address",                  :string
-    t.column "secondary_city",                     :string
-    t.column "secondary_state",                    :string
-    t.column "secondary_zipcode",                  :string
-    t.column "secondary_telephone",                :string
-    t.column "secondary_first_name",               :string
-    t.column "secondary_middle_initial",           :string
-    t.column "secondary_last_name",                :string
-    t.column "secondary_relationship",             :string
-    t.column "secondary_birth_date",               :string
-    t.column "secondary_social_security_number",   :string
-    t.column "secondary_contract_number",          :string
-    t.column "secondary_plan_number",              :string
-    t.column "secondary_group_number",             :string
-    t.column "tertiary_insurance_company",         :string
-    t.column "tertiary_address",                   :string
-    t.column "tertiary_city",                      :string
-    t.column "tertiary_state",                     :string
-    t.column "tertiary_zipcode",                   :string
-    t.column "tertiary_telephone",                 :string
-    t.column "tertiary_first_name",                :string
-    t.column "tertiary_middle_initial",            :string
-    t.column "tertiary_last_name",                 :string
-    t.column "tertiary_relationship",              :string
-    t.column "tertiary_birth_date",                :string
-    t.column "tertiary_social_security_number",    :string
-    t.column "tertiary_contract_number",           :string
-    t.column "tertiary_plan_number",               :string
-    t.column "tertiary_group_number",              :string
+  create_table "stores", :force => true do |t|
+    t.column "alias",          :string,   :limit => 25
+    t.column "friendly_name",  :string,   :limit => 50
+    t.column "address",        :string
+    t.column "contact_person", :string,   :limit => 25
+    t.column "telephone",      :string,   :limit => 20
+    t.column "tax_id",         :string
+    t.column "created_at",     :datetime
+    t.column "updated_at",     :datetime
+    t.column "form_type_ids",  :string,                 :default => "--- []\n\n"
   end
 
   create_table "users", :force => true do |t|
     t.column "username",             :string,   :limit => 25
     t.column "friendly_name",        :string,   :limit => 50
-    t.column "store_id",            :integer
-    t.column "email",                :string
+    t.column "store_id",             :integer
     t.column "crypted_password",     :string,   :limit => 40
     t.column "salt",                 :string,   :limit => 40
     t.column "encryption_key",       :binary
     t.column "status",               :string
     t.column "password_change_date", :string
-    t.column "activation_code",      :string,   :limit => 40
     t.column "activated_at",         :datetime
     t.column "created_at",           :datetime
     t.column "updated_at",           :datetime
+    t.column "form_type_ids",        :string,                 :default => "--- []\n\n"
   end
 
 end

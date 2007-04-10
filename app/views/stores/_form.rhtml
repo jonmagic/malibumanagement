@@ -16,15 +16,20 @@
   	<%= f.text_field :contact_person %></p>
   <p><label for="telephone">Telephone</label><br/>
   	<%= f.text_field :telephone %></p>
-  <p><label for="tax_id">Tax ID</label><br/>
-  	<%= f.text_field :tax_id %></p>
 
 <% fields_for :user, @user do |g| %>
     <%= error_messages_for :user %>
-    <p><label for="friendly_name">Store's Full Name</label><br/>
+    <p><label for="friendly_name">Store Manager's Full Name</label><br/>
     	<%= g.text_field :friendly_name %>
-    <p><%= g.error_message_on :email %><label for="email">Store Email</label><br/>
-    	<%= g.text_field :email %>
+
+			<p><label for="username">Username</label><br/>
+			<%= g.text_field :username %></p>
+
+			<p><label for="password">Password</label><br/>
+			<%= g.password_field :password %></p>
+
+			<p><label for="password_confirmation">Confirm Password</label><br/>
+			<%= g.password_field :password_confirmation %></p>
 <% end -%>
 
   <% if current_user.is_admin? -%>

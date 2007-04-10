@@ -2,7 +2,6 @@ require 'digest/sha1'
 class Store < ActiveRecord::Base
   has_many :users, :dependent => :destroy, :conditions => 'username<>"#{self.alias}"'
   has_one  :admin, :class_name => 'User', :conditions => 'username="#{self.alias}"', :dependent => :destroy
-  has_and_belongs_to_many :form_types
   has_many :form_instances, :dependent => :destroy
     has_many :drafts,    :class_name => 'FormInstance', :conditions => "status_number=1"
     has_many :submitted, :class_name => 'FormInstance', :conditions => "status_number=2"
@@ -14,7 +13,15 @@ class Store < ActiveRecord::Base
   validates_length_of       :alias, :within => 5..25
   validates_uniqueness_of   :alias, :case_sensitive => false
 
-  before_create  :make_encryption_key
+  serialize :form_type_ids, Array
+  def form_types
+    FormType.find(self.form_type_ids)
+  end
+  def form_types=(ary)
+    self.form_type_ids = ary.collect do |ft|
+      ft.id.to_s
+    end
+  end
 
   def self.form_model(form_type_name)
     type = FormType.find_by_name(form_type_name)
@@ -23,7 +30,6 @@ class Store < ActiveRecord::Base
   #This is the proxy method to the form data records
   def form_model(form_type_name)
     type = FormType.find_by_name(form_type_name)
-    # logger.error "Attempted unpermitted FormType access: Store includes " + (self.form_type_ids.join(', ')) + ", but NOT #{type}?" unless self.form_types.include?(type)
     return nil unless self.form_types.include?(type)
     type.nil? ? nil : type.name.constantize
   end
@@ -35,6 +41,10 @@ class Store < ActiveRecord::Base
   def self.id_of_alias(stor_alias)
     stor = Store.find_by_alias(stor_alias)
     stor.nil? ? nil : stor.id
+  end
+
+  def drafts_of_type(form_type)
+    FormInstance.find_all_by_form_data_type_and_status_number(form_type, 'draft'.as_status.number)
   end
 
   def forms_with_status(status)
@@ -49,30 +59,10 @@ class Store < ActiveRecord::Base
 
     def validate_on_update
       old_store = Store.find_by_id(id)
-#      if operation == 'activate' #Activate
-#        if activation_code_valid
-#          errors.add(:username, "can't be blank") if username.blank? && old_user.username.blank?
-#          errors.add(:password, "can't be blank") if password.blank? && old_user.crypted_password.blank?
-#        else
-#          errors.add(:activation_code, "is not valid.") unless @just_activated
-#        end
-#      else
-#        if operation == 'password_change' #Password Change
-##Need to add in validations here
-#          
-#        else #Other Update function: restrain from changing username, password, activation_code (save(false) to inject activation_code)
-##Need to add in validations here
-#          
-#        end
-#      end
       if !old_store.blank?
-        errors.add_to_base("Only Malibu Admin users can modify your assigned forms.") if !form_type_ids.blank? && !old_store.form_type_ids.blank? && !(form_type_ids == old_store.form_type_ids)
+        # errors.add_to_base("Only Malibu Admin users can modify your assigned forms.") if !current_user.is_admin? && !form_type_ids.blank? && !old_store.form_type_ids.blank? && !(form_type_ids == old_store.form_type_ids)
         errors.add(:alias, "cannot be changed once created!") if !self.alias.blank? && !old_store.alias.blank? && !(self.alias == old_store.alias)
       end
     end
-
-    def make_encryption_key
-      self.encryption_key = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
-    end 
 
 end

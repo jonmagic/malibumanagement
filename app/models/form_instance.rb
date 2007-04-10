@@ -30,10 +30,10 @@ class FormInstance < ActiveRecord::Base
   end
 
   def admin_visual_identifier
-    "<span title='#{self.form_identifier}'>#{self.store.friendly_name} &gt; #{self.created_at.strftime('%A, %B %d, %Y')}</span>"
+    "<span title='#{self.form_identifier}'>#{self.store.friendly_name} &gt; #{self.form_type.friendly_name} #{self.created_at.strftime('%A, %B %d, %Y')}</span>"
   end
   def visual_identifier
-    "<span title='#{self.form_identifier}'>#{self.created_at.strftime('%A, %B %d, %Y')}</span>"
+    "<span title='#{self.form_identifier}'>#{self.form_type.friendly_name} &gt; #{self.created_at.strftime('%A, %B %d, %Y')}</span>"
   end
   def visual_identifier_with_status
     "<span title='#{self.form_identifier}'>(#{self.status}) #{self.created_at.strftime('%A, %B %d, %Y')}</span>"

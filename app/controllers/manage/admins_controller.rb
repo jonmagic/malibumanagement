@@ -1,6 +1,5 @@
 class Manage::AdminsController < ApplicationController
   in_place_edit_for :admin, 'friendly_name'
-  in_place_edit_for :admin, 'email'
   layout 'admin'
 
   # GET /admins
@@ -22,63 +21,13 @@ class Manage::AdminsController < ApplicationController
 
   def create
     restrict 'allow only admins' or begin
-      @admin = Admin.new
-      @admin.friendly_name = params[:admin][:friendly_name]
-      @admin.email = params[:admin][:email]
+      @admin = Admin.new(params[:admin])
       if @admin.save
-  #      self.current_user = @admin
-        redirect_back_or_default(admin_path(@admin))
+        redirect_back_or_default(admins_path)
         flash[:notice] = "Thanks for signing up!"
       else
         render :action => 'new'
       end
-    end
-  end
-
-  # GET /admins/register?activation_code=...
-  def register
-    if !given_activation_code.blank?
-      @admin = Admin.find_by_activation_code(given_activation_code)
-      if @admin.blank?
-        flash[:notice] = "Invalid activation code!"
-        render "manage/admins/register_activation"
-      end
-    else
-      flash[:notice] = "You must have an activation code to continue!"
-      render "manage/admins/register_activation"
-    end
-  end
-
-  def activate
-    if !given_activation_code.blank?
-      @admin = Admin.find_by_activation_code(given_activation_code)
-# logger.error "Activating? #{@admin.friendly_name}, #{@admin}"
-      if !@admin.blank?
-        @admin.operation = 'activate'
-        if !@admin.activated?
-          respond_to do |format|
-            if @admin.update_attributes(params[:admin])
-              #Log the user in
-              self.current_user = logged_in? ? self.current_user : @admin
-              flash[:notice] = "Signup complete! #{@admin.username} is ready for login."
-              format.html { redirect_to @admin == self.current_user ? user_account_url : admin_url(@admin) }
-              format.xml  { head :ok }
-            else
-              format.html { render :action => "register" }
-              format.xml  { render :xml => @admin.errors.to_xml }
-            end
-          end
-        else
-          flash[:notice] = "#{@admin.username} is already registered and activated."
-          render :action => "register"
-        end
-      else
-        flash[:notice] = "Invalid activation code!"
-        render "manage/admins/register_activation"
-      end
-    else
-# logger.error "Couldn't find Activation Code!"
-      redirect_to user_account_url(:action => 'register')
     end
   end
 
@@ -104,7 +53,9 @@ class Manage::AdminsController < ApplicationController
     restrict('allow only admins') or begin
       @admin = Admin.find_by_id(params[:id])
       respond_to do |format|
-        if @user.update_attributes(params[:admin])
+# It is possible to fool the system slightly by sending param 'admin[operation]=changing_password' to bypass validation of username and email. I'll assume nobody will ever have a malicious need to do that.
+        if @admin.update_attributes(params[:admin])
+          flash[:notice] = @admin.operation == 'changing_password' ? "Your Password has been changed. Please remember your new password next time you log in." : "#{@admin.friendly_name} has been updated."
           format.html { redirect_to admin_url(@admin) }
           format.js
           format.xml  { head :ok }
@@ -112,21 +63,6 @@ class Manage::AdminsController < ApplicationController
           format.html { render :action => "edit" }
           format.js
           format.xml  { render :xml => @admin.errors.to_xml }
-        end
-      end
-    end
-  end
-
-  def unactivate
-    restrict('allow only admins') or begin
-      @admin = Admin.find_by_id(params[:id])
-      respond_to do |format|
-        if @admin.unactivate
-          format.html { redirect_to admins_url }
-        else
-logger.error "Could not reset password! #{@admin.errors.to_yaml}\n"
-          flash[:notice] = "Could not reset password for #{@admin.friendly_name}!"
-          format.html { redirect_to admins_url }
         end
       end
     end

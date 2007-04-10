@@ -10,7 +10,7 @@ module RouteObjectMapping
       @accessed_domain ||= (params[:domain] || 'malibu')
     end
     def accessed_store
-      @accessed_store ||= accessed_domain == 'malibu' ? Store.new(:friendly_name => 'Malibu') : Store.find_by_alias(accessed_domain)
+      @accessed_store ||= accessed_domain == 'malibu' ? Store.new(:friendly_name => 'Malibu', :domain => 'malibu') : Store.find_by_alias(accessed_domain)
     end
     def current_domain
       #Is this always what I want to return here?
@@ -22,13 +22,13 @@ module RouteObjectMapping
 
 #These are VERY useful!
     def current_form_model
-      @current_form_model ||= current_user.is_admin? ? Store.form_model(params[:form_type]) : current_store.form_model(params[:form_type])
+      @current_form_model ||= Store.form_model(params[:form_type])
     end
     def current_form_instance
-      @current_form_instance ||= current_form.nil? ? nil : current_form.instance
+      @current_form ||= FormInstance.find_by_id(params[:form_id])
     end
     def current_form
-      @current_form ||= current_form_model.nil? ? nil : current_form_model.find_by_id(params[:form_id])
+      @current_form_instance ||= current_form_instance.nil? ? nil : current_form_instance.form_data
     end
     def given_activation_code
       @given_activation_code ||= params[:user] ? (params[:user][:activation_code] || params[:activation_code]) : (params[:admin] ? (params[:admin][:activation_code] || params[:activation_code]) : params[:activation_code])

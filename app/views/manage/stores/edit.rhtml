@@ -1,6 +1,35 @@
 <h2>Editing store</h2>
 
-<%= render :partial => "form", :locals => { :submit => "Update", :submit_url => store_path(:id => @store.id), :form_method => :put } %>
+<% form_method ||= :post %>
+<% form_for(:store, :url => store_path(:id => @store.id), :html => {:method => :put}) do |f| %>
+<%= error_messages_for :store %>
+<% if @store.alias.blank? or !error_message_on(:store, :alias).blank? -%>
+<p><label for="alias">Store Alias</label><br/>
+<%= f.text_field :alias %></p>
+<% else -%>
+<%= f.hidden_field :alias, :value => @store.alias %></p>
+<% end -%>
 
-<%= link_to 'Show', store_path(@store) %> |
-<%= link_to 'Back', stores_path %>
+  <p><label for="friendly_name">Business Friendly Name</label><br/>
+  <%= f.text_field :friendly_name %></p>
+  <p><label for="address">Address</label><br/>
+  <%= f.text_field :address %></p>
+  <p><label for="contact_person">Contact Person</label><br/>
+  <%= f.text_field :contact_person %></p>
+  <p><label for="telephone">Telephone</label><br/>
+  <%= f.text_field :telephone %></p>
+  <% if current_user.is_admin? -%>
+  <p><label for="form_types">Assigned Form Types</label><br/>
+<ul>
+<% FormType.find(:all).each do |t| -%>
+   <li><input type="checkbox" name="store[form_type_ids][]" value="<%= t.id %>" <%= 'checked="checked"' if @store.form_type_ids.include?(t.id.to_s) %> /><%= t.friendly_name %></li>
+<% end -%>
+</ul>
+	</p>
+  <% end -%>
+	<p><%= link_to 'Edit Admin User', manage_user_path(@store.admin) %></p>
+  <p>
+    <%= submit_tag 'Update' %>
+  </p>
+</div>
+<% end %>

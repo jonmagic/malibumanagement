@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
   in_place_edit_for :user, 'friendly_name'
-  in_place_edit_for :user, 'email'
   layout 'store'
 
   # render show.rhtml
@@ -14,62 +13,14 @@ class UsersController < ApplicationController
     end
   end
 
-  # GET /admins/register?activation_code=...
-  def register
-    if !given_activation_code.blank?
-      @user = User.find_by_activation_code(given_activation_code)
-      if !@user.blank?
-        current_user = @user
-      else
-        flash[:notice] = "Invalid activation code!"
-        render "users/register_activation"
-      end
-    else
-      flash[:notice] = "You must have an activation code to continue!"
-      render "users/register_activation"
-    end
-  end
-
-  def activate
-    if !given_activation_code.blank?
-      #Find unregistered user (need to choke if not a valid code)
-      @user = User.find_by_activation_code(given_activation_code)
-      if !@user.blank?
-        current_user = @user
-        @user.operation = 'activate'
-        if !@user.activated?
-          respond_to do |format|
-            if @user.update_attributes(params[:user])
-              #Log the user in
-              self.current_user = @user
-              flash[:notice] = "Signup complete! #{@user.username} is ready for login."
-              format.html { redirect_to user_account_url }
-              format.xml  { head :ok }
-            else
-              format.html { render :action => "register" }
-              format.xml  { render :xml => @user.errors.to_xml }
-            end
-          end
-        else
-          flash[:notice] = "#{@user.username} is already registered and activated."
-          render :action => "register"
-        end
-      else
-        flash[:notice] = "Invalid activation code!"
-        render "users/register_activation"
-      end
-    else
-      redirect_back_or_default(user_path(:action => 'register'))
-    end
-  end
-
-#This needs to be locked down to do only what it should be allowed to do
   def update
     restrict('allow only store users') or begin
-      @user = get_user
+      @user = User.find_by_id(params[:id])
       respond_to do |format|
+        params[:user] = {:password => params[:user][:password], :password_confirmation => params[:user][:password_confirmation], :operation => params[:user][:operation]} if params[:user][:operation] == 'changing_password' # Ensure ONLY password is being changed!
         if @user.update_attributes(params[:user])
-          format.html { redirect_to user_url(@user) }
+          flash[:notice] = @user.operation == 'changing_password' ? "Your Password has been changed. Please remember your new password next time you log in." : "#{@user.friendly_name} has been updated."
+          format.html { redirect_to current_user.is_store_admin? ? users_url : user_account_url }
           format.js
           format.xml  { head :ok }
         else
@@ -80,6 +31,26 @@ class UsersController < ApplicationController
       end
     end
   end
+
+
+# 
+# #This needs to be locked down to do only what it should be allowed to do
+#   def update
+#     restrict('allow only store users') or begin
+#       @user = get_user
+#       respond_to do |format|
+#         if @user.update_attributes(params[:user])
+#           format.html { redirect_to user_url(@user) }
+#           format.js
+#           format.xml  { head :ok }
+#         else
+#           format.html { render :action => "edit" }
+#           format.js
+#           format.xml  { render :xml => @user.errors.to_xml }
+#         end
+#       end
+#     end
+#   end
 
   # GET /users
   # GET /users.xml
@@ -120,29 +91,13 @@ class UsersController < ApplicationController
 
   def create
     restrict('allow only store admins') or begin
-      @user = User.new
-      @user.friendly_name = params[:user][:friendly_name]
-      @user.email = params[:user][:email]
+      @user = User.new(params[:user])
       @user.store = Store.find_by_alias(params[:domain])
       if @user.save
         redirect_back_or_default(users_path)
         flash[:notice] = "User #{@user.friendly_name} has been created."
       else
         render :action => "new"
-      end
-    end
-  end
-
-  def unactivate
-    restrict('allow only store admins') or begin
-      @user = User.find_by_id(params[:id])
-      respond_to do |format|
-        if @user.unactivate
-          format.html { redirect_to users_url }
-        else
-          flash[:notice] = "Could not unactivate #{@user.friendly_name}!"
-          format.html { redirect_to users_url }
-        end
       end
     end
   end
@@ -163,6 +118,6 @@ class UsersController < ApplicationController
 
   private
     def get_user
-      current_user.is_store_or_admin? ? User.find_by_id(params[:id]) || current_user : current_user
+      current_user.is_store_admin_or_admin? ? User.find_by_id(params[:id]) || current_user : current_user
     end
 end

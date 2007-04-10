@@ -16,6 +16,15 @@ a {
 	color: #C13B00;
 }
 
+a img {
+	border:0;
+	padding:2px;
+}
+a img:hover {
+	padding:0px;
+	border:2px solid #C13B00;
+}
+
 a:hover {
 	text-decoration:underline;
 }

@@ -1,7 +1,6 @@
 class Manage::UsersController < ApplicationController
   layout 'admin'
   in_place_edit_for :user, 'friendly_name'
-  in_place_edit_for :user, 'email'
 
   def index
     restrict('allow only admins') or begin
@@ -26,9 +25,7 @@ class Manage::UsersController < ApplicationController
 
   def create
     restrict('allow only admins') or begin
-      @user = User.new
-      @user.friendly_name = params[:user][:friendly_name]
-      @user.email = params[:user][:email]
+      @user = User.new(params[:user])
       @user.store = Store.find_by_id(params[:store_id])
       if @user.save
         redirect_back_or_default(manage_users_url)
@@ -39,16 +36,20 @@ class Manage::UsersController < ApplicationController
     end
   end
 
-  def unactivate
+  def update
     restrict('allow only admins') or begin
       @user = User.find_by_id(params[:id])
       respond_to do |format|
-        if @user.unactivate
+        params[:user] = {:password => params[:user][:password], :password_confirmation => params[:user][:password_confirmation], :operation => params[:user][:operation]} if params[:user][:operation] == 'changing_password' # Ensure ONLY password is being changed!
+        if @user.update_attributes(params[:user])
+          flash[:notice] = @user.operation == 'changing_password' ? "Your Password has been changed. Please remember your new password next time you log in." : "#{@user.friendly_name} has been updated."
           format.html { redirect_to manage_users_url }
+          format.js
+          format.xml  { head :ok }
         else
-logger.error "Could not reset password! #{@user.errors.to_yaml}\n"
-          flash[:notice] = "Could not reset password for #{@user.friendly_name}!"
-          format.html { redirect_to manage_users_url }
+          format.html { render :action => "edit" }
+          format.js
+          format.xml  { render :xml => @user.errors.to_xml }
         end
       end
     end

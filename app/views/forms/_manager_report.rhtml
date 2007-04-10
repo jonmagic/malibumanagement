@@ -1,0 +1,101 @@
+<% view = view.nil? ? true : view -%>
+<% f = nil if view -%>
+<table>
+	<tr>
+	<td class="leftcolumn"><label for="overview">Overview</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:overview, :value => @form.overview) : @form.overview %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for=""></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:, :value => @form.) : @form. %></td>
+	</tr>
+</table>
+
+:actual_debit,     :integer
+:number_of_tans,   :integer
+:total_sales,      :integer
+:total_revenue,    :integer
+:previous_year_sales,  :integer
+:previous_year_tans,   :integer
+:goal_for_month,   :integer
+:action_plan_for_next_month, :text
+:meetings_training_agenda,   :text
+:cash_error,       :integer
+:payroll_percent_for_month,  :integer
+:store_inspection_grade,     :integer
+:employees,        :string #serialized add/remove list
+:maintenance_requests, :string #serialized add/remove list
+:suggestions,      :text
+:store_needs,      :text
+:inventory_items_error,  :string
+:action_plan_to_correct_problems,  :string
+
+

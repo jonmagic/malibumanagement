@@ -14,7 +14,6 @@ module ApplicationHelper
     html_options ||= {}
     active = (active_only_if_equal ? request.request_uri == url : request.request_uri =~ /^#{url}/) ? true : false
     html_options[:class] = html_options[:class].blank? ? 'active' : html_options[:class] + ' active' if active
-logger.error "Opts: #{normally_hide}, #{active}\n"
     (!normally_hide || active) ? link_to(name, options, html_options, *parameters_for_method_reference) : '&nbsp;'
   end
 

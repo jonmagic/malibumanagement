@@ -2,13 +2,13 @@ class Nobody
   def friendly_name
     'Please log in'
   end
-  def is_store?
+  def is_store_admin?
     false
   end
   def is_admin?
     false
   end
-  def is_store_or_admin?
+  def is_store_admin_or_admin?
     false
   end
   def is_store_user?

@@ -4,8 +4,14 @@
 <p><label for="friendly_name">Friendly Name</label><br/>
 <%= f.text_field :friendly_name %></p>
 
-<p><label for="email">Email</label><br/>
-<%= f.text_field :email %></p>
+<p><label for="username">Username</label><br/>
+<%= f.text_field :username %></p>
+
+<p><label for="password">Password</label><br/>
+<%= f.password_field :password %></p>
+
+<p><label for="password_confirmation">Confirm Password</label><br/>
+<%= f.password_field :password_confirmation %></p>
 
 <p><%= submit_tag 'Create User' %></p>
 <% end -%>
