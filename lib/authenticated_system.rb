@@ -9,11 +9,12 @@ module AuthenticatedSystem
     # Accesses the current user from the session.
     def current_user
       #How is this supposed to work?
-      # There is a current_user ONLY IF there is a valid session[:user] or a valid given_activation_code.
+      # There is a current_user ONLY IF there is a valid session[:salt] or a valid given_activation_code.
       if(!given_activation_code.nil?)
         @current_user ||= User.find_by_activation_code(given_activation_code) || Admin.find_by_activation_code(given_activation_code)
-      elsif session[:user]
-        @current_user ||= session[:domain] == 'malibu' ? Admin.find_by_id(session[:user]) : User.find_by_id(session[:user]) || Nobody.new
+      elsif session[:salt]
+        @current_user ||= session[:domain] == 'malibu' ? Admin.find_by_salt(session[:salt]) : User.find_by_salt(session[:salt])
+        @current_user ||= Nobody.new
       else
         Nobody.new
       end
@@ -24,6 +25,7 @@ module AuthenticatedSystem
     def current_user=(new_user)
       session[:user] = (new_user.nil? || new_user.is_a?(Symbol)) ? nil : new_user.id
       @current_user = (new_user.nil? || new_user.is_a?(Symbol)) ? nil : new_user
+      session[:salt] = @current_user.salt
       session[:domain] = @current_user.domain unless @current_user.nil?
     end
 

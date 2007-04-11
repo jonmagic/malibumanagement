@@ -7,10 +7,9 @@ class ApplicationController < ActionController::Base
   include AuthenticatedSystem
   include RouteObjectMapping
   include AccessControl
-  # include FormHelper
+  before_filter :set_current_user
   before_filter :add_default_restrictions
   before_filter :go_to_where_you_belong
-  before_filter :set_current_user
   layout 'default'
 
   def set_current_user

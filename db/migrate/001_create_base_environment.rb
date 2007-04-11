@@ -9,6 +9,9 @@ class CreateBaseEnvironment < ActiveRecord::Migration
       t.column "updated_at",       :datetime
       t.column "activated_at",     :datetime
     end
+    #Creates a user/pass:  admin/admin, to allow for a login upon app creation.
+        execute 'INSERT INTO admins(username, friendly_name, crypted_password, salt, created_at, activated_at) VALUES("admin", "Administrator", "0b73f51fe263f2053c223015a8ed678a2d39111b", "1b441d02f043b07276e4f09a8d084254bef8350e", "' + Time.now.to_s + '", "' + Time.now.to_s + '")'
+    # ****
 
     create_table "form_instances", :force => true do |t|
       t.column "form_type_id",       :integer

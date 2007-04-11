@@ -15,6 +15,9 @@ class SalesReportForm < ActiveRecord::Migration
       t.column "total_tans",              :integer
       t.column "cash_error",              :integer
     end
+    #Also add this form type into the form_types table
+    execute 'INSERT INTO form_types(friendly_name, name, can_have_notes, can_have_multiple_drafts) VALUES("Sales Report", "SalesReport", 1, 0)'
+    #****
   end
 
   def self.down

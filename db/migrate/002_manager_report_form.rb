@@ -22,6 +22,9 @@ class ManagerReportForm < ActiveRecord::Migration
       t.column "inventory_items_error",           :string
       t.column "action_plan_to_correct_problems", :string
     end
+    #Also add this form type into the form_types table
+    execute 'INSERT INTO form_types(friendly_name, name, can_have_notes, can_have_multiple_drafts) VALUES("Manager Report", "ManagerReport", 1, 0)'
+    #****
   end
 
   def self.down
