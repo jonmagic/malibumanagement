@@ -1,0 +1,30 @@
+<% view = view.nil? ? true : view -%>
+<% f = nil if view -%>
+<table>
+	<tr>
+	<td class="leftcolumn"><label for="opening_checklist">Opening Checklist</label></td>
+	<td class="rightcolumn">$<%= !view ? f.check_box(:opening_checklist, :value => @form.opening_checklist) : (@form.opening_checklist ? 'yes' : 'no') %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="closing_checklist">Closing Checklist</label></td>
+	<td class="rightcolumn">$<%= !view ? f.check_box(:closing_checklist) : (@form.closing_checklist ? 'yes' : 'no') %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="store_daily_sales">Store Daily Sales</label></td>
+	<td class="rightcolumn">$<%= !view ? f.text_field(:store_daily_sales, :value => @form.store_daily_sales, :size => 6) : @form.store_daily_sales %></td>
+	</tr>
+</table>
+
+:store_daily_sales,    :integer
+:store_goal,           :boolean
+:total_revenue,        :decimal
+:daily_cleaning,       :boolean
+:goal_for_day,         :decimal
+:goal_vs_actual_diff_for_day, :decimal
+:employee_names,   :string #serialized add/remove list coupled with next three fields
+:employee_sales,   :string #
+:employee_ppa,     :string
+:employee_tans,    :string
+:store_ppa,        :integer
+:total_tans,       :integer
+:cash_error,       :integer

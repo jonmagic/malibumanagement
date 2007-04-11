@@ -3,7 +3,7 @@
 <p>Username: <em><%= @user.username %></em></p>
 <p>Full Name<a href="javascript:void(0)" id="edit_friendly_name_<%= @user.id %>">(edit)</a>:<br />
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= in_place_editor_field :user, 'friendly_name', {}, :rows => 1, :external_control => "edit_friendly_name_#{@user.id}" %></p>
-<% if current_user.id == @user.id -%>
+<% if current_user.id == @user.id || current_user.is_store_admin? -%>
 <p><%= link_to_function 'Change Password', visual_effect(:toggle_blind, :change_password_form, :duration => 0.5) %></p>
 <% form_for :user, :url => { :action => 'update', :id => @user.id }, :html => {:method => :update, :id => 'change_password_form', :style => 'display:none'} do |f| -%>
 <%= hidden_field 'user', 'operation', :value => 'changing_password' %>

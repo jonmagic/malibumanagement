@@ -1,0 +1,80 @@
+<% view = view.nil? ? true : view -%>
+<% f = nil if view -%>
+<table>
+	<tr>
+	<td class="leftcolumn"><label for="overview">Overview</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:overview, :value => @form.overview) : @form.overview %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="actual_debit">Actual Debit</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:actual_debit, :value => @form.actual_debit) : @form.actual_debit %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="number_of_tans">Number of Tans</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:number_of_tans, :value => @form.number_of_tans) : @form.number_of_tans %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="total_sales">Total Sales</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:total_sales, :value => @form.total_sales) : @form.total_sales %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="total_revenue">Total Revenue</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:total_revenue, :value => @form.total_revenue) : @form.total_revenue %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="previous_year_sales">Previous Year Sales</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:previous_year_sales, :value => @form.previous_year_sales) : @form.previous_year_sales %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="previous_year_tans">Previous Year Tans</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:previous_year_tans, :value => @form.previous_year_tans) : @form.previous_year_tans %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="goal_for_month">Goal For Month</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:goal_for_month, :value => @form.goal_for_month) : @form.goal_for_month %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="action_plan_for_next_month">Action Plan for Next Month</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:action_plan_for_next_month, :value => @form.action_plan_for_next_month) : @form.action_plan_for_next_month %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="meetings_training_agenda">Meetings Training Agenda</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:meetings_training_agenda, :value => @form.meetings_training_agenda) : @form.meetings_training_agenda %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="cash_error">Cash Error</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:cash_error, :value => @form.cash_error) : @form.cash_error %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="payroll_percent_for_month">Payroll Percent for Month</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:payroll_percent_for_month, :value => @form.payroll_percent_for_month) : @form.payroll_percent_for_month %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="store_inspection_grade">Store Inspection Grade</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:store_inspection_grade, :value => @form.store_inspection_grade) : @form.store_inspection_grade %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="employees">Employees</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:employees, :value => @form.employees) : @form.employees %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="maintenance_requests">Maintenance Requests</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:maintenance_requests, :value => @form.maintenance_requests) : @form.maintenance_requests %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="suggestions">Suggestions</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:suggestions, :value => @form.suggestions) : @form.suggestions %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="store_needs">Store Needs</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:store_needs, :value => @form.store_needs) : @form.store_needs %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="inventory_items_error">Inventory Items Error</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:inventory_items_error, :value => @form.inventory_items_error) : @form.inventory_items_error %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="action_plan_to_correct_problems">Action Plan to Correct Problems</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:action_plan_to_correct_problems, :value => @form.action_plan_to_correct_problems) : @form.action_plan_to_correct_problems %></td>
+	</tr>
+</table>

@@ -17,6 +17,12 @@ module ApplicationHelper
     (!normally_hide || active) ? link_to(name, options, html_options, *parameters_for_method_reference) : '&nbsp;'
   end
 
+  # Use in place of image_tag when you want to show an icon for a file. Call simply as icon_for(filename)
+  def icon_for(filename)
+    icon_file = File.exists?("#{RAILS_ROOT}/public/images/icons/icon#{File.extname(filename)}.png") ? "/images/icons/icon#{File.extname(filename)}.png" : '/images/icons/icon.any.png'
+    image_tag(icon_file, :width=>"50px", :title=>File.basename(filename))
+  end
+
 end
 
 module ActiveRecord

@@ -34,7 +34,7 @@ ActionController::Routing::Routes.draw do |map|
   map.admin_search_forms    '/malibu/forms/search', :controller => 'manage/forms', :action => 'search'
   map.admin_live_search_forms    '/malibu/forms/live_search', :controller => 'manage/forms', :action => 'live_search'
   map.admin_forms_by_status '/malibu/forms/:form_status/:action',                             :controller => 'manage/forms', :action => 'index', :form_status => nil
-  map.resources :notes, :path_prefix => '/malibu/forms/:form_status/:form_type/:form_id',     :controller => 'manage/notes', :name_prefix => 'admin_'
+  map.resources :notes, :path_prefix => '/malibu/forms/:form_status/:form_type/:form_id',     :controller => 'manage/notes', :name_prefix => 'admin_', :member => { :attachment => :get }
   map.admin_form_log '/malibu/forms/:form_type/:form_id/logs', :controller => 'manage/logs', :action => 'form_logs'
   map.formatted_admin_forms '/malibu/forms/:form_status/:action/:form_type/:form_id.:format', :controller => 'manage/forms', :action => 'view',   :format => 'html'
   map.admin_forms           '/malibu/forms/:form_status/:form_type/:form_id/:action',         :controller => 'manage/forms', :action => 'view'

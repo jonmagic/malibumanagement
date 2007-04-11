@@ -100,4 +100,11 @@ class Manage::NotesController < ApplicationController
     end
   end
 
+  def attachment
+    restrict('allow only admins') or begin
+      @note = Note.find_by_id(params[:id])
+      send_file @note.attachment, :type => Mime::Type.lookup_by_extension(@note.attachment).to_str, :disposition => 'inline'
+    end
+  end
+
 end

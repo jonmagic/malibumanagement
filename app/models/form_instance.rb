@@ -17,7 +17,7 @@ class FormInstance < ActiveRecord::Base
   end
 
   def status
-    self.status_number.as_status.text
+    self.status_number.as_status.word('lowercase short singular')
   end
   def status=(value)
     return nil if value.as_status.number == 0 #0 is a valid status text (all), but not valid for forms

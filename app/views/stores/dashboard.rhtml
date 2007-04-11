@@ -10,7 +10,7 @@
 <h4>Recent Forms</h4>
 	<ul>
 <% for form in FormInstance.find_by_sql(["SELECT * FROM form_instances WHERE store_id=:store_id ORDER BY created_at DESC LIMIT 6", {:store_id => current_store.id}]) -%>
-<li><%= form.visual_identifier %></li>
+<li><%= render :partial => 'forms/all_listing', :locals => {:form => form} %></li>
 <% end -%>
   </ul>
 </div>

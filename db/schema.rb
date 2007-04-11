@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 29) do
+ActiveRecord::Schema.define(:version => 4) do
 
   create_table "account_setups", :force => true do |t|
   end
@@ -37,6 +37,11 @@ ActiveRecord::Schema.define(:version => 29) do
     t.column "can_have_multiple_drafts", :boolean
   end
 
+  create_table "handbook_acknowledgements", :force => true do |t|
+    t.column "digital_signature_id",   :integer
+    t.column "digital_signature_hash", :string
+  end
+
   create_table "logs", :force => true do |t|
     t.column "created_at",  :datetime
     t.column "log_type",    :string
@@ -49,16 +54,17 @@ ActiveRecord::Schema.define(:version => 29) do
 
   create_table "manager_reports", :force => true do |t|
     t.column "overview",                        :text
-    t.column "actual_debit",                    :integer
+    t.column "actual_debit",                    :integer, :limit => 10
     t.column "number_of_tans",                  :integer
-    t.column "total_sales",                     :integer
-    t.column "total_revenue",                   :integer
-    t.column "previous_year_sales",             :integer
+    t.column "total_sales",                     :integer, :limit => 10
+    t.column "total_revenue",                   :integer, :limit => 10
+    t.column "previous_year_sales",             :integer, :limit => 10
     t.column "previous_year_tans",              :integer
-    t.column "goal_for_month",                  :integer
+    t.column "goal_for_month",                  :integer, :limit => 10
+    t.column "actual_vs_goal_diff_for_month",   :integer, :limit => 10
     t.column "action_plan_for_next_month",      :text
     t.column "meetings_training_agenda",        :text
-    t.column "cash_error",                      :integer
+    t.column "cash_error",                      :integer, :limit => 10
     t.column "payroll_percent_for_month",       :integer
     t.column "store_inspection_grade",          :integer
     t.column "employees",                       :string
@@ -76,12 +82,6 @@ ActiveRecord::Schema.define(:version => 29) do
     t.column "text",             :text
     t.column "created_at",       :datetime
     t.column "attachment",       :string
-  end
-
-  create_table "pages", :force => true do |t|
-    t.column "title", :string
-    t.column "body",  :text
-    t.column "stub",  :string
   end
 
   create_table "sales_reports", :force => true do |t|

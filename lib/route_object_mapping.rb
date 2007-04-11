@@ -10,7 +10,7 @@ module RouteObjectMapping
       @accessed_domain ||= (params[:domain] || 'malibu')
     end
     def accessed_store
-      @accessed_store ||= accessed_domain == 'malibu' ? Store.new(:friendly_name => 'Malibu', :domain => 'malibu') : Store.find_by_alias(accessed_domain)
+      @accessed_store ||= accessed_domain == 'malibu' ? Store.new(:friendly_name => 'Malibu', :alias => 'malibu') : Store.find_by_alias(accessed_domain)
     end
     def current_domain
       #Is this always what I want to return here?

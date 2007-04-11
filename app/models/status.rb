@@ -37,8 +37,12 @@ class Status
     case options
       when 'lowercase short singular'
         return ['all', 'draft', 'submitted', 'reviewing', 'archived'][self.number]
+      when 'lowercase short singular not-mine'
+        return ['all', 'draft', 'submitted', 'in review', 'archived'][self.number]
       when 'lowercase short plural'
         return ['all', 'drafts', 'submitted', 'reviewing', 'archived'][self.number]
+      when 'lowercase short plural not-mine'
+        return ['all', 'drafts', 'submitted', 'in review', 'archived'][self.number]
       when 'lowercase long singular'
         return ['all', 'draft', 'submitted form', 'forms in review', 'archived form'][self.number]
       when 'lowercase long plural'
