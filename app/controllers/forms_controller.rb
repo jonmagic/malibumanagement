@@ -72,7 +72,7 @@ class FormsController < ApplicationController
     restrict('allow only store users') or begin
       return redirect_to(store_dashboard_url) if params[:form_type] == 'chooser'
 logger.error "Current Model: #{current_form_model}"
-      @form = !FormType.find_by_name(params[:form_type]).can_have_multiple_drafts && current_store.drafts_of_type(params[:form_type]).count > 0 ? current_store.drafts_of_type(params[:form_type])[0] : FormInstance.new(
+      @form = !FormType.find_by_name(params[:form_type]).can_have_multiple_drafts && current_user.drafts_of_type(params[:form_type]).count > 0 ? current_user.drafts_of_type(params[:form_type])[0] : FormInstance.new(
         :user => current_user,
         :store => current_store,
         :form_type => current_form_model, #Automatically creates the connected form data via the appropriate (given) model
@@ -110,31 +110,50 @@ logger.error "Current Model: #{current_form_model}"
   def update
     restrict('allow only store users') or begin
       status_changed = false
+      assigned_to_changed = false
       @form = FormInstance.find_by_id(params[:form_id])
       return redirect_to(store_dashboard_url) unless @form
+      if !params[:form_instance].nil? && !params[:form_instance][:assigned_to].blank?
+        assigned_to_changed = true
+        @form.user = User.find_by_id(params[:form_instance][:assigned_to])
+        params[:form_instance].delete(:status)
+      elsif !params[:form_instance].nil? &&
+          !params[:form_instance][:status].blank? &&
+          !(params[:form_instance][:status].as_status.number == @form.status.as_status.number)
+        @form.status = params[:form_instance].delete(:status)
+        status_changed = true
+      end
+      unless @form.update_attributes(params[:form_instance])
+        flash[:notice] = "ERROR Submitting draft!"
+      end
       @data = @form.data
-      if @data.update_attributes(params[params[:form_type]]) # & @form.instance.update
-        @save_status = "Draft saved at " << Time.now.strftime("%I:%M %p").downcase + @data.save_status.to_s
-logger.error "Status: #{@form.status} // #{params[:form_instance][:status]} -> #{params[:form_instance][:status].as_status.text}"
-        if !params[:form_instance].nil? && !params[:form_instance][:status].blank? && !(params[:form_instance][:status] == @form.status.as_status.number)
-logger.error "Again, Status: #{@form.status} // #{params[:form_instance][:status]} -> #{params[:form_instance][:status].as_status.text}"
-          @form.status = params[:form_instance][:status].as_status.number
-          if @form.save
-logger.error "And yet again, Status: #{@form.status} // #{params[:form_instance][:status]} -> #{params[:form_instance][:status].as_status.text}"
-            status_changed = true
-          else
-            flash[:notice] = "ERROR Submitting draft!"
-          end
-        end
+      if !assigned_to_changed && @data.update_attributes(params[params[:form_type]]) # & @form.update
+        @save_status = "Draft saved at " + Time.now.strftime("%I:%M %p").downcase + @data.save_status.to_s
       else
         @save_status = "ERROR auto-saving! (#{@data.errors.to_xml})"
       end
       respond_to do |format|
-        format.html {
-          flash[:error] = @data.errors.collect {|err| "#{err[0].humanize} #{err[1]}"}.join('</p><p class="error_message">')
-          redirect_to status_changed ? store_dashboard_url() : store_forms_url(:form_type => @form.data_type, :form_id => @form.id)
-        }
-        format.js   {render :layout => false}
+        if params[:leave_page] == 'true'
+          format.html { redirect_to store_dashboard_url }
+          format.js do
+            render :update do |page|
+              page.redirect_to store_dashboard_url
+            end
+          end
+        elsif params[:reload_page] == 'true'
+          format.html { redirect_to store_forms_url(:form_type => @form.data_type, :form_id => @form.id) }
+          format.js do
+            render :update do |page|
+              page.redirect_to store_forms_url(:form_type => @form.data_type, :form_id => @form.id)
+            end
+          end
+        else
+          format.html {
+            flash[:error] = @data.errors.collect {|err| "#{err[0].humanize} #{err[1]}"}.join('</p><p class="error_message">')
+            redirect_to status_changed ? store_dashboard_url() : store_forms_url(:form_type => @form.data_type, :form_id => @form.id)
+          }
+          format.js   {render :layout => false}
+        end
       end
     end
   end

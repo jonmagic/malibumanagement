@@ -2,10 +2,11 @@ require 'digest/sha1'
 class User < ActiveRecord::Base
   belongs_to :store
   has_many :form_instances
-  has_many :drafts,    :class_name => 'FormInstance', :conditions => "status_number=1"
-  has_many :submitted, :class_name => 'FormInstance', :conditions => "status_number=2"
+  has_many :drafts,     :class_name => 'FormInstance', :conditions => "status_number=1"
+  has_many :submitted,  :class_name => 'FormInstance', :conditions => "status_number=2"
   has_many :reviewing,  :class_name => 'FormInstance', :conditions => "status_number=3"
-  has_many :archived,  :class_name => 'FormInstance', :conditions => "status_number=4"
+  has_many :archived,   :class_name => 'FormInstance', :conditions => "status_number=4"
+  has_many :assigned,   :class_name => 'FormInstance', :foreign_key => 'assigned_to'
 
   has_many :notes, :as => :author
   has_many :logs,  :as => :agent
@@ -52,6 +53,10 @@ class User < ActiveRecord::Base
   def self.valid_username?(username)
     u = find :first, :conditions => ['username = ?', username]
     !u.blank? ? u : nil
+  end
+
+  def drafts_of_type(form_type)
+    FormInstance.find_all_by_user_id_and_data_type_and_status_number(self.id, form_type, 'draft'.as_status.number)
   end
 
   def others_form_instances

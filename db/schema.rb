@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(:version => 12) do
     t.column "created_at",         :datetime
     t.column "submitted",          :boolean
     t.column "has_been_submitted", :boolean,  :default => false
+    t.column "assigned_to",        :integer
   end
 
   create_table "form_types", :force => true do |t|

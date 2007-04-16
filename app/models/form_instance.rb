@@ -6,6 +6,8 @@ class FormInstance < ActiveRecord::Base
   has_many :notes, :dependent => :destroy
   has_many :logs, :as => 'object'
 
+  before_save :unassign_if_submitted
+
 #Creating a new FormInstance:
 #  FormInstance.new(:store => Store, :user => current_user, :form_type => FormType, [[:data => AUTO-CREATES NEW]])
 #Automagically create the form data record whenever a FormInstance is created, and then automagically destroy it when the FormInstance is destroyed.
@@ -27,6 +29,10 @@ class FormInstance < ActiveRecord::Base
   end
   def has_been_submitted?
     self.has_been_submitted
+  end
+
+  def unassign_if_submitted
+    self.assigned_to = nil if self.has_been_submitted
   end
 
   def admin_visual_identifier

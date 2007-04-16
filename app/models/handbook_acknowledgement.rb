@@ -9,7 +9,8 @@ class HandbookAcknowledgement < ActiveRecord::Base
   # "digital_signature_hash" => :string
 # The form should include several paragraphs (explaining that you are signing for reading the handbook) and then two fields - username, and password for the person who wants to sign.
 # in validation of the form, we will check the authentication of that user, then before_save, create the 'digital_signature_hash' from the user's social-security number and the time the form_instance was created.
-  attr_accessor :sign_username, :sign_password
+  attr_accessor :sign_username, :sign_password,
+                :save_status
   before_update :create_signature_hash
 
   def is_signed?

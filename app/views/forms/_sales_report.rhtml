@@ -8,15 +8,15 @@ end %>
 <table>
 	<tr>
 	<td class="leftcolumn"><label for="opening_checklist">Opening Checklist</label></td>
-	<td class="rightcolumn"><%= !view ? f.check_box(:opening_checklist) : (@data.opening_checklist ? 'yes' : 'no') %></td>
+	<td class="rightcolumn"><%= !view ? "<input id=\"SalesReport_opening_checklist\" name=\"SalesReport[opening_checklist]\" type=\"checkbox\" value=\"1\" #{@data.opening_checklist ? 'checked="true"' : ''}/><input name=\"SalesReport[opening_checklist]\" type=\"hidden\" value=\"0\" />" : (@data.opening_checklist ? 'yes' : 'no') %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="closing_checklist">Closing Checklist</label></td>
-	<td class="rightcolumn"><%= !view ? f.check_box(:closing_checklist) : (@data.closing_checklist ? 'yes' : 'no') %></td>
+	<td class="rightcolumn"><%= !view ? "<input id=\"SalesReport_closing_checklist\" name=\"SalesReport[closing_checklist]\" type=\"checkbox\" value=\"1\" #{@data.closing_checklist ? 'checked="true"' : ''}/><input name=\"SalesReport[closing_checklist]\" type=\"hidden\" value=\"0\" />" : (@data.closing_checklist ? 'yes' : 'no') %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="daily_cleaning">Daily Cleaning</label></td>
-	<td class="rightcolumn"><%= !view ? f.check_box(:daily_cleaning) : (@data.daily_cleaning ? 'yes' : 'no') %></td>
+	<td class="rightcolumn"><%= !view ? "<input id=\"SalesReport_daily_cleaning\" name=\"SalesReport[daily_cleaning]\" type=\"checkbox\" value=\"1\" #{@data.daily_cleaning ? 'checked="true"' : ''}/><input name=\"SalesReport[daily_cleaning]\" type=\"hidden\" value=\"0\" />" : (@data.daily_cleaning ? 'yes' : 'no') %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="store_daily_sales">Store Daily Sales</label></td>

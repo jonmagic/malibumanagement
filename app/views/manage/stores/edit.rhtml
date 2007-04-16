@@ -1,6 +1,6 @@
 <h2>Editing <%= link_to @store.friendly_name, store_path(@store) %></h2>
 
-<p><%= link_to '+Edit Admin User', manage_user_path(@store.admin) %></p>
+<p><%= link_to '+Edit Admin User', manage_user_path(:store_id => @store.id, :id => @store.admin.id) %></p>
 <% form_method ||= :post %>
 <% form_for(:store, :url => store_path(:id => @store.id), :html => {:method => :put}) do |f| %>
 <%= error_messages_for :store %>

@@ -4,19 +4,30 @@
 <h3>Store Assistant Dashboard</h3>
 <% end -%>
 
+<% if current_user.assigned.count > 0 -%>
 <div>
-	<h4>Current Forms</h4>
+	<h4>Please Fill Out:</h4>
+	<ul>
+	<% current_user.assigned.each do |a| -%>
+		<li><%= render :partial => 'forms/all_listing', :locals => {:form => a} %></li>
+	<% end -%>
+	</ul>
+</div>
+<p>&nbsp;</p>
+<% end -%>
+<div>
+	<h4>Create New:</h4>
 	<ul>
 <% current_user.store.form_types.concat(current_user.form_types).each do |ft| -%>
-		<li><%= link_to current_store.drafts_of_type(ft.name).count > 0 ? current_store.drafts_of_type(ft.name)[0].visual_identifier : ft.friendly_name + " &gt; New", store_draft_path(:form_status => 'draft', :action => 'new', :form_type => ft.name) %></li>
+		<li><%= link_to current_user.drafts_of_type(ft.name).count > 0 ? current_store.drafts_of_type(ft.name)[0].visual_identifier : ft.friendly_name + " &gt; New", store_draft_path(:form_status => 'draft', :action => 'new', :form_type => ft.name) %></li>
 <% end -%>
 	</ul>
 </div>
 <p>&nbsp;</p>
 <div>
-	<h4>Recent Forms</h4>
+	<h4>Recent Forms:</h4>
 	<ul>
-<% for form in FormInstance.find_by_sql(["SELECT * FROM form_instances WHERE store_id=:store_id ORDER BY created_at DESC LIMIT 6", {:store_id => current_store.id}]) -%>
+<% for form in current_user.is_store_admin? ? FormInstance.find_by_sql(["SELECT * FROM form_instances WHERE store_id=:store_id ORDER BY created_at DESC LIMIT 6", {:store_id => current_store.id}]) : FormInstance.find_by_sql(["SELECT * FROM form_instances WHERE store_id=:store_id AND user_id=:user_id ORDER BY created_at DESC LIMIT 6", {:store_id => current_store.id, :user_id => current_user.id}]) -%>
 		<li><%= render :partial => 'forms/all_listing', :locals => {:form => form} %></li>
 <% end -%>
   </ul>

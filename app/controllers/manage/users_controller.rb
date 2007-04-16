@@ -40,7 +40,7 @@ class Manage::UsersController < ApplicationController
     restrict('allow only admins') or begin
       @user = User.find_by_id(params[:id])
       respond_to do |format|
-        params[:user] = {:password => params[:user][:password], :password_confirmation => params[:user][:password_confirmation], :operation => params[:user][:operation]} if params[:user][:operation] == 'changing_password' # Ensure ONLY password is being changed!
+        params[:user] = {:password => params[:user][:password], :password_confirmation => params[:user][:password_confirmation], :operation => params[:user][:operation]} if params[:user][:operation] == 'changing_password' # Ensure ONLY password is being changed if changing_password - because other validations are turned off!
         if @user.update_attributes(params[:user])
           flash[:notice] = @user.operation == 'changing_password' ? "Your Password has been changed. Please remember your new password next time you log in." : "#{@user.friendly_name} has been updated."
           format.html { redirect_to manage_users_url }
