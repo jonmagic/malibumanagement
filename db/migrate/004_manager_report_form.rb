@@ -29,5 +29,7 @@ class ManagerReportForm < ActiveRecord::Migration
 
   def self.down
     drop_table :manager_reports
+    execute 'DELETE FROM form_types WHERE name="ManagerReport"'
+    execute 'DELETE FROM form_instances WHERE data_type="ManagerReport"'
   end
 end

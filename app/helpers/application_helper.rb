@@ -60,7 +60,7 @@ class String < Object
   end
 
   def fromCamelCase
-    self.to_s.sub(/(.)([A-Z])/, '\1_\2').downcase
+    self.to_s.gsub(/(.)([A-Z])/, '\1_\2').downcase
   end
 end
 

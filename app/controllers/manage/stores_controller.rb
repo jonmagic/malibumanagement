@@ -29,8 +29,8 @@ class Manage::StoresController < ApplicationController
   # GET /stores/new
   def new
     restrict('allow only admins') or begin
-      @user   = User.new(:form_type_ids => [2])
-      @store = Store.new(:form_type_ids => [1], :admin => @user)
+      @user   = User.new(:form_type_ids => [FormType.find_by_name('ManagerReport').id, FormType.find_by_name('NoticeOfTermination').id, FormType.find_by_name('PerformanceReview').id, FormType.find_by_name('VerbalWarning').id, FormType.find_by_name('WrittenWarning').id, FormType.find_by_name('IncidentReport').id])
+      @store  = Store.new(:form_type_ids => [FormType.find_by_name('SalesReport').id, FormType.find_by_name('HandbookAcknowledgement').id], :admin => @user)
       @user.store = @store
     end
   end
@@ -49,8 +49,8 @@ class Manage::StoresController < ApplicationController
 #This really doesn't go here but there might be a need for it to be set?
 #  default_url_options(:host => 'localhost:3000')
     restrict('allow only admins') or begin
-      @store = Store.new(params[:store])
       @user   = User.new(params[:user])
+      @store  = Store.new(params[:store].merge({:admin => @user}))
       @user.username = @store.alias
       @user.store_id = 1 #Fake the validation, this will be overwritten as soon as the store is created.
       respond_to do |format|

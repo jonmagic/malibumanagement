@@ -1,8 +1,10 @@
+<%= link_to '&lt;&lt; All Stores', stores_path %>
 <h1><%= @store.friendly_name %></h1>
 <p>Business Alias: <%= @store.alias %></p>
 <p>Address:        <%= @store.address %></p>
 <p>Admin Name:     <%= @store.admin.friendly_name %></p>
 <p>Assigned Forms: <%= (@store.form_types.collect {|f| f.friendly_name}).join(', ') %></p>
+<p><%= link_to 'Admin User', manage_user_path(:store_id => @store.id, :id => @store.admin.id) %></p>
 <p><%= link_to 'Users', manage_users_path(@store.id) %></p>
 
 <%= link_to 'Edit', edit_store_path(@store) %> |

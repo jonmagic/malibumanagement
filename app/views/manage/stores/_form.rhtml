@@ -22,6 +22,9 @@
 		<p><label for="friendly_name">Store Manager's Full Name</label><br/>
 		<%= g.text_field :friendly_name %></p>
 
+		<p><label for="social_security_number">Social Security Number</label><br/>
+		<%= g.text_field :social_security_number, :maxsize => 9 %></p>
+
 		<p><label for="password">Password</label><br/>
 		<%= g.password_field :password %></p>
 
@@ -32,7 +35,7 @@
 			<ul>
 			<% FormType.find(:all).each do |t| -%>
 			<% unless @user.store.form_type_ids.include?(t.id.to_s) -%>
-			   <li><input type="checkbox" name="user[form_type_ids][]" value="<%= t.id %>" <%= 'checked="checked"' if @user.form_type_ids.include?(t.id.to_s) %> /><%= t.friendly_name %><%= ' (store-wide)' if @user.store.form_type_ids.include?(t.id.to_s) %></li>
+			   <li><input type="checkbox" name="user[form_type_ids][]" value="<%= t.id %>"<%= ' checked="checked"' if @user.form_type_ids.include?(t.id) %> /><%= t.friendly_name %><%= ' (store-wide)' if @user.store.form_type_ids.include?(t.id) %></li>
 			<% end -%>
 			<% end -%>
 			</ul>

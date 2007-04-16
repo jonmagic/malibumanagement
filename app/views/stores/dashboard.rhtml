@@ -4,13 +4,20 @@
 <h3>Store Assistant Dashboard</h3>
 <% end -%>
 
-<div><%= render(:partial => 'forms/new_form') %></div>
+<div>
+	<h4>Current Forms</h4>
+	<ul>
+<% current_user.store.form_types.concat(current_user.form_types).each do |ft| -%>
+		<li><%= link_to current_store.drafts_of_type(ft.name).count > 0 ? current_store.drafts_of_type(ft.name)[0].visual_identifier : ft.friendly_name + " &gt; New", store_draft_path(:form_status => 'draft', :action => 'new', :form_type => ft.name) %></li>
+<% end -%>
+	</ul>
+</div>
 <p>&nbsp;</p>
 <div>
-<h4>Recent Forms</h4>
+	<h4>Recent Forms</h4>
 	<ul>
 <% for form in FormInstance.find_by_sql(["SELECT * FROM form_instances WHERE store_id=:store_id ORDER BY created_at DESC LIMIT 6", {:store_id => current_store.id}]) -%>
-<li><%= render :partial => 'forms/all_listing', :locals => {:form => form} %></li>
+		<li><%= render :partial => 'forms/all_listing', :locals => {:form => form} %></li>
 <% end -%>
   </ul>
 </div>

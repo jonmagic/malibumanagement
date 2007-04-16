@@ -5,8 +5,8 @@ class Manage::NotesController < ApplicationController
   # GET /notes.xml
   def index
     restrict('allow only admins') or begin
-      @form_instance = FormInstance.find_by_form_type_and_form_id(params[:form_type], params[:form_id])
-      @notes = Note.find_by_form_instance_id(@form_instance.id)
+      @form = FormInstance.find_by_id(params[:form_id])
+      @notes = Note.find_by_form_instance_id(@form.id)
       respond_to do |format|
         format.html # index.rhtml
         format.xml  { render :xml => @notes.to_xml }

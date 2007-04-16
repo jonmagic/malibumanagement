@@ -5,7 +5,7 @@
 		<meta name="description" content="Malibu Management: HipForms, a HIPAA compliant form completion tool" />
 		<meta name="keywords" content="" />
 		<meta name="author" content="Malibu Management" />
-		<title>Malibu Management: <%= accessed_store.friendly_name %></title>
+		<title>Malibu Management: <%= accessed_store ? accessed_store.friendly_name : 'Unknown' %></title>
 		<%= stylesheet_link_tag 'common' %>
 		<%= stylesheet_link_tag 'tabs' %>
 		<%= stylesheet_link_tag 'date-picker' %>		
@@ -20,7 +20,7 @@
 	<body>
 		<div id="header">
 			<h1>Malibu Management Form Processor</h1>
-			<h2><em><%= current_user.friendly_name %></em> @ <%= accessed_store.friendly_name %></h2>
+			<h2><em><%= current_user.friendly_name %></em> @ <%= accessed_store ? accessed_store.friendly_name : 'Unknown' %></h2>
 			<ul>
 				<li>
 					<% if logged_in? -%>

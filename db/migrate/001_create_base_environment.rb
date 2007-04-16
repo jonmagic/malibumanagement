@@ -13,26 +13,6 @@ class CreateBaseEnvironment < ActiveRecord::Migration
         execute 'INSERT INTO admins(username, friendly_name, crypted_password, salt, created_at, activated_at) VALUES("admin", "Administrator", "0b73f51fe263f2053c223015a8ed678a2d39111b", "1b441d02f043b07276e4f09a8d084254bef8350e", "' + Time.now.to_s + '", "' + Time.now.to_s + '")'
     # ****
 
-    create_table "form_instances", :force => true do |t|
-      t.column "form_type_id",       :integer
-      t.column "form_data_id",       :integer
-      t.column "form_data_type",     :string
-      t.column "store_id",           :integer
-      t.column "customer_id",        :integer
-      t.column "user_id",            :integer
-      t.column "status_number",      :integer,  :default => 1
-      t.column "created_at",         :datetime
-      t.column "submitted",          :boolean
-      t.column "has_been_submitted", :boolean,  :default => false
-    end
-
-    create_table "form_types", :force => true do |t|
-      t.column "friendly_name",            :string
-      t.column "name",                     :string
-      t.column "can_have_notes",           :boolean
-      t.column "can_have_multiple_drafts", :boolean
-    end
-
     create_table "logs", :force => true do |t|
       t.column "created_at",  :datetime
       t.column "log_type",    :string
@@ -70,8 +50,7 @@ class CreateBaseEnvironment < ActiveRecord::Migration
       t.column "store_id",             :integer
       t.column "crypted_password",     :string,   :limit => 40
       t.column "salt",                 :string,   :limit => 40
-      t.column "encryption_key",       :binary
-      t.column "status",               :string
+      t.column "social_security_number", :integer, :limit => 9
       t.column "password_change_date", :string
       t.column "activated_at",         :datetime
       t.column "created_at",           :datetime
@@ -82,8 +61,6 @@ class CreateBaseEnvironment < ActiveRecord::Migration
 
   def self.down
     drop_table :admins
-    drop_table :form_instances
-    drop_table :form_types
     drop_table :logs
     drop_table :notes
     drop_table :stores

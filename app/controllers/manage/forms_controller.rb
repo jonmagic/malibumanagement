@@ -18,14 +18,14 @@ class Manage::FormsController < ApplicationController
   def view
     restrict('allow only admins') or begin
       do_render = true
-      @form_instance = FormInstance.find_by_form_data_type_and_form_data_id(params[:form_type], params[:form_id])
-      @form = @form_instance.form_data
-logger.error "Status: #{@form_instance.status} // #{params[:form_status]}=#{params[:form_status].as_status.number}\n"
-      if @form_instance.status.as_status.number != params[:form_status].as_status.number and (params[:form_status].as_status.number == 3 or params[:form_status].as_status.number == 4)
-        @form_instance.status = params[:form_status]
-        @form_instance.save
-        if @form_instance.status.as_status.number == 4
-          flash[:notice] = "Form &lt; #{@form_instance.admin_visual_identifier} &gt; was archived."
+      @form = FormInstance.find_by_id(params[:form_id])
+      @data = @form.data
+logger.error "Status: #{@form.status} // #{params[:form_status]}=#{params[:form_status].as_status.number}\n"
+      if @form.status.as_status.number != params[:form_status].as_status.number and (params[:form_status].as_status.number == 3 or params[:form_status].as_status.number == 4)
+        @form.status = params[:form_status]
+        @form.save
+        if @form.status.as_status.number == 4
+          flash[:notice] = "Form &lt; #{@form.admin_visual_identifier} &gt; was archived."
           redirect_to admin_forms_by_status_path(:form_status => 3.as_status.text)
           do_render = false
         end
@@ -81,7 +81,7 @@ logger.error "Status: #{@form_instance.status} // #{params[:form_status]}=#{para
   def return
     restrict('allow only admins') or begin
       status_changed = false
-      @form = FormInstance.find_by_form_data_type_and_form_data_id(params[:form_type], params[:form_id])
+      @form = FormInstance.find_by_id(params[:form_id])
       if !params[:form].nil? && params[:form][:status] == 'draft'
         @form.status = 'draft'
         if @form.save
@@ -92,7 +92,7 @@ logger.error "Status: #{@form_instance.status} // #{params[:form_status]}=#{para
         end
       end
       respond_to do |format|
-        format.html {redirect_to status_changed ? admin_forms_by_status_url(:form_status => 2.as_status.text) : admin_forms_url(:form_type => @form.form_data_type, :form_id => @form.form_data_id)}
+        format.html {redirect_to status_changed ? admin_forms_by_status_url(:form_status => 2.as_status.text) : admin_forms_url(:form_type => @form.data_type, :form_id => @form.id)}
       end
     end
   end

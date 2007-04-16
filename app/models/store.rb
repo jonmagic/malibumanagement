@@ -44,7 +44,7 @@ class Store < ActiveRecord::Base
   end
 
   def drafts_of_type(form_type)
-    FormInstance.find_all_by_form_data_type_and_status_number(form_type, 'draft'.as_status.number)
+    FormInstance.find_all_by_store_id_and_data_type_and_status_number(self.id, form_type, 'draft'.as_status.number)
   end
 
   def forms_with_status(status)

@@ -72,14 +72,14 @@ class FormsController < ApplicationController
     restrict('allow only store users') or begin
       return redirect_to(store_dashboard_url) if params[:form_type] == 'chooser'
 logger.error "Current Model: #{current_form_model}"
-      @form_instance = !FormType.find_by_name(params[:form_type]).can_have_multiple_drafts && current_store.drafts_of_type(params[:form_type]).count > 0 ? current_store.drafts_of_type(params[:form_type])[0] : FormInstance.new(
+      @form = !FormType.find_by_name(params[:form_type]).can_have_multiple_drafts && current_store.drafts_of_type(params[:form_type]).count > 0 ? current_store.drafts_of_type(params[:form_type])[0] : FormInstance.new(
         :user => current_user,
         :store => current_store,
         :form_type => current_form_model, #Automatically creates the connected form data via the appropriate (given) model
         :status => 'draft'
       )
-      if @form_instance.save
-        redirect_to store_forms_url(:form_status => 'draft', :form_type => @form_instance.form_data_type, :action => 'draft', :form_id => @form_instance.id)
+      if @form.save
+        redirect_to store_forms_url(:form_status => 'draft', :form_type => @form.data_type, :action => 'draft', :form_id => @form.id)
       else
         render :action => 'draft'
       end
@@ -94,14 +94,15 @@ logger.error "Current Model: #{current_form_model}"
 # * * * *
       @form_type = params[:form_type]
       return redirect_to(store_dashboard_url) if @form_type == 'chooser'
-      @form_instance = FormInstance.find_by_id(params[:form_id])
-      @form = @form_instance.form_data
-      # Drop the status down to draft!
-      if !(@form.instance.status == 'draft')
-        @form.instance.status = 'draft'
-        @form.instance.save
+      @form = FormInstance.find_by_id(params[:form_id])
+      return redirect_to(store_dashboard_url) unless @form
+      @data = @form.data
+      # Drop the status down to draft! -- only if reeditable!
+      if !(@form.status == 'draft') && @form.form_type.reeditable
+        @form.status = 'draft'
+        @form.save
       end
-      @values = @form
+      @values = @data
     end
   end
 
@@ -109,23 +110,30 @@ logger.error "Current Model: #{current_form_model}"
   def update
     restrict('allow only store users') or begin
       status_changed = false
-      @form = FormType.model_for(params[:form_type]).find_by_id(params[:form_id])
-      if @form.update_attributes(params[params[:form_type]]) # & @form.instance.update
-        @save_status = "Draft saved at " << Time.now.strftime("%I:%M %p").downcase
-        if !params[:form_instance].nil? && !params[:form_instance][:status].blank? && !(params[:form_instance][:status] == @form.instance.status)
-          @form.instance.status = params[:form_instance][:status]
-          if @form.instance.save
-            # Log.create(:log_type => 'status:update', :data => {})
+      @form = FormInstance.find_by_id(params[:form_id])
+      return redirect_to(store_dashboard_url) unless @form
+      @data = @form.data
+      if @data.update_attributes(params[params[:form_type]]) # & @form.instance.update
+        @save_status = "Draft saved at " << Time.now.strftime("%I:%M %p").downcase + @data.save_status.to_s
+logger.error "Status: #{@form.status} // #{params[:form_instance][:status]} -> #{params[:form_instance][:status].as_status.text}"
+        if !params[:form_instance].nil? && !params[:form_instance][:status].blank? && !(params[:form_instance][:status] == @form.status.as_status.number)
+logger.error "Again, Status: #{@form.status} // #{params[:form_instance][:status]} -> #{params[:form_instance][:status].as_status.text}"
+          @form.status = params[:form_instance][:status].as_status.number
+          if @form.save
+logger.error "And yet again, Status: #{@form.status} // #{params[:form_instance][:status]} -> #{params[:form_instance][:status].as_status.text}"
             status_changed = true
           else
             flash[:notice] = "ERROR Submitting draft!"
           end
         end
       else
-        @save_status = "ERROR auto-saving!"
+        @save_status = "ERROR auto-saving! (#{@data.errors.to_xml})"
       end
       respond_to do |format|
-        format.html {redirect_to status_changed ? store_forms_by_status_url(:form_status => @form.instance.status) : store_forms_url(:form_type => @form.instance.form_data_type, :form_id => @form.instance.form_data_id)}
+        format.html {
+          flash[:error] = @data.errors.collect {|err| "#{err[0].humanize} #{err[1]}"}.join('</p><p class="error_message">')
+          redirect_to status_changed ? store_dashboard_url() : store_forms_url(:form_type => @form.data_type, :form_id => @form.id)
+        }
         format.js   {render :layout => false}
       end
     end
@@ -133,14 +141,17 @@ logger.error "Current Model: #{current_form_model}"
 
   def view
     restrict('allow only store users') or begin
+      @form = FormInstance.find_by_id(params[:form_id])
+      return redirect_to(store_dashboard_url) unless @form
+      @data = @form.data
       @form_type = params[:form_type]
-      @form = FormType.model_for(@form_type).find_by_id(params[:form_id])
     end
   end
 
   def discard
     restrict('allow only store users') or begin
-      @form = FormInstance.find_by_form_data_type_and_form_data_id(params[:form_type], params[:form_id])
+      @form = FormInstance.find_by_id(params[:form_id])
+      return redirect_to(store_dashboard_url) unless @form
       @status_count = current_user.forms_with_status(@form.status).count - 1
       @status_link_text_with_count = @form.status.as_status.word('uppercase short plural') + (@status_count == 0 ? '' : " (#{@status_count})")
       @status_container_fill = @status_count == 0 ? "<li>&lt;no current #{params[:form_status].as_status.word('lowercase short plural')}&gt;</li>" : nil

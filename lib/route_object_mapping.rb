@@ -28,7 +28,7 @@ module RouteObjectMapping
       @current_form ||= FormInstance.find_by_id(params[:form_id])
     end
     def current_form
-      @current_form_instance ||= current_form_instance.nil? ? nil : current_form_instance.form_data
+      @current_form_instance ||= current_form_instance.nil? ? nil : current_form_instance.data
     end
     def given_activation_code
       @given_activation_code ||= params[:user] ? (params[:user][:activation_code] || params[:activation_code]) : (params[:admin] ? (params[:admin][:activation_code] || params[:activation_code]) : params[:activation_code])

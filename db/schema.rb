@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 4) do
+ActiveRecord::Schema.define(:version => 12) do
 
   create_table "account_setups", :force => true do |t|
   end
@@ -19,11 +19,11 @@ ActiveRecord::Schema.define(:version => 4) do
 
   create_table "form_instances", :force => true do |t|
     t.column "form_type_id",       :integer
-    t.column "form_data_id",       :integer
-    t.column "form_data_type",     :string
     t.column "store_id",           :integer
     t.column "customer_id",        :integer
     t.column "user_id",            :integer
+    t.column "data_id",            :integer
+    t.column "data_type",          :string
     t.column "status_number",      :integer,  :default => 1
     t.column "created_at",         :datetime
     t.column "submitted",          :boolean
@@ -33,13 +33,25 @@ ActiveRecord::Schema.define(:version => 4) do
   create_table "form_types", :force => true do |t|
     t.column "friendly_name",            :string
     t.column "name",                     :string
-    t.column "can_have_notes",           :boolean
-    t.column "can_have_multiple_drafts", :boolean
+    t.column "can_have_notes",           :boolean, :default => true
+    t.column "can_have_multiple_drafts", :boolean, :default => true
+    t.column "draftable",                :boolean, :default => true
+    t.column "reeditable",               :boolean, :default => true
   end
 
   create_table "handbook_acknowledgements", :force => true do |t|
     t.column "digital_signature_id",   :integer
     t.column "digital_signature_hash", :string
+    t.column "digital_signature_date", :datetime
+  end
+
+  create_table "incident_reports", :force => true do |t|
+    t.column "employee_name",     :string
+    t.column "incident_date",     :datetime
+    t.column "description",       :text
+    t.column "manager_sign_id",   :integer
+    t.column "manager_sign_hash", :string
+    t.column "manager_sign_date", :datetime
   end
 
   create_table "logs", :force => true do |t|
@@ -84,20 +96,55 @@ ActiveRecord::Schema.define(:version => 4) do
     t.column "attachment",       :string
   end
 
+  create_table "notice_of_terminations", :force => true do |t|
+    t.column "employee_name",           :string
+    t.column "reason_for_termination",  :text
+    t.column "manager_signature_id",    :integer
+    t.column "manager_signature_hash",  :string
+    t.column "manager_signature_date",  :datetime
+    t.column "regional_signature_id",   :integer
+    t.column "regional_signature_hash", :string
+    t.column "regional_signature_date", :datetime
+  end
+
+  create_table "performance_reviews", :force => true do |t|
+    t.column "employee_name",         :string
+    t.column "good_attendance",       :boolean
+    t.column "completes_checklists",  :boolean
+    t.column "cleaning_schedule",     :boolean
+    t.column "understands_packages",  :boolean
+    t.column "understands_rotation",  :boolean
+    t.column "pleasant_to_clients",   :boolean
+    t.column "run_computer",          :boolean
+    t.column "paperwork",             :boolean
+    t.column "no_shortages",          :boolean
+    t.column "follows_instructions",  :boolean
+    t.column "open_close_unassisted", :boolean
+    t.column "manager_sign_id",       :integer
+    t.column "manager_sign_hash",     :string
+    t.column "manager_sign_date",     :datetime
+    t.column "manager_comments",      :string
+    t.column "employee_sign_id",      :integer
+    t.column "employee_sign_hash",    :string
+    t.column "employee_sign_date",    :datetime
+    t.column "employee_comments",     :string
+  end
+
   create_table "sales_reports", :force => true do |t|
-    t.column "store_daily_sales",       :integer
-    t.column "opening",                 :boolean
-    t.column "store_goal",              :boolean
-    t.column "total_revenue",           :integer
-    t.column "daily_cleaning",          :boolean
-    t.column "plus_minus_goal_for_day", :integer
-    t.column "employee_names",          :string
-    t.column "employee_sales",          :string
-    t.column "employee_ppa",            :string
-    t.column "employee_tans",           :string
-    t.column "store_ppa",               :integer
-    t.column "total_tans",              :integer
-    t.column "cash_error",              :integer
+    t.column "store_daily_sales",           :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "opening_checklist",           :boolean
+    t.column "closing_checklist",           :boolean
+    t.column "daily_cleaning",              :boolean
+    t.column "goal_for_day",                :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "total_revenue",               :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "actual_vs_goal_diff_for_day", :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "employee_names",              :string,                                               :default => "--- \n- \"\"\n"
+    t.column "employee_sales",              :string,                                               :default => "--- \n- \"\"\n"
+    t.column "employee_ppa",                :string,                                               :default => "--- \n- \"\"\n"
+    t.column "employee_tans",               :string,                                               :default => "--- \n- \"\"\n"
+    t.column "store_ppa",                   :integer
+    t.column "total_tans",                  :integer
+    t.column "cash_error",                  :integer, :limit => 10, :precision => 10, :scale => 0
   end
 
   create_table "stores", :force => true do |t|
@@ -112,19 +159,58 @@ ActiveRecord::Schema.define(:version => 4) do
     t.column "form_type_ids",  :string,                 :default => "--- []\n\n"
   end
 
+  create_table "time_off_requests", :force => true do |t|
+    t.column "is_vacation",             :boolean
+    t.column "dates_requested",         :string
+    t.column "employee_signature_id",   :integer
+    t.column "employee_signature_hash", :string
+    t.column "employee_signature_date", :datetime
+    t.column "admin_review_id",         :integer
+    t.column "admin_review_hash",       :string
+    t.column "admin_review_date",       :datetime
+    t.column "time_left_before_days",   :integer
+    t.column "time_left_after_days",    :integer
+    t.column "admin_approval_id",       :integer
+    t.column "admin_approval_hash",     :string
+    t.column "admin_approval_date",     :datetime
+  end
+
   create_table "users", :force => true do |t|
-    t.column "username",             :string,   :limit => 25
-    t.column "friendly_name",        :string,   :limit => 50
-    t.column "store_id",             :integer
-    t.column "crypted_password",     :string,   :limit => 40
-    t.column "salt",                 :string,   :limit => 40
-    t.column "encryption_key",       :binary
-    t.column "status",               :string
-    t.column "password_change_date", :string
-    t.column "activated_at",         :datetime
-    t.column "created_at",           :datetime
-    t.column "updated_at",           :datetime
-    t.column "form_type_ids",        :string,                 :default => "--- []\n\n"
+    t.column "username",               :string,   :limit => 25
+    t.column "friendly_name",          :string,   :limit => 50
+    t.column "store_id",               :integer
+    t.column "crypted_password",       :string,   :limit => 40
+    t.column "salt",                   :string,   :limit => 40
+    t.column "social_security_number", :integer,  :limit => 9
+    t.column "password_change_date",   :string
+    t.column "activated_at",           :datetime
+    t.column "created_at",             :datetime
+    t.column "updated_at",             :datetime
+    t.column "form_type_ids",          :string,                 :default => "--- []\n\n"
+  end
+
+  create_table "verbal_warnings", :force => true do |t|
+    t.column "employee_name",      :string
+    t.column "incident_date",      :datetime
+    t.column "description",        :text
+    t.column "employee_sign_id",   :integer
+    t.column "employee_sign_hash", :string
+    t.column "employee_sign_date", :datetime
+    t.column "manager_sign_id",    :integer
+    t.column "manager_sign_hash",  :string
+    t.column "manager_sign_date",  :datetime
+  end
+
+  create_table "written_warnings", :force => true do |t|
+    t.column "employee_name",      :string
+    t.column "incident_date",      :datetime
+    t.column "description",        :text
+    t.column "employee_sign_id",   :integer
+    t.column "employee_sign_hash", :string
+    t.column "employee_sign_date", :datetime
+    t.column "manager_sign_id",    :integer
+    t.column "manager_sign_hash",  :string
+    t.column "manager_sign_date",  :datetime
   end
 
 end

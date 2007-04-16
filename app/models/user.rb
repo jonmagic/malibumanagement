@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
   attr_accessor :operation
 
   validates_presence_of     :password, :password_confirmation,    :if => :not_attr_update?
-  validates_presence_of     :store_id, :friendly_name, :username
+  validates_presence_of     :store_id, :friendly_name, :username, :social_security_number
   validates_length_of       :username, :within => 3..40,          :if => :username_present?
   validates_uniqueness_of   :username, :case_sensitive => false,  :if => :username_present?
   # validates_presence_of     :password_confirmation

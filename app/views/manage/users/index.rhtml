@@ -1,4 +1,4 @@
-<h1><%= @store.friendly_name %>'s users</h1>
+<h1><%= link_to @store.friendly_name, store_path(@store) %>'s users</h1>
 
 <table>
   <thead>
@@ -7,6 +7,7 @@
 		<th>Controls</th>
   </thead>
 <% @users.each do |@user| -%>
+	<% next if @user.is_store_admin? %>
   <tr<%= " class='store_admin'" if @user.is_store_admin? %> id="user_listing_<%= @user.id %>">
     <td><%= in_place_editor_field :user,
  'friendly_name', {}, :rows => 1,

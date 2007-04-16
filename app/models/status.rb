@@ -8,12 +8,11 @@ class Status
       self.number = text_to_number(status)
     elsif status.kind_of? Status
       self.number = status.number
+    else
+      self.number = 1
     end
   end
 
-  def inspect
-    self.text
-  end
   def text
     self.word('lowercase short singular')
   end
