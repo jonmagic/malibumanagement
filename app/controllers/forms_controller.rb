@@ -140,7 +140,7 @@ logger.error "Current Model: #{current_form_model}"
               page.redirect_to store_dashboard_url
             end
           end
-        elsif params[:reload_page] == 'true'
+        elsif params[:reload_page] == 'true' || (@save_status =~ /signature accepted/) #Reloads the page automatically if it included a signature submit.
           format.html { redirect_to store_forms_url(:form_type => @form.data_type, :form_id => @form.id) }
           format.js do
             render :update do |page|

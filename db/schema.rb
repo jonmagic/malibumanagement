@@ -8,13 +8,14 @@ ActiveRecord::Schema.define(:version => 12) do
   end
 
   create_table "admins", :force => true do |t|
-    t.column "username",         :string
-    t.column "friendly_name",    :string,   :limit => 50
-    t.column "crypted_password", :string,   :limit => 40
-    t.column "salt",             :string,   :limit => 40
-    t.column "created_at",       :datetime
-    t.column "updated_at",       :datetime
-    t.column "activated_at",     :datetime
+    t.column "username",               :string
+    t.column "friendly_name",          :string,   :limit => 50
+    t.column "crypted_password",       :string,   :limit => 40
+    t.column "salt",                   :string,   :limit => 40
+    t.column "created_at",             :datetime
+    t.column "updated_at",             :datetime
+    t.column "activated_at",           :datetime
+    t.column "social_security_number", :integer,  :limit => 9
   end
 
   create_table "form_instances", :force => true do |t|

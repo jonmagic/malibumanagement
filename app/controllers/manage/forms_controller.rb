@@ -15,6 +15,7 @@ class Manage::FormsController < ApplicationController
     end
   end
 
+  # This kinda doubles for update as well: the form status is updated automatically on view
   def view
     restrict('allow only admins') or begin
       do_render = true
@@ -26,7 +27,7 @@ logger.error "Status: #{@form.status} // #{params[:form_status]}=#{params[:form_
         @form.save
         if @form.status.as_status.number == 4
           flash[:notice] = "Form &lt; #{@form.admin_visual_identifier} &gt; was archived."
-          redirect_to admin_forms_by_status_path(:form_status => 3.as_status.text)
+          redirect_to FormInstance.find_by_status_number(3).count > 0 ? admin_forms_by_status_path(:form_status => 3.as_status.text) : admin_forms_by_status_path(:form_status => 2.as_status.text)
           do_render = false
         end
       end
@@ -35,6 +36,47 @@ logger.error "Status: #{@form.status} // #{params[:form_status]}=#{params[:form_
   end
 
   def archive_view
+  end
+
+#This is for submitting edits. This is an ajax-specific function, normally auto-save like gmail but also via a button (like gmail).
+  def update
+    restrict('allow only admins') or begin
+      status_changed = false
+      assigned_to_changed = false
+      @form = FormInstance.find_by_id(params[:form_id])
+      unless @form.update_attributes(params[:form_instance])
+        flash[:notice] = "ERROR Submitting draft!"
+      end
+      @data = @form.data
+      if !assigned_to_changed && @data.update_attributes(params[params[:form_type]]) # & @form.update
+        @save_status = "Draft saved at " + Time.now.strftime("%I:%M %p").downcase + @data.save_status.to_s
+      else
+        @save_status = "ERROR auto-saving! (#{@data.errors.to_xml})"
+      end
+      respond_to do |format|
+        if params[:leave_page] == 'true'
+          format.html { redirect_to admin_dashboard_url }
+          format.js do
+            render :update do |page|
+              page.redirect_to admin_dashboard_url
+            end
+          end
+        elsif params[:reload_page] == 'true' || (@save_status =~ /signature accepted/) #Reloads the page automatically if it included a signature submit.
+          format.html { redirect_to admin_forms_url(:form_type => @form.data_type, :form_id => @form.id) }
+          format.js do
+            render :update do |page|
+              page.redirect_to admin_forms_url(:form_type => @form.data_type, :form_id => @form.id)
+            end
+          end
+        else
+          format.html {
+            flash[:error] = @data.errors.collect {|err| "#{err[0].humanize} #{err[1]}"}.join('</p><p class="error_message">')
+            redirect_to status_changed ? admin_dashboard_url() : admin_forms_url(:form_type => @form.data_type, :form_id => @form.id)
+          }
+          format.js   {render :layout => false}
+        end
+      end
+    end
   end
 
 #There should be three fields here: Store, Date

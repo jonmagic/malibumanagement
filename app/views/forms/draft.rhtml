@@ -7,7 +7,8 @@
 	<% remote_form_for(@form.data_type, :html => {:id => 'form_'+@form.data_type.fromCamelCase}, :url => formatted_store_forms_path(:form_type => @form.data_type, :action => 'update', :form_id => @form.id, :format => 'js')) do |f| %>
 
 <% if current_user.is_store_admin? -%>
-<label for="form_instance_assigned_to">Assign this form to:</label><%= select(:form_instance, :assigned_to, current_store.users.collect {|u| [ u.friendly_name, u.id ] }, { :include_blank => true, :selected => @form.assigned_to }) %>
+<label for="form_instance_assigned_to">Assign this form to be completed by: </label><%= select(:form_instance, :assigned_to, current_store.users.collect {|u| [ u.friendly_name, u.id ] }, { :include_blank => true, :selected => @form.assigned_to }) %>
+<hr />
 <% end -%>
 
 		<input name="Nothing[important]" type="hidden" value="because theres a bug in the form serializer" />
@@ -29,7 +30,7 @@
 <% else -%>
 	<% form_for(@form.data_type, :html => {:id => 'form_'+@form.data_type.fromCamelCase}, :url => store_forms_path(:form_type => @form.data_type, :action => 'update', :form_id => @form.id)) do |f| %>
 	<% if current_user.is_store_admin? -%>
-	<label for="form_instance_assigned_to">Assign this form to:</label><%= select(:form_instance, :assigned_to, current_store.users.collect {|u| [ u.friendly_name, u.id ] }, { :include_blank => true, :selected => @form.assigned_to }, {:onchange => "this.form.action = this.form.action + '?leave_page=true'; this.form.submit()"}) %>
+	<label for="form_instance_assigned_to">Assign this form to be completed by: </label><%= select(:form_instance, :assigned_to, current_store.users.collect {|u| [ u.friendly_name, u.id ] }, { :include_blank => true, :selected => @form.assigned_to }, {:onchange => "this.form.action = this.form.action + '?leave_page=true'; this.form.submit()"}) %>
 	<% end -%>
 
 

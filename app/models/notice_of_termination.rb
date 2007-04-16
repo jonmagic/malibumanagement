@@ -3,7 +3,7 @@ class NoticeOfTermination < ActiveRecord::Base
   has_one :instance, :as => :data, :class_name => 'FormInstance' # Looks for data_id in form_instances, calls it self.instance
   has_many :logs, :as => 'object'
   belongs_to :manager_signer, :class_name => 'User', :foreign_key => 'manager_signature_id'
-  belongs_to :regional_signer, :class_name => 'User', :foreign_key => 'regional_signature_id'
+  belongs_to :regional_signer, :class_name => 'Admin', :foreign_key => 'regional_signature_id'
   attr_accessor :save_status
 
 # Has two columns:
@@ -32,13 +32,14 @@ class NoticeOfTermination < ActiveRecord::Base
         errors.add_to_base("CANNOT re-sign this form once it is signed!") if !self.manager_sign_username.blank?
       else
         manager = User.authenticate(self.manager_sign_username, self.manager_sign_password, Thread.current['user'].domain)
+        errors.add(:store_manager, "signature must be a store manager.") if !manager.nil? && !manager.is_store_admin?
         errors.add(:store_manager, "could not be validated. Please check your username and password and try again.") if !manager && !self.manager_sign_username.blank?
         errors.add(:social_security_number, "needs to be set in #{self.manager_sign_username}'s profile to be able to sign.") if !manager.nil? && manager.social_security_number.blank?
       end
       if self.regional_signed?
         errors.add_to_base("CANNOT re-sign this form once it is signed!") if !self.regional_sign_username.blank?
       else
-        regional = User.authenticate(self.regional_sign_username, self.regional_sign_password, Thread.current['user'].domain)
+        regional = Admin.authenticate(self.regional_sign_username, self.regional_sign_password)
         errors.add(:regional_manager, "could not be validated. Please check your username and password and try again.") if !regional && !self.regional_sign_username.blank?
         errors.add(:social_security_number, "needs to be set in #{self.regional_sign_username}'s profile to be able to sign.") if !regional.nil? && regional.social_security_number.blank?
       end
@@ -55,7 +56,7 @@ class NoticeOfTermination < ActiveRecord::Base
       end
 
       if !self.regional_sign_username.blank?
-        regional = User.find_by_username_and_store_id(self.regional_sign_username, Thread.current['user'].store_id)
+        regional = Admin.find_by_username(self.regional_sign_username)
         self.regional_signer = regional
         self.regional_signature_hash = Digest::SHA1.hexdigest("--#{regional.social_security_number}--#{self.instance.created_at}--")
         self.regional_signature_date = Time.now
