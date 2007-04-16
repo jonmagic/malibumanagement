@@ -27,7 +27,7 @@ logger.error "Status: #{@form.status} // #{params[:form_status]}=#{params[:form_
         @form.save
         if @form.status.as_status.number == 4
           flash[:notice] = "Form &lt; #{@form.admin_visual_identifier} &gt; was archived."
-          redirect_to FormInstance.find_by_status_number(3).count > 0 ? admin_forms_by_status_path(:form_status => 3.as_status.text) : admin_forms_by_status_path(:form_status => 2.as_status.text)
+          redirect_to FormInstance.find_all_by_status_number(3).count > 0 ? admin_forms_by_status_path(:form_status => 3.as_status.text) : admin_forms_by_status_path(:form_status => 2.as_status.text)
           do_render = false
         end
       end

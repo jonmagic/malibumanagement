@@ -1,4 +1,4 @@
-<h2><%= @form.visual_identifier %></h2>
+<h2><%= @form.admin_visual_identifier %></h2>
 <p>(<%= @form.form_identifier %> - <%= @form.status.as_status.word('uppercase short singular') %>) <%= link_to 'View Log', admin_form_log_path(:form_type => @form.data_type, :form_id => @form.id), :popup => true %></p>
 
 <div class="form">

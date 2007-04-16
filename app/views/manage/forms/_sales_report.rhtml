@@ -1,0 +1,70 @@
+<% view = view.nil? ? true : view -%>
+<%= update_page_tag do |page|
+	page.assign(:employee_count, 0)
+	page.assign(:employee_part, render(:partial => 'manage/forms/_sales_report/employee_part', :locals => {:view => view}))
+	@employee_count = 0
+end %>
+<table>
+	<tr>
+	<td class="leftcolumn"><label for="opening_checklist">Opening Checklist</label></td>
+	<td class="rightcolumn"><%= @data.opening_checklist ? 'yes' : 'no' %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="closing_checklist">Closing Checklist</label></td>
+	<td class="rightcolumn"><%= @data.closing_checklist ? 'yes' : 'no' %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="daily_cleaning">Daily Cleaning</label></td>
+	<td class="rightcolumn"><%= @data.daily_cleaning ? 'yes' : 'no' %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="store_daily_sales">Store Daily Sales</label></td>
+	<td class="rightcolumn">$<%= @data.store_daily_sales %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="total_revenue">Total Revenue</label></td>
+	<td class="rightcolumn">$<%= @data.total_revenue %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="goal_for_day">Goal for Day</label></td>
+	<td class="rightcolumn">$<%= @data.goal_for_day %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="actual_vs_goal_diff_for_day">Actual Difference from Goal</label></td>
+	<td class="rightcolumn">$<%= @data.actual_vs_goal_diff_for_day %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label>Per Employee:</label></td>
+	<td class="rightcolumn">
+		<table>
+			<thead>
+				<th>Employee Name</th>
+				<th>Sales</th>
+				<th>PPA</th>
+				<th>Tans</th>
+			</thead>
+			<tbody id='per_employee_table'>
+			</tbody>
+		</table>
+	</td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="store_ppa">Store PPA</label></td>
+	<td class="rightcolumn"><%= @data.store_ppa %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="total_tans">Total Tans</label></td>
+	<td class="rightcolumn"><%= @data.total_tans %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="cash_error">Over/Short Cash for the Day</label></td>
+	<td class="rightcolumn">$<%= @data.cash_error %></td>
+	</tr>
+</table>
+<% @data.employee_names.each do |oi| -%>
+<%= update_page_tag do |page|
+		page.insert_html :bottom, 'per_employee_table', :partial => 'manage/forms/_sales_report/employee_part', :locals => {:i => @employee_count, :view => view}
+		page.assign(:employee_count, page.literal('employee_count+1'))
+		@employee_count += 1
+end %>
+<% end -%>
