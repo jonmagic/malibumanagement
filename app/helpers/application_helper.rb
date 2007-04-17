@@ -2,6 +2,25 @@
 module ApplicationHelper
   include DatePickerHelper
 
+  def raw_date_picker_field(object, method)
+    obj = instance_eval("@#{object}") || object
+    value = obj.send(method)
+    display_value = value.respond_to?(:strftime) ? value.strftime('%b %d, %Y') : value.to_s
+    display_value = '[ choose date ]' if display_value.blank?
+
+    out = hidden_field(object, method)
+    out << content_tag('a', display_value, :href => '#',
+        :id => "_#{object}_#{method}_link", :class => '_demo_link',
+        :onclick => "DatePicker.toggleDatePicker('#{object}_#{method}'); return false;")
+    out << content_tag('span', '&nbsp;', :class => 'date_picker', :style => 'display: none',
+                      :id => "_#{object}_#{method}_calendar")
+    if obj.respond_to?(:errors) and obj.errors.on(method) then
+      ActionView::Base.field_error_proc.call(out, nil) # What should I pass ?
+    else
+      out
+    end
+  end
+
   def tab_link_to(name, options = {}, html_options = nil, *parameters_for_method_reference)
     if html_options.kind_of?(Hash)
       active_only_if_equal = html_options.delete(:active_only_if_equal) || false
@@ -35,38 +54,6 @@ module ActiveRecord
     def self.count_by_sql_wrapping_select_query(sql)
       sql = sanitize_sql(sql)
       count_by_sql("select count(*) from (#{sql}) as my_table")
-    end
-  end
-end
-
-module ActionView
-  module Helpers
-    module PaginationHelper
-      def remote_pagination_links(paginator, options={}, html_options={})
-        links = pagination_links_each(paginator, options) do |n|
-          ins_options = (options || DEFAULT_OPTIONS).clone
-          ins_options[:url] = ins_options[:url]+"&page=#{n}"
-          link_to_remote(n.to_s, ins_options, html_options)
-        end
-        links.nil? ? nil : "Page: #{links}"
-      end
-    end
-    class InstanceTag
-      def to_check_box_tag(options = {}, checked_value = "1", unchecked_value = "0")
-        options = options.stringify_keys
-        options["type"]     = "checkbox"
-        options["value"]    = checked_value
-        if options.has_key?("checked")
-          cv = options.delete "checked"
-          checked = cv == true || cv == "checked" || cv == "true"
-        else
-          options["val"] = value(object)
-          checked = self.class.check_box_checked?(value(object), checked_value)
-        end
-        options["checked"] = "true" if checked
-        add_default_name_and_id(options)
-        tag("input", options) << tag("input", "name" => options["name"], "type" => "hidden", "value" => unchecked_value)
-      end
     end
   end
 end

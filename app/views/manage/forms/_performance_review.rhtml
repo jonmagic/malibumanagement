@@ -52,10 +52,10 @@
 	</tr>
 	<tr>
 		<td class="leftcolumn"><label for="manager_comments">Manager's Comments</label></td>
-		<td class="rightcolumn"><%= f.text_area :manager_comments, :rows => 3, :cols => 25 %></td>
+		<td class="rightcolumn"><%= !view ? f.text_area(:manager_comments, :rows => 3, :cols => 25, :value => @data.manager_comments) : @data.manager_comments %></td>
 	</tr>
 	<tr>
-		<td class="leftcolumn"><label for="employee_comments">Employee's Comments</label></td>
-		<td class="rightcolumn"><%= f.text_area :employee_comments, :rows => 3, :cols => 25 %></td>
+		<td class="leftcolumn"><label for="employee_comments">employee's Comments</label></td>
+		<td class="rightcolumn"><%= !view ? f.text_area(:employee_comments, :rows => 3, :cols => 25, :value => @data.employee_comments) : @data.employee_comments %></td>
 	</tr>
 </table>

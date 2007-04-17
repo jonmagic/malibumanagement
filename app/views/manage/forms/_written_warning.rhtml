@@ -15,11 +15,7 @@
 	<p class="error_message"><%= flash[:error] %></p>
 	<p style="font-size:12pt; font-style:italic; color:blue">This form was signed<br />&nbsp;&nbsp;&nbsp;&nbsp;on <%= @form.data.employee_sign_date %><br />&nbsp;&nbsp;&nbsp;&nbsp;by <%= @form.data.employee_signer.friendly_name %><br />&nbsp;&nbsp;&nbsp;&nbsp;Digital Signature: <%= @form.data.employee_sign_hash %></p>
 <% else -%>
-	<p class="error_message"><%= flash[:error] %></p>
-	<p><label for="employee_sign_username">Employee's Username</label><br/>
-	<%= f.text_field 'employee_sign_username', :value => nil %></p>
-	<p><label for="employee_sign_password">Employee's Password</label><br/>
-	<%= f.password_field 'employee_sign_password', :value => nil %></p>
+	<p style="font-size:12pt; font-style:italic; color:orange">This form has not yet been signed by the employee!</p>
 <% end -%>
 
 <hr style="width:50%; margin-right:50%" />
@@ -27,10 +23,5 @@
 	<p class="error_message"><%= flash[:error] %></p>
 	<p style="font-size:12pt; font-style:italic; color:blue">This form was signed<br />&nbsp;&nbsp;&nbsp;&nbsp;on <%= @form.data.manager_sign_date %><br />&nbsp;&nbsp;&nbsp;&nbsp;by <%= @form.data.manager_signer.friendly_name %><br />&nbsp;&nbsp;&nbsp;&nbsp;Digital Signature: <%= @form.data.manager_sign_hash %></p>
 <% else -%>
-	<p class="error_message"><%= flash[:error] %></p>
-	<p class="warning_message">Note: Do not sign until the employee name and description of incident is filled out above!</p>
-	<p><label for="manager_sign_username">Store Manager's Username</label><br/>
-	<%= f.text_field 'manager_sign_username', :value => nil %></p>
-	<p><label for="manager_sign_password">Store Manager's Password</label><br/>
-	<%= f.password_field 'manager_sign_password', :value => nil %></p>
+<p style="font-size:12pt; font-style:italic; color:orange">This form has not yet been signed by the store manager!</p>
 <% end -%>

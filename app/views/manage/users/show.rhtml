@@ -7,6 +7,7 @@ Username: <em><%= @user.username %></em></p>
 <% form_for :user, :url => { :action => 'update', :id => @user.id }, :html => {:method => :update} do |f| -%>
 <%= hidden_field 'user', 'operation', :value => 'attr_update' %>
 <p><label for="form_types">Explicitly Assigned Forms</label><br/>
+	<input type="hidden" name="user[form_type_ids][]" value="" />
 	<ul>
 	<% FormType.find(:all).each do |t| -%>
 	<% unless @user.store.form_type_ids.include?(t.id.to_s) -%>

@@ -58,7 +58,7 @@
 						/
 					<% if params[:action] == 'forms' or params[:controller] == 'manage/forms' -%>
 						<%= link_to 'Manage', stores_path %>
-					<% elsif params[:action] == 'management' or params[:controller] == 'manage/stores' or params[:controller] == 'manage/pages' or (params[:controller] == 'manage/admins' and !(params[:action] == 'dashboard')) -%>
+					<% else -%>
 						<%= link_to 'Forms', admin_forms_by_status_path('submitted') %>
 					<% end -%>
 			<% else -%>

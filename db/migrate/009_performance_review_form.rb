@@ -13,13 +13,7 @@ class PerformanceReviewForm < ActiveRecord::Migration
       t.column :no_shortages,         :boolean
       t.column :follows_instructions, :boolean
       t.column :open_close_unassisted,  :boolean
-      t.column :manager_sign_id,        :integer
-      t.column :manager_sign_hash,      :string
-      t.column :manager_sign_date,      :datetime
       t.column :manager_comments,       :string
-      t.column :employee_sign_id,       :integer
-      t.column :employee_sign_hash,     :string
-      t.column :employee_sign_date,     :datetime
       t.column :employee_comments,      :string
     end
     #Also add this form type into the form_types table

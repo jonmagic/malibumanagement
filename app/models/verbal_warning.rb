@@ -27,15 +27,19 @@ class VerbalWarning < ActiveRecord::Base
       else
         manager = User.authenticate(self.manager_sign_username, self.manager_sign_password, Thread.current['user'].domain)
         errors.add(:store_manager, "could not be validated. Please check your username and password and try again.") if !manager && !self.manager_sign_username.blank?
+        errors.add(:store_manager, "signature must be a store manager.") if !manager.nil? && !manager.is_store_admin?
         errors.add(:social_security_number, "needs to be set in #{self.manager_sign_username}'s profile to be able to sign.") if !manager.nil? && manager.social_security_number.blank?
       end
+
       if self.employee_signed?
         errors.add_to_base("CANNOT re-sign this form once it is signed!") if !self.employee_sign_username.blank?
       else
         employee = User.authenticate(self.employee_sign_username, self.employee_sign_password, Thread.current['user'].domain)
-        errors.add(:employee_manager, "could not be validated. Please check your username and password and try again.") if !employee && !self.employee_sign_username.blank?
+        errors.add(:employee, "could not be validated. Please check your username and password and try again.") if !employee && !self.employee_sign_username.blank?
         errors.add(:social_security_number, "needs to be set in #{self.employee_sign_username}'s profile to be able to sign.") if !employee.nil? && employee.social_security_number.blank?
       end
+      
+      errors.add_to_base("This form must first be signed before it can be submitted.") if self.instance.status_number > 1 && ((!employee_signed? and employee.nil?) || (!manager_signed? and manager.nil?))
     end
 
     # Grab the user who authenticated and store in self.digital_signature_hash a hash of the user's social-security number and self.created_at

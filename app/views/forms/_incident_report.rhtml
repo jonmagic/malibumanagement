@@ -8,7 +8,7 @@
 	</tr>
 </table>
 <label for="description">Description of Incident:</label><br/>
-<%= f.text_area :description, :rows => 10, :cols => 50 %>
+<%= !view ? f.text_area(:description, :value => @data.description, :rows => 10, :cols => 50) : @data.description %>
 
 <hr style="width:50%; margin-right:50%" />
 <% if view or !@data.manager_sign_hash.blank? -%>

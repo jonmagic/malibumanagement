@@ -24,6 +24,7 @@ class User < ActiveRecord::Base
   validates_length_of       :password, :within => 4..40,          :if => :password_present?
 
   before_save               :encrypt_password
+  before_save               :normalize_blank_assigned_form_types
 
   serialize :form_type_ids, Array
   def form_types
@@ -112,5 +113,13 @@ class User < ActiveRecord::Base
     end
     def not_attr_update?
       !(self.operation == 'attr_update') && self.password.blank?
+    end
+
+# Because when the checkboxes come back with none checked, it doesn't update, so we include a blank one - which doesn't go well with finding by '' id.
+    def normalize_blank_assigned_form_types
+      # Nil any blank elements from the list
+      self.form_type_ids = self.form_type_ids.collect! {|ftid| ftid == "" ? nil : ftid }
+      # Remove the nil elements
+      self.form_type_ids.compact!
     end
 end

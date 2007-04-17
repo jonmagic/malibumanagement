@@ -18,7 +18,7 @@
 <div>
 	<h4>Recent/Active Forms:</h4>
 	<ul>
-<% for form in current_user.is_store_admin? ? FormInstance.find_by_sql(["SELECT * FROM form_instances WHERE store_id=:store_id AND status_number<4 ORDER BY created_at DESC LIMIT 6", {:store_id => current_store.id}]) : FormInstance.find_by_sql(["SELECT * FROM form_instances WHERE store_id=:store_id AND user_id=:user_id ORDER BY created_at DESC LIMIT 6", {:store_id => current_store.id, :user_id => current_user.id}]) -%>
+<% for form in current_user.is_store_admin? ? FormInstance.find_by_sql(["SELECT * FROM form_instances WHERE store_id=:store_id AND status_number<4 AND assigned_to IS NULL ORDER BY created_at DESC LIMIT 6", {:store_id => current_store.id, :user_id => current_user.id}]) : FormInstance.find_by_sql(["SELECT * FROM form_instances WHERE store_id=:store_id AND user_id=:user_id AND status_number<4 AND assigned_to IS NULL ORDER BY created_at DESC LIMIT 6", {:store_id => current_store.id, :user_id => current_user.id}]) -%>
 		<li><%= render :partial => 'forms/all_listing', :locals => {:form => form} %></li>
 <% end -%>
   </ul>
@@ -28,7 +28,7 @@
 	<h4>Create New:</h4>
 	<ul>
 <% current_user.store.form_types.concat(current_user.form_types).each do |ft| -%>
-		<li><%= link_to current_user.drafts_of_type(ft.name).count > 0 ? current_store.drafts_of_type(ft.name)[0].visual_identifier : ft.friendly_name + " &gt; New", store_draft_path(:form_status => 'draft', :action => 'new', :form_type => ft.name) %></li>
+		<li><%= link_to current_user.drafts_of_type(ft.name).count > 0 && !ft.can_have_multiple_drafts ? current_store.drafts_of_type(ft.name)[0].visual_identifier : ft.friendly_name + " &gt; New", store_draft_path(:form_status => 'draft', :action => 'new', :form_type => ft.name) %></li>
 <% end -%>
 	</ul>
 </div>

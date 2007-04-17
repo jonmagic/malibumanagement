@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 12) do
+ActiveRecord::Schema.define(:version => 13) do
 
   create_table "account_setups", :force => true do |t|
   end
@@ -16,6 +16,23 @@ ActiveRecord::Schema.define(:version => 12) do
     t.column "updated_at",             :datetime
     t.column "activated_at",           :datetime
     t.column "social_security_number", :integer,  :limit => 9
+  end
+
+  create_table "direct_deposit_authorizations", :force => true do |t|
+    t.column "employee_name",             :string
+    t.column "employee_id_number",        :integer
+    t.column "depository_bank",           :string
+    t.column "bank_city",                 :string
+    t.column "bank_branch",               :string
+    t.column "bank_routing_number",       :integer
+    t.column "bank_account_number",       :integer
+    t.column "account_kind",              :string
+    t.column "amount",                    :integer
+    t.column "effective_date",            :date
+    t.column "date_received",             :date
+    t.column "date_pre_note_sent",        :date
+    t.column "date_of_first_payroll",     :date
+    t.column "authorization_new_updated", :string
   end
 
   create_table "form_instances", :force => true do |t|
@@ -162,7 +179,7 @@ ActiveRecord::Schema.define(:version => 12) do
   end
 
   create_table "time_off_requests", :force => true do |t|
-    t.column "is_vacation",             :boolean
+    t.column "time_off_kind",           :string
     t.column "dates_requested",         :string
     t.column "employee_signature_id",   :integer
     t.column "employee_signature_hash", :string
@@ -175,6 +192,8 @@ ActiveRecord::Schema.define(:version => 12) do
     t.column "admin_approval_id",       :integer
     t.column "admin_approval_hash",     :string
     t.column "admin_approval_date",     :datetime
+    t.column "employee_name",           :string
+    t.column "date",                    :date
   end
 
   create_table "users", :force => true do |t|

@@ -6,7 +6,7 @@ class IncidentReport < ActiveRecord::Base
   belongs_to :employee_signer, :class_name => 'User', :foreign_key => 'employee_sign_id'
   attr_accessor :save_status
   
-  attr_accessor :manager_sign_username, :manager_sign_password,
+  attr_accessor :manager_sign_username, :manager_sign_password
   before_update :create_signature_hashes
 
   def is_signed?
@@ -23,8 +23,11 @@ class IncidentReport < ActiveRecord::Base
       else
         manager = User.authenticate(self.manager_sign_username, self.manager_sign_password, Thread.current['user'].domain)
         errors.add(:store_manager, "could not be validated. Please check your username and password and try again.") if !manager && !self.manager_sign_username.blank?
+        errors.add(:store_manager, "signature must be a store manager.") if !manager.nil? && !manager.is_store_admin?
         errors.add(:social_security_number, "needs to be set in #{self.manager_sign_username}'s profile to be able to sign.") if !manager.nil? && manager.social_security_number.blank?
       end
+
+      errors.add_to_base("This form must first be signed before it can be submitted.") if self.instance.status_number > 1 && (!manager_signed? and manager.nil?)
     end
 
     # Grab the user who authenticated and store in self.digital_signature_hash a hash of the user's social-security number and self.created_at

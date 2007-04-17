@@ -113,6 +113,7 @@ logger.error "Current Model: #{current_form_model}"
       assigned_to_changed = false
       @form = FormInstance.find_by_id(params[:form_id])
       return redirect_to(store_dashboard_url) unless @form
+
       if !params[:form_instance].nil? && !params[:form_instance][:assigned_to].blank?
         assigned_to_changed = true
         @form.user = User.find_by_id(params[:form_instance][:assigned_to])
@@ -123,9 +124,11 @@ logger.error "Current Model: #{current_form_model}"
         @form.status = params[:form_instance].delete(:status)
         status_changed = true
       end
+
       unless @form.update_attributes(params[:form_instance])
         flash[:notice] = "ERROR Submitting draft!"
       end
+
       @data = @form.data
       if !assigned_to_changed && @data.update_attributes(params[params[:form_type]]) # & @form.update
         @save_status = "Draft saved at " + Time.now.strftime("%I:%M %p").downcase + @data.save_status.to_s
