@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 13) do
+ActiveRecord::Schema.define(:version => 14) do
 
   create_table "account_setups", :force => true do |t|
   end
@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(:version => 13) do
     t.column "bank_routing_number",       :integer
     t.column "bank_account_number",       :integer
     t.column "account_kind",              :string
-    t.column "amount",                    :integer
+    t.column "amount",                    :integer, :limit => 10, :precision => 10, :scale => 0
     t.column "effective_date",            :date
     t.column "date_received",             :date
     t.column "date_pre_note_sent",        :date
@@ -85,19 +85,19 @@ ActiveRecord::Schema.define(:version => 13) do
 
   create_table "manager_reports", :force => true do |t|
     t.column "overview",                        :text
-    t.column "actual_debit",                    :integer, :limit => 10
+    t.column "actual_debit",                    :integer, :limit => 10, :precision => 10, :scale => 0
     t.column "number_of_tans",                  :integer
-    t.column "total_sales",                     :integer, :limit => 10
-    t.column "total_revenue",                   :integer, :limit => 10
-    t.column "previous_year_sales",             :integer, :limit => 10
+    t.column "total_sales",                     :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "total_revenue",                   :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "previous_year_sales",             :integer, :limit => 10, :precision => 10, :scale => 0
     t.column "previous_year_tans",              :integer
-    t.column "goal_for_month",                  :integer, :limit => 10
-    t.column "actual_vs_goal_diff_for_month",   :integer, :limit => 10
+    t.column "goal_for_month",                  :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "actual_vs_goal_diff_for_month",   :integer, :limit => 10, :precision => 10, :scale => 0
     t.column "action_plan_for_next_month",      :text
     t.column "meetings_training_agenda",        :text
-    t.column "cash_error",                      :integer, :limit => 10
-    t.column "payroll_percent_for_month",       :integer
-    t.column "store_inspection_grade",          :integer
+    t.column "cash_error",                      :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "payroll_percent_for_month",       :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "store_inspection_grade",          :string
     t.column "employees",                       :string
     t.column "maintenance_requests",            :string
     t.column "suggestions",                     :text
