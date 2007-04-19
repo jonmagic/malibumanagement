@@ -20,19 +20,19 @@ end %>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="store_daily_sales">Store Daily Sales</label></td>
-	<td class="rightcolumn">$<%= !view ? f.text_field(:store_daily_sales, :value => @data.store_daily_sales, :size => 6) : @data.store_daily_sales %></td>
+	<td class="rightcolumn">$<%= !view ? f.text_field(:store_daily_sales, :value => @data.store_daily_sales, :size => 6) : dollar_amount(@data.store_daily_sales) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="total_revenue">Total Revenue</label></td>
-	<td class="rightcolumn">$<%= !view ? f.text_field(:total_revenue, :value => @data.total_revenue, :size => 6) : @data.total_revenue %></td>
+	<td class="rightcolumn">$<%= !view ? f.text_field(:total_revenue, :value => @data.total_revenue, :size => 6) : dollar_amount(@data.total_revenue) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="goal_for_day">Goal for Day</label></td>
-	<td class="rightcolumn">$<%= !view ? f.text_field(:goal_for_day, :value => @data.goal_for_day, :size => 6) : @data.goal_for_day %></td>
+	<td class="rightcolumn">$<%= !view ? f.text_field(:goal_for_day, :value => @data.goal_for_day, :size => 6) : dollar_amount(@data.goal_for_day) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="actual_vs_goal_diff_for_day">Actual Difference from Goal</label></td>
-	<td class="rightcolumn">$<%= !view ? f.text_field(:actual_vs_goal_diff_for_day, :value => @data.actual_vs_goal_diff_for_day, :size => 6) : @data.actual_vs_goal_diff_for_day %></td>
+	<td class="rightcolumn">$<%= !view ? f.text_field(:actual_vs_goal_diff_for_day, :value => @data.actual_vs_goal_diff_for_day, :size => 6) : dollar_amount(@data.actual_vs_goal_diff_for_day) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label>Per Employee:</label></td>
@@ -44,12 +44,14 @@ end %>
 				<th>PPA</th>
 				<th>Tans</th>
 			</thead>
+<% unless view -%>
 			<tfoot>
 				<td><%= link_to_function image_tag('plus-rough.png'), 'new Insertion.Bottom("per_employee_table", employee_part); employee_count = employee_count+1;' %></td>
 				<td>&nbsp;</td>
 				<td>&nbsp;</td>
 				<td>&nbsp;</td>
 			</tfoot>
+<% end -%>
 			<tbody id='per_employee_table'>
 			</tbody>
 		</table>
@@ -65,7 +67,7 @@ end %>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="cash_error">Over/Short Cash for the Day</label></td>
-	<td class="rightcolumn">$<%= !view ? f.text_field(:cash_error, :value => @data.cash_error, :size => 6) : @data.cash_error %></td>
+	<td class="rightcolumn">$<%= !view ? f.text_field(:cash_error, :value => @data.cash_error, :size => 6) : dollar_amount(@data.cash_error) %></td>
 	</tr>
 </table>
 <% @data.employee_names.each do |oi| -%>

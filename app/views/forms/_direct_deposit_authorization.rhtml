@@ -47,7 +47,7 @@
 <% end -%>
 	<tr>
 	<td class="leftcolumn"><label for="amount">Amount</label></td>
-	<td class="rightcolumn">$<%= !view ? f.text_field(:amount, :value => @data.amount) : @data.amount %></td>
+	<td class="rightcolumn">$<%= !view ? f.text_field(:amount, :value => @data.amount) : dollar_amount(@data.amount) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="effective_date">Effective Date</label></td>

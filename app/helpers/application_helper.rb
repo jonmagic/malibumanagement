@@ -42,6 +42,9 @@ module ApplicationHelper
     image_tag(icon_file, :width=>"50px", :title=>File.basename(filename))
   end
 
+  def dollar_amount(amount)
+    amount > 0 ? "<span class='currency_positive'>#{amount}</span>" : "<span class='currency_negative'>#{amount}</span>"
+  end
 end
 
 module ActiveRecord

@@ -212,3 +212,13 @@ label {
 .form_listings li.submitted:before {
 	content: url(/images/icons/services_orange_sm.gif)
 }
+
+.currency_positive {
+	color:darkgreen;
+}
+.currency_negative {
+	color:darkred;
+}
+.draft_listing {
+	background-color:#fdd;
+}
