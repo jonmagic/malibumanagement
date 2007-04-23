@@ -59,6 +59,7 @@ class Manage::UsersController < ApplicationController
   def destroy
     restrict('allow only admins') or begin
       @user = User.find_by_id(params[:id])
+      return flash[:error] = "Cannot remove the last admin. Please delegate another to be admin before removing yourself." if @user.is_store_admin && @user.store.admins.length == 1
       if @user.destroy
         respond_to do |format|
           format.html { redirect_to manage_users_url }

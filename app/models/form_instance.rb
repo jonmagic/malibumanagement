@@ -5,6 +5,7 @@ class FormInstance < ActiveRecord::Base
   belongs_to :data, :polymorphic => true, :dependent => :destroy #(, :extend => ...)  #Uses columns data_type, data_id
   has_many :notes, :dependent => :destroy
   has_many :logs, :as => 'object'
+  belongs_to :assigned, :class_name => 'User', :foreign_key => 'assigned_to'
 
   before_save :unassign_if_submitted
 

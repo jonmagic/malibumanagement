@@ -1,2 +1,2 @@
 <%= render :partial => "forms/#{form.status}_listing", :locals => {:form => form, :pre_text => "(#{Thread.current['user'].is_admin? ? form.status : form.status.as_status.word('lowercase short singular not-mine')
-})"} unless form.status == 'all' %>
+}" + (!form.assigned_to.nil? && form.assigned_to > 0 && Thread.current['user'].is_store_admin? ? " - assigned to #{form.assigned.friendly_name}" : '') + ")"} unless form.status == 'all' %>
