@@ -4,31 +4,35 @@
 
 ActiveRecord::Schema.define(:version => 14) do
 
+  create_table "account_setups", :force => true do |t|
+  end
+
   create_table "admins", :force => true do |t|
     t.column "username",               :string
     t.column "friendly_name",          :string,   :limit => 50
-    t.column "social_security_number", :integer,  :limit => 9
     t.column "crypted_password",       :string,   :limit => 40
     t.column "salt",                   :string,   :limit => 40
     t.column "created_at",             :datetime
     t.column "updated_at",             :datetime
     t.column "activated_at",           :datetime
+    t.column "social_security_number", :integer,  :limit => 9
   end
 
   create_table "direct_deposit_authorizations", :force => true do |t|
-    t.column "employee_name",         :string
-    t.column "employee_id_number",    :integer
-    t.column "depository_bank",       :string
-    t.column "bank_city",             :string
-    t.column "bank_branch",           :string
-    t.column "bank_routing_number",   :integer
-    t.column "bank_account_number",   :integer
-    t.column "account_type",          :string
-    t.column "amount",                :integer, :limit => 10, :precision => 10, :scale => 0
-    t.column "effective_date",        :date
-    t.column "date_received",         :date
-    t.column "date_pre_note_sent",    :date
-    t.column "date_of_first_payroll", :date
+    t.column "employee_name",             :string
+    t.column "employee_id_number",        :integer
+    t.column "depository_bank",           :string
+    t.column "bank_city",                 :string
+    t.column "bank_branch",               :string
+    t.column "bank_routing_number",       :integer
+    t.column "bank_account_number",       :integer
+    t.column "account_kind",              :string
+    t.column "amount",                    :decimal, :precision => 8, :scale => 2
+    t.column "effective_date",            :date
+    t.column "date_received",             :date
+    t.column "date_pre_note_sent",        :date
+    t.column "date_of_first_payroll",     :date
+    t.column "authorization_new_updated", :string
   end
 
   create_table "form_instances", :force => true do |t|
@@ -81,18 +85,18 @@ ActiveRecord::Schema.define(:version => 14) do
 
   create_table "manager_reports", :force => true do |t|
     t.column "overview",                        :text
-    t.column "actual_debit",                    :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "actual_debit",                    :decimal, :precision => 8, :scale => 2
     t.column "number_of_tans",                  :integer
-    t.column "total_sales",                     :integer, :limit => 10, :precision => 10, :scale => 0
-    t.column "total_revenue",                   :integer, :limit => 10, :precision => 10, :scale => 0
-    t.column "previous_year_sales",             :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "total_sales",                     :decimal, :precision => 8, :scale => 2
+    t.column "total_revenue",                   :decimal, :precision => 8, :scale => 2
+    t.column "previous_year_sales",             :decimal, :precision => 8, :scale => 2
     t.column "previous_year_tans",              :integer
-    t.column "goal_for_month",                  :integer, :limit => 10, :precision => 10, :scale => 0
-    t.column "actual_vs_goal_diff_for_month",   :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "goal_for_month",                  :decimal, :precision => 8, :scale => 2
+    t.column "actual_vs_goal_diff_for_month",   :decimal, :precision => 8, :scale => 2
     t.column "action_plan_for_next_month",      :text
     t.column "meetings_training_agenda",        :text
-    t.column "cash_error",                      :integer, :limit => 10, :precision => 10, :scale => 0
-    t.column "payroll_percent_for_month",       :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "cash_error",                      :decimal, :precision => 8, :scale => 2
+    t.column "payroll_percent_for_month",       :decimal, :precision => 8, :scale => 2
     t.column "store_inspection_grade",          :string
     t.column "employees",                       :string
     t.column "maintenance_requests",            :string
@@ -135,25 +139,31 @@ ActiveRecord::Schema.define(:version => 14) do
     t.column "no_shortages",          :boolean
     t.column "follows_instructions",  :boolean
     t.column "open_close_unassisted", :boolean
+    t.column "manager_sign_id",       :integer
+    t.column "manager_sign_hash",     :string
+    t.column "manager_sign_date",     :datetime
     t.column "manager_comments",      :string
+    t.column "employee_sign_id",      :integer
+    t.column "employee_sign_hash",    :string
+    t.column "employee_sign_date",    :datetime
     t.column "employee_comments",     :string
   end
 
   create_table "sales_reports", :force => true do |t|
-    t.column "store_daily_sales",           :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "store_daily_sales",           :decimal, :precision => 8, :scale => 2
     t.column "opening_checklist",           :boolean
     t.column "closing_checklist",           :boolean
     t.column "daily_cleaning",              :boolean
-    t.column "goal_for_day",                :integer, :limit => 10, :precision => 10, :scale => 0
-    t.column "total_revenue",               :integer, :limit => 10, :precision => 10, :scale => 0
-    t.column "actual_vs_goal_diff_for_day", :integer, :limit => 10, :precision => 10, :scale => 0
-    t.column "employee_names",              :string,                                               :default => "--- \n- \"\"\n"
-    t.column "employee_sales",              :string,                                               :default => "--- \n- \"\"\n"
-    t.column "employee_ppa",                :string,                                               :default => "--- \n- \"\"\n"
-    t.column "employee_tans",               :string,                                               :default => "--- \n- \"\"\n"
+    t.column "goal_for_day",                :decimal, :precision => 8, :scale => 2
+    t.column "total_revenue",               :decimal, :precision => 8, :scale => 2
+    t.column "actual_vs_goal_diff_for_day", :decimal, :precision => 8, :scale => 2
+    t.column "employee_names",              :string,                                :default => "--- \n- \"\"\n"
+    t.column "employee_sales",              :string,                                :default => "--- \n- \"\"\n"
+    t.column "employee_ppa",                :string,                                :default => "--- \n- \"\"\n"
+    t.column "employee_tans",               :string,                                :default => "--- \n- \"\"\n"
     t.column "store_ppa",                   :integer
     t.column "total_tans",                  :integer
-    t.column "cash_error",                  :integer, :limit => 10, :precision => 10, :scale => 0
+    t.column "cash_error",                  :decimal, :precision => 8, :scale => 2
   end
 
   create_table "stores", :force => true do |t|
@@ -169,12 +179,21 @@ ActiveRecord::Schema.define(:version => 14) do
   end
 
   create_table "time_off_requests", :force => true do |t|
-    t.column "employee_name",         :string
-    t.column "date",                  :date
-    t.column "time_off_kind",         :string
-    t.column "dates_requested",       :string
-    t.column "time_left_before_days", :integer
-    t.column "time_left_after_days",  :integer
+    t.column "time_off_kind",           :string
+    t.column "dates_requested",         :string
+    t.column "employee_signature_id",   :integer
+    t.column "employee_signature_hash", :string
+    t.column "employee_signature_date", :datetime
+    t.column "admin_review_id",         :integer
+    t.column "admin_review_hash",       :string
+    t.column "admin_review_date",       :datetime
+    t.column "time_left_before_days",   :integer
+    t.column "time_left_after_days",    :integer
+    t.column "admin_approval_id",       :integer
+    t.column "admin_approval_hash",     :string
+    t.column "admin_approval_date",     :datetime
+    t.column "employee_name",           :string
+    t.column "date",                    :date
   end
 
   create_table "users", :force => true do |t|
