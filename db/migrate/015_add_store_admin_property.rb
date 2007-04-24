@@ -1,6 +1,5 @@
 class AddStoreAdminProperty < ActiveRecord::Migration
   def self.up
-    remove_column :users, :is_store_admin
     add_column :users, :is_store_admin, :boolean, :default => false
     @migrating = true
     Store.find(:all).each do |store|
