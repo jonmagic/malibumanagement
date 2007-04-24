@@ -18,7 +18,6 @@ class Manage::StoresController < ApplicationController
   def show
     restrict('allow only admins') or begin
       @store = Store.find_by_id(params[:id])
-      @user   = @store.admin
       respond_to do |format|
         format.html # show.rhtml
         # format.xml  { render :xml => (:store_account => {:store => @store, :user => @user}).to_xml }
@@ -30,7 +29,7 @@ class Manage::StoresController < ApplicationController
   def new
     restrict('allow only admins') or begin
       @user   = User.new(:form_type_ids => [FormType.find_by_name('ManagerReport').id, FormType.find_by_name('NoticeOfTermination').id, FormType.find_by_name('PerformanceReview').id, FormType.find_by_name('VerbalWarning').id, FormType.find_by_name('WrittenWarning').id, FormType.find_by_name('IncidentReport').id])
-      @store  = Store.new(:form_type_ids => [FormType.find_by_name('SalesReport').id, FormType.find_by_name('HandbookAcknowledgement').id], :admin => @user)
+      @store  = Store.new(:form_type_ids => [FormType.find_by_name('SalesReport').id, FormType.find_by_name('HandbookAcknowledgement').id])
       @user.store = @store
     end
   end
@@ -39,7 +38,6 @@ class Manage::StoresController < ApplicationController
   def edit
     restrict('allow only admins') or begin
       @store = Store.find_by_id(params[:id])
-      @user   = @store.admin
     end
   end
 
@@ -50,8 +48,8 @@ class Manage::StoresController < ApplicationController
 #  default_url_options(:host => 'localhost:3000')
     restrict('allow only admins') or begin
       @user   = User.new(params[:user])
-      @store  = Store.new(params[:store].merge({:admin => @user}))
-      @user.username = @store.alias
+      @store  = Store.new(params[:store])
+      @user.is_store_admin = true
       @user.store_id = 1 #Fake the validation, this will be overwritten as soon as the store is created.
       respond_to do |format|
         if @store.valid? & @user.valid?

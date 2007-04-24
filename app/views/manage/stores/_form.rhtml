@@ -17,6 +17,8 @@
   <%= f.text_field :contact_person %></p>
   <p><label for="telephone">Telephone</label><br/>
   <%= f.text_field :telephone %></p>
+	<p><label for="manager_fields">Store Manager</label></p>
+	<div style="border:2px solid #999999; padding:1em 0 1em 2em; width:24em">
   <% fields_for :user, @user do |g| %>
     <%= error_messages_for :user %>
 		<p><label for="friendly_name">Store Manager's Full Name</label><br/>
@@ -24,6 +26,9 @@
 
 		<p><label for="social_security_number">Social Security Number</label><br/>
 		<%= g.text_field :social_security_number, :maxsize => 9 %></p>
+
+		<p><label for="username">Store Manager's Username</label><br/>
+		<%= g.text_field :username %></p>
 
 		<p><label for="password">Password</label><br/>
 		<%= g.password_field :password %></p>
@@ -41,6 +46,7 @@
 			</ul>
 		</p>
   <% end -%>
+  </div>
   <% if current_user.is_admin? -%>
   <p><label for="form_types">Store-wide Form Types</label><br/>
 <ul>

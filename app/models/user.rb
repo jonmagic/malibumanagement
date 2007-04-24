@@ -36,10 +36,11 @@ class User < ActiveRecord::Base
   end
   
   def self.is_store_admin?(user)
-    user.store.alias == user.username
+    u = User.find_by_username(user)
+    u.nil? ? nil : u.is_store_admin?
   end
   def is_store_admin?
-    self.class.is_store_admin?(self)
+    self.is_store_admin
   end
   def is_admin?
     false

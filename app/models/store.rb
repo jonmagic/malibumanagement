@@ -1,11 +1,12 @@
 require 'digest/sha1'
 class Store < ActiveRecord::Base
-  has_many :users, :dependent => :destroy, :conditions => 'username<>"#{self.alias}"'
-  has_one  :admin, :class_name => 'User', :conditions => 'username="#{self.alias}"', :dependent => :destroy
+  has_many :users, :dependent => :destroy
+  has_many :admins, :class_name => 'User', :conditions => 'is_admin_user=1', :dependent => :destroy
+  has_one  :vintage_admin, :class_name => 'User', :conditions => 'username="#{self.alias}"', :dependent => :destroy
   has_many :form_instances, :dependent => :destroy
     has_many :drafts,    :class_name => 'FormInstance', :conditions => "status_number=1"
     has_many :submitted, :class_name => 'FormInstance', :conditions => "status_number=2"
-    has_many :reviewing,  :class_name => 'FormInstance', :conditions => "status_number=3"
+    has_many :reviewing, :class_name => 'FormInstance', :conditions => "status_number=3"
     has_many :archived,  :class_name => 'FormInstance', :conditions => "status_number=4"
   has_many :logs, :as => :object
 

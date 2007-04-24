@@ -18,6 +18,7 @@ class UsersController < ApplicationController
       @user = User.find_by_id(params[:id])
       respond_to do |format|
         params[:user] = {:password => params[:user][:password], :password_confirmation => params[:user][:password_confirmation], :operation => params[:user][:operation]} if params[:user][:operation] == 'changing_password' # Ensure ONLY password is being changed!
+        params[:user].delete(:is_store_admin) unless current_user.is_store_admin? #Only store admins can make others an admin.
         if @user.update_attributes(params[:user])
           flash[:notice] = @user.operation == 'changing_password' ? "Your Password has been changed. Please remember your new password next time you log in." : "#{@user.friendly_name} has been updated."
           format.html { redirect_to current_user.is_store_admin? ? users_url : user_account_url }
