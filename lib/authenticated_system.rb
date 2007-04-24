@@ -25,7 +25,7 @@ module AuthenticatedSystem
     def current_user=(new_user)
       session[:user] = (new_user.nil? || new_user.is_a?(Symbol)) ? nil : new_user.id
       @current_user = (new_user.nil? || new_user.is_a?(Symbol)) ? nil : new_user
-      session[:salt] = @current_user.salt
+      session[:salt] = @current_user.salt unless @current_user.nil?
       session[:domain] = @current_user.domain unless @current_user.nil?
     end
 

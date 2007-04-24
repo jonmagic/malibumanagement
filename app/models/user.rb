@@ -18,7 +18,6 @@ class User < ActiveRecord::Base
   validates_presence_of     :password, :password_confirmation,    :if => :not_attr_update?
   validates_presence_of     :store_id, :friendly_name, :username, :social_security_number
   validates_length_of       :username, :within => 3..40,          :if => :username_present?
-  validates_uniqueness_of   :username, :case_sensitive => false,  :if => :username_present?
   # validates_presence_of     :password_confirmation
   validates_confirmation_of :password
   validates_length_of       :password, :within => 4..40,          :if => :password_present?
@@ -97,6 +96,11 @@ class User < ActiveRecord::Base
   end
 
   protected
+
+    # validates_uniqueness_of   :username, :case_sensitive => false,  :if => :username_present?
+    def validate_on_create
+      errors.add(:username, "is already taken for store #{self.store.friendly_name}") if User.find_by_username_and_store_id(self.username, self.store_id)
+    end
 
     def encrypt_password
       return if password.blank?
