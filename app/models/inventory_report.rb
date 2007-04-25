@@ -45,6 +45,8 @@ logger.error "Setting #{key} to #{value}:"
       query = connection.prepare('SELECT Descriptions,qty_onhand FROM inventory')
       results = []
       query.execute.each_hash {|h| results.push(h) }
+      query.drop
+      connection.disconnect
       results
     end
 end

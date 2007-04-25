@@ -51,7 +51,7 @@ logger.error "Domain: #{self.current_user.domain}"
       flash[:notice] = "You have been logged out."
        redirect_to dom == 'malibu' ? admin_login_url : store_login_url(dom)
     else
-      redirect_to page_url
+      redirect_to admin_login_url
     end
   end
   private
