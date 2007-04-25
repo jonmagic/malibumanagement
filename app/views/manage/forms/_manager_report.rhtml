@@ -33,6 +33,11 @@
 	<td class="leftcolumn"><label for="goal_for_month">Goal For Month</label></td>
 	<td class="rightcolumn"><%= !view ? f.text_field(:goal_for_month, :value => @data.goal_for_month) : dollar_amount(@data.goal_for_month) %></td>
 	</tr>
+<%= view ? "
+	<tr>
+	<td class='leftcolumn'><label for='actual_vs_goal_diff_for_month'>Difference from Month Goal</label></td>
+	<td class='rightcolumn'>#{dollar_amount(@data.actual_vs_goal_diff_for_month)}</td>
+	</tr>" : '' -%>
 	<tr>
 	<td class="leftcolumn"><label for="action_plan_for_next_month">Action Plan for Next Month</label></td>
 	<td class="rightcolumn"><%= !view ? f.text_field(:action_plan_for_next_month, :value => @data.action_plan_for_next_month) : @data.action_plan_for_next_month %></td>
