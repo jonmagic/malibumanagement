@@ -43,7 +43,8 @@ module ApplicationHelper
   end
 
   def dollar_amount(amount)
-    amount > 0 ? "<span class='currency_positive'>#{amount}</span>" : "<span class='currency_negative'>#{amount}</span>"
+    amount = 0 if amount.nil?
+    amount.to_f > 0 ? "<span class='currency_positive'>#{amount}</span>" : "<span class='currency_negative'>#{amount}</span>"
   end
 end
 
