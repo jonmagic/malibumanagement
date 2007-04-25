@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 15) do
+ActiveRecord::Schema.define(:version => 18) do
 
   create_table "admins", :force => true do |t|
     t.column "username",               :string
@@ -69,6 +69,20 @@ ActiveRecord::Schema.define(:version => 15) do
     t.column "manager_sign_date", :datetime
   end
 
+  create_table "inventory_line_items", :force => true do |t|
+    t.column "inventory_report_id", :integer
+    t.column "name",                :string
+    t.column "should_be",           :integer
+    t.column "actual",              :integer
+    t.column "label",               :string
+  end
+
+  create_table "inventory_reports", :force => true do |t|
+    t.column "signer_id",   :integer
+    t.column "signer_hash", :string
+    t.column "signer_date", :datetime
+  end
+
   create_table "logs", :force => true do |t|
     t.column "created_at",  :datetime
     t.column "log_type",    :string
@@ -88,7 +102,6 @@ ActiveRecord::Schema.define(:version => 15) do
     t.column "previous_year_sales",             :decimal, :precision => 8, :scale => 2
     t.column "previous_year_tans",              :integer
     t.column "goal_for_month",                  :decimal, :precision => 8, :scale => 2
-    t.column "actual_vs_goal_diff_for_month",   :decimal, :precision => 8, :scale => 2
     t.column "action_plan_for_next_month",      :text
     t.column "meetings_training_agenda",        :text
     t.column "cash_error",                      :decimal, :precision => 8, :scale => 2
@@ -140,20 +153,19 @@ ActiveRecord::Schema.define(:version => 15) do
   end
 
   create_table "sales_reports", :force => true do |t|
-    t.column "store_daily_sales",           :decimal, :precision => 8, :scale => 2
-    t.column "opening_checklist",           :boolean
-    t.column "closing_checklist",           :boolean
-    t.column "daily_cleaning",              :boolean
-    t.column "goal_for_day",                :decimal, :precision => 8, :scale => 2
-    t.column "total_revenue",               :decimal, :precision => 8, :scale => 2
-    t.column "actual_vs_goal_diff_for_day", :decimal, :precision => 8, :scale => 2
-    t.column "employee_names",              :string,                                :default => "--- \n- \"\"\n"
-    t.column "employee_sales",              :string,                                :default => "--- \n- \"\"\n"
-    t.column "employee_ppa",                :string,                                :default => "--- \n- \"\"\n"
-    t.column "employee_tans",               :string,                                :default => "--- \n- \"\"\n"
-    t.column "store_ppa",                   :integer
-    t.column "total_tans",                  :integer
-    t.column "cash_error",                  :decimal, :precision => 8, :scale => 2
+    t.column "store_daily_sales", :decimal, :precision => 8, :scale => 2
+    t.column "opening_checklist", :boolean
+    t.column "closing_checklist", :boolean
+    t.column "daily_cleaning",    :boolean
+    t.column "goal_for_day",      :decimal, :precision => 8, :scale => 2
+    t.column "total_revenue",     :decimal, :precision => 8, :scale => 2
+    t.column "employee_names",    :string,                                :default => "--- \n- \"\"\n"
+    t.column "employee_sales",    :string,                                :default => "--- \n- \"\"\n"
+    t.column "employee_ppa",      :string,                                :default => "--- \n- \"\"\n"
+    t.column "employee_tans",     :string,                                :default => "--- \n- \"\"\n"
+    t.column "store_ppa",         :decimal, :precision => 8, :scale => 2
+    t.column "total_tans",        :integer
+    t.column "cash_error",        :decimal, :precision => 8, :scale => 2
   end
 
   create_table "stores", :force => true do |t|

@@ -12,7 +12,6 @@ class InventoryTables < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :inventory_line_items
     drop_table :inventory_reports
     execute 'DELETE FROM form_types WHERE name="InventoryReport"'
     execute 'DELETE FROM form_instances WHERE data_type="InventoryReport"'

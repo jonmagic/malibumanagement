@@ -42,9 +42,9 @@ module ApplicationHelper
     image_tag(icon_file, :width=>"50px", :title=>File.basename(filename))
   end
 
-  def dollar_amount(amount)
+  def color_amount(amount)
     amount = 0 if amount.nil?
-    amount.to_f > 0 ? "<span class='currency_positive'>#{amount}</span>" : "<span class='currency_negative'>#{amount}</span>"
+    amount.to_f > 0 ? "<span class='number_positive'>#{amount}</span>" : "<span class='number_negative'>#{amount}</span>"
   end
 end
 
@@ -69,6 +69,14 @@ class String < Object
 
   def fromCamelCase
     self.to_s.gsub(/(.)([A-Z])/, '\1_\2').downcase
+  end
+
+  def l33t
+    self.gsub(/[Ii]/, '1').gsub(/[Aa]/, '4').gsub(/[Ee]/, '3').gsub(/[Oo]/, '0')
+  end
+
+  def columnize
+    self.split(/ +/).each {|w| w.gsub!(/[\.-]/, ''); w.capitalize!}.join('').underscore
   end
 end
 

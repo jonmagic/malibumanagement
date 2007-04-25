@@ -1,0 +1,10 @@
+<% view = view.nil? ? true : view -%>
+<% f = nil if view -%>
+<table>
+<% @data.items.each do |item| -%>
+	<tr>
+	<td class="leftcolumn"><label for="<%= item.name %>"><%= item.label %></label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(item.name, :value => item.actual, :size => 8) : item.actual %></td>
+	</tr>
+<% end -%>
+</table>

@@ -7,7 +7,7 @@
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="actual_debit">Actual Debit</label></td>
-	<td class="rightcolumn">$<%= !view ? f.text_field(:actual_debit, :value => @data.actual_debit, :size => 6) : dollar_amount(@data.actual_debit) %></td>
+	<td class="rightcolumn">$<%= !view ? f.text_field(:actual_debit, :value => @data.actual_debit, :size => 6) : color_amount(@data.actual_debit) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="number_of_tans">Number of Tans</label></td>
@@ -15,15 +15,15 @@
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="total_sales">Total Sales</label></td>
-	<td class="rightcolumn"><%= !view ? f.text_field(:total_sales, :value => @data.total_sales, :size => 6) : dollar_amount(@data.total_sales) %></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:total_sales, :value => @data.total_sales, :size => 6) : color_amount(@data.total_sales) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="total_revenue">Total Revenue</label></td>
-	<td class="rightcolumn">$<%= !view ? f.text_field(:total_revenue, :value => @data.total_revenue, :size => 6) : dollar_amount(@data.total_revenue) %></td>
+	<td class="rightcolumn">$<%= !view ? f.text_field(:total_revenue, :value => @data.total_revenue, :size => 6) : color_amount(@data.total_revenue) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="previous_year_sales">Previous Year Sales</label></td>
-	<td class="rightcolumn"><%= !view ? f.text_field(:previous_year_sales, :value => @data.previous_year_sales, :size => 6) : dollar_amount(@data.previous_year_sales) %></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:previous_year_sales, :value => @data.previous_year_sales, :size => 6) : color_amount(@data.previous_year_sales) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="previous_year_tans">Previous Year Tans</label></td>
@@ -31,12 +31,12 @@
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="goal_for_month">Goal For Month</label></td>
-	<td class="rightcolumn"><%= !view ? f.text_field(:goal_for_month, :value => @data.goal_for_month, :size => 6) : dollar_amount(@data.goal_for_month) %></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:goal_for_month, :value => @data.goal_for_month, :size => 6) : color_amount(@data.goal_for_month) %></td>
 	</tr>
 <%= view ? "
 	<tr>
 	<td class='leftcolumn'><label for='actual_vs_goal_diff_for_month'>Difference from Month Goal</label></td>
-	<td class='rightcolumn'>#{dollar_amount(@data.actual_vs_goal_diff_for_month)}</td>
+	<td class='rightcolumn'>#{color_amount(@data.actual_vs_goal_diff_for_month)}</td>
 	</tr>" : '' -%>
 	<tr>
 	<td class="leftcolumn"><label for="action_plan_for_next_month">Action Plan for Next Month</label></td>
@@ -48,7 +48,7 @@
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="cash_error">Cash Error</label></td>
-	<td class="rightcolumn"><%= !view ? f.text_field(:cash_error, :value => @data.cash_error, :size => 6) : dollar_amount(@data.cash_error) %></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:cash_error, :value => @data.cash_error, :size => 6) : color_amount(@data.cash_error) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="payroll_percent_for_month">Payroll Percent for Month</label></td>

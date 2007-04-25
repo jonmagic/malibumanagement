@@ -19,19 +19,19 @@ end %>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="store_daily_sales">Store Daily Sales</label></td>
-	<td class="rightcolumn">$<%= dollar_amount(@data.store_daily_sales) %></td>
+	<td class="rightcolumn">$<%= color_amount(@data.store_daily_sales) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="total_revenue">Total Revenue</label></td>
-	<td class="rightcolumn">$<%= dollar_amount(@data.total_revenue) %></td>
+	<td class="rightcolumn">$<%= color_amount(@data.total_revenue) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="goal_for_day">Goal for Day</label></td>
-	<td class="rightcolumn">$<%= dollar_amount(@data.goal_for_day) %></td>
+	<td class="rightcolumn">$<%= color_amount(@data.goal_for_day) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="actual_vs_goal_diff_for_day">Actual Difference from Goal</label></td>
-	<td class="rightcolumn">$<%= dollar_amount(@data.actual_vs_goal_diff_for_day) %></td>
+	<td class="rightcolumn">$<%= color_amount(@data.actual_vs_goal_diff_for_day) %></td>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label>Per Employee:</label></td>
@@ -58,7 +58,7 @@ end %>
 	</tr>
 	<tr>
 	<td class="leftcolumn"><label for="cash_error">Over/Short Cash for the Day</label></td>
-	<td class="rightcolumn">$<%= dollar_amount(@data.cash_error) %></td>
+	<td class="rightcolumn">$<%= color_amount(@data.cash_error) %></td>
 	</tr>
 </table>
 <% @data.employee_names.each do |oi| -%>

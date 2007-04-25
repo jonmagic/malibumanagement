@@ -1,3 +1,50 @@
 class InventoryReport < ActiveRecord::Base
-  has_many :inventory_line_items
+  require_library_or_gem 'odbc'
+  has_many :inventory_line_items, :dependent => :destroy
+  has_one :instance, :as => :data, :class_name => 'FormInstance' # Looks for data_id in form_instances, calls it self.instance
+  has_many :logs, :as => 'object'
+  attr_accessor :save_status
+
+  def items(reload=false)
+    if reload || self.inventory_line_items.length < 1
+      # self.inventory_line_items.each {|li| li.destroy}
+      theitems = self.inventory_from_odbc
+      theitems.each do |line_item|
+        self.inventory_line_items.build(:name => line_item['Descriptions'].columnize, :label => line_item['Descriptions'], :should_be => line_item['qty_onhand']) unless self.inventory_line_item(line_item['Descriptions'])
+      end
+      self.save
+    end
+    self.inventory_line_items(true)
+  end
+
+  def update_attributes(attributes)
+    attributes.each do |key, value|
+logger.error "Setting #{key} to #{value}:"
+      self.set_inventory_line_item(key, value) if self.is_inventory_item_name?(key)
+    end
+  end
+
+  def is_inventory_item_name?(name)
+    ['signer_id', 'signer_hash', 'signer_date'].include?(name) ? false : true
+  end
+  def inventory_line_item(liname)
+    self.inventory_line_items.find_by_name(liname.columnize)
+  end
+  def set_inventory_line_item(liname,value)
+    li = self.inventory_line_items.find_by_name(liname.columnize)
+    logger.error "Trying to set #{liname} to #{value}.."
+    return false if li.nil?
+    li.actual = value
+    logger.error "Set #{liname} to #{value}..!"
+    li.save
+  end
+
+  protected
+    def inventory_from_odbc
+      connection = ODBC::connect("HeliosInventory-#{self.instance.store.alias}", self.instance.store.alias, self.instance.store.alias.l33t.reverse)
+      query = connection.prepare('SELECT Descriptions,qty_onhand FROM inventory')
+      results = []
+      query.execute.each_hash {|h| results.push(h) }
+      results
+    end
 end

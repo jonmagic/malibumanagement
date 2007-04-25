@@ -213,10 +213,10 @@ label {
 	content: url(/images/icons/services_orange_sm.gif)
 }
 
-.currency_positive {
+.number_positive {
 	color:darkgreen;
 }
-.currency_negative {
+.number_negative {
 	color:darkred;
 }
 .draft_listing {
