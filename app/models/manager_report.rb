@@ -1,9 +1,5 @@
 class ManagerReport < ActiveRecord::Base
   has_one :instance, :as => :data, :class_name => 'FormInstance' # Looks for data_id in form_instances, calls it self.instance
-#These are actually not necessary!!
-  has_many :stores, :finder_sql => 'SELECT stores.* FROM stores,form_instances fi WHERE fi.data_id=#{id} AND fi.data_type="ManagerReport" AND stores.id=fi.store_id'
-  has_many :form_types, :finder_sql => 'SELECT form_types.* FROM form_types,form_instances fi WHERE fi.data_id=#{id} AND fi.data_type="ManagerReport" AND form_types.id=fi.form_type_id'
-  has_many :notes, :finder_sql => 'SELECT notes.* FROM notes,form_instances fi WHERE fi.data_id=#{id} AND fi.data_type="ManagerReport" AND AND notes.form_instance_id=fi.id'
   has_many :logs, :as => 'object'
   attr_accessor :save_status
 
