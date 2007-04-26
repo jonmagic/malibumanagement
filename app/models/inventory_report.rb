@@ -9,6 +9,7 @@ class InventoryReport < ActiveRecord::Base
     if reload || self.inventory_line_items.length < 1
       # self.inventory_line_items.each {|li| li.destroy}
       theitems = self.inventory_from_odbc
+      return [] unless theitems
       theitems.each do |line_item|
         self.inventory_line_items.build(:name => line_item['Descriptions'].columnize, :label => line_item['Descriptions'], :should_be => line_item['qty_onhand']) unless self.inventory_line_item(line_item['Descriptions'])
       end
@@ -41,12 +42,23 @@ logger.error "Setting #{key} to #{value}:"
 
   protected
     def inventory_from_odbc
-      connection = ODBC::connect("HeliosInventory-#{self.instance.store.alias}", self.instance.store.alias, self.instance.store.alias.l33t.reverse)
-      query = connection.prepare('SELECT Descriptions,qty_onhand FROM inventory')
       results = []
-      query.execute.each_hash {|h| results.push(h) }
-      query.drop
-      connection.disconnect
+      ODBC::connect("HeliosInventory-#{self.instance.store.alias}", self.instance.store.alias, self.instance.store.alias.l33t.reverse) do |connection|
+        query = connection.prepare('SELECT Descriptions,qty_onhand FROM inventory')
+        query.execute.each_hash {|h| results.push(h) }
+        query.drop
+        connection.disconnect
+      end or do begin
+        return false
+      end
       results
+      rescue ODBC::Error => e
+        logger.error "! Error Connecting to ODBC Database (HeliosInventory-#{self.instance.store.alias})!"
+        logger.error "! Error code: #{e.err}"
+        logger.error "! Error message: #{e.errstr}"
+        return false
+      ensure
+        # disconnect from server
+        connection.disconnect if connection
     end
 end
