@@ -54,11 +54,11 @@ logger.error "Setting #{key} to #{value}:"
     def inventory_from_odbc
       results = []
       # ODBC::connect("HeliosInventory-#{self.instance.store.alias}", self.instance.store.alias, self.instance.store.alias.l33t.reverse) do |connection|
-      ODBC::connect("HeliosInventory-#{self.instance.store.alias}", '', '') do |connection|
-        query = connection.prepare('SELECT Descriptions,qty_onhand FROM inventory')
+      ODBC::connect("HeliosInventory-#{self.instance.store.alias}", '', '') do |conn|
+        query = conn.prepare('SELECT Descriptions,qty_onhand FROM inventory')
         query.execute.each_hash {|h| results.push(h) }
         query.drop
-        connection.disconnect
+        conn.disconnect
       end or begin
         return false
       end
