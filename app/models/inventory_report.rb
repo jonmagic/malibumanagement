@@ -6,7 +6,8 @@ class InventoryReport < ActiveRecord::Base
   attr_accessor :save_status
 
   def items(reload=false)
-    return @the_inventory_items unless @the_inventory_items
+    @the_inventory_items ||= nil
+    return @the_inventory_items if @the_inventory_items.kind_of?(Array)
     @the_inventory_items = []
     if reload || self.inventory_line_items.length < 1
       # self.inventory_line_items.each {|li| li.destroy}
