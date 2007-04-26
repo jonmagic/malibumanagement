@@ -11,7 +11,7 @@ module ActionView
         InstanceTag.new(object_name, method, self, nil, options.delete(:object)).to_input_field_tag(options.merge({:onkeypress => 'return numbersonly(event)'}))
       end
     end
-    class FormTagHelper
+    module FormTagHelper
       def number_field_tag(name, value = nil, options = {})
         tag :input, { "type" => "text", "name" => name, "id" => name, "value" => value, "onkeypress" => 'return numbersonly(event)' }.update(options.stringify_keys)
       end
