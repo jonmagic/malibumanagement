@@ -646,7 +646,7 @@ Object.extend(Hash, {
         else {
         	key = encodeURIComponent(pair.key);
           values.each(function(value) {
-            value = value != undefined ? encodeURIComponent(value) : '';
+            value = value != undefined ? value : '';
             parts.push(key + '=' + encodeURIComponent(value));
           });
           return;
@@ -1891,6 +1891,7 @@ var Form = {
       return result;
     });
 
+		document.getElementById('serialized_form_stuff').value = (getHash ? data : Hash.toQueryString(data));
     return getHash ? data : Hash.toQueryString(data);
   }
 };
