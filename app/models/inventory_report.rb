@@ -54,19 +54,15 @@ logger.error "Setting #{key} to #{value}:"
     def inventory_from_odbc
       results = []
       # ODBC::connect("HeliosInventory-#{self.instance.store.alias}", self.instance.store.alias, self.instance.store.alias.l33t.reverse) do |connection|
-      ODBC::connect("HeliosInventory-#{self.instance.store.alias}", '', '') do |conn|
-        query = conn.prepare('SELECT Descriptions,qty_onhand FROM inventory')
-        query.execute.each_hash {|h| results.push(h) }
-        query.drop
-        conn.disconnect
-      end or begin
-        return false
-      end
-      results
-      rescue ODBC::Error => e
-        logger.error "! Error Connecting to ODBC Database (HeliosInventory-#{self.instance.store.alias})!"
-        logger.error "! Error message: #{e.clean_message}"
-        self.odbc_error = e.clean_message
-        return false
+      conn = ODBC::connect("HeliosInventory-#{self.instance.store.alias}", '', '')
+      query = conn.prepare('SELECT Descriptions,qty_onhand FROM inventory')
+      query.execute.each_hash {|h| results.push(h) }
+      conn.disconnect
+      return results
+    rescue ODBC::Error => e
+      logger.error "! Error Connecting to ODBC Database (HeliosInventory-#{self.instance.store.alias})!"
+      logger.error "! Error message: #{e.clean_message}"
+      self.odbc_error = e.clean_message
+      return false
     end
 end
