@@ -6,16 +6,18 @@ class InventoryReport < ActiveRecord::Base
   attr_accessor :save_status
 
   def items(reload=false)
+    return @the_inventory_items unless @the_inventory_items
+    @the_inventory_items = []
     if reload || self.inventory_line_items.length < 1
       # self.inventory_line_items.each {|li| li.destroy}
       theitems = self.inventory_from_odbc
-      return [] unless theitems
+      return @the_inventory_items unless theitems
       theitems.each do |line_item|
         self.inventory_line_items.build(:name => line_item['Descriptions'].columnize, :label => line_item['Descriptions'], :should_be => line_item['qty_onhand']) unless self.inventory_line_item(line_item['Descriptions'])
       end
       self.save
     end
-    self.inventory_line_items(true)
+    @the_inventory_items = self.inventory_line_items(true)
   end
 
   def update_attributes(attributes)
@@ -54,7 +56,6 @@ logger.error "Setting #{key} to #{value}:"
       results
       rescue ODBC::Error => e
         logger.error "! Error Connecting to ODBC Database (HeliosInventory-#{self.instance.store.alias})!"
-        logger.error "! Error code: #{e.methods}"
         logger.error "! Error message: #{e.clean_message}"
         @ODBC_error = e.clean_message
         return false
