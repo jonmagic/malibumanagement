@@ -43,6 +43,13 @@ logger.error "Setting #{key} to #{value}:"
     li.save
   end
 
+  def odbc_error=(value)
+    @odbc_error = value
+  end
+  def odbc_error
+    @odbc_error
+  end
+
   protected
     def inventory_from_odbc
       results = []
@@ -58,7 +65,7 @@ logger.error "Setting #{key} to #{value}:"
       rescue ODBC::Error => e
         logger.error "! Error Connecting to ODBC Database (HeliosInventory-#{self.instance.store.alias})!"
         logger.error "! Error message: #{e.clean_message}"
-        @ODBC_error = e.clean_message
+        self.odbc_error = e.clean_message
         return false
     end
 end
