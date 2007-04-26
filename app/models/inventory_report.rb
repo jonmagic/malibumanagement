@@ -57,8 +57,5 @@ logger.error "Setting #{key} to #{value}:"
         logger.error "! Error code: #{e.err}"
         logger.error "! Error message: #{e.errstr}"
         return false
-      ensure
-        # disconnect from server
-        connection.disconnect if connection
     end
 end
