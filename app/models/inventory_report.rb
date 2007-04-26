@@ -56,6 +56,7 @@ logger.error "Setting #{key} to #{value}:"
         logger.error "! Error Connecting to ODBC Database (HeliosInventory-#{self.instance.store.alias})!"
         logger.error "! Error code: #{e.methods}"
         logger.error "! Error message: #{e.clean_message}"
+        @ODBC_error = e.clean_message
         return false
     end
 end
