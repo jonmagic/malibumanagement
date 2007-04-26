@@ -2,33 +2,37 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 18) do
+ActiveRecord::Schema.define(:version => 19) do
+
+  create_table "account_setups", :force => true do |t|
+  end
 
   create_table "admins", :force => true do |t|
     t.column "username",               :string
     t.column "friendly_name",          :string,   :limit => 50
-    t.column "social_security_number", :integer,  :limit => 9
     t.column "crypted_password",       :string,   :limit => 40
     t.column "salt",                   :string,   :limit => 40
     t.column "created_at",             :datetime
     t.column "updated_at",             :datetime
     t.column "activated_at",           :datetime
+    t.column "social_security_number", :integer,  :limit => 9
   end
 
   create_table "direct_deposit_authorizations", :force => true do |t|
-    t.column "employee_name",         :string
-    t.column "employee_id_number",    :integer
-    t.column "depository_bank",       :string
-    t.column "bank_city",             :string
-    t.column "bank_branch",           :string
-    t.column "bank_routing_number",   :integer
-    t.column "bank_account_number",   :integer
-    t.column "account_type",          :string
-    t.column "amount",                :decimal, :precision => 8, :scale => 2
-    t.column "effective_date",        :date
-    t.column "date_received",         :date
-    t.column "date_pre_note_sent",    :date
-    t.column "date_of_first_payroll", :date
+    t.column "employee_name",             :string
+    t.column "employee_id_number",        :integer
+    t.column "depository_bank",           :string
+    t.column "bank_city",                 :string
+    t.column "bank_branch",               :string
+    t.column "bank_routing_number",       :integer
+    t.column "bank_account_number",       :integer
+    t.column "account_kind",              :string
+    t.column "amount",                    :decimal, :precision => 8, :scale => 2
+    t.column "effective_date",            :date
+    t.column "date_received",             :date
+    t.column "date_pre_note_sent",        :date
+    t.column "date_of_first_payroll",     :date
+    t.column "authorization_new_updated", :string
   end
 
   create_table "form_instances", :force => true do |t|
@@ -72,9 +76,9 @@ ActiveRecord::Schema.define(:version => 18) do
   create_table "inventory_line_items", :force => true do |t|
     t.column "inventory_report_id", :integer
     t.column "name",                :string
+    t.column "label",               :string
     t.column "should_be",           :integer
     t.column "actual",              :integer
-    t.column "label",               :string
   end
 
   create_table "inventory_reports", :force => true do |t|
@@ -148,7 +152,13 @@ ActiveRecord::Schema.define(:version => 18) do
     t.column "no_shortages",          :boolean
     t.column "follows_instructions",  :boolean
     t.column "open_close_unassisted", :boolean
+    t.column "manager_sign_id",       :integer
+    t.column "manager_sign_hash",     :string
+    t.column "manager_sign_date",     :datetime
     t.column "manager_comments",      :string
+    t.column "employee_sign_id",      :integer
+    t.column "employee_sign_hash",    :string
+    t.column "employee_sign_date",    :datetime
     t.column "employee_comments",     :string
   end
 
@@ -181,12 +191,21 @@ ActiveRecord::Schema.define(:version => 18) do
   end
 
   create_table "time_off_requests", :force => true do |t|
-    t.column "employee_name",         :string
-    t.column "date",                  :date
-    t.column "time_off_kind",         :string
-    t.column "dates_requested",       :string
-    t.column "time_left_before_days", :integer
-    t.column "time_left_after_days",  :integer
+    t.column "time_off_kind",           :string
+    t.column "dates_requested",         :string
+    t.column "employee_signature_id",   :integer
+    t.column "employee_signature_hash", :string
+    t.column "employee_signature_date", :datetime
+    t.column "admin_review_id",         :integer
+    t.column "admin_review_hash",       :string
+    t.column "admin_review_date",       :datetime
+    t.column "time_left_before_days",   :integer
+    t.column "time_left_after_days",    :integer
+    t.column "admin_approval_id",       :integer
+    t.column "admin_approval_hash",     :string
+    t.column "admin_approval_date",     :datetime
+    t.column "employee_name",           :string
+    t.column "date",                    :date
   end
 
   create_table "users", :force => true do |t|

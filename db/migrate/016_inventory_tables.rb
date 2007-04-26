@@ -6,9 +6,6 @@ class InventoryTables < ActiveRecord::Migration
       t.column :signer_date,  :datetime
     end
     execute 'INSERT INTO form_types(friendly_name, name, can_have_notes, can_have_multiple_drafts, draftable, reeditable) VALUES("Inventory Report", "InventoryReport", 1, 0, 1, 0)'
-    create_table :inventory_line_items do |t|
-      
-    end
   end
 
   def self.down
