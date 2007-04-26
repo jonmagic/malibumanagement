@@ -48,7 +48,7 @@ logger.error "Setting #{key} to #{value}:"
         query.execute.each_hash {|h| results.push(h) }
         query.drop
         connection.disconnect
-      end or do begin
+      end or begin
         return false
       end
       results
