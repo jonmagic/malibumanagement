@@ -1,6 +1,7 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
   include DatePickerHelper
+  include NumberFieldHelper
 
   def raw_date_picker_field(object, method)
     obj = instance_eval("@#{object}") || object
@@ -40,11 +41,6 @@ module ApplicationHelper
   def icon_for(filename)
     icon_file = File.exists?("#{RAILS_ROOT}/public/images/icons/icon#{File.extname(filename)}.png") ? "/images/icons/icon#{File.extname(filename)}.png" : '/images/icons/icon.any.png'
     image_tag(icon_file, :width=>"50px", :title=>File.basename(filename))
-  end
-
-  def color_amount(amount)
-    amount = 0 if amount.nil?
-    amount.to_f > 0 ? "<span class='number_positive'>#{amount}</span>" : (amount.to_f == 0 ? "<span class='number_zero'>#{amount}</span>" : "<span class='number_negative'>#{amount}</span>")
   end
 end
 
