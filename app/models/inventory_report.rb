@@ -54,8 +54,8 @@ logger.error "Setting #{key} to #{value}:"
       results
       rescue ODBC::Error => e
         logger.error "! Error Connecting to ODBC Database (HeliosInventory-#{self.instance.store.alias})!"
-        logger.error "! Error code: #{e.err}"
-        logger.error "! Error message: #{e.errstr}"
+        logger.error "! Error code: #{e.methods}"
+        # logger.error "! Error message: #{e.errstr}"
         return false
     end
 end
