@@ -202,6 +202,19 @@ label {
 	text-align:right;
 }
 
+table.spacetable td {
+	margin-left:10px;
+}
+
+.centercolumn {
+	text-align:center;
+	width:8em;
+}
+
+.lightgrey {
+	background-color:#eee;
+}
+
 .form td {
 	border-bottom:1px solid #eee;
 }
@@ -217,7 +230,10 @@ label {
 	color:darkgreen;
 }
 .number_negative {
-	color:darkred;
+	color:#f44;
+}
+.number_zero {
+	color:#999;
 }
 .draft_listing {
 	background-color:#fdd;

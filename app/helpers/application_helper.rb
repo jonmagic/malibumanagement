@@ -44,7 +44,7 @@ module ApplicationHelper
 
   def color_amount(amount)
     amount = 0 if amount.nil?
-    amount.to_f > 0 ? "<span class='number_positive'>#{amount}</span>" : "<span class='number_negative'>#{amount}</span>"
+    amount.to_f > 0 ? "<span class='number_positive'>#{amount}</span>" : (amount.to_f == 0 ? "<span class='number_zero'>#{amount}</span>" : "<span class='number_negative'>#{amount}</span>")
   end
 end
 
