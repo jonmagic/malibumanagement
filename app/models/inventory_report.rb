@@ -53,7 +53,8 @@ logger.error "Setting #{key} to #{value}:"
   protected
     def inventory_from_odbc
       results = []
-      ODBC::connect("HeliosInventory-#{self.instance.store.alias}", self.instance.store.alias, self.instance.store.alias.l33t.reverse) do |connection|
+      # ODBC::connect("HeliosInventory-#{self.instance.store.alias}", self.instance.store.alias, self.instance.store.alias.l33t.reverse) do |connection|
+      ODBC::connect("HeliosInventory-#{self.instance.store.alias}", '', '') do |connection|
         query = connection.prepare('SELECT Descriptions,qty_onhand FROM inventory')
         query.execute.each_hash {|h| results.push(h) }
         query.drop
