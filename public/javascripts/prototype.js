@@ -1891,7 +1891,6 @@ var Form = {
       return result;
     });
 
-		document.getElementById('serialized_form_stuff').value = (getHash ? data : Hash.toQueryString(data));
     return getHash ? data : Hash.toQueryString(data);
   }
 };
