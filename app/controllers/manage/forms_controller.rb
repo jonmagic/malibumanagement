@@ -84,10 +84,12 @@ logger.error "Status: #{@form.status} // #{params[:form_status]}=#{params[:form_
     store  = nil
     user    = nil
     date    = nil
+    formtype = nil
 
     store  = "%" + params[:store_field]  + "%" if !params[:store_field].nil? and params[:store_field].length > 0
     user    = "%" + params[:user_field]    + "%" if !params[:user_field].nil? and params[:user_field].length > 0
     date = (!params[:Time][:tomorrow].nil? and params[:Time][:tomorrow].length > 0) ? params[:Time][:tomorrow] : Time.tomorrow
+    formtype = params[:formtype_field] if !params[:formtype_field].nil? and params[:formtype_field].length > 0
 #Learn how to handle Dates in rails' forms
     # date    = params[:date_field].nil? ? Date.new. : params[:date_field]
 
@@ -99,6 +101,7 @@ logger.error "Status: #{@form.status} // #{params[:form_status]}=#{params[:form_
 
     matches = ['form_instances.status_number=4 AND form_instances.created_at < :date'] #Put the date field in first by default - there will always be a date to search for.
     matches.push('form_instances.store_id=stores.id') unless store.nil?
+    matches.push('form_instances.data_type=:formtype') unless formtype.nil?
     matches.push('form_instances.user_id=users.id') unless user.nil?
     matches.push('stores.friendly_name LIKE :store') unless store.nil?
     matches.push('users.friendly_name LIKE :user') unless user.nil?
@@ -107,10 +110,10 @@ logger.error "Status: #{@form.status} // #{params[:form_status]}=#{params[:form_
     @values = {:date => date}
     @form_values.merge!({:store_field => params[:store_field]}) unless store.nil?
     @values.merge!({:store => store}) unless store.nil?
+    @form_values.merge!({:formtype_field => params[:formtype_field]}) unless formtype.nil?
+    @values.merge!({:formtype => formtype}) unless formtype.nil?
     @form_values.merge!({:user_field => params[:user_field]}) unless user.nil?
     @values.merge!({:user => user}) unless user.nil?
-
-# SELECT form_instances.* FROM form_instances,stores,users WHERE form_instances.store_id=stores.id AND form_instances.user_id=users.id AND stores.friendly_name LIKE :store AND users.friendly_name LIKE :user
 
     @result_pages, @results = paginate_by_sql(FormInstance, ["SELECT form_instances.* FROM " + tables.join(',') + " WHERE " + matches.join(' AND ') + " ORDER BY form_instances.created_at DESC", @values], 30, options={})
     @search_entity = @results.length == 1 ? "Archived Form" : "Archived Forms"

@@ -3,6 +3,7 @@
 <p><b>Live Search:</b></p>
 <div>
 Find Forms... Before <span style="border-top:2px solid #848484; border-left:2px solid #848484; border-bottom:2px solid #FAFAFA; border-right:2px solid #FAFAFA; padding:2px 3px 2px 0"><%= date_picker_field(Time, :tomorrow) %></span>
+of Type: <select name="formtype_field"><option value="">&lt; any &gt;</option><%= options_from_collection_for_select current_store.form_types.concat(current_user.form_types).collect {|ft| [ft.name, ft.friendly_name]}, 'first', 'last' %></select>&nbsp;&nbsp;&nbsp;&nbsp;
 created by User: <%= text_field_tag 'user_field', '', :size => 13 %>&nbsp;&nbsp;&nbsp;&nbsp;
 </div>
 <%= end_form_tag %>
