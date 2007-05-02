@@ -113,11 +113,12 @@ logger.error "Current Model: #{current_form_model}"
       @form = FormInstance.find_by_id(params[:form_id])
       return redirect_to(store_dashboard_url) unless @form
 
-      if !params[:form_instance].nil? && !params[:form_instance][:assigned_to].blank? && @form.user_id != params[:form_instance][:assigned_to]
-        assigned_to_changed = true
+      if !params[:form_instance].nil? && !params[:form_instance][:assigned_to].blank?
+        assigned_to_changed = true unless @form.user_id != params[:form_instance][:assigned_to]
         @form.user = User.find_by_id(params[:form_instance][:assigned_to])
         params[:form_instance].delete(:status)
-      elsif !params[:form_instance].nil? &&
+      end
+      if !params[:form_instance].nil? &&
           !params[:form_instance][:status].blank? &&
           !(params[:form_instance][:status].as_status.number == @form.status.as_status.number)
         @form.status = params[:form_instance].delete(:status)
