@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(:version => 20) do
     t.column "bank_branch",           :string
     t.column "bank_routing_number",   :integer
     t.column "bank_account_number",   :integer
-    t.column "account_kind",          :string
+    t.column "account_type",          :string
     t.column "amount",                :decimal, :precision => 8, :scale => 2
     t.column "effective_date",        :date
     t.column "date_received",         :date

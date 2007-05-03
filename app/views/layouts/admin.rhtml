@@ -7,7 +7,8 @@
 		<meta name="author" content="Malibu Management" />
 		<title>Malibu Management: <%= current_domain %></title>
 		<%= stylesheet_link_tag 'common' %>
-		<%= stylesheet_link_tag 'tabs' %>		
+		<%= stylesheet_link_tag 'tabs' %>
+		<%= stylesheet_link_tag 'print', :media => "print" %>				
 		<%= javascript_include_tag 'application' %>
 		<%= javascript_include_tag 'prototype' %>
 		<%= javascript_include_tag 'effects' %>
@@ -15,34 +16,8 @@
 		<%= javascript_include_tag 'controls' %>
 		<%= javascript_include_tag 'dragdrop' %>
 		<%= javascript_include_tag 'rounded' %>
-		<%= javascript_include_tag 'dojo' %>
 		<%= stylesheet_link_tag 'date-picker' %>
 		<%= javascript_include_tag 'date-picker' %>
-		<script type="text/javascript">
-			dojo.require("dojo.widget.Editor2");
-		/*	dojo.require("dojo.widget.Editor2Plugin.DialogCommands");*/
-			dojo.require("dojo.widget.Editor2Plugin.AlwaysShowToolbar");
-		</script>
-		<script type="text/javascript">
-			var AddEditor = {
-				init: function() {
-					var helptext = document.getElementsByTagName('p');
-					for (var i = 0, ht; ht = helptext[i]; i++) {
-							if (ht.innerHTML.match(/Rich Text./)) {
-								ta = ht.previousSibling.previousSibling
-								ta.setAttribute("dojoType", "Editor2");
-							}
-					}
-				},
-			}
-		</script>
-		<style type="text/css" media="screen">
-			div.RichTextEditable { border:1px solid #ccc; width:75%;}
-			.EditorToolbarDomNode {padding-left:5px;}
-			.RichTextEditable td {padding:0; vertical-align:middle;}
-			.RichTextEditable table {border:none;}
-			.RichTextEditable iframe {padding:.5em 1em;}
-		</style>
 	</head>
 	<body>
 		<div id="header">

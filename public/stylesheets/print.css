@@ -1,0 +1,17 @@
+body {
+	background: white;
+	font-size: 12pt;
+	font-family: arial;
+	}
+	
+#tabmenu, #header {
+	display: none;
+	}
+	
+#content {
+	width: auto;
+	border: 0;
+	margin: 0 5%;
+	padding: 0;
+	float: none !important;
+	}
