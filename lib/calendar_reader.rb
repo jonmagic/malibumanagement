@@ -168,7 +168,7 @@ module CalendarReader
     attr_accessor :url, :ical, :xml, :product_id, :version, :scale, :method, :time_zone_name, :time_zone_offset, :events
 
     def initialize(cal_url=nil)
-      if cal_url
+      if !cal_url.blank?
         self.url = cal_url
         self.parse!
       else
@@ -201,7 +201,9 @@ module CalendarReader
     end
 
     def parse_from_ical!
-      self.ical = ICal.new(self.calendar_raw_data)
+      rawdata = self.calendar_raw_data
+      return nil unless rawdata
+      self.ical = ICal.new(rawdata)
       self.version  = self.ical.hash['VCALENDAR']['VERSION']
       self.scale    = self.ical.hash['VCALENDAR']['CALSCALE']
       self.method   = self.ical.hash['VCALENDAR']['METHOD']
@@ -284,7 +286,8 @@ module CalendarReader
         when Net::HTTPSuccess, Net::HTTPRedirection
           return data
         else
-          response.error!
+          # response.error!
+          return nil
         end
       end
     end
