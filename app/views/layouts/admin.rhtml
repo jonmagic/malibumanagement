@@ -55,11 +55,12 @@
 				<li><%= tab_link_to 'Stores', stores_path %></li>
 				<li><%= tab_link_to 'Admins', admins_path %></li>
 				<% end -%>
+				<li><%= tab_link_to 'Work Schedules', admin_schedule_path('hillsdale') %></li>
 		<% else -%>
 				<li><%= tab_link_to "Login", admin_login_path %></li>
 		<% end -%>
 			</ul>
-			<div style="background:#C13B00;"><br /></div><br />
+			<div id="colorbar" style="background:#C13B00;"><br /></div><br />
 			<div id="content">
 				<%= yield %>
 				<br />

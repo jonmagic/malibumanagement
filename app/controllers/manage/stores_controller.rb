@@ -91,6 +91,13 @@ class Manage::StoresController < ApplicationController
     restrict('allow only admins')
   end
 
+  def work_schedule
+    restrict('allow only admins') or begin
+      @store = Store.find_by_alias(params[:domain])
+      redirect_to dashboard_path if @store.nil?
+    end
+  end
+
   # DELETE /stores/1
   # DELETE /stores/1.xml
   def destroy

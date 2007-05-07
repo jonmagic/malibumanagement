@@ -1,17 +1,37 @@
 body {
 	background: white;
-	font-size: 12pt;
+	font-size: 10pt;
 	font-family: arial;
-	}
+	margin: 0;
+	padding: 0;
+}
 	
-#tabmenu, #header {
+#tabmenu, #header, #colorbar {
 	display: none;
-	}
+}
 	
 #content {
 	width: auto;
 	border: 0;
-	margin: 0 5%;
+	margin: 0;
 	padding: 0;
 	float: none !important;
-	}
+}
+
+table.calendar_table {
+	border-collapse: collapse;
+	margin-bottom: 2em;
+	font-size: 10pt;
+}
+
+.calendar_table caption {
+	font-size: 15pt;
+	margin: 1em 0;
+}
+
+.calendar_table td {
+	vertical-align: top;
+	border-right: 1px solid black;
+	border-left: 1px solid black;
+	padding: 0 5px;
+}

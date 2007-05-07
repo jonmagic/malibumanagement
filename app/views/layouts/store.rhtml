@@ -50,6 +50,7 @@
 				<li><%= tab_link_to 3.as_status.word('uppercase short plural') + (!current_user.forms_with_status(3).blank? ? " (#{current_user.forms_with_status(3).count})" : ''), store_forms_by_status_path(:form_status => 3.as_status.text), :class => "#{3.as_status.text}_count" %></li> -->
 				<li><%= tab_link_to 'Archive', store_forms_by_status_path(:form_status => 4.as_status.text) %></li>
 				<% end -%>
+				<li><%= tab_link_to 'Work Schedule', store_schedule_path %></li>
 				<% else -%>
 				<li><%= tab_link_to "Login", store_login_path %></li>
 				<% end -%>
