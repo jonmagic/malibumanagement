@@ -2,6 +2,145 @@ require 'net/http'
 require 'uri'
 require 'time'
 
+class TimeRange < Time
+  attr_accessor :length
+  def initialize(seconds)
+    self.length = seconds
+  end
+  
+  def from(time)
+    self.set_start(time)
+  end
+  def from_now
+    self.from(Time.now)
+  end
+  def set_start(time)
+    AnchoredTimeRange.new(self.length, time)
+  end
+  def set_end(time)
+    AnchoredTimeRange.new(self.length, time+self.length)
+  end
+end
+class AnchoredTimeRange
+  attr_accessor :start_time, :end_time, :length, :tied_events
+  def initialize(length, start_time=Time.now)
+    self.start_time = start_time
+    self.length = length
+    self.end_time = start_time+length
+  end
+
+  def set_start(time)
+    self.start_time = time
+    self
+  end
+  def set_end(time)
+    self.end_time = time
+    self
+  end
+  def weeks(begin_with_week=true)
+    weeks = []
+    if !begin_with_week
+      thestart  = self.start_time.beginning_of_day
+      theend    = self.start_time.beginning_of_day + ((self.end_time.beginning_of_day - self.start_time.beginning_of_day) / 1.week).ceil.weeks
+    else
+      thestart  = self.start_time.beginning_of_week
+      theend    = self.end_time.beginning_of_week
+      theend += 1.week if theend < self.end_time
+    end
+    ((theend - thestart)/1.week).ceil.times do |which_week|
+      weeks.push(AnchoredWeek.new(thestart + which_week * 1.week).with_events(self.tied_events))
+    end
+    weeks
+  end
+
+# include CalendarReader
+# @cal = Calendar.new('https://www.google.com/calendar/ical/yanno.org_lf810kkm8475qm1p5c1ncmilec%40group.calendar.google.com/private-28518e4e7f49d0470d59ba10047ce78b/basic.ics')
+# 2.calendar_weeks.from_now.with_events(@cal)
+# 2.calendar_weeks.from_now.with_events(@cal).weeks.collect {|w| w.start_time}
+  def days
+    days = []
+    thestart  = self.start_time.beginning_of_day
+    theend    = self.end_time.beginning_of_day
+    theend += 1.day if theend < self.end_time
+    ((theend - thestart)/1.day).ceil.times do |which_day|
+      days.push(AnchoredDay.new(thestart + which_day * 1.day).with_events(self.tied_events))
+    end
+    days
+  end
+  def with_events(calendar)
+    self.tied_events = calendar
+    self
+  end
+
+  def events
+    self.tied_events.events_in_range(self.start_time, self.end_time)
+  end
+
+  class AnchoredWeek < AnchoredTimeRange
+    @@length = 1.week-1
+
+    def initialize(start_time)
+      super(@@length, start_time)
+    end
+  end
+  class AnchoredDay < AnchoredTimeRange
+    @@length = 1.day-1
+
+    def initialize(start_time)
+      super(@@length, start_time)
+    end
+
+    def name
+      self.start_time.strftime("%A")
+    end
+  end
+end
+
+class Fixnum < Integer
+  def calendar_weeks
+    TimeRange.new(self.weeks)
+  end
+  def calendar_week
+    self.calendar_weeks
+  end
+
+  def calendar_days
+    TimeRange.new(self.days)
+  end
+  def calendar_day
+    self.calendar_days
+  end
+end
+
+class Time
+  def self.gcalschema(tzid) #We may not be handling Time Zones in the best way...
+     if tzid =~ /(\d\d\d\d)(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)Z/ # yyyymmddThhmmss
+       Time.xmlschema("#{$1}-#{$2}-#{$3}T#{$4}:#{$5}:#{$6}")
+     else
+       return nil
+     end
+  end
+
+  def humanize_time
+    self.strftime("%M").to_i > 0 ? self.strftime("#{self.strftime("%I").to_i.to_s}:%M%p").downcase : self.strftime("#{self.strftime("%I").to_i.to_s}%p").downcase
+  end
+  def humanize_date(length_profile='medium') #There may be decent reason to change how this works entirely...
+    case length_profile
+    when 'abbr' || 'abbreviated'
+      self.strftime("%m/%d/%y")
+    when 'short'
+      self.strftime("%b #{self.strftime("%d").to_i.to_s}")
+    when 'medium'
+      self.strftime("%B #{self.strftime("%d").to_i.to_s}")
+    when 'long'
+      self.strftime("%B #{self.strftime("%d").to_i.to_s} %Y")
+    end
+  end
+  def humanize_date_time
+    self.humanize_date + ' ' + self.humanize_time
+  end
+end
+
 module CalendarReader
 
 # Daniel's public gcal: http://www.google.com/calendar/ical/dcparker%40gmail.com/public/basic.ics
@@ -17,9 +156,10 @@ module CalendarReader
       end
     end
 
-    def add_event(event)
+    def add_event(event, sortit=true)
       self.events ||= []
-      self.events.push(event)
+      self.events << event
+      @events.sort! {|a,b| a.start_time <=> b.start_time } if sortit
     end
 
     def self.parse(cal_url)
@@ -80,7 +220,8 @@ module CalendarReader
           :summary => e['SUMMARY'],
           :description => e['DESCRIPTION'],
           :recurrance_rule => e['RRULE']
-        ))
+        ), false) # (disable sorting until done)
+        @events.sort! {|a,b| a.start_time <=> b.start_time }
       end
     end
     def parse_from_ical
@@ -136,6 +277,23 @@ module CalendarReader
         end
       end
     end
+    
+    # class Week
+    #   attr_accessor :time_range
+    #   @@range = TimeRange.new(1.week).freeze
+    #   def initialize
+    #     self.time_range = @@range
+    #     self.extend(TimeRange)
+    #   end
+    # end
+    # class Day
+    #   attr_accessor :time_range
+    #   @@range = TimeRange.new(1.day).freeze
+    #   def initialize
+    #     self.time_range = @@range
+    #     self.extend(TimeRange)
+    #   end
+    # end
   end
 
   class ICal
@@ -188,14 +346,4 @@ puts 'Beginning to parse data...'
     end
   end
 
-end
-
-class Time
-  def self.gcalschema(tzid) #We may not be handling Time Zones in the best way...
-     if tzid =~ /(\d\d\d\d)(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)Z/ # yyyymmddThhmmss
-       Time.xmlschema("#{$1}-#{$2}-#{$3}T#{$4}:#{$5}:#{$6}")
-     else
-       return nil
-     end
-  end
 end

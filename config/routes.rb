@@ -46,6 +46,7 @@ ActionController::Routing::Routes.draw do |map|
 #* * * * * * * *
 
   map.store_dashboard '/stores/:domain', :controller => 'stores', :action => 'dashboard'
+  map.store_schedule '/stores/:domain/work_schedule', :controller => 'stores', :action => 'work_schedule'
   map.store_login '/stores/:domain/login', :controller => 'sessions', :action => 'create_user'
   map.store_profile '/stores/:domain/manage/profile/:action', :controller => 'stores', :action => 'profile'
 

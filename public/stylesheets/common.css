@@ -238,3 +238,15 @@ table.spacetable td {
 .draft_listing {
 	background-color:#fdd;
 }
+
+.calendar_table {
+	
+}
+
+th.calendar_day {
+	width: 30em;
+}
+
+.calendar_table td {
+	vertical-align: top;
+}

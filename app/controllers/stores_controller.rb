@@ -18,7 +18,10 @@ class StoresController < ApplicationController
   end
 
   def work_schedule
-    @cal = Calendar.new('http://www.google.com/calendar/ical/dcparker%40gmail.com/public/basic.ics') #To be updated with the workers' public calendar!
+    restrict('allow only store users') or begin
+      # Need to pull this value from store.gcal_url
+      @cal = Calendar.new('https://www.google.com/calendar/ical/yanno.org_lf810kkm8475qm1p5c1ncmilec%40group.calendar.google.com/private-28518e4e7f49d0470d59ba10047ce78b/basic.ics')
+    end
   end
 
 #This should be operational for store admins to view and edit their account
