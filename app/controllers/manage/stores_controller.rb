@@ -94,8 +94,9 @@ class Manage::StoresController < ApplicationController
   def work_schedule
     restrict('allow only admins') or begin
       @store = Store.find_by_alias(params[:domain])
-      redirect_to dashboard_path if @store.nil?
+      redirect_to admin_dashboard_path if @store.nil?
       @cal = Calendar.new(@store.gcal_url)
+      redirect_to admin_dashboard_path if @cal.nil?
       @start = params[:start] ? Time.utc(params[:start].split('-')[0], params[:start].split('-')[1], params[:start].split('-')[2]) : Time.now
     end
   end

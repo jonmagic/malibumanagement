@@ -171,6 +171,8 @@ module CalendarReader
       if cal_url
         self.url = cal_url
         self.parse!
+      else
+        return nil
       end
     end
 
