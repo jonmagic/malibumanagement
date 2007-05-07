@@ -18,7 +18,7 @@ module ActionView
 
         add_default_name_and_id(options)
 
-        out = tag('input', 'name' => options["name"], 'id' => options["id"], 'type' => 'hidden', 'value' => value)
+        out = tag('input', 'name' => options["name"], 'id' => options["id"], 'type' => 'hidden', 'value' => value, 'onchange' => options['onchange'])
         out << content_tag('a', display_value, :href => '#',
             :id => "_#{options['id']}_link", :class => '_date_picker_link',
             :onclick => "DatePicker.toggleDatePicker('#{options['id']}'); return false;")

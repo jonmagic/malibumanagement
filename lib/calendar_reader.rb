@@ -93,11 +93,14 @@ class AnchoredTimeRange
     def name
       self.start_time.strftime("%A")
     end
+    def number
+      self.start_time.strftime("%d").to_i
+    end
     def even?
-      self.start_time.strftime("%d").to_i.even?
+      self.number.even?
     end
     def odd?
-      self.start_time.strftime("%d").to_i.odd?
+      self.number.odd?
     end
     def day_of_week
       self.start_time.wday
@@ -130,6 +133,12 @@ class Time
      end
   end
 
+  def self.tomorrow
+    1.day.from_now
+  end
+  def strfsql
+    self.strftime("%Y-#{self.strftime("%m").to_i.to_s}-#{self.strftime("%d").to_i.to_s}")
+  end
   def humanize_time
     self.strftime("%M").to_i > 0 ? self.strftime("#{self.strftime("%I").to_i.to_s}:%M%p").downcase : self.strftime("#{self.strftime("%I").to_i.to_s}%p").downcase
   end
@@ -142,7 +151,7 @@ class Time
     when 'medium'
       self.strftime("%B #{self.strftime("%d").to_i.to_s}")
     when 'long'
-      self.strftime("%B #{self.strftime("%d").to_i.to_s} %Y")
+      self.strftime("%B #{self.strftime("%d").to_i.to_s}, %Y")
     end
   end
   def humanize_date_time

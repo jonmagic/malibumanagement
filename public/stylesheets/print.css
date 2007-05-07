@@ -6,7 +6,7 @@ body {
 	padding: 0;
 }
 	
-#tabmenu, #header, #colorbar {
+#tabmenu, #header, #colorbar, #calendar_controls {
 	display: none;
 }
 	
