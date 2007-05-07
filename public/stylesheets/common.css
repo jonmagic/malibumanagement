@@ -240,7 +240,7 @@ table.spacetable td {
 }
 
 .calendar_table {
-	
+	border-collapse: collapse
 }
 
 th.calendar_day {
@@ -249,4 +249,5 @@ th.calendar_day {
 
 .calendar_table td {
 	vertical-align: top;
+	border: 1px solid black;
 }
