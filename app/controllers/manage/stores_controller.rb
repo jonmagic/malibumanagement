@@ -95,6 +95,7 @@ class Manage::StoresController < ApplicationController
     restrict('allow only admins') or begin
       @store = Store.find_by_alias(params[:domain])
       redirect_to dashboard_path if @store.nil?
+      @cal = Calendar.new(@store.gcal_url)
     end
   end
 

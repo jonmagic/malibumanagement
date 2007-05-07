@@ -17,6 +17,8 @@
   <%= f.text_field :contact_person %></p>
   <p><label for="telephone">Telephone</label><br/>
   <%= f.text_field :telephone %></p>
+  <p><label for="gcal_url">Google Calendar (private url)</label><br/>
+ 	<%= f.text_field :gcal_url %></p>
 	<p><label for="manager_fields">Store Manager</label></p>
 	<div style="border:2px solid #999999; padding:1em 0 1em 2em; width:24em">
   <% fields_for :user, @user do |g| %>

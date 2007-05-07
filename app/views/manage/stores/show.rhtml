@@ -4,4 +4,5 @@
 <p>Business Alias: <%= @store.alias %></p>
 <p>Address:        <%= @store.address %></p>
 <p>Assigned Forms: <%= (@store.form_types.collect {|f| f.friendly_name}).join(', ') %></p>
+<p>Google Calendar: <%= link_to @store.gcal_url, @store.gcal_url %></p>
 <p><%= link_to 'View/Edit Users', manage_users_path(@store.id) %></p>

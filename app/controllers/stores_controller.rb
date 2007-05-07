@@ -21,7 +21,8 @@ class StoresController < ApplicationController
     restrict('allow only store users') or begin
       @store = current_store
       # Need to pull this value from @store.gcal_url
-      @cal = Calendar.new('https://www.google.com/calendar/ical/yanno.org_lf810kkm8475qm1p5c1ncmilec%40group.calendar.google.com/private-28518e4e7f49d0470d59ba10047ce78b/basic.ics')
+      # @cal = Calendar.new('https://www.google.com/calendar/ical/yanno.org_lf810kkm8475qm1p5c1ncmilec%40group.calendar.google.com/private-28518e4e7f49d0470d59ba10047ce78b/basic.ics')
+      @cal = Calendar.new(@store.gcal_url)
     end
   end
 

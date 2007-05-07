@@ -1,4 +1,4 @@
-<% 4.calendar_weeks.from(Time.now.beginning_of_week).with_events(@store.gcal_url).weeks.each do |w| -%>
+<% 2.calendar_weeks.from(Time.now.beginning_of_week).with_events(@cal).weeks.each do |w| -%>
 <table class="calendar_table">
 	<caption><%= @store.friendly_name %>, Week of <%= w.start_time.strftime("%B %d, %Y") %></caption>
   <thead>
