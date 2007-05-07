@@ -239,8 +239,14 @@ table.spacetable td {
 	background-color:#fdd;
 }
 
-.calendar_table {
-	border-collapse: collapse
+table.calendar_table {
+	border-collapse: collapse;
+	margin-bottom: 2em;
+}
+
+.calendar_table caption {
+	font-size: 15pt;
+	margin: 1em 0;
 }
 
 th.calendar_day {
@@ -249,5 +255,15 @@ th.calendar_day {
 
 .calendar_table td {
 	vertical-align: top;
-	border: 1px solid black;
+	border-right: 1px solid black;
+	border-left: 1px solid black;
+	padding: 0 10px;
+}
+
+.calendar_table td.even {
+	background-color: #ffffee;
+}
+
+.calendar_table td.odd {
+	background-color: #ffeeff;
 }

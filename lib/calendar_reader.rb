@@ -93,6 +93,15 @@ class AnchoredTimeRange
     def name
       self.start_time.strftime("%A")
     end
+    def even?
+      self.start_time.strftime("%d").to_i.even?
+    end
+    def odd?
+      self.start_time.strftime("%d").to_i.odd?
+    end
+    def day_of_week
+      self.start_time.wday
+    end
   end
 end
 
