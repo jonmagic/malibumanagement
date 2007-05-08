@@ -28,7 +28,7 @@ var saving = false
 	                :function => "$('save_draft_bttn').value = 'Save Draft'; $('save_draft_bttn').disabled = false" %>
 <script type="text/javascript">
 //<![CDATA[
-draft_observe = new Form.Observer('form_wildcard_form', 5, function(element, value) {if(!saving) {new Ajax.Request('/stores/adrian/forms/draft/WildcardForm/62/update.js', {asynchronous:true, evalScripts:true, parameters:'Form.serialize("form_wildcard_form")=' + value})}})
+draft_observe = new Form.Observer('<%= 'form_'+@form.data_type.fromCamelCase %>', 5, function(element, value) {if(!saving) {new Ajax.Request('<%= formatted_store_forms_path(:form_type => @form.data_type, :action => 'update', :form_id => @form.id, :format => 'js') %>', {asynchronous:true, evalScripts:true, parameters:'Form.serialize("<%= 'form_'+@form.data_type.fromCamelCase %>")=' + value})}})
 //]]>
 </script>
 <% else -%>
