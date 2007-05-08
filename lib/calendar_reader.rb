@@ -209,7 +209,9 @@ module CalendarReader
       self.method   = self.ical.hash['VCALENDAR']['METHOD']
       self.product_id = self.ical.hash['VCALENDAR']['PRODID']
       self.time_zone_name = self.ical.hash['VCALENDAR']['VTIMEZONE']['TZID']
+puts "Time Zone: #{self.time_zone_name}"
       self.time_zone_offset = self.ical.hash['VCALENDAR']['VTIMEZONE']['STANDARD']['TZOFFSETTO']
+      self.ical.hash['VCALENDAR']['VEVENT'] = [self.ical.hash['VCALENDAR']['VEVENT']] unless self.ical.hash['VCALENDAR']['VEVENT'].kind_of?(Array)
       self.ical.hash['VCALENDAR']['VEVENT'].each do |e|
         # DTSTART;VALUE=DATE # format of yyyymmdd
         # DTSTART;TZID=America/Chicago # format of yyyymmddThhmmss
@@ -233,6 +235,7 @@ module CalendarReader
         # RRULE # Recurrance Rule - string like 'FREQ=WEEKLY'
         st = e["DTSTART;TZID=#{self.time_zone_name}"] || "#{e['DTSTART;VALUE=DATE']}T000000"
         et = e["DTEND;TZID=#{self.time_zone_name}"] || "#{e['DTEND;VALUE=DATE']}T000000"
+        # DTSTART;TZID=America/New_York:20070508T070000
         self.add_event(Event.new(
           :start_time => Time.gcalschema("#{st}Z"),
           :end_time => Time.gcalschema("#{et}Z"),
