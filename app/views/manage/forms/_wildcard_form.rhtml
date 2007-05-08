@@ -1,0 +1,4 @@
+<% view = view.nil? ? true : view -%>
+<% f = nil if view -%>
+<label for="description">Description:</label><br/>
+<%= !view ? f.text_area(:description, :value => @data.description, :rows => 6, :cols => 40) : @data.description %>
