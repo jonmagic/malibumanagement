@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 21) do
+ActiveRecord::Schema.define(:version => 22) do
 
   create_table "account_setups", :force => true do |t|
   end
@@ -218,6 +218,10 @@ ActiveRecord::Schema.define(:version => 21) do
     t.column "manager_sign_id",    :integer
     t.column "manager_sign_hash",  :string
     t.column "manager_sign_date",  :datetime
+  end
+
+  create_table "wildcard_forms", :force => true do |t|
+    t.column "description", :text
   end
 
   create_table "written_warnings", :force => true do |t|

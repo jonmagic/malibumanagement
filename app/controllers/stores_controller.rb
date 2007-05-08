@@ -5,6 +5,7 @@ class StoresController < ApplicationController
   in_place_edit_for :store, 'address'
   in_place_edit_for :store, 'telephone'
   in_place_edit_for :store, 'contact_person'
+  in_place_edit_for :store, 'gcal_url'
   layout 'store'
 
 # AccessControl:

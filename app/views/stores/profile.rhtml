@@ -5,5 +5,7 @@
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= in_place_editor_field :store, 'address', {}, :rows => 1, :external_control => "edit_address_#{@store.id}" %></p>
 <p><label for="edit_telephone_<%= @store.id %>">Telephone</label><a href="javascript:void(0)" id="edit_telephone_<%= @store.id %>">(edit)</a>:<br />
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= in_place_editor_field :store, 'telephone', {}, :rows => 1, :external_control => "edit_telephone_#{@store.id}" %></p>
+	<p><label for="edit_gcal_url_<%= @store.id %>">Google Calendar (private url)</label><a href="javascript:void(0)" id="edit_gcal_url_<%= @store.id %>">(edit)</a>:<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= in_place_editor_field :store, 'gcal_url', {}, :rows => 1, :external_control => "edit_gcal_url_#{@store.id}" %></p>
 <p><label for="edit_contact_person_<%= @store.id %>">Contact Person</label><a href="javascript:void(0)" id="edit_contact_person_<%= @store.id %>">(edit)</a>:<br />
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= in_place_editor_field :store, 'contact_person', {}, :rows => 1, :external_control => "edit_contact_person_#{@store.id}" %></p>
