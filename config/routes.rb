@@ -24,7 +24,7 @@ ActionController::Routing::Routes.draw do |map|
 #* * * * * * *
 
   map.admin_dashboard                        '/malibu',        :controller => 'manage/forms',   :action => 'index'
-  map.admin_schedule '/malibu/work_schedule/:domain', :controller => 'manage/stores', :action => 'work_schedule'
+  map.admin_schedule '/malibu/work_schedule/:store_alias', :controller => 'manage/stores', :action => 'work_schedule'
   map.resources :admins,     :path_prefix => '/malibu/manage', :controller => 'manage/admins',  :collection => { :live_search => :any, :search => :any, :set_admin_friendly_name => :any }, :member => { :update => :update }
   map.resources :stores,    :path_prefix => '/malibu/manage', :controller => 'manage/stores' do |store|
     store.resources :users, :name_prefix => 'manage_',          :controller => 'manage/users',   :collection => { :live_search => :any, :search => :any, :set_user_friendly_name => :any }, :member => { :update => :update }
