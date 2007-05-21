@@ -112,7 +112,6 @@ class User < ActiveRecord::Base
     def username_present?
       !self.username.blank?
     end
-
     def password_present?
       !self.password.blank?
     end

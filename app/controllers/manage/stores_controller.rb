@@ -104,8 +104,6 @@ class Manage::StoresController < ApplicationController
   # DELETE /stores/1
   # DELETE /stores/1.xml
   def destroy
-#Use the acts_as_deleted plugin!!!
-#****
     restrict('allow only admins') or begin
       @store = Store.find(params[:id])
       @store.destroy

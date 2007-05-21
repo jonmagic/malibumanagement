@@ -5,7 +5,7 @@ class Manage::UsersController < ApplicationController
   def index
     restrict('allow only admins') or begin
       @store = Store.find_by_id(params[:store_id])
-      @users = User.find_all_by_store_id(params[:store_id])
+      @users = @store.users
     end
   end
 
