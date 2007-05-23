@@ -466,7 +466,7 @@ Field.scrollFreeActivate = function(field) {
 }
 
 Ajax.InPlaceEditor = Class.create();
-Ajax.InPlaceEditor.defaultHighlightColor = "#FFFF99";
+Ajax.InPlaceEditor.defaultHighlightColor = "#FFF280";
 Ajax.InPlaceEditor.prototype = {
   initialize: function(element, url, options) {
     this.url = url;

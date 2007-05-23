@@ -3,9 +3,17 @@ body {
 	padding:0;
 	background-color:#fff;
 	font-family:Verdana, Arial, Helvetica, sans-serif;
-	color: #555;
+	color: #2B3655;
 	font-size:80%;
 }
+
+#wrapper {
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+}
+
 
 .error_message {
 	color:red;
@@ -17,7 +25,7 @@ body {
 
 a {
 	text-decoration:none;
-	color: #C13B00;
+	color: #AA558F;
 }
 
 a img {
@@ -26,7 +34,7 @@ a img {
 }
 a img:hover {
 	padding:0px;
-	border:2px solid #C13B00;
+	border:2px solid #FF80D7;
 }
 
 a:hover {
@@ -121,15 +129,22 @@ label {
 }
 
 #header {
-	background-color:#AAA;
-	color:#FFF;
-	height:3.2em;
-	padding:.75em 1em;
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:5em;
+	background-color:#80A2FF;
+	color:#556CAA;
+}
+
+#header a:hover {
+	background-color:#FFF280;
 }
 
 #header h1 {
 	font-size:1.5em;
-	color: #666;
+	color: #2B3655;
 	margin:0;
 	padding:0;
 }
@@ -141,27 +156,34 @@ label {
 }
 
 #header ul {
-	position:absolute;
-	right:1em;
-	top:1em;
 	list-style:none;
-	margin:0;
-	padding:0;
 }
 
 #header li {
-	list-style:none;
 	text-align:right;
-	margin-bottom:.2em;
-	vertical-align:middle;
 }
 
 #header a {
-	color:#FFF;
+	color:#2B3655;
+}
+
+#header_content {
+	position:absolute;
+	top:1em;
+	left:1em;
+}
+
+#header_menu {
+	position:absolute;
+	top:1em;
+	right:1em;
 }
 
 #main {
-	margin-top:1em;
+	position:absolute;
+	top:5em;
+	left:0;
+	width:100%;
 }
 
 #content {
@@ -172,11 +194,9 @@ label {
 }
 
 #content h2 {
-	color:#222;
 }
 
-#content h4 {
-	color:#333;
+#content h4 {;
 	padding:.1em 0;
 }
 
@@ -267,3 +287,4 @@ th.calendar_day {
 .calendar_table td.odd {
 	background-color: #ffeeff;
 }
+

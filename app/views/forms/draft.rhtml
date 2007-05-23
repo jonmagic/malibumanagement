@@ -5,7 +5,6 @@ var saving = false
 //]]>
 </script>
 <h2 class="visual_identifier"><%= @form.visual_identifier %></h2>
-<p>(<%= @form.form_identifier %> - <%= @form.status.as_status.word('uppercase short singular') %>) <%= link_to 'View Log', store_form_log_path(:form_type => @form.data_type, :form_id => @form.id), :popup => true %></p>
 
 <%= error_messages_for :basic_form %>
 <% if @form.form_type.draftable -%>

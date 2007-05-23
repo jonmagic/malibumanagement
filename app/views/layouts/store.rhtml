@@ -20,45 +20,51 @@
 		<%= javascript_include_tag 'rounded' %>
 	</head>
 	<body>
-		<div id="header">
-			<h1>Malibu Management Form Processor</h1>
-			<h2><em><%= current_user.friendly_name %></em> @ <%= accessed_store ? accessed_store.friendly_name : 'Unknown' %></h2>
-			<ul>
-				<li>
+		<div id="wrapper">
+			<div id="header">
+				<div id="header_content">
+					<h1>Malibu Management Form Processor</h1>
+					<h2><em><%= current_user.friendly_name %></em> @ <%= accessed_store ? accessed_store.friendly_name : 'Unknown' %></h2>
+				</div>
+				<div id="header_menu">
+					<ul>
+						<li>
+							<% if logged_in? -%>
+								<a href="/logout">Logout</a>
+							</li>
+							<li>
+							<%= link_to 'My Account', user_account_path %><%= " / " + link_to("Manage", users_path) if current_user.is_store_admin? %>
+							<% else -%>
+								Not logged in. <a href="/<%= accessed_domain %>/login">Login</a>
+							<% end -%>
+						</li>
+					</ul>		
+				</div>
+			</div>
+			<div id="main">
+				<div id="messages" class="floatright"><%= flash[:notice] %></div>
+				<ul id="tabmenu">
 					<% if logged_in? -%>
-						<a href="/logout">Logout</a>
-					</li>
-					<li>
-					<%= link_to 'My Account', user_account_path %><%= " / " + link_to("Manage", users_path) if current_user.is_store_admin? %>
+					<li><%= tab_link_to "Dashboard", store_dashboard_path, :active_only_if_equal => true %></li>
+					<% if current_user.is_store_admin? and request.request_uri =~ /\/manage/ -%>
+					<li><%= tab_link_to "Store Profile", store_profile_path %></li>
+					<li><%= tab_link_to "Users", users_path %></li>
 					<% else -%>
-						Not logged in. <a href="/<%= accessed_domain %>/login">Login</a>
+					<!-- <li><%= tab_link_to 1.as_status.word('uppercase short plural') + (!current_user.forms_with_status(1).blank? ? " (#{current_user.forms_with_status(1).count})" : ''), store_forms_by_status_path(:form_status => 1.as_status.text), :class => "#{1.as_status.text}_count" %></li>
+					<li><%= tab_link_to 2.as_status.word('uppercase short plural') + (!current_user.forms_with_status(2).blank? ? " (#{current_user.forms_with_status(2).count})" : ''), store_forms_by_status_path(:form_status => 2.as_status.text), :class => "#{2.as_status.text}_count" %></li>
+					<li><%= tab_link_to 3.as_status.word('uppercase short plural') + (!current_user.forms_with_status(3).blank? ? " (#{current_user.forms_with_status(3).count})" : ''), store_forms_by_status_path(:form_status => 3.as_status.text), :class => "#{3.as_status.text}_count" %></li> -->
+					<li><%= tab_link_to 'Archive', store_forms_by_status_path(:form_status => 4.as_status.text) %></li>
 					<% end -%>
-				</li>
-			</ul>		
-		</div>
-		<div id="main">
-			<div id="messages" class="floatright"><%= flash[:notice] %></div>
-			<ul id="tabmenu">
-				<% if logged_in? -%>
-				<li><%= tab_link_to "Dashboard", store_dashboard_path, :active_only_if_equal => true %></li>
-				<% if current_user.is_store_admin? and request.request_uri =~ /\/manage/ -%>
-				<li><%= tab_link_to "Store Profile", store_profile_path %></li>
-				<li><%= tab_link_to "Users", users_path %></li>
-				<% else -%>
-				<!-- <li><%= tab_link_to 1.as_status.word('uppercase short plural') + (!current_user.forms_with_status(1).blank? ? " (#{current_user.forms_with_status(1).count})" : ''), store_forms_by_status_path(:form_status => 1.as_status.text), :class => "#{1.as_status.text}_count" %></li>
-				<li><%= tab_link_to 2.as_status.word('uppercase short plural') + (!current_user.forms_with_status(2).blank? ? " (#{current_user.forms_with_status(2).count})" : ''), store_forms_by_status_path(:form_status => 2.as_status.text), :class => "#{2.as_status.text}_count" %></li>
-				<li><%= tab_link_to 3.as_status.word('uppercase short plural') + (!current_user.forms_with_status(3).blank? ? " (#{current_user.forms_with_status(3).count})" : ''), store_forms_by_status_path(:form_status => 3.as_status.text), :class => "#{3.as_status.text}_count" %></li> -->
-				<li><%= tab_link_to 'Archive', store_forms_by_status_path(:form_status => 4.as_status.text) %></li>
-				<% end -%>
-				<li><%= tab_link_to 'Work Schedule', store_schedule_path %></li>
-				<% else -%>
-				<li><%= tab_link_to "Login", store_login_path %></li>
-				<% end -%>
-			</ul>
-			<div style="background:#C13B00;"><br /></div><br />
-			<div id="content">
-				<%= yield  %>
-				<br />
+					<li><%= tab_link_to 'Work Schedule', store_schedule_path %></li>
+					<% else -%>
+					<li><%= tab_link_to "Login", store_login_path %></li>
+					<% end -%>
+				</ul>
+				<div id="tabmenu_bottom_border"><br /></div><br />
+				<div id="content">
+					<%= yield  %>
+					<br />
+				</div>
 			</div>
 		</div>
 	</body>

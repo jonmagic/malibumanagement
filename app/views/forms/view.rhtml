@@ -1,5 +1,4 @@
 <h2><%= @form.visual_identifier %></h2>
-<p>(<%= @form.form_identifier %> - <%= @form.status.as_status.word('uppercase short singular') %>) <%= link_to 'View Log', store_form_log_path(:form_type => @form.data_type, :form_id => @form.id), :popup => true %><% unless @form.status == 'archived'  %><% if @form.form_type.reeditable %> / <%= link_to 'Edit', store_forms_path(:action => 'draft', :form_status => 'draft', :form_type => @form.data_type, :form_id => @form.id), :confirm => "Editing this form will un-submit the form and move it back to the Draft status. Do you want to continue?" %><% end %><% end %></p>
 
 <div class="form">
 <%= render :partial => @form.data_type.fromCamelCase -%>
