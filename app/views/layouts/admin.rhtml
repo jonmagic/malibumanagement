@@ -55,7 +55,7 @@
 				<li><%= tab_link_to 'Stores', stores_path %></li>
 				<li><%= tab_link_to 'Admins', admins_path %></li>
 				<% end -%>
-				<li><%= tab_link_to 'Work Schedules', admin_schedule_path('hillsdale') %></li>
+				<li><%= tab_link_to 'Work Schedules', admin_schedule_path('hillsdale'), :class => 'calendar_tab' %></li>
 		<% else -%>
 				<li><%= tab_link_to "Login", admin_login_path %></li>
 		<% end -%>
