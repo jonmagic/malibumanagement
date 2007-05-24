@@ -16,6 +16,7 @@ ActionController::Routing::Routes.draw do |map|
 # * * * * * * * *
 
   map.test '/test/:action/:id', :controller => 'manage/test', :action => 'dashboard'
+  map.connect '/malibu/posts/:action', :controller => 'posts', :action => 'index'
 
 # * * * * * * * * * * * * * * * * * * * * * * * *
 
