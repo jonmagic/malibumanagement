@@ -1,2 +1,2 @@
-module BulletinboardHelper
+module PostsHelper
 end

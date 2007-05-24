@@ -39,10 +39,11 @@ class PostsController < ApplicationController
     # POST /posts.xml
     def create
       @post = Post.new(params[:post])
+logger.info "CurrentUser: #{current_user}"
       @post.author = current_user
       respond_to do |format|
         if @post.save
-          format.html
+          format.html {redirect_to current_user.kind_of?(Admin) ? admin_posts_url : posts_url}
           format.js do
             responds_to_parent do
               render :update do |page|
@@ -66,7 +67,7 @@ class PostsController < ApplicationController
     # PUT /posts/1
     # PUT /posts/1.xml
     def update
-      restrict('allow only store users') or begin
+      restrict('allow only admins and store users') or begin
         @post = Post.find_by_id(params[:id])
         @post.form_instance = current_form_instance
         @post.author = current_user
@@ -87,7 +88,7 @@ class PostsController < ApplicationController
     # DELETE /posts/1
     # DELETE /posts/1.xml
     def destroy
-      restrict('allow only store users') or begin
+      restrict('allow only admins and store users') or begin
         @post = Post.find_by_id(params[:id])
         @post.destroy
         respond_to do |format|
@@ -99,7 +100,7 @@ class PostsController < ApplicationController
     end
 
     def attachment
-      restrict('allow only store users') or begin
+      restrict('allow only admins and store users') or begin
         @post = Post.find_by_id(params[:id])
         send_file @post.attachment, :type => Mime::Type.lookup_by_extension(@post.attachment).to_str, :disposition => 'inline'
       end

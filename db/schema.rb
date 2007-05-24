@@ -4,15 +4,18 @@
 
 ActiveRecord::Schema.define(:version => 23) do
 
+  create_table "account_setups", :force => true do |t|
+  end
+
   create_table "admins", :force => true do |t|
     t.column "username",               :string
     t.column "friendly_name",          :string,   :limit => 50
-    t.column "social_security_number", :integer,  :limit => 9
     t.column "crypted_password",       :string,   :limit => 40
     t.column "salt",                   :string,   :limit => 40
     t.column "created_at",             :datetime
     t.column "updated_at",             :datetime
     t.column "activated_at",           :datetime
+    t.column "social_security_number", :integer,  :limit => 9
   end
 
   create_table "direct_deposit_authorizations", :force => true do |t|
@@ -23,7 +26,7 @@ ActiveRecord::Schema.define(:version => 23) do
     t.column "bank_branch",           :string
     t.column "bank_routing_number",   :integer
     t.column "bank_account_number",   :integer
-    t.column "account_type",          :string
+    t.column "account_kind",          :string
     t.column "amount",                :decimal, :precision => 8, :scale => 2
     t.column "effective_date",        :date
     t.column "date_received",         :date
@@ -191,12 +194,12 @@ ActiveRecord::Schema.define(:version => 23) do
   end
 
   create_table "time_off_requests", :force => true do |t|
-    t.column "employee_name",         :string
-    t.column "date",                  :date
     t.column "time_off_kind",         :string
     t.column "dates_requested",       :string
     t.column "time_left_before_days", :integer
     t.column "time_left_after_days",  :integer
+    t.column "employee_name",         :string
+    t.column "date",                  :date
   end
 
   create_table "users", :force => true do |t|

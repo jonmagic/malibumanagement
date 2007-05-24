@@ -22,6 +22,7 @@ class ApplicationController < ActionController::Base
     add_restriction('allow only admins or store admins', current_user.is_store_admin_or_admin?) {flash[:notice] = "Only Store Admins can access this. Please login with Store Admin credentials."; store_location; redirect_to store_login_path(accessed_domain)}
     add_restriction('allow only store users', current_user.is_store_user? && current_user.store == accessed_store) {flash[:notice] = "Only Store Users can access this. Please login."; store_location; redirect_to store_login_path(accessed_domain)}
     add_restriction('allow only admins', current_user.is_admin?) {flash[:notice] = "Only Admins can access this. Please login."; store_location; redirect_to(admin_login_path)}
+    add_restriction('allow only admins and store users', current_user.kind_of?(Admin) || current_user.kind_of?(User)) {flash[:notice] = "You are not authorized to access this content. Please login."; store_location; redirect_to(admin_login_path)}
   end
 
 #Virtually makes this publicly global for the app.
