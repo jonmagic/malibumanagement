@@ -1,6 +1,7 @@
 class AddBulletinBoard < ActiveRecord::Migration
   def self.up
     create_table "posts", :force => true do |t|
+      t.column "author_type",      :string
       t.column "author_id",        :integer
       t.column "title",            :string
       t.column "text",             :text

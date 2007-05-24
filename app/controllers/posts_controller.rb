@@ -10,6 +10,29 @@ class PostsController < ApplicationController
       end
     end
 
+    def search(live=false)
+      search    = nil
+
+      search    = "%" + params[:search_field]    + "%" if !params[:search_field].nil? and params[:search_field].length > 0
+
+      matches = ['created_at < :now'] #Put the before_date field in first by default - there will always be a date to search for.
+      matches.push('(title LIKE :search OR text LIKE :search OR attachment LIKE :search)') unless search.nil?
+      matches.push('0') if matches.blank? # This ensures a blank valid no-result search if there is absolutely nothing to search for.
+
+      @values = {:now => Time.now}
+      @post_values = {:dummy => 'value'}
+
+      @values.merge!({:search => search}) unless search.nil?
+      @post_values.merge!({:search_field => params[:search_field]}) unless search.nil?
+
+      @result_pages, @results = paginate_by_sql(Post, ["SELECT * FROM posts WHERE " + matches.join(' AND ') + " ORDER BY created_at DESC", @values], 3)
+      @search_entity = @results.length == 1 ? "Bulletin" : "Bulletins"
+      render :layout => false
+    end
+    def live_search
+      search(true)
+    end
+
     # GET /posts/1
     # GET /posts/1.xml
     def show
@@ -23,6 +46,10 @@ class PostsController < ApplicationController
     # GET /posts/new
     def new
       @post = Post.new
+      respond_to do |format|
+        format.html
+        format.js {render :layout => false}
+      end
     end
 
     # GET /posts/1;edit
@@ -47,11 +74,12 @@ logger.info "CurrentUser: #{current_user}"
           format.js do
             responds_to_parent do
               render :update do |page|
-                page.insert_html :bottom, 'posts_container', :partial => 'posts/show_post', :locals => { :post => @post }
-                page['new_post_title_field'].value = ''
+                page.insert_html :bottom, 'search_results', :partial => 'posts/show_post', :locals => { :post => @post }
+                page['new_post_title'].value = ''
                 page['new_post_text_area'].value = ''
                 page['post_attachment_temp'].value = ''
                 page['post_attachment'].value = ''
+                page.hide('new_post_container')
               end # render
             end # responds_to_parent
           end # wants
@@ -69,7 +97,6 @@ logger.info "CurrentUser: #{current_user}"
     def update
       restrict('allow only admins and store users') or begin
         @post = Post.find_by_id(params[:id])
-        @post.form_instance = current_form_instance
         @post.author = current_user
         respond_to do |format|
           if @post.update_attributes(params[:post])

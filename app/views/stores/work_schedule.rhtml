@@ -1,3 +1,4 @@
+View for Date:
 <div id='calendar_controls'>
   <input id="Time_now" name="Time[now]" type="hidden" value="<%= params[:start] || Time.now.strfsql %>" /><a class="_date_picker_link" href="#" id="_Time_now_link" onclick="DatePicker.toggleDatePicker('Time_now'); return false;"><%= @start.strftime('%b %d, %Y') %></a><span class="date_picker" id="_Time_now_calendar" style="display: none">&nbsp;</span>
 	<script type="text/javascript">

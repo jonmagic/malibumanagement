@@ -7,11 +7,7 @@ module RouteObjectMapping
   end
 
     def accessed_domain
-      if params.nil?
-        'malibu'
-      else
-        @accessed_domain ||= (params[:domain] || 'malibu')
-      end
+      @accessed_domain ||= ((!params.nil? && params[:domain]) || 'malibu')
     end
     def accessed_store
       @accessed_store ||= accessed_domain == 'malibu' ? Store.new(:friendly_name => 'Malibu', :alias => 'malibu') : Store.find_by_alias(accessed_domain)

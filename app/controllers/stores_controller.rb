@@ -30,6 +30,10 @@ class StoresController < ApplicationController
     end
   end
 
+  def bulletin_board
+    restrict('allow only admins and store users')
+  end
+
 #This should be operational for store admins to view and edit their account
   def profile
     restrict('allow only store admins') or begin

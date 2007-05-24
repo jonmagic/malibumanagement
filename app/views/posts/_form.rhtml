@@ -1,0 +1,9 @@
+<% form_for(:post, :url => formatted_posts_path(:format => 'js'), :html => {:id => 'new_post_form', :multipart => true, :target => 'background-uploader'}) do |f| -%>
+	<h3>New Bulletin Posting</h3>
+	<p><label>Title:</label><br /><%= f.text_field :title, :id => 'new_post_title' %></p>
+  <p><label>Text:</label><br /><%= f.text_area :text, :rows => 4, :cols => 35, :id => 'new_post_text_area' %></p>
+	<p>Or attach a file:<br /><%= file_column_field 'post', 'attachment' %></p>
+  <p><%= submit_tag "New Note" %> <a href="javascript:void(0)" onclick="Element.hide('new_post_container'); Element.hide('new_post_remote_link'); Element.show('new_post_toggle_link')">Cancel</p>
+<% end -%>
+<iframe frameBorder="0" width="1" height="1" name="background-uploader" src="about:blank"></iframe>
+<%= javascript_tag "Element.hide('new_post_remote_link')" %>

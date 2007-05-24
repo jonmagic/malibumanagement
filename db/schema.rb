@@ -156,12 +156,13 @@ ActiveRecord::Schema.define(:version => 23) do
   end
 
   create_table "posts", :force => true do |t|
-    t.column "author_id",  :integer
-    t.column "title",      :string
-    t.column "text",       :text
-    t.column "created_at", :datetime
-    t.column "updated_at", :datetime
-    t.column "attachment", :string
+    t.column "author_type", :string
+    t.column "author_id",   :integer
+    t.column "title",       :string
+    t.column "text",        :text
+    t.column "created_at",  :datetime
+    t.column "updated_at",  :datetime
+    t.column "attachment",  :string
   end
 
   create_table "sales_reports", :force => true do |t|
