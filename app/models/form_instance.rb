@@ -34,7 +34,7 @@ class FormInstance < ActiveRecord::Base
   end
 
   def unassign_if_submitted
-    self.assigned_to = nil if self.has_been_submitted
+    self.assigned_to = nil if self.status_number > 1
   end
 
   def admin_visual_identifier

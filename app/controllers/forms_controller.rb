@@ -106,6 +106,15 @@ logger.error "Current Model: #{current_form_model}"
   end
 
 #This is for submitting edits. This is an ajax-specific function, normally auto-save like gmail but also via a button (like gmail).
+# This performs several functions (probably not good programming practice?!):
+# 1) Only update assigned_to.
+# 2) Only update status (submit).
+# 3) Update attributes presented in form.
+#
+# The differences of input are as follows:
+#   1) Assigned_to: form-attributes, form_instance => {:assigned_to => 1, :status => 'draft'}
+#   2) Status: form-attributes, form_instance => {:status => 'submitted'}
+#   3) Update Attributes: form-attributes, form_instance => {:status => 'draft'}
   def update
     restrict('allow only store users') or begin
       status_changed = false
@@ -113,28 +122,16 @@ logger.error "Current Model: #{current_form_model}"
       @form = FormInstance.find_by_id(params[:form_id])
       return redirect_to(store_dashboard_url) unless @form
 
-      if !params[:form_instance].nil? && !params[:form_instance][:assigned_to].blank?
-        assigned_to_changed = true
-        @form.user = User.find_by_id(params[:form_instance][:assigned_to])
-        params[:form_instance].delete(:status)
-      elsif !params[:form_instance].nil? &&
-          !params[:form_instance][:status].blank? &&
-          !(params[:form_instance][:status].as_status.number == @form.status.as_status.number)
-        @form.status = params[:form_instance].delete(:status)
-        status_changed = true
-      end
-
       if !params[:form_instance].nil?
         if !params[:form_instance][:status].blank? &&
           !(params[:form_instance][:status].as_status.number == @form.status.as_status.number)
-logger.info "Changing Status"
           @form.status = params[:form_instance].delete(:status)
           status_changed = true
           params[:form_instance].delete(:assigned_to)
         elsif @form.assigned_to != params[:form_instance][:assigned_to]
-logger.info "Assigning To"
           assigned_to_changed = true
-          @form.user = User.find_by_id(params[:form_instance][:assigned_to])
+          @form.assigned = User.find_by_id(params[:form_instance][:assigned_to])
+          params[:form_instance].delete(:status)
         end
       end
 
