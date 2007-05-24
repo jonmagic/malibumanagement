@@ -88,8 +88,14 @@ ul, li {
 }
 
 .form_listing, .customer_listing {
-	padding:0 0 1em 0;
+	padding:.4em 0;
 	clear:both;
+	margin-bottom:.2em;
+}
+
+.form_listing a {
+	color:#2B3655;
+	width:100%;
 }
 
 .form_listing span, .customer_listing span {
@@ -99,7 +105,7 @@ ul, li {
 
 .form_listing span:hover, .customer_listing span:hover {
 	display:inline;
-	background-color:#eee;
+	background-color:#80A2FF;
 }
 
 .form_listing a:hover, .customer_listing a:hover {
@@ -256,7 +262,7 @@ table.spacetable td {
 	color:#999;
 }
 .draft_listing {
-	background-color:#fdd;
+	background-color:#FFF280;
 }
 
 table.calendar_table {

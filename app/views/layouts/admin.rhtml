@@ -61,6 +61,7 @@
 					<li><%= tab_link_to 'Admins', admins_path %></li>
 					<% end -%>
 					<li><%= tab_link_to 'Work Schedules', admin_schedule_path('hillsdale'), :class => 'calendar_tab' %></li>
+					<li><%= tab_link_to 'Bulletin Board', admin_bulletin_path %></li>					
 			<% else -%>
 					<li><%= tab_link_to "Login", admin_login_path %></li>
 			<% end -%>
