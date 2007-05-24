@@ -1,4 +1,7 @@
-<h2>Malibu Bulletin Board</h2>
+<p class="floatright new_post_link"><%= link_to_remote 'New Post', {:url => new_post_path, :update => 'new_post_container', :method => :get}, {:id => 'new_post_remote_link'} %><a href="javascript:void(0)" onclick="Element.toggle('new_post_container'); Element.hide(this)" id="new_post_toggle_link" style="display:none">New Post</a></p>
+<h2 class="floatleft">Malibu Bulletin Board</h2>
+
+<div id="new_post_container"></div>
 
 <%= form_tag(search_posts_path, { :onSubmit => "Element.show('search_loading');", :id => 'posts_live_search_form' }) %>
 <!-- I want to include some tickler text (gray, dissappearing text) in the search box, indicated by a local :tickler_text -->
@@ -14,5 +17,4 @@
 								:url => live_search_posts_path %>
 <div style="height:19px"><img alt="loading..." id="search_loading" src="/images/barloader.gif" style="display:none;" /></div>
 <div id="search_results"></div>
-<p><%= link_to_remote '+New Post', {:url => new_post_path, :update => 'new_post_container', :method => :get}, {:id => 'new_post_remote_link'} %><a href="javascript:void(0)" onclick="Element.toggle('new_post_container'); Element.hide(this)" id="new_post_toggle_link" style="display:none">+New Post</a></p>
-<div id="new_post_container"></div>
+

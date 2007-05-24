@@ -314,3 +314,15 @@ th.calendar_day {
 	padding:.2em;
 	border:4px solid #FF80D7;
 }
+
+.new_post_link a {
+	background-color:#FFF280;
+	padding:.5em 1em;
+	border:4px solid#80A2FF;
+}
+
+.new_post_link a:hover {
+	background-color:#80A2FF;
+	padding:.5em 1em;
+	color:#2B3655;
+}
