@@ -1,8 +1,9 @@
 <div class="post" id="post_section_<%= post.id %>">
-<p class="post_header" id="post_header_<%= post.id %>">Post by <%= post.author.friendly_name %> on <%= post.created_at.strftime "%h %d" %> at <%= post.created_at.strftime "%r" %> <% if post.author == current_user -%><span class="post_controls">[<%= link_to_remote('Edit', {:url => formatted_edit_post_path(:format => 'js', :id => post.id), :method => :get}, {:id => "edit_link_#{post.id}"})+" / " %><%= link_to_remote 'Remove', :url => post_path(:id => post.id), :confirm => 'Delete this post?', :method => :delete %>]</span><% end -%></p>
+	
+<p class="post_header floatright" id="post_header_<%= post.id %>">Post by <%= post.author.friendly_name %> on <%= post.created_at.strftime "%h %d" %> at <%= post.created_at.strftime "%r" %> <% if post.author == current_user -%><span class="post_controls">[<%= link_to_remote('Edit', {:url => formatted_edit_post_path(:format => 'js', :id => post.id), :method => :get}, {:id => "edit_link_#{post.id}"})+" / " %><%= link_to_remote 'Remove', :url => post_path(:id => post.id), :confirm => 'Delete this post?', :method => :delete %>]</span><% end -%></p>
 <h3 class="post_title" id="post_title_<%= post.id %>"><%= post.title %></h3>
 <p class="post_text" id="post_text_<%= post.id %>" ondblclick="<%= remote_function(:url => formatted_edit_post_path(:format => 'js', :id => post.id), :method => :get, :html => {:id => "edit_link_#{post.id}"}) %>"><%= post.text %></p>
 <% if post.attachment -%>
-	<p>Attached file: <%= File.basename(post.attachment) %><br /> <%= link_to icon_for(post.attachment), attachment_post_path(:id => post.id) %></p>
+	<p class="post_attachment">Attached file: <%= File.basename(post.attachment) %> <%= link_to icon_for(post.attachment), attachment_post_path(:id => post.id) %></p>
 <% end -%>
 </div>
