@@ -1,9 +1,10 @@
-<p class="floatright new_post_link"><%= link_to_remote 'New Post', {:url => new_post_path, :update => 'new_post_container', :method => :get}, {:id => 'new_post_remote_link'} %><a href="javascript:void(0)" onclick="Element.toggle('new_post_container'); Element.hide(this)" id="new_post_toggle_link" style="display:none">New Post</a></p>
+<p class="floatright new_post_link"><%= link_to_remote 'New Post', {:url => the_new_post_path, :update => 'new_post_container', :method => :get}, {:id => 'new_post_remote_link'} %><a href="javascript:void(0)" onclick="Element.toggle('new_post_container'); Element.hide(this)" id="new_post_toggle_link" style="display:none">New Post</a></p>
+
 <h2 class="floatleft">Malibu Bulletin Board</h2>
 
 <div id="new_post_container"></div>
 
-<%= form_tag(search_posts_path, { :onSubmit => "Element.show('search_loading');", :id => 'posts_live_search_form' }) %>
+<%= form_tag(the_search_posts_path, { :onSubmit => "Element.show('search_loading');", :id => 'posts_live_search_form' }) %>
 <!-- I want to include some tickler text (gray, dissappearing text) in the search box, indicated by a local :tickler_text -->
 <p><span id="search_open_link" onclick="Element.hide(this); Element.show($('search_field')); $('search_field').focus(); $('search_field').select()"><b><a href="javascript:void(0);">Search for bulletins &gt;&gt;</a></b></span> <%= text_field_tag 'search_field', nil, :style => 'display:none', :onblur => "if(this.value == '') {Element.hide(this); Element.show($('search_open_link'))}" %></p>
 </form>
@@ -14,7 +15,6 @@
                 :update => 'search_results',
                 :loading => "Element.show('search_loading');",
                 :complete => "Element.hide('search_loading'); if( ($('description_field').value == '') && ($('new_post_form_section').style.display == 'none') ) {new Effect.SlideDown($('new_post_form_section'), {})} else {if(($('description_field').value != '') && ($('new_post_form_section').style.display != 'none')) {new Effect.SlideUp($('new_post_form_section'), {});}}",
-								:url => live_search_posts_path %>
+								:url => the_live_search_posts_path %>
 <div style="height:19px"><img alt="loading..." id="search_loading" src="/images/barloader.gif" style="display:none;" /></div>
 <div id="search_results"></div>
-
