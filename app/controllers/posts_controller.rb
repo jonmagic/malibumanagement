@@ -66,7 +66,6 @@ class PostsController < ApplicationController
     # POST /posts.xml
     def create
       @post = Post.new(params[:post])
-logger.info "CurrentUser: #{current_user}"
       @post.author = current_user
       respond_to do |format|
         if @post.save
@@ -74,7 +73,8 @@ logger.info "CurrentUser: #{current_user}"
           format.js do
             responds_to_parent do
               render :update do |page|
-                page.insert_html :bottom, 'search_results', :partial => 'posts/show_post', :locals => { :post => @post }
+                page.insert_html :top, 'posts_container', "<hr />"
+                page.insert_html :top, 'posts_container', :partial => 'posts/show_post', :locals => { :post => @post }
                 page['new_post_title'].value = ''
                 page['new_post_text_area'].value = ''
                 page['post_attachment_temp'].value = ''

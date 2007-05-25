@@ -22,6 +22,9 @@ class Admin < ActiveRecord::Base
   def domain
     'malibu'
   end
+  def default_layout
+    'admin'
+  end
   def store
     domain
   end

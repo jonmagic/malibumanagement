@@ -33,6 +33,9 @@ class User < ActiveRecord::Base
   def domain
     self.store.alias
   end
+  def default_layout
+    'store'
+  end
   
   def self.is_store_admin?(user)
     u = User.find_by_username(user)

@@ -1,3 +1,5 @@
-<p style='color:#888'><%= simple_remote_pagination_links @result_pages, :url => live_search_posts_path(@post_values), :update => 'search_results', :between_text => "(#{page_x_of_y(@result_pages)})" %></p>
+<p style='color:#888'><%= simple_remote_pagination_links @result_pages, :url => the_live_search_posts_path(@post_values), :update => 'search_results', :between_text => "(#{page_x_of_y(@result_pages)})" %></p>
+<div id='posts_container'>
 <%= @results.collect { |post| render :partial => 'show_post', :locals => {:post => post} }.join("<hr />") %>
-<p style='color:#888'><%= simple_remote_pagination_links @result_pages, :url => live_search_posts_path(@post_values), :update => 'search_results', :between_text => "(#{page_x_of_y(@result_pages)})" %></p>
+</div>
+<p style='color:#888'><%= simple_remote_pagination_links @result_pages, :url => the_live_search_posts_path(@post_values), :update => 'search_results', :between_text => "(#{page_x_of_y(@result_pages)})" %></p>

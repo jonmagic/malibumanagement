@@ -42,6 +42,31 @@ module ApplicationHelper
     icon_file = File.exists?("#{RAILS_ROOT}/public/images/icons/icon#{File.extname(filename)}.png") ? "/images/icons/icon#{File.extname(filename)}.png" : '/images/icons/icon.any.png'
     image_tag(icon_file, :width=>"50px", :title=>File.basename(filename))
   end
+
+  def the_post_path(options={})
+    current_user.kind_of?(Admin) ? admin_post_path(options) : post_path(options)
+  end
+  def the_js_post_path(options={})
+    current_user.kind_of?(Admin) ? formatted_admin_post_path({:format => 'js'}.merge(options)) : formatted_post_path({:format => 'js'}.merge(options))
+  end
+  def the_js_edit_post_path(options={})
+    current_user.kind_of?(Admin) ? formatted_admin_edit_post_path({:format => 'js'}.merge(options)) : formatted_edit_post_path({:format => 'js'}.merge(options))
+  end
+  def the_js_posts_path(options={})
+    current_user.kind_of?(Admin) ? formatted_admin_posts_path({:format => 'js'}.merge(options)) : formatted_posts_path({:format => 'js'}.merge(options))
+  end
+  def the_attachment_post_path(options={})
+    current_user.kind_of?(Admin) ? admin_attachment_post_path(options) : attachment_post_path(options)
+  end
+  def the_search_posts_path(options={})
+    current_user.kind_of?(Admin) ? admin_search_posts_path : search_posts_path
+  end
+  def the_live_search_posts_path(options={})
+    current_user.kind_of?(Admin) ? admin_live_search_posts_path(options) : live_search_posts_path(options)
+  end
+  def the_new_post_path(options={})
+    current_user.kind_of?(Admin) ? admin_new_post_path(options) : new_post_path(options)
+  end
 end
 
 module ActiveRecord

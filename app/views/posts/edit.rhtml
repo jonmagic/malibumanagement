@@ -1,4 +1,4 @@
-<% remote_form_for(:post, :url => formatted_post_path(:id => @post.id, :format => 'js'), :html => { :method => :put, :id => "#{@post.id}_edit_form" }) do |f| %>
+<% remote_form_for(:post, :url => the_js_post_path(:id => @post.id), :html => { :method => :put, :id => "#{@post.id}_edit_form" }) do |f| %>
 	<p><label>Title:</label><br /><%= f.text_field :title, :id => 'edit_post_title', :value => @post.title, :tabindex => 1 %></p>
 	<p><label>Text:</label><br /><%= f.text_area :text, :rows => 4, :cols => 35, :id => 'edit_post_text_area', :value => @post.text, :tabindex => 2 %></p>
 <% end %>
