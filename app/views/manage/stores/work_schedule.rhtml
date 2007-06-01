@@ -17,7 +17,7 @@
 		//]]>
 		</script>
 </div>
-<% 2.calendar_weeks.from(@start.beginning_of_week).with_events(@cal).weeks.each do |w| -%>
+<% 4.calendar_weeks.from(@start.beginning_of_week).with_events(@cal).weeks.each do |w| -%>
 <table class="calendar_table">
 	<caption><%= @store.friendly_name %>, Week of <%= w.start_time.humanize_date('long') %></caption>
   <thead>
