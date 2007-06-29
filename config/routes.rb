@@ -15,9 +15,6 @@ ActionController::Routing::Routes.draw do |map|
 
 # * * * * * * * *
 
-  map.test '/test/:action/:id', :controller => 'manage/test', :action => 'dashboard'
-  map.connect '/malibu/posts/:action', :controller => 'posts', :action => 'index'
-
 # * * * * * * * * * * * * * * * * * * * * * * * *
 
 #* * * * * * *
@@ -26,8 +23,8 @@ ActionController::Routing::Routes.draw do |map|
 
   map.admin_dashboard                        '/malibu',        :controller => 'manage/forms',   :action => 'index'
   map.admin_schedule '/malibu/work_schedule/:store_alias', :controller => 'manage/stores', :action => 'work_schedule'
-  map.resources :posts, :name_prefix => 'admin_', :path_prefix => '/malibu/bulletin_board', :collection => { :live_search => :any, :search => :any }, :member => {:attachment => :get}
   map.admin_bulletin '/malibu/bulletin_board', :controller => 'stores', :action => 'bulletin_board'
+  map.resources :posts, :name_prefix => 'admin_', :path_prefix => '/malibu/bulletin_board', :collection => { :live_search => :any, :search => :any }, :member => {:attachment => :get}
   map.resources :admins,     :path_prefix => '/malibu/manage', :controller => 'manage/admins',  :collection => { :live_search => :any, :search => :any, :set_admin_friendly_name => :any }, :member => { :update => :update }
   map.resources :stores,    :path_prefix => '/malibu/manage', :controller => 'manage/stores' do |store|
     store.resources :users, :name_prefix => 'manage_',          :controller => 'manage/users',   :collection => { :live_search => :any, :search => :any, :set_user_friendly_name => :any }, :member => { :update => :update }

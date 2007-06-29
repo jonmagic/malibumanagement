@@ -9,6 +9,10 @@ class FormInstance < ActiveRecord::Base
 
   before_save :unassign_if_submitted
 
+  def validate
+    errors.add_to_base("Form data is not valid") unless self.data.valid?
+  end
+
 #Creating a new FormInstance:
 #  FormInstance.new(:store => Store, :user => current_user, :form_type => FormType, [[:data => AUTO-CREATES NEW]])
 #Automagically create the form data record whenever a FormInstance is created, and then automagically destroy it when the FormInstance is destroyed.

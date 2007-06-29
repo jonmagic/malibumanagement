@@ -119,6 +119,7 @@ logger.error "Current Model: #{current_form_model}"
     restrict('allow only store users') or begin
       status_changed = false
       assigned_to_changed = false
+      @save_status = ''
       @form = FormInstance.find_by_id(params[:form_id])
       return redirect_to(store_dashboard_url) unless @form
 
@@ -135,25 +136,49 @@ logger.error "Current Model: #{current_form_model}"
         end
       end
 
-      unless @form.update_attributes(params[:form_instance])
-        flash[:notice] = "ERROR Submitting draft!"
-      end
-
+# THIS IS MESSY! (Just thought I'd let you know...)
       @data = @form.data
-      if !assigned_to_changed && @data.update_attributes(params[params[:form_type]]) # & @form.update
-        @save_status = "Draft saved at " + Time.now.strftime("%I:%M %p").downcase + @data.save_status.to_s
+      if !assigned_to_changed && @form.data.update_attributes(params[params[:form_type]]) # & @form.update
+        if @form.update_attributes(params[:form_instance])
+          @save_status = "Draft saved at " + Time.now.strftime("%I:%M %p").downcase + ' ' + @form.data.save_status.to_s
+        else
+logger.error "Error updating @form attributes?! (#{@form.errors.full_messages.to_sentence} / #{@form.data.errors.full_messages.to_sentence})"
+          flash[:notice] = "ERROR Submitting draft!"
+        end
       else
-        @save_status = "ERROR auto-saving! (#{@data.errors.to_xml})"
+        unless @form.update_attributes(params[:form_instance])
+          @save_status << " ERROR auto-saving! (#{@form.errors.full_messages.to_sentence} / #{@form.data.errors.full_messages.to_sentence})"
+        end
       end
+      if @form.data.respond_to?(:is_signed?) && !@form.data.is_signed?
+        @form.status = 'draft'
+        status_changed = false
+        flash[:error] = 'This form must be signed before it can be submitted.'
+      end
+logger.info "Save Status: #{@save_status}"
+      # @save_status << ' ' << @data.save_status.to_s
       respond_to do |format|
-        if params[:leave_page] == 'true'
+        if @form.errors.length > 0
+          flash[:error] = @form.data.errors.collect {|err| "#{err[0].humanize} #{err[1]}"}.join('</p><p class="error_message">')
+          format.html do
+            redirect_to store_forms_url(:form_type => @form.data_type, :form_id => @form.id)
+          end
+          format.js do
+# Here we should insert the error messages, not reload the entire page.
+            render :update do |page|
+              page["draft_save_status"].replace_html(@form.errors.full_messages.to_sentence + ': ' + @form.data.errors.full_messages.to_sentence)
+              # page.redirect_to store_forms_url(:form_type => @form.data_type, :form_id => @form.id)
+            end
+          end
+        elsif params[:leave_page] == 'true'
           format.html { redirect_to store_dashboard_url }
           format.js do
             render :update do |page|
               page.redirect_to store_dashboard_url
             end
           end
-        elsif params[:reload_page] == 'true' || (@save_status =~ /signature accepted/) #Reloads the page automatically if it included a signature submit.
+        elsif params[:reload_page] == 'true' || (@save_status =~ /signature accepted/i) #Reloads the page automatically if it included a signature submit.
+logger.info "params[:reload_page] told us to reload"
           format.html { redirect_to store_forms_url(:form_type => @form.data_type, :form_id => @form.id) }
           format.js do
             render :update do |page|
@@ -162,7 +187,8 @@ logger.error "Current Model: #{current_form_model}"
           end
         else
           format.html {
-            flash[:error] = @data.errors.collect {|err| "#{err[0].humanize} #{err[1]}"}.join('</p><p class="error_message">')
+logger.info "Reloading by default (asked for html)..."
+            flash[:error] = @form.data.errors.collect {|err| "#{err[0].humanize} #{err[1]}"}.join('</p><p class="error_message">')
             redirect_to status_changed ? store_dashboard_url() : store_forms_url(:form_type => @form.data_type, :form_id => @form.id)
           }
           format.js   {render :layout => false}

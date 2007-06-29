@@ -31,8 +31,9 @@ class StoresController < ApplicationController
   end
 
   def bulletin_board
-    restrict('allow only admins and store users')
-    render :layout => current_user.default_layout
+    restrict('allow only admins and store users') or begin
+      render :layout => current_user.default_layout
+    end
   end
 
 #This should be operational for store admins to view and edit their account
