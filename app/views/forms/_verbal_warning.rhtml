@@ -4,17 +4,16 @@
 <table>
 	<tr>
 	<td class="leftcolumn"><label for="employee_name">Employee Name</label></td>
-	<td class="rightcolumn"><%= !view && @data.manager_sign_hash.blank? ? f.text_field(:employee_name, :value => @data.employee_name) : (@data.employee_name.blank? ? '<p>- No employee mentioned -</p>' : @data.employee_name) %></td>
+	<td class="rightcolumn"><%= !view && @form.data.manager_sign_hash.blank? ? f.text_field(:employee_name, :value => @form.data.employee_name) : (@form.data.employee_name.blank? ? '<p>- No employee mentioned -</p>' : @form.data.employee_name) %></td>
 	</tr>
 </table>
 <label for="description">Description of Incident:</label><br/>
-<%= !view && @data.manager_sign_hash.blank? ? f.text_area(:description, :value => @data.description, :rows => 10, :cols => 50) : (@data.description.blank? ? '<p>- No description -</p>' : @data.description) %>
+<%= !view && @form.data.manager_sign_hash.blank? ? f.text_area(:description, :value => @form.data.description, :rows => 10, :cols => 50) : (@form.data.description.blank? ? '<p>- No description -</p>' : @form.data.description) %>
 
 <hr style="width:50%; margin-right:50%" />
 <p class="error_message"><%= flash[:error] %></p>
-<% if view || !@data.employee_sign_hash.blank? -%>
-	<p class="error_message"><%= flash[:error] %></p>
-<% if !@data.employee_sign_hash.blank? -%>
+<% if view || !@form.data.employee_sign_hash.blank? -%>
+<% if !@form.data.employee_sign_hash.blank? -%>
 	<p style="font-size:12pt; font-style:italic; color:blue">This form was signed<br />&nbsp;&nbsp;&nbsp;&nbsp;on <%= @form.data.employee_sign_date %><br />&nbsp;&nbsp;&nbsp;&nbsp;by <%= @form.data.employee_signer.friendly_name %><br />&nbsp;&nbsp;&nbsp;&nbsp;Digital Signature: <%= @form.data.employee_sign_hash %></p>
 <% else -%>
 <p>This form was not signed by the employee.</p>
@@ -27,9 +26,8 @@
 <% end -%>
 
 <hr style="width:50%; margin-right:50%" />
-<% if view || !@data.manager_sign_hash.blank? -%>
-	<p class="error_message"><%= flash[:error] %></p>
-<% if !@data.manager_sign_hash.blank? -%>
+<% if view || !@form.data.manager_sign_hash.blank? -%>
+<% if !@form.data.manager_sign_hash.blank? -%>
 	<p style="font-size:12pt; font-style:italic; color:blue">This form was signed<br />&nbsp;&nbsp;&nbsp;&nbsp;on <%= @form.data.manager_sign_date %><br />&nbsp;&nbsp;&nbsp;&nbsp;by <%= @form.data.manager_signer.friendly_name %><br />&nbsp;&nbsp;&nbsp;&nbsp;Digital Signature: <%= @form.data.manager_sign_hash %></p>
 <% else -%>
 <p>This form was not signed by the manager.</p>
