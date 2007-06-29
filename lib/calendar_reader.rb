@@ -168,16 +168,17 @@ module CalendarReader
     attr_accessor :url, :ical, :xml, :product_id, :version, :scale, :method, :time_zone_name, :time_zone_offset, :events
 
     def initialize(cal_url=nil)
+      self.events = []
       if !cal_url.blank?
         self.url = cal_url
         self.parse!
-        self.events = []
       else
         return nil
       end
     end
 
     def add_event(event, sortit=true)
+      self.events = [] unless self.events.kind_of?(Array)
       self.events << event
       @events.sort! {|a,b| a.start_time <=> b.start_time } if sortit
       event
