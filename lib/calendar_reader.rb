@@ -233,20 +233,22 @@ puts "Time Zone: #{self.time_zone_name}"
         # ATTENDEE;CUTYPE=GROUP;ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED;CN=Moody Campu\ns;X-NUM-GUESTS=0 # so far always nil
         # COMMENT;X-COMMENTER=MAILTO # someone's email address, perhaps if they commented on the event.
         # RRULE # Recurrance Rule - string like 'FREQ=WEEKLY'
-        st = e["DTSTART;TZID=#{self.time_zone_name}"] || "#{e['DTSTART;VALUE=DATE']}T000000"
-        et = e["DTEND;TZID=#{self.time_zone_name}"] || "#{e['DTEND;VALUE=DATE']}T000000"
-        # DTSTART;TZID=America/New_York:20070508T070000
-        self.add_event(Event.new(
-          :start_time => Time.gcalschema("#{st}Z"),
-          :end_time => Time.gcalschema("#{et}Z"),
-          :location => e['LOCATION'],
-          :created_at => Time.gcalschema(e['CREATED']),
-          :updated_at => Time.gcalschema(e['LAST-MODIFIED']),
-          :summary => e['SUMMARY'],
-          :description => e['DESCRIPTION'],
-          :recurrance_rule => e['RRULE']
-        ), false) # (disable sorting until done)
-        @events.sort! {|a,b| a.start_time <=> b.start_time }
+        if !e.nil?
+          st = e["DTSTART;TZID=#{self.time_zone_name}"] || "#{e['DTSTART;VALUE=DATE']}T000000"
+          et = e["DTEND;TZID=#{self.time_zone_name}"] || "#{e['DTEND;VALUE=DATE']}T000000"
+          # DTSTART;TZID=America/New_York:20070508T070000
+          self.add_event(Event.new(
+            :start_time => Time.gcalschema("#{st}Z"),
+            :end_time => Time.gcalschema("#{et}Z"),
+            :location => e['LOCATION'],
+            :created_at => Time.gcalschema(e['CREATED']),
+            :updated_at => Time.gcalschema(e['LAST-MODIFIED']),
+            :summary => e['SUMMARY'],
+            :description => e['DESCRIPTION'],
+            :recurrance_rule => e['RRULE']
+          ), false) # (disable sorting until done)
+          @events.sort! {|a,b| a.start_time <=> b.start_time }
+        end
       end
     end
     def parse_from_ical
