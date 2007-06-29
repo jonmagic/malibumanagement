@@ -171,15 +171,16 @@ module CalendarReader
       if !cal_url.blank?
         self.url = cal_url
         self.parse!
+        self.events = []
       else
         return nil
       end
     end
 
     def add_event(event, sortit=true)
-      self.events ||= []
       self.events << event
       @events.sort! {|a,b| a.start_time <=> b.start_time } if sortit
+      event
     end
 
     def self.parse(cal_url)
