@@ -39,6 +39,7 @@ ActionController::Routing::Routes.draw do |map|
   map.admin_form_log '/malibu/forms/:form_type/:form_id/logs', :controller => 'manage/logs', :action => 'form_logs'
   map.formatted_admin_forms '/malibu/forms/:form_status/:action/:form_type/:form_id.:format', :controller => 'manage/forms', :action => 'view',   :format => 'html'
   map.admin_forms           '/malibu/forms/:form_status/:form_type/:form_id/:action',         :controller => 'manage/forms', :action => 'view'
+  map.helios '/malibu/helios/:action/:id', :controller => 'helios', :action => 'index'
 
 # * * * * * * * * * * * * * * * * * * * * * * * *
 
