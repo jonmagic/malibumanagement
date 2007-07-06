@@ -6,7 +6,7 @@ class HeliosController < ApplicationController
 
   def FixMismatch13
     Helios::ClientProfile.update_satellites = true # Ensures satellite databases are updated automatically.
-    Helios::ClientProfile.find_all_by_Member1(nil).each {|faulty| faulty.update_attributes(:Member1 => 0)}
-    Helios::ClientProfile.find_all_by_Member2(nil).each {|faulty| faulty.update_attributes(:Member2 => 0)}
+    Helios::ClientProfile.find_all_by_member1_flex(nil).each {|faulty| faulty.update_attributes(:member1_flex => 0)}
+    Helios::ClientProfile.find_all_by_member2_flex(nil).each {|faulty| faulty.update_attributes(:member2_flex => 0)}
   end
 end

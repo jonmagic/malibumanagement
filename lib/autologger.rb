@@ -19,19 +19,19 @@
 module Autologger
   def self.append_features(base)
     base.after_create do |model|
-      unless model.class.to_s.humanize == 'Log' or @migrating == true
+      unless model.class.to_s.humanize == 'Log' or model.class.name =~ /::/ or @migrating == true
         old_obj = model.class.find_by_id(model.id)
         Log.create(:log_type => "create:#{model.class.to_s.humanize}", :data => {:new_attributes => model.attributes.changed_values(old_obj.attributes)}, :object => old_obj, :agent => Thread.current['user'])
       end
     end
     base.before_update do |model|
-      unless model.class.to_s.humanize == 'Log' or @migrating == true
+      unless model.class.to_s.humanize == 'Log' or model.class.name =~ /::/ or @migrating == true
         old_obj = model.class.find_by_id(model.id)
         Log.create(:log_type => "update:#{model.class.to_s.humanize}", :data => {:old_attributes => old_obj.attributes.changed_values(model.attributes), :new_attributes => model.attributes.changed_values(old_obj.attributes)}, :object => old_obj, :agent => Thread.current['user']) unless model.attributes.changed_values(old_obj.attributes).empty?
       end
     end
     base.before_destroy do |model|
-      unless model.class.to_s.humanize == 'Log' or @migrating == true
+      unless model.class.to_s.humanize == 'Log' or model.class.name =~ /::/ or @migrating == true
         old_obj = model.class.find_by_id(model.id)
         Log.create(:log_type => "destroy:#{model.class.to_s.humanize}", :data => {:old_attributes => old_obj.attributes.changed_values(model.attributes)}, :object => old_obj, :agent => Thread.current['user'])
       end

@@ -7,8 +7,12 @@ class Helios::Eft < ActiveRecord::Base
     :password => 'booboo'
   )
 
-  include HeliosPeripheral
-
   set_table_name 'EFT'
   set_primary_key 'Client_No'
+
+  include HeliosPeripheral
+
+  def public_attributes
+    self.attributes.reject {|k,v| [self.class.primary_key, 'F_LOC', 'UpdateAll'].include?(k)}
+  end
 end

@@ -7,8 +7,12 @@ class Helios::ClientProfile < ActiveRecord::Base
     :password => 'booboo'
   )
 
+  set_table_name 'Client_Profile'
+  set_primary_key 'Client_no'
+
   include HeliosPeripheral
 
-  set_table_name 'Client_Profiles'
-  set_primary_key 'Client_no'
+  def public_attributes
+    self.attributes.reject {|k,v| [self.class.primary_key, 'F_LOC', 'UpdateAll'].include?(k)}
+  end
 end
