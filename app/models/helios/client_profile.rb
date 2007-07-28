@@ -3,8 +3,8 @@ class Helios::ClientProfile < ActiveRecord::Base
     :adapter  => 'mysql',
     :database => 'HeliosBS',
     :host     => '127.0.0.1',
-    :username => 'Administrator',
-    :password => 'gninnat'
+    :username => 'OpenHeliosConnector',
+    :password => 'adshf98a4yaw'
   )
 
   set_table_name 'Client_Profile'
