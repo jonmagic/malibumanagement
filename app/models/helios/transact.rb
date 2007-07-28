@@ -2,7 +2,7 @@ class Helios::Transact < ActiveRecord::Base
   self.establish_connection(
     :adapter  => 'mysql',
     :database => 'HeliosBS',
-    :host     => '10.11.45.3',
+    :host     => '127.0.0.1',
     :username => 'maly',
     :password => 'booboo'
   )
