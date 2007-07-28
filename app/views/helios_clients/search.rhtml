@@ -1,0 +1,44 @@
+<% model_name = 'helios_clients' -%>
+<% show_null_results ||= 'no' -%>
+<% proxy_partial ||= 'live_search_results' -%>
+<p>Showing <%= @clients.length %> of <%= @total %> <%= @total == 1 ? model_name.singularize.humanize : model_name.humanize %> <%= @query.blank? ? 'total' :  "containing <em>#{@query}</em>" %><%= @clients.length > 0 ? ':' : '!' %></p><br />
+<p><a href="javascript:void(0)" onclick="Element.show('helios_clients_search_loading'); new Ajax.Updater('helios_clients_livesearch_results', '/malibu/helios/helios_clients.html;search?page=<%= params[:page] ? params[:page].to_i-1 : 0 %>&amp;query=<%= @query %>', {asynchronous:true, onComplete:function(){Element.hide('helios_clients_search_loading')}, method:'get'}); return false;">&lt;&lt;</a> = <a href="javascript:void(0)" onclick="Element.show('helios_clients_search_loading'); new Ajax.Updater('helios_clients_livesearch_results', '/malibu/helios/helios_clients.html;search?page=<%= params[:page] ? params[:page].to_i+1 : 2 %>&amp;query=<%= @query %>', {asynchronous:true, onComplete:function(){Element.hide('helios_clients_search_loading')}, method:'get'}); return false;">&gt;&gt;</a></p>
+<div id='<%= model_name %>_livesearch_results_list'>
+	<table>
+		<thead>
+			<th>Client_no</th>
+			<th>Name</th>
+			<th>Address</th>
+			<th>Phone</th>
+			<th>Modified</th>
+			<!-- <th>Last Transaction Date</th> -->
+			<th>Member1 (Beg - Exp)</th>
+			<th>Time4_Exp, Time5_Exp</th>
+			<th>Controls</th>
+		</thead>
+
+	<% if !(show_null_results == 'no') || @clients.length > 0 -%>
+		<% rownum = 0 -%>
+		<% @clients.each do |client| -%>
+			<% rownum += 1 -%>
+			<%= render(:partial => 'client_listing', :locals => {:client => client, :rownum => rownum}) %>
+		<% end -%>
+	<% else -%>
+		<%= render :partial => 'client_listing', :locals => {:client => Helios::ClientProfile.new}%>
+	<% end -%>
+	</table>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+document.getElementsByClassName('destroy_link').each(
+	function(link){
+		new Control.Modal(link, {requestOptions: {postBody: '_method=delete', method: 'post'}})
+	}
+);
+document.getElementsByClassName('ajax_link').each(
+	function(link){
+		new Control.Modal(link, {method: 'post'})
+	}
+);
+//]]>
+</script>
