@@ -70,8 +70,7 @@ class FormsController < ApplicationController
   def new
     restrict('allow only store users') or begin
       return redirect_to(store_dashboard_url) if params[:form_type] == 'chooser'
-logger.error "Current Model: #{current_form_model}"
-      @form = !FormType.find_by_name(params[:form_type]).can_have_multiple_drafts && current_user.drafts_of_type(params[:form_type]).count > 0 ? current_user.drafts_of_type(params[:form_type])[0] : FormInstance.new(
+      @form = (!FormType.find_by_name(params[:form_type]).can_have_multiple_drafts && current_user.drafts_of_type(params[:form_type]).count > 0) ? current_user.drafts_of_type(params[:form_type])[0] : FormInstance.new(
         :user => current_user,
         :store => current_store,
         :form_type => current_form_model, #Automatically creates the connected form data via the appropriate (given) model
@@ -157,6 +156,7 @@ logger.error "Error updating @form attributes?! (#{@form.errors.full_messages.to
       end
 logger.info "Save Status: #{@save_status}"
       # @save_status << ' ' << @data.save_status.to_s
+
       respond_to do |format|
         if @form.errors.length > 0
           flash[:error] = @form.data.errors.collect {|err| "#{err[0].humanize} #{err[1]}"}.join('</p><p class="error_message">')

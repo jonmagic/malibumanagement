@@ -116,6 +116,14 @@ ul, li {
 	text-decoration:underline;
 }
 
+.livesearch_results .even {
+	background-color:#ddf;
+}
+
+.livesearch_results .odd {
+	background-color:#fdd;
+}
+
 span.action_links {
 	padding:0;
 }
@@ -325,4 +333,19 @@ th.calendar_day {
 	background-color:#80A2FF;
 	padding:.5em 1em;
 	color:#2B3655;
+}
+
+#modal_container {  
+	padding:5px;  
+	background-color:#fff;  
+	border:1px solid #666;  
+	overflow:auto;  
+	font-family:"Lucida Grande",Verdana;  
+	font-size:12px;  
+	color:#333;  
+	text-align:left;  
+} 
+
+#modal_overlay {  
+	background-color:#000;  
 }

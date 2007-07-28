@@ -646,7 +646,7 @@ Object.extend(Hash, {
         else {
         	key = encodeURIComponent(pair.key);
           values.each(function(value) {
-            value = value != undefined ? encodeURIComponent(value) : '';
+            value = value != undefined ? value : '';
             parts.push(key + '=' + encodeURIComponent(value));
           });
           return;

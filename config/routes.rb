@@ -25,6 +25,10 @@ ActionController::Routing::Routes.draw do |map|
   map.admin_schedule '/malibu/work_schedule/:store_alias', :controller => 'manage/stores', :action => 'work_schedule'
   map.admin_bulletin '/malibu/bulletin_board', :controller => 'stores', :action => 'bulletin_board'
   map.resources :posts, :name_prefix => 'admin_', :path_prefix => '/malibu/bulletin_board', :collection => { :live_search => :any, :search => :any }, :member => {:attachment => :get}
+  # map.search_helios_clients '/malibu/helios/search', :controller => 'helios', :action => 'search'
+  # map.formatted_search_helios_clients '/malibu/helios/search.:format', :controller => 'helios', :action => 'search'
+  map.resources :helios_clients, :path_prefix => '/malibu/helios', :collection => {:live_search => :any, :search => :any}, :member => { :exists => :any }
+  map.helios '/malibu/helios/:action/:id', :controller => 'helios', :action => 'index'
   map.resources :admins,     :path_prefix => '/malibu/manage', :controller => 'manage/admins',  :collection => { :live_search => :any, :search => :any, :set_admin_friendly_name => :any }, :member => { :update => :update }
   map.resources :stores,    :path_prefix => '/malibu/manage', :controller => 'manage/stores' do |store|
     store.resources :users, :name_prefix => 'manage_',          :controller => 'manage/users',   :collection => { :live_search => :any, :search => :any, :set_user_friendly_name => :any }, :member => { :update => :update }
@@ -39,7 +43,6 @@ ActionController::Routing::Routes.draw do |map|
   map.admin_form_log '/malibu/forms/:form_type/:form_id/logs', :controller => 'manage/logs', :action => 'form_logs'
   map.formatted_admin_forms '/malibu/forms/:form_status/:action/:form_type/:form_id.:format', :controller => 'manage/forms', :action => 'view',   :format => 'html'
   map.admin_forms           '/malibu/forms/:form_status/:form_type/:form_id/:action',         :controller => 'manage/forms', :action => 'view'
-  map.helios '/malibu/helios/:action/:id', :controller => 'helios', :action => 'index'
 
 # * * * * * * * * * * * * * * * * * * * * * * * *
 

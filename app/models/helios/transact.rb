@@ -7,8 +7,10 @@ class Helios::Transact < ActiveRecord::Base
     :password => 'booboo'
   )
 
-  include HeliosPeripheral
-
   set_table_name 'Transactions'
   set_primary_key 'transact_no'
+
+  include HeliosPeripheral
+
+  belongs_to :client, :class_name => 'Helios::ClientProfile', :foreign_key => 'client_no'
 end

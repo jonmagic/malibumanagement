@@ -11,7 +11,7 @@ RAILS_GEM_VERSION = '1.2.2' unless defined? RAILS_GEM_VERSION
 require File.join(File.dirname(__FILE__), 'boot')
 
 SATELLITE_LOCATIONS = {
-  'hillsdale' => '10.11.45.2:3000'
+  'hillsdale' => '10.11.45.2:5050'
 }
 
 Rails::Initializer.run do |config|

@@ -1,6 +1,27 @@
 <p>Hello, and Welcome to the Helios Administration!</p>
 <p>From here you can:<br />
-<ul>
-	<li><%= link_to 'Fix ALL Mismatch 13 errors', helios_path('FixMismatch13') %></li>
-</ul>
+	<ul>
+		<li><%= link_to 'Fix ALL Mismatch 13 errors', helios_path('FixMismatch13') %></li>
+		<li>Merge and delete clients:</li>
+	</ul>
 </p>
+<% #model_name = controller.class.name.sub('Controller', '').underscore -%>
+<% model_name = 'helios_clients' -%>
+<div class="livesearch_container">
+	<div class="livesearch_form">
+		<form id="<%= model_name %>_livesearch_form" onsubmit="Element.show('<%= model_name %>_search_loading'); new Ajax.Request('<%= self.send('formatted_search_'+model_name+'_path', :format => 'js') %>', {asynchronous:true, evalScripts:true, parameters:Form.serialize(this), onComplete: function(){Element.hide('<%= model_name %>_search_loading')}}); return false;" method="post" action="<%= self.send('formatted_search_'+model_name+'_path', :format => 'js') %>">
+			<b>Live Search:</b> <input id="<%= model_name %>_searchtext" name="query" type="text" />
+			<span id='<%= model_name %>_search_loading' style="display:none"><img alt="loading..." src="/images/ajax/barloader.gif" /></span>
+		</form>
+	</div>
+	<div id="<%= model_name %>_livesearch_results" class="livesearch_results"></div>
+</div>
+<%= observe_form(model_name + '_livesearch_form',
+								:frequency => 0.5,
+               	:update => model_name + '_livesearch_results',
+								:start_nil => true,
+               	:loading => "Element.show('" + model_name + "_search_loading')",
+               	:complete => "Element.hide('" + model_name + "_search_loading')",
+               	:url => self.send('formatted_search_'+model_name+'_path', :format => 'html'),
+								:method => :get)
+%>

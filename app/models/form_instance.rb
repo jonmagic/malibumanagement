@@ -21,7 +21,8 @@ class FormInstance < ActiveRecord::Base
     ft = args[:form_type]
     args[:form_type] = FormType.find_by_name(args[:form_type].to_s)
     super(args)
-    self.data = ft.new unless !(args.kind_of? Hash) or ft.nil?
+    # self.data = ft.new unless !(args.kind_of? Hash) or ft.nil?
+    self.data = ft.new unless ft.nil? #Don't know what the args.kind_of? Hash was for...
   end
 
   def status
