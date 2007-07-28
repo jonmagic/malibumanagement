@@ -1,4 +1,4 @@
-<p><strong><%= @client.full_name %></strong> (<%= @client.id %>) exists in the following locations:</p>
+<p><strong><%= @client.full_name || @client.id %></strong> exists in the following locations:</p>
 <ul>
 	<% @client_locations.each do |location, record| -%>
 	<li class="<%= !record.errors.blank? ? 'warning_bullet' : (record.new? ? 'red_bullet' : 'green_bullet') %>"><%= location %> - <%= !record.errors.blank? ? record.errors.full_messages.to_sentence : (record.new? ? "Doesn't Exist" : 'Exists') %></li>
