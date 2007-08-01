@@ -16,5 +16,5 @@
                 :loading => "Element.show('search_loading');",
                 :complete => "Element.hide('search_loading'); if( ($('description_field').value == '') && ($('new_post_form_section').style.display == 'none') ) {new Effect.SlideDown($('new_post_form_section'), {})} else {if(($('description_field').value != '') && ($('new_post_form_section').style.display != 'none')) {new Effect.SlideUp($('new_post_form_section'), {});}}",
 								:url => the_live_search_posts_path %>
-<div style="height:19px"><img alt="loading..." id="search_loading" src="/images/barloader.gif" style="display:none;" /></div>
+<div style="height:19px"><img alt="loading..." id="search_loading" src="/images/ajax/barloader.gif" style="display:none;" /></div>
 <div id="search_results"></div>
