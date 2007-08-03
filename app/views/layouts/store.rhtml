@@ -53,7 +53,7 @@
 					<!-- <li><%= tab_link_to 1.as_status.word('uppercase short plural') + (!current_user.forms_with_status(1).blank? ? " (#{current_user.forms_with_status(1).count})" : ''), store_forms_by_status_path(:form_status => 1.as_status.text), :class => "#{1.as_status.text}_count" %></li>
 					<li><%= tab_link_to 2.as_status.word('uppercase short plural') + (!current_user.forms_with_status(2).blank? ? " (#{current_user.forms_with_status(2).count})" : ''), store_forms_by_status_path(:form_status => 2.as_status.text), :class => "#{2.as_status.text}_count" %></li>
 					<li><%= tab_link_to 3.as_status.word('uppercase short plural') + (!current_user.forms_with_status(3).blank? ? " (#{current_user.forms_with_status(3).count})" : ''), store_forms_by_status_path(:form_status => 3.as_status.text), :class => "#{3.as_status.text}_count" %></li> -->
-					<li><%= tab_link_to 'Archive', store_forms_by_status_path(:form_status => 4.as_status.text) %></li>
+					<li><%= tab_link_to current_user.is_store_admin? ? 'Archive' : 'History', store_forms_by_status_path(:form_status => 4.as_status.text) %></li>
 					<% end -%>
 					<li><%= tab_link_to 'Work Schedule', store_schedule_path %></li>
 					<li><%= tab_link_to 'Bulletin Board', bulletin_board_path %></li>

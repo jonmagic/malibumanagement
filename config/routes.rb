@@ -62,6 +62,7 @@ ActionController::Routing::Routes.draw do |map|
 
   map.store_search_forms      '/stores/:domain/forms/search',      :controller => 'forms', :action => 'search'
   map.store_live_search_forms '/stores/:domain/forms/live_search', :controller => 'forms', :action => 'live_search'
+  map.store_forms_history '/stores/:domain/forms/history', :controller => 'forms', :action => 'live_history'
   map.store_forms_by_status '/stores/:domain/forms/:form_status/:action',                     :controller => 'forms',       :action => 'index', :form_status => nil
   map.resources :notes, :path_prefix => '/stores/:domain/forms/:form_status/:form_type/:form_id', :name_prefix => 'store_', :member => {:attachment => :get}
   map.store_form_log '/stores/:domain/forms/:form_type/:form_id/logs', :controller => 'logs', :action => 'form_logs'

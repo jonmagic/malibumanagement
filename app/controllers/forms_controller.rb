@@ -17,7 +17,11 @@ class FormsController < ApplicationController
       if params[:form_status].nil?
         redirect_to store_forms_by_status_path(:form_status => 'drafts')
       elsif params[:form_status] == 'archived'
-        render :action => 'archive_view'
+        if current_user.is_store_admin?
+          archive_view
+        else
+          history_view
+        end
       else
         if params[:form_status] == 'all'
           @my_forms = current_user.form_instances
@@ -31,36 +35,68 @@ class FormsController < ApplicationController
   end
 
   def archive_view
+    restrict('allow only store admins') or begin
+      render :action => 'archive_view'
+    end
+  end
+  def history_view
+    @result_pages, @results = paginate_by_sql(
+      FormInstance,
+      [
+        "SELECT form_instances.* FROM form_instances WHERE (form_instances.user_id=:user_id OR form_instances.data_type='SalesReport') AND form_instances.store_id=:store_id AND form_instances.status_number=4 AND form_instances.created_at < :date ORDER BY form_instances.created_at DESC",
+        {:date => Time.tomorrow, :store_id => current_store.id, :user_id => current_user.id}
+      ],
+      20
+    )
+logger.info "Search Results: #{@results.length} -- #{@results}"
+    @search_entity = @results.length == 1 ? "Archived Form" : "Archived Forms"
+    render :action => 'history_view'
+  end
+
+  def live_history
+    @result_pages, @results = paginate_by_sql(
+      FormInstance,
+      [
+        "SELECT form_instances.* FROM form_instances WHERE (form_instances.user_id=:user_id OR form_instances.data_type='SalesReport') AND form_instances.store_id=:store_id AND form_instances.status_number=4 AND form_instances.created_at < :date ORDER BY form_instances.created_at DESC",
+        {:date => Time.tomorrow, :store_id => current_store.id, :user_id => current_user.id}
+      ],
+      20
+    )
+logger.info "Search Results: #{@results.length} -- #{@results}"
+    @search_entity = @results.length == 1 ? "Archived Form" : "Archived Forms"
+    render :partial => 'live_history', :layout => false
   end
 
 #There should be three fields here: Store, Date
   def search(live=false)
-    user    = nil
-    date    = nil
-    formtype = nil
+    restrict('allow only store admins') or begin
+      user    = nil
+      date    = nil
+      formtype = nil
 
-    user    = "%" + params[:user_field]    + "%" if !params[:user_field].nil? and params[:user_field].length > 0
-    formtype    = params[:formtype_field] if !params[:formtype_field].nil? and params[:formtype_field].length > 0
-    date = (!params[:Time][:tomorrow].nil? and params[:Time][:tomorrow].length > 0) ? params[:Time][:tomorrow] : Time.tomorrow
+      user    = "%" + params[:user_field]    + "%" if !params[:user_field].nil? and params[:user_field].length > 0
+      formtype    = params[:formtype_field] if !params[:formtype_field].nil? and params[:formtype_field].length > 0
+      date = (!params[:Time][:tomorrow].nil? and params[:Time][:tomorrow].length > 0) ? params[:Time][:tomorrow] : Time.tomorrow
 
-    tables = ['form_instances']
-    tables.push('users') unless user.nil?
+      tables = ['form_instances']
+      tables.push('users') unless user.nil?
 
-    matches = ["form_instances.store_id=:store_id AND form_instances.status_number=4 AND form_instances.created_at < :date"] #Put the date field in first by default - there will always be a date to search for.
-    matches.push('form_instances.data_type=:formtype') unless formtype.nil?
-    matches.push('form_instances.user_id=users.id') unless user.nil?
-    matches.push('users.friendly_name LIKE :user') unless user.nil?
+      matches = ["form_instances.store_id=:store_id AND form_instances.status_number=4 AND form_instances.created_at < :date"] #Put the date field in first by default - there will always be a date to search for.
+      matches.push('form_instances.data_type=:formtype') unless formtype.nil?
+      matches.push('form_instances.user_id=users.id') unless user.nil?
+      matches.push('users.friendly_name LIKE :user') unless user.nil?
 
-    @form_values = {:Time => {:tomorrow => date}} #put the date field in first by default - there will always be a date to search for.
-    @values = {:date => date, :store_id => current_store.id}
-    @form_values.merge!({:user_field => params[:user_field]}) unless user.nil?
-    @values.merge!({:user => user}) unless user.nil?
-    @form_values.merge!({:formtype_field => params[:formtype_field]}) unless formtype.nil?
-    @values.merge!({:formtype => formtype}) unless formtype.nil?
+      @form_values = {:Time => {:tomorrow => date}} #put the date field in first by default - there will always be a date to search for.
+      @values = {:date => date, :store_id => current_store.id}
+      @form_values.merge!({:user_field => params[:user_field]}) unless user.nil?
+      @values.merge!({:user => user}) unless user.nil?
+      @form_values.merge!({:formtype_field => params[:formtype_field]}) unless formtype.nil?
+      @values.merge!({:formtype => formtype}) unless formtype.nil?
 
-    @result_pages, @results = paginate_by_sql(FormInstance, ["SELECT form_instances.* FROM " + tables.join(',') + " WHERE " + matches.join(' AND ') + " ORDER BY form_instances.created_at DESC", @values], 20)
-    @search_entity = @results.length == 1 ? "Archived Form" : "Archived Forms"
-    render :layout => false
+      @result_pages, @results = paginate_by_sql(FormInstance, ["SELECT form_instances.* FROM " + tables.join(',') + " WHERE " + matches.join(' AND ') + " ORDER BY form_instances.created_at DESC", @values], 20)
+      @search_entity = @results.length == 1 ? "Archived Form" : "Archived Forms"
+      render :layout => false
+    end
   end
   def live_search
     search(true)
@@ -94,6 +130,10 @@ class FormsController < ApplicationController
       return redirect_to(store_dashboard_url) if @form_type == 'chooser'
       @form = FormInstance.find_by_id(params[:form_id])
       return redirect_to(store_dashboard_url) unless @form
+      unless current_user.is_store_admin? || @form.user_id == current_user.id || @form.data_type == 'SalesReport'
+        flash[:notice] = "You don't have access to that form. Please select another."
+        return redirect_to(store_dashboard_url)
+      end
       @data = @form.data
       # Drop the status down to draft! -- only if reeditable!
       if !(@form.status == 'draft') && @form.form_type.reeditable
@@ -121,6 +161,10 @@ class FormsController < ApplicationController
       @save_status = ''
       @form = FormInstance.find_by_id(params[:form_id])
       return redirect_to(store_dashboard_url) unless @form
+      unless current_user.is_store_admin? || @form.user_id == current_user.id || @form.data_type == 'SalesReport'
+        flash[:notice] = "You don't have access to that form. Please select another."
+        return redirect_to(store_dashboard_url)
+      end
 
       if !params[:form_instance].nil?
         if !params[:form_instance][:status].blank? &&
@@ -201,6 +245,10 @@ logger.info "Reloading by default (asked for html)..."
     restrict('allow only store users') or begin
       @form = FormInstance.find_by_id(params[:form_id])
       return redirect_to(store_dashboard_url) unless @form
+      unless current_user.is_store_admin? || @form.user_id == current_user.id || @form.data_type == 'SalesReport'
+        flash[:notice] = "You don't have access to that form. Please select another."
+        return redirect_to(store_dashboard_url)
+      end
       @data = @form.data
       @form_type = params[:form_type]
     end
