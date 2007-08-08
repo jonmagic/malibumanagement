@@ -69,6 +69,8 @@ module HeliosPeripheral
       self.slaves.keys.each do |slave|
         begin
 puts "Finding #{args.inspect} at #{slave}"
+Thread.current['satellite_status'].status_text = "Performing #{method} for #{args.join(', ')} at #{slave}..."
+Thread.current['satellite_status'].percent = 100 / (self.slaves.keys.index(slave)+1)
           retval[slave] = self.slaves[slave].send(method, *args)
         rescue ActiveResource::ResourceNotFound => e
         rescue Errno::ETIMEDOUT => e

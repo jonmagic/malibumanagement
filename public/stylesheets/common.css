@@ -349,3 +349,13 @@ th.calendar_day {
 #modal_overlay {  
 	background-color:#000;  
 }
+
+#satellite_status_tray {
+	display:block;
+	position:absolute;
+	right:0;
+	top:0;
+	background-color:red;
+	color:white;
+	padding:1px 7px;
+}

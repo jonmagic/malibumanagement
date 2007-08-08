@@ -29,6 +29,7 @@ ActionController::Routing::Routes.draw do |map|
   # map.formatted_search_helios_clients '/malibu/helios/search.:format', :controller => 'helios', :action => 'search'
   map.resources :helios_clients, :path_prefix => '/malibu/helios', :collection => {:live_search => :any, :search => :any}, :member => { :exists => :any }
   map.helios '/malibu/helios/:action/:id', :controller => 'helios', :action => 'index'
+  map.connect '/malibu/helios/:action.:format', :controller => 'helios', :action => 'index', :format => 'xml'
   map.resources :admins,     :path_prefix => '/malibu/manage', :controller => 'manage/admins',  :collection => { :live_search => :any, :search => :any, :set_admin_friendly_name => :any }, :member => { :update => :update }
   map.resources :stores,    :path_prefix => '/malibu/manage', :controller => 'manage/stores' do |store|
     store.resources :users, :name_prefix => 'manage_',          :controller => 'manage/users',   :collection => { :live_search => :any, :search => :any, :set_user_friendly_name => :any }, :member => { :update => :update }

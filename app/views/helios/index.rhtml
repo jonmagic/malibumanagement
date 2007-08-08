@@ -1,3 +1,4 @@
+<div id='satellite_status_tray'>Status Loading...</div>
 <p>Hello, and Welcome to the Helios Administration!</p>
 <p>From here you can:<br />
 	<ul>
@@ -25,3 +26,21 @@
                	:url => self.send('formatted_search_'+model_name+'_path', :format => 'html'),
 								:method => :get)
 %>
+
+<%= javascript_tag "Element.hide('satellite_status_tray');
+var jack = new Ajax.PeriodicalUpdater(
+	'satellite_status_tray',
+	'/malibu/helios/satellite_status.xml',
+	{
+		frequency:    1,
+		asynchronous: true,
+		evalScripts:  true,
+		method:       'get',
+		onSuccess: 		function(request){
+			var status = request.responseXML.firstChild.childNodes.item(1).childNodes.item(1).firstChild.nodeValue;
+			var percent = request.responseXML.firstChild.childNodes.item(1).childNodes.item(3).firstChild.nodeValue;
+			if(percent < 100) {Element.show('satellite_status_tray')}
+			 else {Element.hide('satellite_status_tray')}
+		}
+	}
+);" %>

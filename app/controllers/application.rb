@@ -15,6 +15,7 @@ class ApplicationController < ActionController::Base
 
   def set_current_user
     Thread.current['user'] = current_user
+    Thread.current['satellite_status'] = Helios::SatelliteStatus.find_or_create_by_session_key(session.session_id)
   end
 
   def add_default_restrictions
