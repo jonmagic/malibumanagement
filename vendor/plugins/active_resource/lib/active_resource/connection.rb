@@ -14,14 +14,9 @@ module ActiveResource
     end
 
     def to_s
-      "Failed with #{response.code} #{response.message if response.respond_to?(:message)}"
+      "Failed with #{response.code}"
     end
   end
-
-  # 3xx Redirection
-  class Redirection < ConnectionError # :nodoc:
-    def to_s; response['Location'] ? "#{super} => #{response['Location']}" : super; end    
-  end 
 
   # 4xx Client Error
   class ClientError < ConnectionError; end # :nodoc:
@@ -112,8 +107,6 @@ module ActiveResource
       # Handles response and error codes from remote service.
       def handle_response(response)
         case response.code.to_i
-          when 301,302
-            raise(Redirection.new(response))
           when 200...400
             response
           when 404
@@ -141,6 +134,7 @@ module ActiveResource
           @http.use_ssl     = @site.is_a?(URI::HTTPS)
           @http.verify_mode = OpenSSL::SSL::VERIFY_NONE if @http.use_ssl
         end
+        @http.open_timeout = 15
 
         @http
       end

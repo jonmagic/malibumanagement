@@ -625,7 +625,9 @@ module ActiveResource
     #   Person.find(new_id)
     #   # => 404 (Resource Not Found)
     def destroy
-      connection.delete(element_path, self.class.headers)
+      res = connection.delete(element_path, self.class.headers)
+      self.id = nil if res
+      res.msg == 'OK' ? true : false
     end
 
     # Evaluates to <tt>true</tt> if this resource is not +new?+ and is
