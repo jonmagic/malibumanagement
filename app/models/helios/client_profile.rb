@@ -1,10 +1,8 @@
 class Helios::ClientProfile < ActiveRecord::Base
   self.establish_connection(
-    :adapter  => 'mysql',
-    :database => 'HeliosBS',
-    :host     => '127.0.0.1',
-    :username => 'maly',
-    :password => 'booboo'
+    :adapter  => 'sqlserver',
+    :mode => 'ODBC',
+    :dsn => 'HeliosBS'
   )
 
   set_table_name 'Client_Profile'
@@ -17,7 +15,9 @@ class Helios::ClientProfile < ActiveRecord::Base
   def self.search(query, options={})
     limit = options[:limit] || 10
     offset = options[:offset] || 0
-    self.find_by_sql("SELECT * FROM #{self.table_name} #{craft_sql_condition_for_query(query)} LIMIT #{limit} OFFSET #{offset}")
+    sql = "SELECT * FROM (SELECT TOP #{limit} * FROM (SELECT TOP #{limit + offset} * FROM Client_Profile #{craft_sql_condition_for_query(query)} ORDER BY [Last_Name], [Client_no] ASC) AS tmp1 ORDER BY [Last_Name], [Client_no] DESC) AS tmp2 ORDER BY [Last_Name], [Client_no] ASC"
+    ActionController::Base.logger.info "Search SQL: #{sql}"
+    self.find_by_sql(sql)
   end
   def self.search_count(query)
     self.count_by_sql("SELECT COUNT(*) FROM #{self.table_name} #{craft_sql_condition_for_query(query)}")
@@ -41,6 +41,6 @@ class Helios::ClientProfile < ActiveRecord::Base
   protected
     def self.craft_sql_condition_for_query(query) #search in: Client_no, First_Name, Last_Name, Address
       query = '%' + query + '%'
-      self.replace_bind_variables("WHERE Client_no LIKE ? OR CONCAT_WS(' ', First_Name, Last_Name) LIKE ? OR CONCAT_WS(', ', Last_Name, First_Name) LIKE ? OR Address LIKE ? ORDER BY Last_Name, First_Name", [query, query, query, query])
+      self.replace_bind_variables("WHERE [Client_no] LIKE ? OR [First_Name] LIKE ? OR [Address] LIKE ?", [query, query, query])
     end
 end

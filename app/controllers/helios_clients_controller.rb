@@ -5,7 +5,7 @@ class HeliosClientsController < ApplicationController
     if @query
       per_page = 30
       @total = Helios::ClientProfile.search_count(@query)
-      logger.info "Total matched: #{@total}"
+logger.info "Total matched: #{@total}"
       @pages = Paginator.new self, @total, per_page, params[:page]
 logger.info "Limit: #{@pages.current.to_sql[0]}, Offset: #{@pages.current.to_sql[1]}"
       @clients = Helios::ClientProfile.search(@query, :limit => @pages.current.to_sql[0], :offset => @pages.current.to_sql[1])

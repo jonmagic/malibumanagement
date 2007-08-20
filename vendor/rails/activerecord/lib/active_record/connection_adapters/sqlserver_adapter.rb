@@ -43,6 +43,7 @@ module ActiveRecord
         host      = config[:host] ? config[:host].to_s : 'localhost'
         driver_url = "DBI:ADO:Provider=SQLOLEDB;Data Source=#{host};Initial Catalog=#{database};User Id=#{username};Password=#{password};"
       end
+ActionController::Base.logger.info "Driver URL: #{driver_url}, U: #{username}, P: #{password}"
       conn      = DBI.connect(driver_url, username, password)
       conn["AutoCommit"] = autocommit
       ConnectionAdapters::SQLServerAdapter.new(conn, logger, [driver_url, username, password])
@@ -368,7 +369,7 @@ module ActiveRecord
 
       def add_limit_offset!(sql, options)
         if options[:limit] and options[:offset]
-          total_rows = @connection.select_all("SELECT count(*) as TotalRows from (#{sql.gsub(/\bSELECT(\s+DISTINCT)?\b/i, "SELECT#{$1} TOP 1000000000")}) tally")[0][:TotalRows].to_i
+          total_rows = select("SELECT count(*) as TotalRows from (#{sql.gsub(/\bSELECT(\s+DISTINCT)?\b/i, "SELECT#{$1} TOP 1000000000")}) tally")[0][:TotalRows].to_i
           if (options[:limit] + options[:offset]) >= total_rows
             options[:limit] = (total_rows - options[:offset] >= 0) ? (total_rows - options[:offset]) : 0
           end
@@ -503,6 +504,7 @@ module ActiveRecord
         def select(sql, name = nil)
           repair_special_columns(sql)
 
+          ActionController::Base.logger.info "SQL: #{sql}"
           result = []          
           execute(sql) do |handle|
             handle.each do |row|

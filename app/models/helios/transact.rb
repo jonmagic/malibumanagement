@@ -1,10 +1,10 @@
 class Helios::Transact < ActiveRecord::Base
   self.establish_connection(
-    :adapter  => 'mysql',
+    :adapter  => 'sqlserver',
     :database => 'HeliosBS',
-    :host     => '127.0.0.1',
-    :username => 'maly',
-    :password => 'booboo'
+    :host     => '.',
+    :username => 'OpenHelios',
+    :password => 'adshf98a4yaw'
   )
 
   set_table_name 'Transactions'

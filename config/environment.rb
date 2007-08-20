@@ -10,10 +10,6 @@ RAILS_GEM_VERSION = '1.2.2' unless defined? RAILS_GEM_VERSION
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 
-SATELLITE_LOCATIONS = {
-  'hillsdale' => '10.11.45.2:5050'
-}
-
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here
   

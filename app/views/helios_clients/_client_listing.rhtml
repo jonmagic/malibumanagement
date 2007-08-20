@@ -1,5 +1,5 @@
 <tr class="livesearch_result client_listing listing <%= rownum.even? ? 'even' : 'odd' %>">
-	<td><%= link_to client.Client_no, exists_helios_client_path(:id => client.id), :class => 'ajax_link' %></td>
+	<td><%= client.new_record? ? '(NEW)' : link_to(client.Client_no, exists_helios_client_path(:id => client.id), :class => 'ajax_link') %></td>
 	<td><%= client.full_name %></td>
 	<td><%= client.Address %></td>
 	<td><%= client.home_phone %></td>
@@ -7,5 +7,5 @@
 	<!-- <td><%# client.transactions.blank? ? '(last transaction date)' : client.last_transaction.Last_Mdt.strftime("%Y %b %d") %></td> -->
 	<td><%= client.Member1 %> (<%= client.Member1_Beg.strftime("%Y %b %d") if !client.Member1_Beg.nil? %> - <%= client.Member1_Exp.strftime("%Y %b %d") if !client.Member1_Exp.nil? %>)</td>
 	<td><%= client.Time4_Exp.strftime("%Y %b %d") if !client.Time4_Exp.nil? %><%= client.Time5_Exp.strftime("%Y %b %d") if !client.Time5_Exp.nil? %></td>
-	<td><%= link_to 'Destroy', helios_client_path(:id => client.id), :confirm => "This will destroy all record of this client PERMANENTLY. Are you sure?", :method => :delete, :class => 'destroy_link' if !client.new_record? %></td>
+	<td><%= link_to 'Destroy', helios_client_path(:id => client.id), :confirm => "This will destroy all records of this client PERMANENTLY. Are you sure?", :method => :delete, :class => 'destroy_link' if !client.new_record? %></td>
 </tr>
