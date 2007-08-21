@@ -21,7 +21,11 @@
 		<% rownum = 0 -%>
 		<% @clients.each do |client| -%>
 			<% rownum += 1 -%>
+			<% begin %>
 			<%= render :partial => 'helios_clients/client_listing', :locals => {:client => client, :rownum => rownum} %>
+			<% rescue ActionView::TemplateError %>
+			<%= render :partial => 'helios_clients/client_listing', :locals => {:client => Helios::ClientProfile.new(:First_Name => 'ERROR', :Last_Name => 'Rendering!'), :rownum => rownum} %>
+			<% end %>
 		<% end -%>
 	<% else -%>
 		<%= render :partial => 'helios_clients/client_listing', :locals => {:client => Helios::ClientProfile.new} %>
