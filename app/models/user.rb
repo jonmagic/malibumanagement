@@ -1,5 +1,7 @@
 require 'digest/sha1'
 class User < ActiveRecord::Base
+  # acts_as_paranoid
+
   belongs_to :store
   has_many :form_instances
   has_many :drafts,     :class_name => 'FormInstance', :conditions => "status_number=1"
