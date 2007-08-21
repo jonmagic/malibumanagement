@@ -1,6 +1,6 @@
 require 'digest/sha1'
 class User < ActiveRecord::Base
-  # acts_as_paranoid
+  acts_as_paranoid
 
   belongs_to :store
   has_many :form_instances
