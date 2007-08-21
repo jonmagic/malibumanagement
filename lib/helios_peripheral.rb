@@ -87,7 +87,7 @@ puts "Finding #{args.inspect} at #{slave}"
           retval[slave] = self.slaves[slave].new
           retval[slave].errors.add_to_base(err) if err
         end
-puts "\tResult: #{retval[slave].inspect}"
+# puts "\tResult: #{retval[slave].inspect}"
       end
       retval
     end
