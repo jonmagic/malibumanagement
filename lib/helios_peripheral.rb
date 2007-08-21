@@ -69,6 +69,7 @@ module HeliosPeripheral
       self.slaves.keys.each do |slave|
         begin
 puts "Finding #{args.inspect} at #{slave}"
+ActionController::Base.logger.info "Performing #{method} for #{args.join(', ')} at #{slave}..."
           Thread.current['satellite_status'].status_text = "Performing #{method} for #{args.join(', ')} at #{slave}..."
           Thread.current['satellite_status'].percent = 100 / (self.slaves.keys.index(slave)+1) * self.slaves.keys.length
           retval[slave] = self.slaves[slave].send(method, *args)
@@ -87,7 +88,7 @@ puts "Finding #{args.inspect} at #{slave}"
           retval[slave] = self.slaves[slave].new
           retval[slave].errors.add_to_base(err) if err
         end
-# puts "\tResult: #{retval[slave].inspect}"
+ActionController::Base.logger.info "\tResult: #{retval[slave].inspect}"
       end
       retval
     end
