@@ -1,9 +1,19 @@
 class Helios::ClientProfile < ActiveRecord::Base
-  self.establish_connection(
-    :adapter  => 'sqlserver',
-    :mode => 'ODBC',
-    :dsn => 'HeliosBS'
-  )
+  if ENV.has_key?('LINES') || (ENV.has_key?('USERDOMAIN') && ENV['USERDOMAIN'] == 'NITWIT')
+    self.establish_connection(
+      :adapter  => 'mysql',
+      :database => 'HeliosBS',
+      :host     => '10.11.45.3',
+      :username => 'maly',
+      :password => 'booboo'
+    )
+  else
+    self.establish_connection(
+      :adapter  => 'sqlserver',
+      :mode => 'ODBC',
+      :dsn => 'HeliosBS'
+    )
+  end
 
   set_table_name 'Client_Profile'
   set_primary_key 'Client_no'
