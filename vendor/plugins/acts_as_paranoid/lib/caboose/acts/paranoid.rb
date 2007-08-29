@@ -129,6 +129,7 @@ module Caboose #:nodoc:
         end
 
         def destroy_without_callbacks
+          puts "Using paranoid deletion..."
           unless new_record?
             self.class.update_all self.class.send(:sanitize_sql, ["#{self.class.deleted_attribute} = ?", self.class.send(:current_time)]), ["#{self.class.primary_key} = ?", id]
           end

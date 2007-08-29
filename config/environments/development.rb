@@ -21,5 +21,6 @@ config.action_view.debug_rjs                         = true
 config.action_mailer.raise_delivery_errors = false
 
 SATELLITE_LOCATIONS = {
-  'hillsdale' => '10.11.45.2:5050'
+  'HeliosA' => '10.11.45.2:3001',
+  'HeliosB' => '10.11.45.2:3002'
 }

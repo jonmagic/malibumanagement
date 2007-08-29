@@ -1,8 +1,41 @@
 <div id='satellite_status_tray'>Status Loading...</div>
+
+<%= javascript_tag "Element.hide('satellite_status_tray');
+var jack = null;
+var done_time = (new Date()).valueOf() * 2;
+
+jack = new Ajax.PeriodicalUpdater(
+	'satellite_status_tray',
+	'/malibu/helios/satellite_status.xml',
+	{
+		frequency:    1,
+		asynchronous: true,
+		evalScripts:  true,
+		method:       'get',
+		onSuccess: 		function(request){
+			var status = request.responseXML.firstChild.childNodes.item(1).childNodes.item(1).firstChild.nodeValue;
+			var percent = request.responseXML.firstChild.childNodes.item(1).childNodes.item(3).firstChild.nodeValue;
+			if(percent < 100) {
+				Element.show('satellite_status_tray');
+			} else {
+				if((new Date()).valueOf() > done_time + 15000){
+					jack.stop();
+					Element.hide('satellite_status_tray');
+					done_time = (new Date()).valueOf() * 2;
+				} else {
+					if(done_time > (new Date()).valueOf()){
+						done_time = (new Date()).valueOf();
+					}
+				}
+			}
+		}
+	}
+);" %>
+
 <p>Hello, and Welcome to the Helios Administration!</p>
 <p>From here you can:<br />
 	<ul>
-		<li><%= link_to 'Fix ALL Mismatch 13 errors', helios_path('FixMismatch13') %></li>
+		<li><%= link_to 'Fix ALL Mismatch13 errors at ALL malibu locations', 'javascript:void(0)', :onclick => "new Ajax.Request('#{helios_path('fixmismatch')}', {asynchronous:true}); jack.start()" %></li>
 		<li>Merge and delete clients:</li>
 	</ul>
 </p>
@@ -26,25 +59,3 @@
                	:url => self.send('formatted_search_'+model_name+'_path', :format => 'html'),
 								:method => :get)
 %>
-
-<%= javascript_tag "Element.hide('satellite_status_tray');
-var jack = new Ajax.PeriodicalUpdater(
-	'satellite_status_tray',
-	'/malibu/helios/satellite_status.xml',
-	{
-		frequency:    1,
-		asynchronous: true,
-		evalScripts:  true,
-		method:       'get',
-		onSuccess: 		function(request){
-			var status = request.responseXML.firstChild.childNodes.item(1).childNodes.item(1).firstChild.nodeValue;
-			var percent = request.responseXML.firstChild.childNodes.item(1).childNodes.item(3).firstChild.nodeValue;
-			if(percent < 100) {
-				Element.show('satellite_status_tray')
-			} else {
-				Element.hide('satellite_status_tray')
-			}
-		}
-	}
-);
-jack.stop();" %>

@@ -14,10 +14,6 @@ module HeliosPeripheral
     base.cattr_accessor :journal
     base.journal = []
 
-# Helios::ClientProfile.update_satellites = true
-# cp = Helios::ClientProfile.find(1000001)
-# cp.save
-
     SATELLITE_LOCATIONS.keys.each do |location|
       base.add_slave(location, SATELLITE_LOCATIONS[location])
     end
@@ -70,8 +66,10 @@ module HeliosPeripheral
         begin
 puts "Finding #{args.inspect} at #{slave}"
 ActionController::Base.logger.info "Performing #{method} for #{args.join(', ')} at #{slave}..."
-          Thread.current['satellite_status'].status_text = "Performing #{method} for #{args.join(', ')} at #{slave}..."
-          Thread.current['satellite_status'].percent = 100 / (self.slaves.keys.index(slave)+1) * self.slaves.keys.length
+          if Thread.current['satellite_status'].class.name == 'Helios::SatelliteStatus'
+            Thread.current['satellite_status'].status_text = "Performing #{method} for #{args.join(', ')} at #{slave}..."
+            Thread.current['satellite_status'].percent = 100 / (self.slaves.keys.index(slave)+1) * self.slaves.keys.length
+          end
           retval[slave] = self.slaves[slave].send(method, *args)
         rescue ActiveResource::ResourceNotFound => e
         rescue Errno::ETIMEDOUT => e
@@ -85,8 +83,10 @@ ActionController::Base.logger.info "Performing #{method} for #{args.join(', ')} 
         rescue ActiveResource::ClientError => e
           err = "Unknown Client Error"
         ensure
-          retval[slave] = self.slaves[slave].new
-          retval[slave].errors.add_to_base(err) if err
+          if err
+            retval[slave] = self.slaves[slave].new
+            retval[slave].errors.add_to_base(err)
+          end
         end
 ActionController::Base.logger.info "\tResult: #{retval[slave].inspect}"
       end
@@ -95,23 +95,29 @@ ActionController::Base.logger.info "\tResult: #{retval[slave].inspect}"
   end
 
   module InstanceMethods
-    # EXPERIMENTAL
+    def included(base)
+      base.send(:alias, :old_destroy, :destroy)
+    end
+    # Tainted destroy for satellites also.
+    #  1) Finds the record at all satellite locations
+    #  2) Tries to delete all records that reported existing
+    #  3) Deletes the central record IF all records' deletion was successful
     def destroy
 puts "Using the tainted destroy method!"
       if self.class.update_satellites == true
 puts "Updating satellite..."
         satellite_records = self.class.propogate_method(:find, self.id)
-puts "Satellite records:"
+puts "Deleting whatever Satellite records I can:"
         satellite_records.each do |location, satellite_record|
-puts("\tSatellite: #{location} -- #{satellite_record.inspect}")
-          self.errors.add_to_base(satellite_record.errors.full_messages.to_sentence) if satellite_record.errors
+puts("\tSatellite: #{location} -- #{satellite_record.id}")
+          self.errors.add_to_base(satellite_record.errors.full_messages.to_sentence) if !satellite_record.errors.full_messages.blank?
 puts("\t\tSkipping (doesn't exist at #{location})") if satellite_record.new?
           next if satellite_record.new?
           begin
 puts("\t\tUpdating...")
             retval = satellite_record.destroy
 puts("\t\tResult: #{retval.inspect}")
-            self.errors.add_to_base("Error destroying #{satellite_record}: #{retval}") if retval == 'trouble!'
+            self.errors.add_to_base("Error destroying #{satellite_record}: #{retval}") unless retval
   # Need more rescue codes here
           rescue ActiveResource::ResourceNotFound => e
             # Somehow got destroy'd between finding it a second ago and trying to delete it now.
@@ -129,12 +135,23 @@ puts("\t\tResult: #{retval.inspect}")
           rescue ActiveResource::ConnectionError => e
             err = "Failed to connect to #{slave}: #{e.to_s}"
           ensure
-puts("\t\tResult: #{err}")
-            self.errors.add_to_base(err)
+puts("\t\tError! => #{err}") if err
+            self.errors.add_to_base(err) if err
           end
         end
       end
-      self.old_destroy unless self.errors
+      if self.errors.full_messages.blank?
+        # THE ORIGINAL DELETE METHOD
+        unless new_record?
+          connection.delete <<-end_sql, "#{self.class.name} Destroy"
+            DELETE FROM #{self.class.table_name}
+            WHERE #{self.class.primary_key} = #{quoted_id}
+          end_sql
+        end
+
+        freeze
+        # * * * *
+      end
       return self
     end
   end

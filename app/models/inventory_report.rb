@@ -4,6 +4,7 @@ class InventoryReport < ActiveRecord::Base
   has_one :instance, :as => :data, :class_name => 'FormInstance' # Looks for data_id in form_instances, calls it self.instance
   has_many :logs, :as => 'object'
   attr_accessor :save_status
+  cattr_accessor :odbc_error
 
   def items(reload=false)
     @the_inventory_items ||= nil
@@ -44,13 +45,6 @@ logger.error "Setting #{key} to #{value}:"
     li.save
   end
 
-  def odbc_error=(value)
-    @odbc_error = value
-  end
-  def odbc_error
-    @odbc_error
-  end
-
   protected
     def inventory_from_odbc
       # ODBC::connect("HeliosInventory-#{self.instance.store.alias}", self.instance.store.alias, self.instance.store.alias.l33t.reverse) do |connection|
@@ -63,7 +57,7 @@ logger.error "Setting #{key} to #{value}:"
     rescue ODBC::Error => e
       logger.error "! Error Connecting to ODBC Database (HeliosInventory-#{self.instance.store.alias})!"
       logger.error "! Error message: #{e.clean_message}"
-      self.odbc_error = e.clean_message
+      self.class.odbc_error = e.clean_message
       return false
     end
 end
