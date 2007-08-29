@@ -1,1 +1,4 @@
-<p>HEY, YOU DESTROYED ME!!! YAY, GOOD JOB!!</p>
+<p>Client <%= @client.full_name || @client.id %><%= ' not' if !@client.errors.full_messages.blank? %> destroyed<%= ' successfully' if @client.errors.full_messages.blank? %>. <%= @client.errors.full_messages.to_sentence if !@client.errors.full_messages.blank? %></p>
+<%= javascript_tag "
+$('client_listing_#{@client.id}').remove()
+" %>
