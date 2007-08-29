@@ -1,4 +1,4 @@
-<tr class="livesearch_result client_listing listing <%= rownum.even? ? 'even' : 'odd' %>">
+<tr id="client_listing_<%= client.id %>" class="livesearch_result client_listing listing <%= rownum.even? ? 'even' : 'odd' %>">
 	<td><%= client.new_record? ? '(NEW)' : link_to(client.Client_no, exists_helios_client_path(:id => client.id), :class => 'ajax_link') %></td>
 	<td><%= client.full_name %></td>
 	<td><%= client.Address %></td>

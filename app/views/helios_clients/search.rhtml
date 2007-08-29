@@ -36,7 +36,7 @@
 //<![CDATA[
 document.getElementsByClassName('destroy_link').each(
 	function(link){
-		new Control.Modal(link, {requestOptions: {postBody: '_method=delete', method: 'post'}})
+		new Control.Modal(link, {requestOptions: {postBody: '_method=delete', method: 'post', evalScripts: true}})
 	}
 );
 document.getElementsByClassName('ajax_link').each(
