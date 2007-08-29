@@ -53,11 +53,33 @@ logger.error "Setting #{key} to #{value}:"
       query = conn.prepare('SELECT Descriptions,qty_onhand FROM inventory')
       query.execute.each_hash {|h| results.push(h) }
       conn.disconnect
+      ActionController::Base.logger.info results.inspect
       return results
     rescue ODBC::Error => e
       logger.error "! Error Connecting to ODBC Database (HeliosInventory-#{self.instance.store.alias})!"
       logger.error "! Error message: #{e.clean_message}"
       self.class.odbc_error = e.clean_message
       return false
+    end
+    def inventory_from_open_helios
+      results = []
+      begin
+        conn = ActiveResource::Connection.new("http://#{self.instance.store.ar_site}")
+        resp = conn.get('/inventories')
+      rescue Errno::ETIMEDOUT => e
+        err = "Connection Failed"
+      rescue Timeout::Error => e
+        err = "Connection Failed"
+      rescue Errno::EHOSTDOWN => e
+        err = "Connection Failed"
+      ensure
+        if err
+          return false
+        else
+          results = conn.xml_from_response(resp)
+          ActionController::Base.logger.info results.inspect
+          return results
+        end
+      end
     end
 end
