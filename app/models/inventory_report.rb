@@ -12,7 +12,7 @@ class InventoryReport < ActiveRecord::Base
     @the_inventory_items = []
     if reload || self.inventory_line_items.length < 1
       # self.inventory_line_items.each {|li| li.destroy}
-      theitems = self.inventory_from_odbc
+      theitems = self.inventory_from_open_helios
       return @the_inventory_items unless theitems
       theitems.each do |line_item|
         next if line_item['Descriptions'].nil?
@@ -65,7 +65,7 @@ logger.error "Setting #{key} to #{value}:"
       results = []
       begin
         conn = ActiveResource::Connection.new("http://#{self.instance.store.ar_site}")
-        resp = conn.get('/inventories')
+        results = conn.get('/inventories')
       rescue Errno::ETIMEDOUT => e
         err = "Connection Failed"
       rescue Timeout::Error => e
@@ -76,9 +76,8 @@ logger.error "Setting #{key} to #{value}:"
         if err
           return false
         else
-          results = conn.xml_from_response(resp)
-          ActionController::Base.logger.info results.inspect
-          return results
+          ActionController::Base.logger.info results['inventory'].inspect
+          return results['inventory']
         end
       end
     end
