@@ -69,24 +69,28 @@ module ActiveResource
     # Execute a GET request.
     # Used to get (find) resources.
     def get(path, headers = {})
+ActionController::Base.logger.info "GET from #{path}..."
       xml_from_response(request(:get, path, build_request_headers(headers)))
     end
 
     # Execute a DELETE request (see HTTP protocol documentation if unfamiliar).
     # Used to delete resources.
     def delete(path, headers = {})
+ActionController::Base.logger.info "DELETE to #{path}..."
       request(:delete, path, build_request_headers(headers))
     end
 
     # Execute a PUT request (see HTTP protocol documentation if unfamiliar).
     # Used to update resources.
     def put(path, body = '', headers = {})
+ActionController::Base.logger.info "PUT to #{path}..."
       request(:put, path, body.to_s, build_request_headers(headers))
     end
 
     # Execute a POST request.
     # Used to create new resources.
     def post(path, body = '', headers = {})
+ActionController::Base.logger.info "POST to #{path}..."
       request(:post, path, body.to_s, build_request_headers(headers))
     end
 

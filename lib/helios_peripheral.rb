@@ -56,6 +56,7 @@ module HeliosPeripheral
       self.slaves ||= {}
       self.slaves[location_name] = Class.new(ActiveResource::Base)
       self.slaves[location_name].site = "http://#{uri_base}/"
+ActionController::Base.logger.info "Primary Key: #{self.primary_key}"
       self.slaves[location_name].primary_key = self.primary_key
       self.slaves[location_name].element_name = self.name.split("::").last.underscore
     end
@@ -84,6 +85,7 @@ ActionController::Base.logger.info "Performing #{method} for #{args.join(', ')} 
           err = "Unknown Client Error"
         ensure
           if err
+            ActionController::Base.logger.info "Error: #{err}"
             retval[slave] = self.slaves[slave].new
             retval[slave].errors.add_to_base(err)
           end
@@ -105,18 +107,18 @@ ActionController::Base.logger.info "\tResult: #{retval[slave].inspect}"
     def destroy
 puts "Using the tainted destroy method!"
       if self.class.update_satellites == true
-puts "Updating satellite..."
+ActionController::Base.logger.info "Updating satellite..."
         satellite_records = self.class.propogate_method(:find, self.id)
-puts "Deleting whatever Satellite records I can:"
         satellite_records.each do |location, satellite_record|
-puts("\tSatellite: #{location} -- #{satellite_record.id}")
+ActionController::Base.logger.info("\tSatellite: #{location} -- #{satellite_record.inspect}")
+          self.errors.add_to_base(satellite_record.errors.full_messages.to_sentence) if satellite_record.errors
           self.errors.add_to_base(satellite_record.errors.full_messages.to_sentence) if !satellite_record.errors.full_messages.blank?
-puts("\t\tSkipping (doesn't exist at #{location})") if satellite_record.new?
+ActionController::Base.logger.info("\t\tSkipping (doesn't exist at #{location})") if satellite_record.new?
           next if satellite_record.new?
           begin
-puts("\t\tUpdating...")
+ActionController::Base.logger.info("\t\tDestroying at #{location}...")
             retval = satellite_record.destroy
-puts("\t\tResult: #{retval.inspect}")
+ActionController::Base.logger.info("\t\tResult: #{retval.inspect}")
             self.errors.add_to_base("Error destroying #{satellite_record}: #{retval}") unless retval
   # Need more rescue codes here
           rescue ActiveResource::ResourceNotFound => e
@@ -135,8 +137,10 @@ puts("\t\tResult: #{retval.inspect}")
           rescue ActiveResource::ConnectionError => e
             err = "Failed to connect to #{slave}: #{e.to_s}"
           ensure
-puts("\t\tError! => #{err}") if err
-            self.errors.add_to_base(err) if err
+            if err
+ActionController::Base.logger.info("\t\tError! => #{err}")
+              self.errors.add_to_base(err)
+            end
           end
         end
       end
