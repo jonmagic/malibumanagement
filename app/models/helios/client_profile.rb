@@ -22,8 +22,8 @@ class Helios::ClientProfile < ActiveRecord::Base
   def self.search(query, options={})
     limit = options[:limit] || 10
     offset = options[:offset] || 0
-    # sql = "SELECT * FROM (SELECT TOP #{limit} * FROM (SELECT TOP #{limit + offset} * FROM Client_Profile #{craft_sql_condition_for_query(query)} ORDER BY Client_no ASC) AS tmp1 ORDER BY Client_no DESC) AS tmp2 ORDER BY Client_no ASC"
-    sql = "SELECT * FROM Client_Profile #{craft_sql_condition_for_query(query)} ORDER BY Client_no ASC LIMIT #{limit} OFFSET #{offset}"
+    sql = "SELECT * FROM (SELECT TOP #{limit} * FROM (SELECT TOP #{limit + offset} * FROM Client_Profile #{craft_sql_condition_for_query(query)} ORDER BY [Client_no] ASC) AS tmp1 ORDER BY [Client_no] DESC) AS tmp2 ORDER BY [Client_no] ASC"
+    # sql = "SELECT * FROM Client_Profile #{craft_sql_condition_for_query(query)} ORDER BY Client_no ASC LIMIT #{limit} OFFSET #{offset}"
     ActionController::Base.logger.info "Search SQL: #{sql}"
     self.find_by_sql(sql)
   end
@@ -49,6 +49,7 @@ class Helios::ClientProfile < ActiveRecord::Base
   protected
     def self.craft_sql_condition_for_query(query) #search in: Client_no, First_Name, Last_Name, Address
       query = '%' + query + '%'
-      self.replace_named_bind_variables("WHERE Client_no LIKE :query OR First_Name LIKE :query OR Last_Name LIKE :query OR Address LIKE :query", {:query => query})
+      self.replace_named_bind_variables("WHERE [Client_no] LIKE :query OR [First_Name] LIKE :query OR [Last_Name] LIKE :query OR [Address] LIKE :query", {:query => query})
+      # self.replace_named_bind_variables("WHERE Client_no LIKE :query OR First_Name LIKE :query OR Last_Name LIKE :query OR Address LIKE :query", {:query => query})
     end
 end
