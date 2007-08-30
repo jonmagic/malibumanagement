@@ -66,6 +66,7 @@ logger.error "Setting #{key} to #{value}:"
       begin
         conn = ActiveResource::Connection.new("http://#{self.instance.store.ar_site}")
         ActionController::Base.logger.info "Connecting to http://#{self.instance.store.ar_site}"
+        puts "Connecting to http://#{self.instance.store.ar_site}"
         results = conn.get('/inventories')
       rescue Errno::ETIMEDOUT => e
         err = "Connection Failed"
@@ -78,6 +79,7 @@ logger.error "Setting #{key} to #{value}:"
           return false
         else
           ActionController::Base.logger.info results['inventory'].inspect
+          puts results['inventory'].inspect
           return results['inventory']
         end
       end
