@@ -35,7 +35,7 @@ module ActiveRecord #:nodoc:
   end
   class Rollback < StandardError #:nodoc:
   end
-
+  
   class AttributeAssignmentError < ActiveRecordError #:nodoc:
     attr_reader :exception, :attribute
     def initialize(message, exception, attribute)
@@ -373,7 +373,7 @@ module ActiveRecord #:nodoc:
       # * <tt>:order</tt>: An SQL fragment like "created_at DESC, name".
       # * <tt>:group</tt>: An attribute name by which the result should be grouped. Uses the GROUP BY SQL-clause.
       # * <tt>:limit</tt>: An integer determining the limit on the number of rows that should be returned.
-      # * <tt>:offset</tt>: An integer determining the offset from where the rows should be fetched. So at 5, it would skip rows 0 through 4.
+      # * <tt>:offset</tt>: An integer determining the offset from where the rows should be fetched. So at 5, it would skip the first 4 rows.
       # * <tt>:joins</tt>: An SQL fragment for additional joins like "LEFT JOIN comments ON comments.post_id = id". (Rarely needed).
       #   The records will be returned read-only since they will have attributes that do not correspond to the table's columns.
       #   Pass :readonly => false to override.
@@ -883,7 +883,7 @@ module ActiveRecord #:nodoc:
       # is available.
       def column_methods_hash #:nodoc:
         @dynamic_methods_hash ||= [column_names, 'id'].flatten.uniq.inject(Hash.new(false)) do |methods, attr|
-       attr_name = attr.to_s
+          attr_name = attr.to_s
           methods[attr.to_sym]       = attr_name
           methods["#{attr}=".to_sym] = attr_name
           methods["#{attr}?".to_sym] = attr_name unless attr_name == 'id'
@@ -939,6 +939,11 @@ module ActiveRecord #:nodoc:
       def quote_value(value, column = nil) #:nodoc:
         connection.quote(value,column)
       end
+
+      def quote(value, column = nil) #:nodoc:
+        connection.quote(value, column)
+      end
+      deprecate :quote => :quote_value
 
       # Used to sanitize objects before they're used in an SELECT SQL-statement. Delegates to <tt>connection.quote</tt>.
       def sanitize(object) #:nodoc:
@@ -2380,6 +2385,12 @@ module ActiveRecord #:nodoc:
         self.class.connection.quote(value, column)
       end
 
+      # Deprecated, use quote_value
+      def quote(value, column = nil)
+        self.class.connection.quote(value, column)
+      end
+      deprecate :quote => :quote_value
+
       # Interpolate custom sql string in instance context.
       # Optional record argument is meant for custom insert_sql.
       def interpolate_sql(sql, record = nil)
@@ -2465,16 +2476,16 @@ module ActiveRecord #:nodoc:
         end
       end
 
-      def quoted_changed_column_names(attributes = changed_attributes_with_quotes)
-        attributes.keys.collect do |column_name|
-          self.class.connection.quote_column_name(column_name)
-        end
-      end
-
       def quote_columns(quoter, hash)
         hash.inject({}) do |quoted, (name, value)|
           quoted[quoter.quote_column_name(name)] = value
           quoted
+        end
+      end
+
+      def quoted_changed_column_names(attributes = changed_attributes_with_quotes)
+        attributes.keys.collect do |column_name|
+          self.class.connection.quote_column_name(column_name)
         end
       end
 
