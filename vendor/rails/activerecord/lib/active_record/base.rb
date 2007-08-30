@@ -1840,12 +1840,21 @@ module ActiveRecord #:nodoc:
       # Updates the associated record with values matching those of the instance attributes.
       # Returns the number of affected rows.
       def update
-        connection.update(
-          "UPDATE #{self.class.table_name} " +
-          "SET #{quoted_comma_pair_list(connection, attributes_with_quotes(false))} " +
-          "WHERE #{self.class.primary_key} = #{quote_value(id)}",
-          "#{self.class.name} Update"
-        )
+        if modified?
+          success = connection.update(
+            "UPDATE #{self.class.table_name} " +
+            "SET #{quoted_comma_pair_list(connection, changed_attributes_with_quotes(false))} " +
+            "WHERE #{connection.quote_column_name(self.class.primary_key)} = #{quote_value(id)}",
+            "#{self.class.name} Update"
+          )
+          if success
+            @attributes = @attributes.merge(@changed_attributes)
+            @changed_attributes = {}
+          end
+          success
+        else
+          return '0'
+        end
       end
 
       # Creates a record with values matching those of the instance attributes
