@@ -27,5 +27,5 @@ SATELLITE_LOCATIONS = {
   'jackson' => '192.168.14.21:5050',
   'hudson' => '192.168.15.21:5050',
   'middlebelt' => 'malibu-middlebelt.no-ip.com:5050',
-  'fortwayne' => '192.168.17.21:5050'
+  'dupont' => '192.168.17.21:5050'
 }
