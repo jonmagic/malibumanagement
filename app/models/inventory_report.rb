@@ -11,7 +11,7 @@ class InventoryReport < ActiveRecord::Base
     return @the_inventory_items if @the_inventory_items.kind_of?(Array)
     @the_inventory_items = []
     if reload || self.inventory_line_items.length < 1
-      # self.inventory_line_items.each {|li| li.destroy}
+      self.inventory_line_items.each {|li| li.destroy} if reload
       theitems = self.inventory_from_open_helios
       return @the_inventory_items unless theitems
       theitems.each do |line_item|
@@ -78,8 +78,8 @@ logger.error "Setting #{key} to #{value}:"
         if err
           return false
         else
-          ActionController::Base.logger.info results['inventory'].inspect
-          puts results['inventory'].inspect
+          ActionController::Base.logger.info results.inspect
+          puts results.inspect
           return results['inventory']
         end
       end
