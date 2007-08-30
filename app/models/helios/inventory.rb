@@ -1,10 +1,15 @@
 class Helios::Inventory < ActiveRecord::Base
+  # self.establish_connection(
+  #   :adapter  => 'mysql',
+  #   :database => 'HeliosBS',
+  #   :host     => '10.11.45.3',
+  #   :username => 'maly',
+  #   :password => 'booboo'
+  # )
   self.establish_connection(
-    :adapter  => 'mysql',
-    :database => 'HeliosBS',
-    :host     => '127.0.0.1',
-    :username => 'maly',
-    :password => 'booboo'
+    :adapter  => 'sqlserver',
+    :mode => 'ODBC',
+    :dsn => 'HeliosBS'
   )
 
   include HeliosPeripheral

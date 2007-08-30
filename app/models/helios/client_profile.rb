@@ -1,16 +1,16 @@
 class Helios::ClientProfile < ActiveRecord::Base
-  self.establish_connection(
-    :adapter  => 'mysql',
-    :database => 'HeliosBS',
-    :host     => '10.11.45.3',
-    :username => 'maly',
-    :password => 'booboo'
-  )
   # self.establish_connection(
-  #   :adapter  => 'sqlserver',
-  #   :mode => 'ODBC',
-  #   :dsn => 'HeliosBS'
+  #   :adapter  => 'mysql',
+  #   :database => 'HeliosBS',
+  #   :host     => '10.11.45.3',
+  #   :username => 'maly',
+  #   :password => 'booboo'
   # )
+  self.establish_connection(
+    :adapter  => 'sqlserver',
+    :mode => 'ODBC',
+    :dsn => 'HeliosBS'
+  )
 
   set_table_name 'Client_Profile'
   set_primary_key 'Client_no'
