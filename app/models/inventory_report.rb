@@ -64,9 +64,9 @@ logger.error "Setting #{key} to #{value}:"
     def inventory_from_open_helios
       results = {}
       begin
-        conn = ActiveResource::Connection.new("http://#{self.instance.store.ar_site}")
         ActionController::Base.logger.info "Connecting to http://#{self.instance.store.ar_site}"
         puts "Connecting to http://#{self.instance.store.ar_site}"
+        conn = ActiveResource::Connection.new("http://#{self.instance.store.ar_site}")
         results = conn.get('/inventories')
       rescue Errno::ETIMEDOUT => e
         err = "Connection Failed"
