@@ -24,6 +24,8 @@ class FormInstance < ActiveRecord::Base
     # self.data = ft.new unless !(args.kind_of? Hash) or ft.nil?
     self.data = ft.new unless ft.nil? #Don't know what the args.kind_of? Hash was for...
       self.data.save(false)
+      self.data_id = self.data.id
+      self.data_type = self.data.class.name
       self.save(false)
   end
 
