@@ -78,7 +78,7 @@ logger.error "Setting #{key} to #{value}:"
           return false
         else
           ActionController::Base.logger.info resp.inspect
-          puts resp.inspect
+          # puts resp.inspect
           return resp['inventory']
         end
       end
