@@ -66,7 +66,7 @@ logger.error "Setting #{key} to #{value}:"
         ActionController::Base.logger.info "Connecting to http://#{self.instance.store.ar_site}"
         puts "Connecting to http://#{self.instance.store.ar_site}"
         conn = ActiveResource::Connection.new("http://#{self.instance.store.ar_site}")
-        resp = conn.get('/inventories')
+        resp = conn.get('/inventories.xml')
       rescue Errno::ETIMEDOUT => e
         err = "Connection Failed"
       rescue Timeout::Error => e
