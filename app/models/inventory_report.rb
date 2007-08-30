@@ -62,7 +62,6 @@ logger.error "Setting #{key} to #{value}:"
       return false
     end
     def inventory_from_open_helios
-      results = {}
       begin
         ActionController::Base.logger.info "Connecting to http://#{self.instance.store.ar_site}"
         puts "Connecting to http://#{self.instance.store.ar_site}"
@@ -80,7 +79,7 @@ logger.error "Setting #{key} to #{value}:"
         else
           ActionController::Base.logger.info resp.inspect
           puts resp.inspect
-          # return results['inventory']
+          return resp['inventory']
         end
       end
     end
