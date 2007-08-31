@@ -87,7 +87,7 @@ module ActionView
           when confirm && method
             "if (#{confirm_javascript_function(confirm)}) { #{method_javascript_function(method)} };return false;"
           when loading
-            "#{loading_javascript_function(loading)}return true;"
+            "#{loading_javascript_function(loading)}return false;"
           when confirm
             "return #{confirm_javascript_function(confirm)};"
           when method
