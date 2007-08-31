@@ -107,19 +107,25 @@ ActionController::Base.logger.info "\tResult: #{retval[slave].inspect}"
     def destroy
 puts "Using the tainted destroy method!"
       if self.class.update_satellites == true
-ActionController::Base.logger.info "Updating satellite..."
+ActionController::Base.logger.info "Updating satellites..."
+puts "Updating satellites..."
         satellite_records = self.class.propogate_method(:find, self.id)
         satellite_records.each do |location, satellite_record|
 ActionController::Base.logger.info("\tSatellite: #{location} -- #{satellite_record.inspect}")
+puts "\tSatellite: #{location} -- #{satellite_record.inspect}"
           self.errors.add_to_base(satellite_record.errors.full_messages.to_sentence) if satellite_record.errors
           self.errors.add_to_base(satellite_record.errors.full_messages.to_sentence) if !satellite_record.errors.full_messages.blank?
 ActionController::Base.logger.info("\t\tSkipping (doesn't exist at #{location})") if satellite_record.new?
+puts "\t\tSkipping (doesn't exist at #{location})" if satellite_record.new?
           next if satellite_record.new?
           begin
 ActionController::Base.logger.info("\t\tDestroying at #{location}...")
+puts "\t\tDestroying at #{location}..."
             retval = satellite_record.destroy
 ActionController::Base.logger.info("\t\tResult: #{retval.inspect}")
+puts "\t\tResult: #{retval.inspect}"
             self.errors.add_to_base("Error destroying #{satellite_record}: #{retval}") unless retval
+puts "(Recording error) Error destroying #{satellite_record}: #{retval}" unless retval
   # Need more rescue codes here
           rescue ActiveResource::ResourceNotFound => e
             # Somehow got destroy'd between finding it a second ago and trying to delete it now.
@@ -139,6 +145,7 @@ ActionController::Base.logger.info("\t\tResult: #{retval.inspect}")
           ensure
             if err
 ActionController::Base.logger.info("\t\tError! => #{err}")
+puts "\t\t(Recording error) Error! => #{err}"
               self.errors.add_to_base(err)
             end
           end
