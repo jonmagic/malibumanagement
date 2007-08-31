@@ -359,3 +359,9 @@ th.calendar_day {
 	color:white;
 	padding:1px 7px;
 }
+
+.loading-dialog {
+	background-color:white;
+	padding:0.3em 3em;
+	font-size:1.8em;
+}
