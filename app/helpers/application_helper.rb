@@ -69,6 +69,37 @@ module ApplicationHelper
   end
 end
 
+module ActionView
+  module Helpers
+    module UrlHelper
+      def convert_options_to_javascript!(html_options, url = '')
+        confirm, popup, loading = html_options.delete("confirm"), html_options.delete("popup"), html_options.delete("loading")
+
+        method, href = html_options.delete("method"), html_options['href']
+
+        html_options["onclick"] = case
+          when loading
+            "Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' />Loading...</div>');return true;"
+          when popup && method
+            raise ActionView::ActionViewError, "You can't use :popup and :method in the same link"
+          when confirm && popup
+            "if (#{confirm_javascript_function(confirm)}) { #{popup_javascript_function(popup)} };return false;"
+          when confirm && method
+            "if (#{confirm_javascript_function(confirm)}) { #{method_javascript_function(method)} };return false;"
+          when confirm
+            "return #{confirm_javascript_function(confirm)};"
+          when method
+            "#{method_javascript_function(method, url, href)}return false;"
+          when popup
+            popup_javascript_function(popup) + 'return false;'
+          else
+            html_options["onclick"]
+        end
+      end
+    end
+  end
+end
+
 module ActiveRecord
   class Base
     def self.find_by_sql_with_limit(sql, offset, limit)
