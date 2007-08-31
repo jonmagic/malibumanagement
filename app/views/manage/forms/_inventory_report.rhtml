@@ -7,7 +7,7 @@
 		<th>Actual</th>
 		<th>Difference</th>
 	</thead>
-<% @data.items(true).each do |item| -%>
+<% @data.items.each do |item| -%>
 	<tr>
 	<td class="leftcolumn"><%= item.label %></td>
 	<td class="centercolumn lightgrey"><%= !view ? f.text_field(item.name, :value => item.actual, :size => 8) : color_amount(item.actual || 0) %></td>
