@@ -164,6 +164,8 @@ puts "!! Deleting immediate record !"
 
         freeze
         # * * * *
+      else
+puts "Errors: #{self.errors.full_messages.inspect}"
       end
       return self
     end
