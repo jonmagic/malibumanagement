@@ -114,7 +114,6 @@ puts "Updating satellites..."
         satellite_records.each do |location, satellite_record|
 ActionController::Base.logger.info("\tSatellite: #{location} -- #{satellite_record.inspect}")
 puts "\tSatellite: #{location} -- #{satellite_record.inspect}"
-          self.errors.add_to_base(satellite_record.errors.full_messages.to_sentence) if satellite_record.errors
           self.errors.add_to_base(satellite_record.errors.full_messages.to_sentence) if !satellite_record.errors.full_messages.blank?
 ActionController::Base.logger.info("\t\tSkipping (doesn't exist at #{location})") if satellite_record.new?
 puts "\t\tSkipping (doesn't exist at #{location})" if satellite_record.new?
@@ -144,7 +143,7 @@ puts "(Recording error) Error destroying #{satellite_record}: #{retval}" unless 
           rescue ActiveResource::ConnectionError => e
             err = "Failed to connect to #{location}: #{e.to_s}"
           ensure
-            if err
+            if !err.blank?
 ActionController::Base.logger.info("\t\tError! => #{err}")
 puts "\t\t(Recording error) Error! => #{err}"
               self.errors.add_to_base(err)
