@@ -28,7 +28,7 @@
 	<h4>Create New:</h4>
 	<ul>
 <% current_user.store.form_types.concat(current_user.form_types).each do |ft| -%>
-		<li><%= link_to current_user.drafts_of_type(ft.name).count > 0 && !ft.can_have_multiple_drafts ? current_store.drafts_of_type(ft.name)[0].visual_identifier : ft.friendly_name + " &gt; New", store_draft_path(:form_status => 'draft', :action => 'new', :form_type => ft.name) %></li>
+		<li><%= link_to current_user.drafts_of_type(ft.name).count > 0 && !ft.can_have_multiple_drafts ? current_store.drafts_of_type(ft.name)[0].visual_identifier : ft.friendly_name + " &gt; New", store_draft_path(:form_status => 'draft', :action => 'new', :form_type => ft.name), :loading => "Loading #{current_user.drafts_of_type(ft.name).count > 0 && !ft.can_have_multiple_drafts ? current_store.drafts_of_type(ft.name)[0].visual_identifier : "New " + ft.friendly_name}" %></li>
 <% end -%>
 	</ul>
 </div>
