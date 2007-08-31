@@ -1,6 +1,6 @@
 <% pre_text ||= '' -%>
 <% update ||= 'yes' -%>
-<li class="form_listing" id="form_listing_<%= form.id %>"><span><%= pre_text %><%= link_to form.visual_identifier, store_forms_path(:form_status => form.status, :action => 'view', :form_type => form.data_type, :form_id => form.id), :loading => 'Loading Archived Form...' %><span class="action_links">[
-<% if form.form_type.reeditable -%><%= link_to 'Edit', store_forms_path(:form_status => 'draft', :action => 'draft', :form_type => form.data_type, :form_id => form.id), :confirm => "Editing this form will un-submit the form and move it back to the Draft status. Do you want to continue?", :loading => 'Loading Archived Form...' %>
+<li class="form_listing" id="form_listing_<%= form.id %>"><span><%= pre_text %><%= link_to form.visual_identifier, store_forms_path(:form_status => form.status, :action => 'view', :form_type => form.data_type, :form_id => form.id), :loading => 'Loading Form...' %><span class="action_links">[
+<% if form.form_type.reeditable -%><%= link_to 'Edit', store_forms_path(:form_status => 'draft', :action => 'draft', :form_type => form.data_type, :form_id => form.id), :confirm => "Editing this form will un-submit the form and move it back to the Draft status. Do you want to continue?", :loading => 'Loading Form as Draft...' %>
  / 
 <% end -%><%= link_to_remote 'Discard', :confirm => "Discard this form?", :url => formatted_store_forms_path(:form_status => form.status, :form_type => form.data_type, :action => 'discard', :form_id => form.id, :format => 'js', :update => update) %> ]</span></span></li>
