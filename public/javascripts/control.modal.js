@@ -4,7 +4,7 @@
  * @package Control.Modal
  * @license MIT
  * @url http://livepipe.net/projects/control_modal/
- * @version 2.2.2
+ * @version 2.2.3
  */
 
 if(typeof(Control) == "undefined")
@@ -25,7 +25,7 @@ Object.extend(Control.Modal,{
 		overlayAppear: false
 	},
 	targetRegexp: /#(.+)$/,
-	imgRegexp: /\.(jpe?g|gif|png|tiff?)$/,
+	imgRegexp: /\.(jpe?g|gif|png|tiff?)$/i,
 	overlayStyles: {
 		position: 'fixed',
 		top: 0,
