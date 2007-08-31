@@ -365,3 +365,8 @@ th.calendar_day {
 	padding:0.3em 3em;
 	font-size:1.8em;
 }
+
+.loading-dialog img {
+	margin-right:1em;
+	vertical-align:middle;
+}
