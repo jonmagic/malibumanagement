@@ -78,14 +78,16 @@ module ActionView
         method, href = html_options.delete("method"), html_options['href']
 
         html_options["onclick"] = case
-          when loading
-            "Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' />Loading...</div>');return true;"
+          when confirm && loading
+            "if (#{confirm_javascript_function(confirm)}) { #{loading_javascript_function(loading)}return true; };return false;"
           when popup && method
             raise ActionView::ActionViewError, "You can't use :popup and :method in the same link"
           when confirm && popup
             "if (#{confirm_javascript_function(confirm)}) { #{popup_javascript_function(popup)} };return false;"
           when confirm && method
             "if (#{confirm_javascript_function(confirm)}) { #{method_javascript_function(method)} };return false;"
+          when loading
+            "#{loading_javascript_function(loading)}return false;"
           when confirm
             "return #{confirm_javascript_function(confirm)};"
           when method
@@ -95,6 +97,10 @@ module ActionView
           else
             html_options["onclick"]
         end
+      end
+      
+      def loading_javascript_function(loading)
+        "Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' />#{loading}</div>');"
       end
     end
   end
