@@ -23,7 +23,10 @@ class InventoryReport < ActiveRecord::Base
     @the_inventory_items = self.inventory_line_items(true)
   end
 
-  def update_attributes(attributes)
+  def update_attributes(new_attributes)
+    return if new_attributes.nil?
+    attributes = new_attributes.dup
+    attributes.stringify_keys!
     attributes.each do |key, value|
 logger.error "Setting #{key} to #{value}:"
       self.set_inventory_line_item(key, value) if self.is_inventory_item_name?(key)
