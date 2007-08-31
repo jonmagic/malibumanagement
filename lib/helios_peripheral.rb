@@ -108,8 +108,9 @@ ActionController::Base.logger.info "\tResult: #{retval[slave].inspect}"
 puts "Using the tainted destroy method!"
       if self.class.update_satellites == true
 ActionController::Base.logger.info "Updating satellites..."
-puts "Updating satellites..."
+puts "Finding satellites..."
         satellite_records = self.class.propogate_method(:find, self.id)
+puts "Updating satellites..."
         satellite_records.each do |location, satellite_record|
 ActionController::Base.logger.info("\tSatellite: #{location} -- #{satellite_record.inspect}")
 puts "\tSatellite: #{location} -- #{satellite_record.inspect}"
@@ -154,6 +155,7 @@ puts "\t\t(Recording error) Error! => #{err}"
       if self.errors.full_messages.blank?
         # THE ORIGINAL DELETE METHOD
         unless new_record?
+puts "!! Deleting immediate record !"
           connection.delete <<-end_sql, "#{self.class.name} Destroy"
             DELETE FROM #{self.class.table_name}
             WHERE #{self.class.primary_key} = #{quoted_id}
