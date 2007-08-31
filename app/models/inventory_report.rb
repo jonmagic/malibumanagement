@@ -13,14 +13,14 @@ class InventoryReport < ActiveRecord::Base
     if reload || self.inventory_line_items.length < 1
       self.inventory_line_items.each {|li| li.destroy} if reload
       theitems = self.inventory_from_open_helios
-      return @the_inventory_items unless theitems
+  return [] unless theitems.is_a?(Array)
       theitems.each do |line_item|
         next if line_item['Descriptions'].nil?
         self.inventory_line_items.build(:name => line_item['Descriptions'].columnize, :label => line_item['Descriptions'], :should_be => line_item['qty_onhand']) unless self.inventory_line_item(line_item['Descriptions'])
       end
       self.save
     end
-    @the_inventory_items = self.inventory_line_items(true)
+    @the_inventory_items = self.inventory_line_items(true) || []
   end
 
   def update_attributes(new_attributes)
