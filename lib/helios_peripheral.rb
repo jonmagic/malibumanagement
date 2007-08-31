@@ -113,7 +113,7 @@ puts "Finding satellites..."
 puts "Updating satellites..."
         satellite_records.each do |location, satellite_record|
 ActionController::Base.logger.info("\tSatellite: #{location} -- #{satellite_record.inspect}")
-puts "\tSatellite: #{location} -- #{satellite_record.inspect}"
+# puts "\tSatellite: #{location} -- #{satellite_record.inspect}"
           self.errors.add_to_base(satellite_record.errors.full_messages.to_sentence) if !satellite_record.errors.full_messages.blank?
 ActionController::Base.logger.info("\t\tSkipping (doesn't exist at #{location})") if satellite_record.new?
 puts "\t\tSkipping (doesn't exist at #{location})" if satellite_record.new?
