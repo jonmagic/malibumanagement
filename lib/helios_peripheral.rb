@@ -124,18 +124,18 @@ ActionController::Base.logger.info("\t\tResult: #{retval.inspect}")
           rescue ActiveResource::ResourceNotFound => e
             # Somehow got destroy'd between finding it a second ago and trying to delete it now.
             # It's okay if it doesn't exist.
-            # self.errors.add_to_base("Could not destroy from #{slave}: does not exist!")
+            # self.errors.add_to_base("Could not destroy from #{location}: does not exist!")
             err = "Record doesn't exist."
           rescue ActiveResource::ClientError => e
-            err = "Could not destroy from #{slave}: unknown error"
+            err = "Could not destroy from #{location}: unknown error"
           rescue Errno::EHOSTDOWN => e
-            err = "Failed to connect to #{slave}: #{e.to_s}"
+            err = "Failed to connect to #{location}: #{e.to_s}"
           rescue Errno::ETIMEDOUT => e
-            err = "Failed to connect to #{slave}: #{e.to_s}"
+            err = "Failed to connect to #{location}: #{e.to_s}"
           rescue Timeout::Error => e
-            err = "Failed to connect to #{slave}: #{e.to_s}"
+            err = "Failed to connect to #{location}: #{e.to_s}"
           rescue ActiveResource::ConnectionError => e
-            err = "Failed to connect to #{slave}: #{e.to_s}"
+            err = "Failed to connect to #{location}: #{e.to_s}"
           ensure
             if err
 ActionController::Base.logger.info("\t\tError! => #{err}")
