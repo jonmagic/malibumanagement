@@ -100,7 +100,7 @@ module ActionView
       end
       
       def loading_javascript_function(loading)
-        "Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' />#{loading}</div>');"
+        "Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' />#{escape_javascript(loading)}</div>');"
       end
     end
   end
