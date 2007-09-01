@@ -9,7 +9,7 @@ class HeliosController < ApplicationController
     restrict('allow only admins') or begin
       respond_to do |format|
         format.xml {
-          render :xml => {:status => {:text => Thread.current['satellite_status'].status_text || '', :percent => Thread.current['satellite_status'].percent || 100}}.to_xml
+          render :xml => {:text => Thread.current['satellite_status'].status_text || '', :percent => Thread.current['satellite_status'].percent || 100}.to_xml(:root => :status)
         }
       end
     end
