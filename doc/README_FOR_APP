@@ -1,2 +1,2 @@
-Use this README file to introduce your application and point to useful places in the API for learning more.
-Run "rake appdoc" to generate API documentation for your models and controllers.
+Wget command for deleting a client on a remote machine
+wget --post-data='_method=delete' http://192.168.15.21:5050/client_profiles/1009045
