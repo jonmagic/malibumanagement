@@ -15,6 +15,7 @@ jack = new Ajax.PeriodicalUpdater(
 		onSuccess: 		function(request){
 			var status = request.responseXML.firstChild.childNodes.item(1).childNodes.item(1).firstChild.nodeValue;
 			var percent = request.responseXML.firstChild.childNodes.item(1).childNodes.item(3).firstChild.nodeValue;
+			console.info('Percent: '+percent);
 			if(percent < 100) {
 				Element.show('satellite_status_tray');
 			} else {
