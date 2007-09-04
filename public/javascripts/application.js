@@ -7,3 +7,25 @@ function numbersonly(e){
 			return false //disable key press
 	}
 }
+
+function deleteModal(id_to_delete, friendly_name){
+	Control.Modal.open('<div>\
+		<h2>Delete Client?</h2>\
+		<div class="dialog_content">\
+			<div class="dialog_body">Are you sure you want to delete client #' + id_to_delete + ' (' + friendly_name + ')?</div>\
+			<div id="dialog_buttons" class="dialog_buttons">\
+				<input type="button" value="Delete" onclick="deleteClient(' + id_to_delete + ');" class="dialog-button"/>\
+				<input type="button" value="Cancel" onclick="Control.Modal.close();" class="dialog-button"/>\
+			</div>\
+		</div>\
+	</div>', {overlayCloseOnClick: false});
+}
+
+function deleteClient(id_to_delete){
+	// Start an ajax call, with Control.Modal.open() on start and .close() on finish.
+	new Ajax.Request('/malibu/helios/helios_clients/'+id_to_delete, {
+		asynchronous: true,
+		method: 'delete'
+	});
+	Control.Modal.open('<div>Deleting!!</div>', {fade: true, overlayCloseOnClick: false});
+}

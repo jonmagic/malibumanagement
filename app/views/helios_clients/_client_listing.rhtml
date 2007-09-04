@@ -7,5 +7,5 @@
 	<!-- <td><%# client.transactions.blank? ? '(last transaction date)' : client.last_transaction.Last_Mdt.strftime("%Y %b %d") %></td> -->
 	<td><%= client.Member1 %> (<%= client.Member1_Beg.strftime("%Y %b %d") if !client.Member1_Beg.nil? %> - <%= client.Member1_Exp.strftime("%Y %b %d") if !client.Member1_Exp.nil? %>)</td>
 	<td><%= client.Time4_Exp.strftime("%Y %b %d") if !client.Time4_Exp.nil? %><%= client.Time5_Exp.strftime("%Y %b %d") if !client.Time5_Exp.nil? %></td>
-	<td><%= link_to 'Destroy', helios_client_path(:id => client.id), :confirm => "This will destroy all records of this client PERMANENTLY. Are you sure?", :method => :delete, :class => 'destroy_link' if !client.new_record? %></td>
+	<td><a href="javascript:void(0)" onclick="deleteModal(<%= client.id %>, <%= client.full_name %>);">Destroy</a></td>
 </tr>

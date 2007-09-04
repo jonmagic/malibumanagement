@@ -370,3 +370,7 @@ th.calendar_day {
 	margin-right:1em;
 	vertical-align:middle;
 }
+
+.dialog_buttons {
+	margin:1em;
+}
