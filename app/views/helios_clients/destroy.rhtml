@@ -1,6 +1,0 @@
-<p>Client <%= @client.full_name || @client.id %><%= ' not' if !@client.errors.full_messages.blank? %> destroyed<%= ' successfully' if @client.errors.full_messages.blank? %>. <%= @client.errors.full_messages.to_sentence if !@client.errors.full_messages.blank? %></p>
-<%= javascript_tag "
-$('client_listing_#{@client.id}').remove();
-Control.Modal.open('Delete successful!', {fade: true});
-setTimeout('Control.Modal.close();', 3000);
-" %>

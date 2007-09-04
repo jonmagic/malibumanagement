@@ -1,0 +1,3 @@
+<< "$('client_listing_#{@client.id}').remove();"
+<< @client.errors.full_messages.blank? ? "Control.Modal.open('#{@client.full_name} successfully DESTROYED at all locations!', {fade:true});" : "Control.Modal.open('#{@client.full_name} NOT destroyed: #{@client.errors.full_messages.to_sentence}');"
+<< "setTimeout('Control.Modal.close();', 3000);"
