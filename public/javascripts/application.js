@@ -21,12 +21,29 @@ function deleteModal(id_to_delete, friendly_name){
 	</div>', {fade: true, overlayCloseOnClick: false});
 }
 
+function mismatchModal(){
+	Control.Modal.open('<div>\
+		<h2>Kill Mismatch13?</h2>\
+		<div class="dialog_content">\
+			<div class="dialog_body">Run Mismatch13-Fix on all stores?<br />A report will be emailed to the administrator with the results of the process.</div>\
+			<div id="dialog_buttons" class="dialog_buttons">\
+				<input type="button" value="Kill Mismatch13" onclick="runMismatch();" class="dialog-button"/>\
+				<input type="button" value="Cancel" onclick="Control.Modal.close();" class="dialog-button"/>\
+			</div>\
+		</div>\
+	</div>', {fade: true, overlayCloseOnClick: false});
+}
+
+function runMismatch(){
+	new Ajax.Request('/malibu/helios/fixmismatch', {asynchronous:true});
+	$('mismatch13_link').replace('<span><em>Mismatch13 is currently being fixed. Please wait at least 10 minutes and reload this page if you want to run the Mismatch13 fix again.</em></span>');
+	// Disable the mismatch link
+}
+
 function deleteClient(id_to_delete){
-	// Start an ajax call, with Control.Modal.open() on start and .close() on finish.
 	new Ajax.Request('/malibu/helios/helios_clients/'+id_to_delete+'.js', {
 		asynchronous: true,
-		method: 'delete',
-		evalScripts: true
+		method: 'delete'
 	});
 	Control.Modal.open("<div class='loading-dialog'><img src='/images/ajax-loader.gif' valign='middle' />&nbsp;Deleting from all locations...</div>", {fade: true, overlayCloseOnClick: false});
 }

@@ -1,16 +1,20 @@
 class Helios::ClientProfile < ActiveRecord::Base
-  # self.establish_connection(
-  #   :adapter  => 'mysql',
-  #   :database => 'HeliosBS',
-  #   :host     => '10.11.45.3',
-  #   :username => 'maly',
-  #   :password => 'booboo'
-  # )
-  self.establish_connection(
-    :adapter  => 'sqlserver',
-    :mode => 'ODBC',
-    :dsn => 'HeliosBS'
-  )
+  case ::RAILS_ENV
+  when 'development'
+    self.establish_connection(
+      :adapter  => 'mysql',
+      :database => 'HeliosBS',
+      :host     => '10.11.45.3',
+      :username => 'maly',
+      :password => 'booboo'
+    )
+  when 'production'
+    self.establish_connection(
+      :adapter  => 'sqlserver',
+      :mode => 'ODBC',
+      :dsn => 'HeliosBS'
+    )
+  end
 
   set_table_name 'Client_Profile'
   set_primary_key 'Client_no'
@@ -22,8 +26,12 @@ class Helios::ClientProfile < ActiveRecord::Base
   def self.search(query, options={})
     limit = options[:limit] || 10
     offset = options[:offset] || 0
-    sql = "SELECT * FROM (SELECT TOP #{limit} * FROM (SELECT TOP #{limit + offset} * FROM Client_Profile #{craft_sql_condition_for_query(query)} ORDER BY [Client_no] ASC) AS tmp1 ORDER BY [Client_no] DESC) AS tmp2 ORDER BY [Client_no] ASC"
-    # sql = "SELECT * FROM Client_Profile #{craft_sql_condition_for_query(query)} ORDER BY Client_no ASC LIMIT #{limit} OFFSET #{offset}"
+    case ::RAILS_ENV
+    when 'development'
+      sql = "SELECT * FROM Client_Profile #{craft_sql_condition_for_query(query)} ORDER BY Client_no ASC LIMIT #{limit} OFFSET #{offset}"
+    when 'production'
+      sql = "SELECT * FROM (SELECT TOP #{limit} * FROM (SELECT TOP #{limit + offset} * FROM Client_Profile #{craft_sql_condition_for_query(query)} ORDER BY [Client_no] ASC) AS tmp1 ORDER BY [Client_no] DESC) AS tmp2 ORDER BY [Client_no] ASC"
+    end
     ActionController::Base.logger.info "Search SQL: #{sql}"
     self.find_by_sql(sql)
   end
@@ -49,7 +57,11 @@ class Helios::ClientProfile < ActiveRecord::Base
   protected
     def self.craft_sql_condition_for_query(query) #search in: Client_no, First_Name, Last_Name, Address
       query = '%' + query + '%'
-      self.replace_named_bind_variables("WHERE [Client_no] LIKE :query OR [First_Name] LIKE :query OR [Last_Name] LIKE :query OR [Address] LIKE :query", {:query => query})
-      # self.replace_named_bind_variables("WHERE Client_no LIKE :query OR First_Name LIKE :query OR Last_Name LIKE :query OR Address LIKE :query", {:query => query})
+      case ::RAILS_ENV
+      when 'development'
+        self.replace_named_bind_variables("WHERE Client_no LIKE :query OR First_Name LIKE :query OR Last_Name LIKE :query OR Address LIKE :query", {:query => query})
+      when 'production'
+        self.replace_named_bind_variables("WHERE [Client_no] LIKE :query OR [First_Name] LIKE :query OR [Last_Name] LIKE :query OR [Address] LIKE :query", {:query => query})
+      end
     end
 end

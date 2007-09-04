@@ -1,9 +1,5 @@
-<p>Hello, and Welcome to the Helios Administration!</p>
 <p>From here you can:<br />
-	<ul>
-		<li><%= link_to 'Fix ALL Mismatch13 errors at ALL malibu locations', 'javascript:void(0)', :onclick => "new Ajax.Request('#{helios_path('fixmismatch')}', {asynchronous:true}); jack.start()" %></li>
-		<li>Merge and delete clients:</li>
-	</ul>
+<a id="mismatch13_link" href="javascript:void(0)" onclick="mismatchModal();">Fix Mismatch 13</a>
 </p>
 <% #model_name = controller.class.name.sub('Controller', '').underscore -%>
 <% model_name = 'helios_clients' -%>
