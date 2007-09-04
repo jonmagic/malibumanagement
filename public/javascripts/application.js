@@ -28,5 +28,5 @@ function deleteClient(id_to_delete){
 		method: 'delete',
 		evalScripts: true
 	});
-	Control.Modal.open('<div>Deleting!!</div>', {fade: true, overlayCloseOnClick: false});
+	Control.Modal.open("<div class='loading-dialog'><img src='/images/ajax-loader.gif' valign='middle' />&nbsp;Deleting from all locations...</div>", {fade: true, overlayCloseOnClick: false});
 }
