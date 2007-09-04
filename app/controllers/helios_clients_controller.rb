@@ -37,7 +37,9 @@ class HeliosClientsController < ApplicationController
       Helios::ClientProfile.update_satellites = true # Ensures satellite databases are updated automatically.
       @client = Helios::ClientProfile.find(params[:id])
       @destroy_results = @client.destroy
-      render :layout => false
+      respond_to do |format|
+        format.js
+      end
     end
   end
 end
