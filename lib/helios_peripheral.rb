@@ -73,6 +73,7 @@ ActionController::Base.logger.info "Performing #{method} for #{args.join(', ')} 
           end
           retval[slave] = self.slaves[slave].send(method, *args)
         rescue ActiveResource::ResourceNotFound => e
+          retval[slave] = self.slaves[slave].new
         rescue Errno::ETIMEDOUT => e
           err = "Connection Failed"
         rescue Timeout::Error => e
