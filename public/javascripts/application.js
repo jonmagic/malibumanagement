@@ -23,9 +23,10 @@ function deleteModal(id_to_delete, friendly_name){
 
 function deleteClient(id_to_delete){
 	// Start an ajax call, with Control.Modal.open() on start and .close() on finish.
-	new Ajax.Request('/malibu/helios/helios_clients/'+id_to_delete, {
+	new Ajax.Request('/malibu/helios/helios_clients/'+id_to_delete+'.js', {
 		asynchronous: true,
-		method: 'delete'
+		method: 'delete',
+		evalScripts: true
 	});
 	Control.Modal.open('<div>Deleting!!</div>', {fade: true, overlayCloseOnClick: false});
 }
