@@ -1,3 +1,3 @@
-<< "$('client_listing_#{@client.id}').remove();"
-<< @client.errors.full_messages.blank? ? "Control.Modal.open('#{@client.full_name} successfully DESTROYED at all locations!', {fade:true});" : "Control.Modal.open('#{@client.full_name} NOT destroyed: #{@client.errors.full_messages.to_sentence}');"
-<< "setTimeout('Control.Modal.close();', 3000);"
+page << "$('client_listing_#{@client.id}').remove();" if @client.errors.full_messages.blank?
+page << (@client.errors.full_messages.blank? ? "Control.Modal.open('<div class=\"loading-dialog\">#{@client.full_name} successfully DESTROYED at all locations!</div>', {fade:true});" : "<div class=\"loading-dialog\">Control.Modal.open('#{@client.full_name} NOT destroyed: #{@client.errors.full_messages.to_sentence}</div>', {fade:true});")
+page << "setTimeout('Control.Modal.close();', 4000);" if @client.errors.full_messages.blank?
