@@ -18,7 +18,7 @@ function deleteModal(id_to_delete, friendly_name){
 				<input type="button" value="Cancel" onclick="Control.Modal.close();" class="dialog-button"/>\
 			</div>\
 		</div>\
-	</div>', {overlayCloseOnClick: false});
+	</div>', {fade: true, overlayCloseOnClick: false});
 }
 
 function deleteClient(id_to_delete){
