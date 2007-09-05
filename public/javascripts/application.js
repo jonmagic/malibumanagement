@@ -37,7 +37,6 @@ function mismatchModal(){
 function runMismatch(){
 	new Ajax.Request('/malibu/helios/fixmismatch', {asynchronous:true});
 	$('mismatch13_link').replace('<span><em>Mismatch13 is currently being fixed. Please wait at least 10 minutes and reload this page if you want to run the Mismatch13 fix again.</em></span>');
-	// Disable the mismatch link
 }
 
 function deleteClient(id_to_delete){

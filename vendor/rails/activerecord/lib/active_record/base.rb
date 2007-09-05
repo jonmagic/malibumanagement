@@ -643,6 +643,11 @@ module ActiveRecord #:nodoc:
         read_inheritable_attribute("attr_accessible")
       end
 
+      # Returns a boolean answering whether the named attribute exists
+      def has_attribute?(key)
+        columns_hash.has_key?(key.to_s)
+      end
+
 
       # Specifies that the attribute by the name of +attr_name+ should be serialized before saving to the database and unserialized
       # after loading from the database. The serialization is done through YAML. If +class_name+ is specified, the serialized
@@ -1675,7 +1680,7 @@ module ActiveRecord #:nodoc:
       # A new object isn't saved yet, so there are no 'original' attributes - all attributes are newly created, so they go into @changed_attributes.
       def initialize(attributes = nil)
         @attributes = attributes_from_column_definition #Pretend the default values are the original values
-        @changed_attributes = {}
+        @changed_attributes = {} #Or should we pretend that all default values are modified attributes?
         @new_record = true
         ensure_proper_type
         self.attributes = attributes unless attributes.nil?
@@ -1722,10 +1727,24 @@ module ActiveRecord #:nodoc:
         @new_record
       end
 
+      # Returns true if the object can be found in the database by the current id (primary key)
+      def exists?
+        return false if self.id.blank?
+        self.class.find(self.id)
+        return true
+      rescue ActiveRecord::RecordNotFound
+        return false
+      end
+
       # * No record exists: Creates a new record with values matching those of the object attributes.
       # * A record does exist: Updates the record with values matching those of the object attributes.
       def save
         create_or_update
+      end
+
+      # Simply calls save on the object, if the object has been modified.
+      def save_if_modified
+        save if modified?
       end
       
       # Attempts to save the record, but instead of just returning false if it couldn't happen, it raises a 
@@ -1826,6 +1845,15 @@ module ActiveRecord #:nodoc:
         @changed_attributes = {}
         self
       end
+      alias :revert :reset
+
+      # Resets a single attribute to the original value of that attribute when the object was last loaded
+      # Returns the original value of that attribute
+      def reset_attribute(attribute)
+        @changed_attributes.delete(attribute)
+        @attributes[attribute]
+      end
+      alias :revert_attribute :reset_attribute
 
       # Reloads the attributes of this object from the database.
       # The optional options argument is passed to find when reloading so you
@@ -1891,7 +1919,28 @@ module ActiveRecord #:nodoc:
         end
       end
 
-      # Returns a hash of all the attributes with their names as keys and clones of their objects as values.
+      # Returns a hash of all the default attributes with their names as keys and clones of their objects as values.
+      def default_attributes(options = nil)
+        default_attributes = clone_attributes :read_attribute_default
+        
+        if options.nil?
+          default_attributes
+        else
+          if except = options[:except]
+            except = Array(except).collect { |attribute| attribute.to_s }
+            except.each { |attribute_name| default_attributes.delete(attribute_name) }
+            default_attributes
+          elsif only = options[:only]
+            only = Array(only).collect { |attribute| attribute.to_s }
+            default_attributes.delete_if { |key, value| !only.include?(key) }
+            default_attributes
+          else
+            raise ArgumentError, "Options does not specify :except or :only (#{options.keys.inspect})"
+          end
+        end
+      end
+
+      # Returns a hash of all the original attributes with their names as keys and clones of their objects as values.
       def original_attributes(options = nil)
         attributes = clone_attributes :read_original_attribute
         
@@ -1912,7 +1961,7 @@ module ActiveRecord #:nodoc:
         end
       end
 
-      # Returns a hash of all the attributes with their names as keys and clones of their objects as values.
+      # Returns a hash of all the changed attributes with their names as keys and clones of their objects as values.
       def changed_attributes(options = nil)
         attributes = clone_changed_attributes :read_attribute
         
@@ -1933,8 +1982,14 @@ module ActiveRecord #:nodoc:
         end
       end
 
+      # Returns a boolean answer to whether the attribute has been changed or not, since the last time the object was loaded
+      def attribute_changed?(attribute)
+        @changed_attributes.has_key?(attribute.to_s)
+      end
+      alias :attr_changed? :attribute_changed?
+
       def modified?
-        changed_attributes.keys.length > 0
+        (new_record? || @changed_attributes.keys.length > 0) ? true : false
       end
 
       # Returns a hash of cloned attributes before typecasting and deserialization.
@@ -1969,7 +2024,7 @@ module ActiveRecord #:nodoc:
 
       # Returns an array of names for the attributes available on this object sorted alphabetically.
       def attribute_names
-        @attributes.merge(@changed_attributes).keys.sort
+        attributes_from_column_definition.keys.sort
       end
 
       # Returns an array of names for the attributes available on this object sorted alphabetically.
@@ -2061,6 +2116,7 @@ module ActiveRecord #:nodoc:
       def create_or_update
         raise ReadOnlyRecord if readonly?
         result = new_record? ? create : update
+        @attributes, @changed_attributes = @attributes.merge(@changed_attributes), {} if result != false
         result != false
       end
 
@@ -2142,9 +2198,10 @@ module ActiveRecord #:nodoc:
       # table with a master_id foreign key can instantiate master through Client#master.
       def method_missing(method_id, *args, &block)
         method_name = method_id.to_s
-        if @attributes.include?(method_name) or
+        all_attrs = @attributes.merge(@changed_attributes)
+        if all_attrs.include?(method_name) or
             (md = /\?$/.match(method_name) and
-            @attributes.include?(query_method_name = md.pre_match) and
+            all_attrs.include?(query_method_name = md.pre_match) and
             method_name = query_method_name)
           if self.class.read_methods.empty? && self.class.generate_read_methods
             define_read_methods
@@ -2157,7 +2214,7 @@ module ActiveRecord #:nodoc:
           id
         elsif md = self.class.match_attribute_method?(method_name)
           attribute_name, method_type = md.pre_match, md.to_s
-          if @attributes.include?(attribute_name)
+          if all_attrs.include?(attribute_name)
             __send__("attribute#{method_type}", attribute_name, *args, &block)
           else
             super
@@ -2207,6 +2264,29 @@ module ActiveRecord #:nodoc:
         end
       end
 
+      # Returns the default value for an attribute
+      def read_attribute_default(attr_name)
+        attr_name = attr_name.to_s
+        if column = column_for_attribute(attr_name)
+          if unserializable_attribute?(attr_name, column)
+            unserialize_value_for_attribute(column.default, column.name)
+          else
+            column.type_cast(column.default)
+          end
+        else
+          column.default
+        end
+      end
+      def unserialize_value_for_attribute(value, attr_name)
+        unserialized_object = object_from_yaml(value)
+        if unserialized_object.is_a?(self.class.serialized_attributes[attr_name]) || unserialized_object.nil?
+          unserialized_object
+        else
+          raise SerializationTypeMismatch,
+            "#{attr_name} was supposed to be a #{self.class.serialized_attributes[attr_name]}, but was a #{unserialized_object.class.to_s}"
+        end
+      end
+
       def read_attribute_before_type_cast(attr_name)
         @attributes[attr_name]
       end
@@ -2236,7 +2316,7 @@ module ActiveRecord #:nodoc:
         access_code = cast_code ? "(v = (@changed_attributes['#{attr_name}'] || @attributes['#{attr_name}'])) && #{cast_code}" : "(@changed_attributes['#{attr_name}'] || @attributes['#{attr_name}'])"
         
         unless attr_name.to_s == self.class.primary_key.to_s
-          access_code = access_code.insert(0, "raise NoMethodError, 'missing attribute: #{attr_name}', caller unless @attributes.has_key?('#{attr_name}'); ")
+          access_code = access_code.insert(0, "raise NoMethodError, 'missing attribute: #{attr_name}', caller unless @attributes.merge(@changed_attributes).has_key?('#{attr_name}'); ")
           self.class.read_methods << attr_name
         end
         
@@ -2282,10 +2362,14 @@ module ActiveRecord #:nodoc:
 
       # Returns the unserialized object of the attribute.
       def unserialize_attribute(attr_name)
-        unserialized_object = object_from_yaml(@attributes[attr_name])
-
+        unserializable_value = @changed_attributes.has_key?(attr_name) ? @changed_attributes[attr_name] : @attributes[attr_name]
+        unserialized_object = unserialize_value_for_attribute(unserializable_value, attr_name)
         if unserialized_object.is_a?(self.class.serialized_attributes[attr_name]) || unserialized_object.nil?
-          @attributes.frozen? ? unserialized_object : @attributes[attr_name] = unserialized_object
+          if(@changed_attributes.has_key?(attr_name))
+            @changed_attributes.frozen? ? unserialized_object : @changed_attributes[attr_name] = unserialized_object
+          else
+            @attributes.frozen? ? unserialized_object : @attributes[attr_name] = unserialized_object
+          end
         else
           raise SerializationTypeMismatch,
             "#{attr_name} was supposed to be a #{self.class.serialized_attributes[attr_name]}, but was a #{unserialized_object.class.to_s}"
@@ -2297,16 +2381,21 @@ module ActiveRecord #:nodoc:
       def write_attribute(attr_name, value)
         attr_name = attr_name.to_s
         column = self.class.columns_hash[attr_name == 'id' ? self.class.primary_key : attr_name]
-        if column.type_cast(convert_number_column_value(value)) != read_attribute(attr_name) && column.type_cast(convert_number_column_value(value)).to_s != read_attribute(attr_name).to_s
-          if column.type_cast(convert_number_column_value(value)) != read_original_attribute(attr_name) && column.type_cast(convert_number_column_value(value)).to_s != read_original_attribute(attr_name).to_s
+        type_casted = column.type_cast(convert_number_column_value(value))
+        if type_casted != read_attribute(attr_name) && type_casted.to_s != read_attribute(attr_name).to_s
+          if type_casted != read_original_attribute(attr_name) && type_casted.to_s != read_original_attribute(attr_name).to_s
+            # Attribute has been updated.
             if (column = column_for_attribute(attr_name)) && column.number?
               @changed_attributes[attr_name] = convert_number_column_value(value)
             else
               @changed_attributes[attr_name] = value
             end
           else
+            # Attribute has been set to the original value.
             @changed_attributes.delete(attr_name)
           end
+        else
+          # Attribute remains unchanged
         end
       end
 
