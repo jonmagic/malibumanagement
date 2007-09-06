@@ -17,10 +17,7 @@ class HeliosController < ApplicationController
 
   def fixmismatch
     restrict('allow only admins') or begin
-      count = 0
-      Helios::ClientProfile.update_satellites = false # Ensures satellite databases are NOT updated automatically.
-      Helios::ClientProfile.find_all_by_member1_flex(nil).each {|faulty| count += 1 if faulty.update_attributes(:member1_flex => 0) }
-      Helios::ClientProfile.find_all_by_member2_flex(nil).each {|faulty| count += 1 if faulty.update_attributes(:member2_flex => 0) }
+      count = Helios::ClientProfile.fixmismatch
       @locations = {}
       @locations['Central'] = {'success' => true, 'count' => count}
       last_location_done = nil

@@ -54,6 +54,14 @@ class Helios::ClientProfile < ActiveRecord::Base
     self.attributes.reject {|k,v| [self.class.primary_key, 'F_LOC', 'UpdateAll'].include?(k)}
   end
 
+  def self.fixmismatch
+    count = 0
+    update_satellites = false # Ensures satellite databases are NOT updated automatically.
+    find_all_by_member1_flex(nil).each {|faulty| count += 1 if faulty.update_attributes(:member1_flex => 0) }
+    find_all_by_member2_flex(nil).each {|faulty| count += 1 if faulty.update_attributes(:member2_flex => 0) }
+    count
+  end
+
   protected
     def self.craft_sql_condition_for_query(query) #search in: Client_no, First_Name, Last_Name, Address
       query = '%' + query + '%'
