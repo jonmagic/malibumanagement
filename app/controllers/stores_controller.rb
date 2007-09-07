@@ -13,6 +13,10 @@ class StoresController < ApplicationController
 #  profile:   only the current accessed_store's store admin
 #  update:    only the current accessed_store's store admin
 
+  def redir_from_root
+    redirect_to admin_dashboard_path()
+  end
+
   # GET /:domain/dashboard
   def dashboard
     restrict('allow only store users')
