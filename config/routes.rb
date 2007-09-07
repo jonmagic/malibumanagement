@@ -3,6 +3,7 @@ ActionController::Routing::Routes.draw do |map|
 
 #/sessions/[new,create,destroy]
 #  map.resources :sessions
+  map.connect '/', :controller => 'stores', :action => 'redir_from_root'
 
 #/pages/[show, etc]
   map.page '/pages/:stub', :controller => 'pages', :action => 'show', :stub => 'index'
@@ -23,7 +24,7 @@ ActionController::Routing::Routes.draw do |map|
 
   if APP_CONFIG[:FEATURES].include?(:forms)
     map.admin_dashboard                        '/malibu',        :controller => 'manage/forms',   :action => 'index'
-  elsif APP_CONFIG[:FEATURES].include?(:helios)
+  elsif APP_CONFIG[:FEATURES].include?(:open_helios)
     map.admin_dashboard                        '/malibu',        :controller => 'helios',   :action => 'index'
   elsif APP_CONFIG[:FEATURES].include?(:work_schedules)
     map.admin_dashboard                        '/malibu',        :controller => 'manage/stores',   :action => 'work_schedule'
