@@ -1,0 +1,9 @@
+
+APP_CONFIG = {
+  
+}
+
+# Specify the network locations of the OpenHelios clients synching with this server.
+OPENHELIOS_LOCATIONS = {
+	# 'location-name' => 'IP:port'
+}

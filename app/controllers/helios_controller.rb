@@ -21,9 +21,9 @@ class HeliosController < ApplicationController
       @locations = {}
       @locations['Central'] = {'success' => true, 'count' => count}
       last_location_done = nil
-      SATELLITE_LOCATIONS.each do |location,site|
+      OPENHELIOS_LOCATIONS.each do |location,site|
         Thread.current['satellite_status'].status_text = (last_location_done ? (!last_location_done.has_key?('error') ? "#{last_location_done['count']} fixed at #{last_location_done['location']}. " : "#{result['error']} at #{last_location_done['location']}. ") : '') + "Fixing errors at #{location}..."
-        Thread.current['satellite_status'].percent = 100 / (@locations.keys.length) * (SATELLITE_LOCATIONS.keys.length+2)
+        Thread.current['satellite_status'].percent = 100 / (@locations.keys.length) * (OPENHELIOS_LOCATIONS.keys.length+2)
         begin
           conn = ActiveResource::Connection.new("http://#{site}")
           resp = conn.put('/fixmismatch')

@@ -14,8 +14,8 @@ module HeliosPeripheral
     base.cattr_accessor :journal
     base.journal = []
 
-    SATELLITE_LOCATIONS.keys.each do |location|
-      base.add_slave(location, SATELLITE_LOCATIONS[location])
+    OPENHELIOS_LOCATIONS.keys.each do |location|
+      base.add_slave(location, OPENHELIOS_LOCATIONS[location])
     end
 
     # Register the after_save handle

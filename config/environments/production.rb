@@ -16,16 +16,3 @@ config.action_controller.perform_caching             = true
 
 # Disable delivery errors, bad email addresses will be ignored
 # config.action_mailer.raise_delivery_errors = false
-
-#Sam: (517) 610-4488
-
-SATELLITE_LOCATIONS = {
-  'hillsdale' => '192.168.10.21:5050',
-  'coldwater' => '192.168.11.21:5050',
-  'angola' => '192.168.12.21:5050',
-  'jonesville' => '192.168.13.21:5050',
-  'jackson' => '192.168.14.21:5050',
-  'hudson' => '192.168.15.21:5050',
-  'middlebelt' => 'malibu-middlebelt.no-ip.com:5050',
-  'dupont' => '192.168.17.21:5050'
-}
