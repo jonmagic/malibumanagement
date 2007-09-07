@@ -19,8 +19,3 @@ config.action_view.debug_rjs                         = true
 
 # Don't care if the mailer can't send
 config.action_mailer.raise_delivery_errors = false
-
-OPENHELIOS_LOCATIONS = {
-  'HeliosA' => '10.11.45.2:3001',
-  'HeliosB' => '10.11.45.2:3002'
-}

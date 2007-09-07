@@ -1,6 +1,8 @@
-
+# Configuration for how to display the application
 APP_CONFIG = {
+	:GUI => {
   
+	}
 }
 
 # Specify the network locations of the OpenHelios clients synching with this server.
