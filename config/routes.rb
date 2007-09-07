@@ -21,12 +21,18 @@ ActionController::Routing::Routes.draw do |map|
 # A D M I N S *
 #* * * * * * *
 
-  map.admin_dashboard                        '/malibu',        :controller => 'manage/forms',   :action => 'index'
+  if APP_CONFIG[:FEATURES].include?(:forms)
+    map.admin_dashboard                        '/malibu',        :controller => 'manage/forms',   :action => 'index'
+  elsif APP_CONFIG[:FEATURES].include?(:helios)
+    map.admin_dashboard                        '/malibu/helios',        :controller => 'helios',   :action => 'index'
+  elsif APP_CONFIG[:FEATURES].include?(:work_schedules)
+    map.admin_dashboard                        '/malibu/work_schedule',        :controller => 'manage/stores',   :action => 'work_schedule'
+  elsif APP_CONFIG[:FEATURES].include?(:bulletin_board)
+    map.admin_dashboard                        '/malibu/bulletin_board',        :controller => 'stores',   :action => 'bulletin_board'
+  end
   map.admin_schedule '/malibu/work_schedule/:store_alias', :controller => 'manage/stores', :action => 'work_schedule'
   map.admin_bulletin '/malibu/bulletin_board', :controller => 'stores', :action => 'bulletin_board'
   map.resources :posts, :name_prefix => 'admin_', :path_prefix => '/malibu/bulletin_board', :collection => { :live_search => :any, :search => :any }, :member => {:attachment => :get}
-  # map.search_helios_clients '/malibu/helios/search', :controller => 'helios', :action => 'search'
-  # map.formatted_search_helios_clients '/malibu/helios/search.:format', :controller => 'helios', :action => 'search'
   map.resources :helios_clients, :path_prefix => '/malibu/helios', :collection => {:live_search => :any, :search => :any}, :member => { :exists => :any }
   map.helios '/malibu/helios/:action/:id', :controller => 'helios', :action => 'index'
   map.connect '/malibu/helios/:action.:format', :controller => 'helios', :action => 'index', :format => 'xml'
@@ -47,10 +53,17 @@ ActionController::Routing::Routes.draw do |map|
 
 # * * * * * * * * * * * * * * * * * * * * * * * *
 
-#* * * * * * * *
-# D O C T O R S *
-#* * * * * * * *
+#* * * * * * *
+# S T O R E S *
+#* * * * * * *
 
+  if APP_CONFIG[:FEATURES].include?(:forms)
+    map.store_dashboard                        '/stores/:domain',        :controller => 'stores',   :action => 'dashboard'
+  elsif APP_CONFIG[:FEATURES].include?(:work_schedules)
+    map.store_dashboard                        '/stores/:domain/work_schedule',        :controller => 'stores',   :action => 'work_schedule'
+  elsif APP_CONFIG[:FEATURES].include?(:bulletin_board)
+    map.store_dashboard                        '/stores/:domain/bulletin_board',        :controller => 'stores',   :action => 'bulletin_board'
+  end
   map.store_dashboard '/stores/:domain', :controller => 'stores', :action => 'dashboard'
   map.store_schedule '/stores/:domain/work_schedule', :controller => 'stores', :action => 'work_schedule'
   map.bulletin_board '/stores/:domain/bulletin_board', :controller => 'stores', :action => 'bulletin_board'

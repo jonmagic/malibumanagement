@@ -4,7 +4,7 @@ class Helios::ClientProfile < ActiveRecord::Base
     self.establish_connection(
       :adapter  => 'mysql',
       :database => 'HeliosBS',
-      :host     => '10.11.45.3',
+      :host     => 'localhost',
       :username => 'maly',
       :password => 'booboo'
     )

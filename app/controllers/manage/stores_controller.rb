@@ -93,7 +93,7 @@ class Manage::StoresController < ApplicationController
 
   def work_schedule
     restrict('allow only admins') or begin
-      @store = Store.find_by_alias(params[:store_alias])
+      @store = Store.find_by_alias(params[:store_alias]) || Store.find(:first) # Will work if at least one store exists, with a gcal_url. Errors will be thrown or infinite redirection otherwise.
       redirect_to admin_dashboard_path if @store.nil? || @store.gcal_url.blank?
       @cal = Calendar.new(@store.gcal_url)
       redirect_to admin_dashboard_path if @cal.nil?
