@@ -1,8 +1,13 @@
 # Configuration for how to display the application
 APP_CONFIG = {
-	:GUI => {
-  
-	}
+	:FEATURES => [
+  	:stores,
+  	:forms,
+	  :work_schedules,
+	  :bulletin_board,
+	  :open_helios,
+	  nil
+	]
 }
 
 # Specify the network locations of the OpenHelios clients synching with this server.
