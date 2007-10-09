@@ -53,10 +53,10 @@ class StoresController < ApplicationController
     restrict('allow only store admins') or begin
       @store = Store.find(params[:id])
       log = Log.new(:log_type => 'update:Store', :data => {:old_attributes => @store.attributes.changed_values(params[:store])}, :object => @store, :agent => current_user)
-logger.error "Created log: #{log}\n"
+logger.info "Created log: #{log}\n"
       respond_to do |format|
   #This doesn't update the FormTypes association if all of them are unchecked...?
-  logger.error "Current user #{@current_user}...\n"
+  logger.info "Current user #{@current_user}...\n"
         if (@store.valid?) &&  @store.update_attributes(params[:store])
           logger.error "Current user #{@current_user}...\n"
           log.save
