@@ -130,7 +130,7 @@ logger.info "Search Results: #{@results.length} -- #{@results}"
       return redirect_to(store_dashboard_url) if @form_type == 'chooser'
       @form = FormInstance.find_by_id(params[:form_id])
       return redirect_to(store_dashboard_url) unless @form
-      unless current_user.is_store_admin? || @form.user_id == current_user.id || @form.data_type == 'SalesReport'
+      unless current_user.is_store_admin? || @form.user_id == current_user.id || @form.assigned_to == current_user.id || @form.data_type == 'SalesReport'
         flash[:notice] = "You don't have access to that form. Please select another."
         return redirect_to(store_dashboard_url)
       end
@@ -161,7 +161,7 @@ logger.info "Search Results: #{@results.length} -- #{@results}"
       @save_status = ''
       @form = FormInstance.find_by_id(params[:form_id])
       return redirect_to(store_dashboard_url) unless @form
-      unless current_user.is_store_admin? || @form.user_id == current_user.id || @form.data_type == 'SalesReport'
+      unless current_user.is_store_admin? || @form.user_id == current_user.id || @form.assigned_to == current_user.id || @form.data_type == 'SalesReport'
         flash[:notice] = "You don't have access to that form. Please select another."
         return redirect_to(store_dashboard_url)
       end
@@ -245,7 +245,7 @@ logger.info "Reloading by default (asked for html)..."
     restrict('allow only store users') or begin
       @form = FormInstance.find_by_id(params[:form_id])
       return redirect_to(store_dashboard_url) unless @form
-      unless current_user.is_store_admin? || @form.user_id == current_user.id || @form.data_type == 'SalesReport'
+      unless current_user.is_store_admin? || @form.user_id == current_user.id || @form.assigned_to == current_user.id || @form.data_type == 'SalesReport'
         flash[:notice] = "You don't have access to that form. Please select another."
         return redirect_to(store_dashboard_url)
       end
