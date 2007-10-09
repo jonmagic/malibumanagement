@@ -20,6 +20,7 @@ class Helios::ClientProfile < ActiveRecord::Base
   set_primary_key 'Client_no'
 
   has_many :transactions, :class_name => 'Helios::Transact', :foreign_key => 'client_no', :order => 'Last_Mdt DESC'
+  has_one :eft, :class_name => 'Helios::Eft', :foreign_key => 'Client_no'
 
   include HeliosPeripheral
 
