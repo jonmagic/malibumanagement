@@ -41,7 +41,7 @@ module ActiveRecord
         raise ArgumentError, "Missing Database. Argument ':database' must be set in order for this adapter to work." unless config.has_key?(:database)
         database  = config[:database]
         host      = config[:host] ? config[:host].to_s : 'localhost'
-        driver_url = "DBI:ADO:Provider=SQLOLEDB;Data Source=#{host};Initial Catalog=#{database};User Id=#{username};Password=#{password};"
+        driver_url = config[:security] == 'trusted' ? "DBI:ADO:Provider=SQLOLEDB;Data Source=#{host};Initial Catalog=#{database};Integrated Security=SSPI;" : "DBI:ADO:Provider=SQLOLEDB;Data Source=#{host};Initial Catalog=#{database};User Id=#{username};Password=#{password};"
       end
 ActionController::Base.logger.info "Driver URL: #{driver_url}, U: #{username}, P: #{password}"
 puts "Driver URL: #{driver_url}, U: #{username}, P: #{password}"
