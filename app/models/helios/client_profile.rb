@@ -11,8 +11,9 @@ class Helios::ClientProfile < ActiveRecord::Base
   when 'production'
     self.establish_connection(
       :adapter  => 'sqlserver',
-      :mode => 'ODBC',
-      :dsn => 'HeliosBS'
+      :mode => 'ADO',
+      :database => 'HeliosBS',
+      :security => 'trusted'
     )
   end
 
