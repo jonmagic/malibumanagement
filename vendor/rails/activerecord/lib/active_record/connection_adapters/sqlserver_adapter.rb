@@ -43,7 +43,7 @@ module ActiveRecord
         host      = config[:host] ? config[:host].to_s : 'localhost'
         driver_url = "DBI:ADO:Provider=SQLOLEDB;Data Source=#{host};Initial Catalog=#{database};User Id=#{username};Password=#{password};"
       end
-ActionController::Base.logger.info "Driver URL: #{driver_url}, U: #{username}, P: #{password}"
+puts ActionController::Base.logger.info "Driver URL: #{driver_url}, U: #{username}, P: #{password}"
       conn      = DBI.connect(driver_url, username, password)
       conn["AutoCommit"] = autocommit
       ConnectionAdapters::SQLServerAdapter.new(conn, logger, [driver_url, username, password])
