@@ -44,7 +44,6 @@ module ActiveRecord
         driver_url = config[:security] == 'trusted' ? "DBI:ADO:Provider=SQLOLEDB;Data Source=#{host};Initial Catalog=#{database};Integrated Security=SSPI;" : "DBI:ADO:Provider=SQLOLEDB;Data Source=#{host};Initial Catalog=#{database};User Id=#{username};Password=#{password};"
       end
 ActionController::Base.logger.info "Driver URL: #{driver_url}, U: #{username}, P: #{password}"
-puts "Driver URL: #{driver_url}, U: #{username}, P: #{password}"
       conn      = DBI.connect(driver_url, username, password)
       conn["AutoCommit"] = autocommit
       ConnectionAdapters::SQLServerAdapter.new(conn, logger, [driver_url, username, password])
@@ -124,25 +123,27 @@ puts "Driver URL: #{driver_url}, U: #{username}, P: #{password}"
       # These methods will only allow the adapter to insert binary data with a length of 7K or less
       # because of a SQL Server statement length policy.
       def self.string_to_binary(value)
-        value.gsub(/(\r|\n|\0|\x1a)/) do
-          case $1
-            when "\r"   then  "%00"
-            when "\n"   then  "%01"
-            when "\0"   then  "%02"
-            when "\x1a" then  "%03"
-          end
-        end
+        value
+        # value.gsub(/(\r|\n|\0|\x1a)/) do
+        #   case $1
+        #     when "\r"   then  "%00"
+        #     when "\n"   then  "%01"
+        #     when "\0"   then  "%02"
+        #     when "\x1a" then  "%03"
+        #   end
+        # end
       end
 
       def self.binary_to_string(value)
-        value.gsub(/(%00|%01|%02|%03)/) do
-          case $1
-            when "%00"    then  "\r"
-            when "%01"    then  "\n"
-            when "%02\0"  then  "\0"
-            when "%03"    then  "\x1a"
-          end
-        end
+        value
+        # value.gsub(/(%00|%01|%02|%03)/) do
+        #   case $1
+        #     when "%00"    then  "\r"
+        #     when "%01"    then  "\n"
+        #     when "%02\0"  then  "\0"
+        #     when "%03"    then  "\x1a"
+        #   end
+        # end
       end
     end
 
