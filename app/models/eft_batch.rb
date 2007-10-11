@@ -23,7 +23,7 @@ class EftBatch < ActiveRecord::Base
       sql = "([Member1] = 'VIP' AND '"+Time.parse(month).strftime("%Y%m%d")+"' >= [Member1_Beg] AND [Member1_Exp] >= '"+Time.parse(month).strftime("%Y%m%d")+"') OR ([Member2] = 'VIP' AND '"+Time.parse(month).strftime("%Y%m%d")+"' >= [Member2_Beg] AND [Member2_Exp] >= '"+Time.parse(month).strftime("%Y%m%d")+"')"
     end
 
-    Helios::ClientProfile.find(:all, :conditions => [sql], :limit => 120).each do |cp|
+    Helios::ClientProfile.find(:all, :conditions => [sql]).each do |cp|
       if cp.eft.nil?
         @no_eft << cp.id.to_i
       else
