@@ -35,8 +35,11 @@ ActionController::Routing::Routes.draw do |map|
   map.admin_bulletin '/malibu/bulletin_board', :controller => 'stores', :action => 'bulletin_board'
   map.resources :posts, :name_prefix => 'admin_', :path_prefix => '/malibu/bulletin_board', :collection => { :live_search => :any, :search => :any }, :member => {:attachment => :get}
   map.resources :helios_clients, :path_prefix => '/malibu/helios', :collection => {:live_search => :any, :search => :any}, :member => { :exists => :any }
-  map.helios '/malibu/helios/:action/:id', :controller => 'helios', :action => 'index'
-  map.connect '/malibu/helios/:action.:format', :controller => 'helios', :action => 'index', :format => 'xml'
+  map.open_helios '/malibu/helios/:action/:id', :controller => 'helios', :action => 'index'
+  map.helios '/malibu/helios/:action', :controller => 'helios', :action => 'index', :format => 'html'
+  map.formatted_helios '/malibu/helios/:action.:format', :controller => 'helios', :action => 'index', :format => 'xml'
+  map.eft           '/malibu/eft/:action',        :controller => 'eft', :action => 'view_batch_stats', :format => 'html'
+  map.formatted_eft '/malibu/eft/:action.:format',:controller => 'eft', :action => 'view_batch_stats', :format => 'xml'
   map.resources :admins,     :path_prefix => '/malibu/manage', :controller => 'manage/admins',  :collection => { :live_search => :any, :search => :any, :set_admin_friendly_name => :any }, :member => { :update => :update }
   map.resources :stores,    :path_prefix => '/malibu/manage', :controller => 'manage/stores' do |store|
     store.resources :users, :name_prefix => 'manage_',          :controller => 'manage/users',   :collection => { :live_search => :any, :search => :any, :set_user_friendly_name => :any }, :member => { :update => :update }
