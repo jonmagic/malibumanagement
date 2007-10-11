@@ -380,7 +380,7 @@ th.calendar_day {
 #eft h2 {margin-left:4em;}
 #eft a {color:#2667b6;}
 #eft a:visited {color:#2667b6;}
-#eft_actions {position:relative;margin-top:1em;}
+#eft_actions {position:relative;margin-top:.4em;}
 #eft_actions_header {position:relative;width:100%;height:50px;border-bottom:5px solid #fff280;background-image:url(/images/eft/chkbook.gif);background-repeat:no-repeat;background-position:20px;}
 #eft_actions_header p {position:absolute;left:80px;top:10px;}
 #eft_actions a {margin-top:1em;text-indent:20px;}
