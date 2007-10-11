@@ -1,3 +1,10 @@
+require 'fileutils'
+
+def with(*objects)
+  yield(*objects)
+  return *objects
+end
+
 class EftBatch < ActiveRecord::Base
   attr_accessor :members, :no_eft, :froze, :expired, :no_aba
 
@@ -74,7 +81,25 @@ class EftBatch < ActiveRecord::Base
     # t.column :members_with_expired_cards, :integer
     self.members_with_expired_cards = @expired.length
 
-    
+    path = 'EFT/'+self.for_month+'/' # should be different for each month and should end in /
+    FileUtils.mkpath(path)
+    with(File.open(path+'payment.csv', 'w')) do |file|
+      @members.each do |m|
+        file.write("#{m}\r\n")
+      end
+    end.close
+
+    with(File.open(path+'no_eft.csv', 'w')) do |file|
+      @no_eft.each do |n|
+        file.write("#{n}\r\n")
+      end
+    end.close
+
+    with(File.open(path+'expired.csv', 'w')) do |file|
+      @expired.each do |n|
+        file.write("#{n}\r\n")
+      end
+    end.close
   end
 
   def submit_for_payment!
