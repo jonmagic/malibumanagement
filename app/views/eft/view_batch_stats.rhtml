@@ -1,7 +1,7 @@
 <div id="eft">
 	<div id="eft_actions">
 		<div id="eft_actions_header">
-			<h2>Viewing <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
+			<h2>&nbsp;<br />Viewing <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
 		<a href="" class="eft_column calc">Generate Batch for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></a>
 		<a href="" class="eft_column go">Submit Batch for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></a>
@@ -9,7 +9,7 @@
 	</div>
 	<div id="eft_downloads">
 		<div id="eft_downloads_header">
-			<h2>Downloadable Excel files for <%= Time.parse(@batch.for_month).strftime("%B %Y") %>:</h2>
+			<h2>&nbsp;<br />Downloadable Excel files for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
 		<div class="eft_column"><a href="" class="floatleft">Current Batch</a></div>
 		<div class="eft_column"><a href="" class="floatleft">Still clearing</a></div>
@@ -17,7 +17,7 @@
 	</div>
 	<div id="eft_stats">
 		<div id="eft_stats_header">
-			<h2>Statistics for <%= Time.parse(@batch.for_month).strftime("%B %Y") %>:</h2>
+			<h2>&nbsp;<br />Statistics for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
 		<div class="eft_column">
 			<h3>By store and Total</h3>
