@@ -1,17 +1,29 @@
 class EftBatch < ActiveRecord::Base
-  def initialize(month) # 2007/11
+  attr_accessor :members, :no_eft, :froze, :expired
+
+  def initialize(attrs={}) # 2007/11
     # EftBatch.new -- will gather information from Helios::ClientProfile and Helios::Eft.
     # Generate 3 CSV's from live data and save them in that month's directory.
-    month ||= '2007/11'
     @members = []
     @no_eft = []
     @froze = []
     @expired = []
+    super(attrs)
+    month = attrs[:month] if attrs.has_key?(:month)
+    month ||= '2007/11'
     total_amount = 0
     locations_amounts = {}
     locations_count = {}
     amounts_count = {}
-    Helios::ClientProfile.find(:all, :conditions => ["([Member1] = 'VIP' AND '"+Time.parse(month).strftime("%Y%m%d")+"' >= [Member1_Beg] AND [Member1_Exp] >= '"+Time.parse(month).strftime("%Y%m%d")+"') OR ([Member2] = 'VIP' AND '"+Time.parse(month).strftime("%Y%m%d")+"' >= [Member2_Beg] AND [Member2_Exp] >= '"+Time.parse(month).strftime("%Y%m%d")+"')"]).each do |cp|
+    sql = ''
+    case ::RAILS_ENV
+    when 'development'
+      sql = "(Member1 = 'VIP' AND '"+Time.parse(month).strftime("%Y-%m-%d")+"' >= Member1_Beg AND Member1_Exp >= '"+Time.parse(month).strftime("%Y-%m-%d")+"') OR (Member2 = 'VIP' AND '"+Time.parse(month).strftime("%Y-%m-%d")+"' >= Member2_Beg AND Member2_Exp >= '"+Time.parse(month).strftime("%Y-%m-%d")+"')"
+    when 'production'
+      sql = "([Member1] = 'VIP' AND '"+Time.parse(month).strftime("%Y%m%d")+"' >= [Member1_Beg] AND [Member1_Exp] >= '"+Time.parse(month).strftime("%Y%m%d")+"') OR ([Member2] = 'VIP' AND '"+Time.parse(month).strftime("%Y%m%d")+"' >= [Member2_Beg] AND [Member2_Exp] >= '"+Time.parse(month).strftime("%Y%m%d")+"')"
+    end
+
+    Helios::ClientProfile.find(:all, :conditions => [sql], :limit => 120).each do |cp|
       if cp.eft.nil?
         @no_eft << cp.id.to_i
       else
@@ -21,24 +33,24 @@ class EftBatch < ActiveRecord::Base
           else
             @members << cp.id.to_i
 
-            total_amount += cp.eft.Monthly_Fee.to_f
+            total_amount += (cp.eft.Monthly_Fee.to_f*100).to_i
 
-            locations_amounts[cp.eft.Location] ||= 0
-            locations_amounts[cp.eft.Location] += cp.eft.amount
+            locations_amounts[HELIOS_LOCATION_CODES[cp.eft.Location]] ||= 0
+            locations_amounts[HELIOS_LOCATION_CODES[cp.eft.Location]] += (cp.eft.Monthly_Fee.to_f*100).to_i
 
-            locations_count[cp.eft.Location] ||= 0
-            locations_count[cp.eft.Location] += 1
+            locations_count[HELIOS_LOCATION_CODES[cp.eft.Location]] ||= 0
+            locations_count[HELIOS_LOCATION_CODES[cp.eft.Location]] += 1
 
-            amounts_count[cp.eft.Monthly_Fee.to_f] ||= 0
-            amounts_count[cp.eft.Monthly_Fee.to_f] += 1
+            amounts_count[(cp.eft.Monthly_Fee.to_f*100).to_i] ||= 0
+            amounts_count[(cp.eft.Monthly_Fee.to_f*100).to_i] += 1
           end
         else
           @froze << cp.id.to_i
         end
       end
-    end.length
+    end
     self.for_month = month
-    self.eft_count = @vip.length
+    self.eft_count = @members.length
     self.eft_total = total_amount
     # t.column :eft_count_by_location, :string, :default => {}.to_yaml
     self.eft_count_by_location = locations_count
@@ -47,9 +59,9 @@ class EftBatch < ActiveRecord::Base
     # t.column :eft_total_by_location, :string, :default => {}.to_yaml
     self.eft_total_by_location = locations_amounts
     # t.column :memberships_without_efts, :integer
-    self.memberships_without_efts = @no_eft
+    self.memberships_without_efts = @no_eft.length
     # t.column :members_with_expired_cards, :integer
-    self.members_with_expired_cards = @expired
+    self.members_with_expired_cards = @expired.length
   end
 
   def submit_for_payment!

@@ -64,6 +64,23 @@ class Helios::ClientProfile < ActiveRecord::Base
     count
   end
 
+  def self.delete_these(ids)
+    self.update_satellites = true
+    failed_list = []
+    ids.each do |id|
+      begin
+        cp = self.find(id)
+        cp.destroy
+        failed_list << id if !cp.errors.blank?
+      rescue ActiveRecord::RecordNotFound
+        nil
+      end
+    end
+    puts " * * * * * *" * 5
+    puts "FAILED TO DESTROY:"
+    puts failed_list.inspect
+  end
+
   protected
     def self.craft_sql_condition_for_query(query) #search in: Client_no, First_Name, Last_Name, Address
       query = '%' + query + '%'

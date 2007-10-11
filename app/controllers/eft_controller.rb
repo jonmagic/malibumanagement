@@ -1,31 +1,38 @@
-class EftController < ActionController::Base
-  before_filter :set_for_month
+class EftController < ApplicationController
+  layout 'admin'
+  before_filter :set_month
 
   def generate_batch
-  # 1) Determine the month this will be active for
-    time = Now.beginning_of_month
-    batch = EftBatch.find_or_create_by_for_month(time.strftime("%Y/%m"))
-    if !batch.submitted_at.blank?
-      time = 5.weeks.from(time).beginning_of_month
+    restrict('allow only admins') or begin
+    # 1) Determine the month this will be active for
+      time = Now.beginning_of_month
       batch = EftBatch.find_or_create_by_for_month(time.strftime("%Y/%m"))
+      if !batch.submitted_at.blank?
+        time = 5.weeks.from(time).beginning_of_month
+        batch = EftBatch.find_or_create_by_for_month(time.strftime("%Y/%m"))
+      end
+    # 3) Redirect to view_batch_stats of that month
+      redirect_to eft_path(:action => 'view_batch_stats', :for_month => batch.for_month)
     end
-  # 3) Redirect to view_batch_stats of that month
-    redirect_to eft_path(:action => 'view_batch_stats', :for_month => batch.for_month)
   end
   
   def view_batch_stats
-    # Just view the numbers in the specified month's EftBatch record
-    @batch = EftBatch.find_or_create_by_for_month(@for_month)
+    restrict('allow only admins') or begin
+      # Just view the numbers in the specified month's EftBatch record
+      @batch = EftBatch.find_or_create_by_for_month(@for_month)
+    end
   end
   
   def submit_batch
-    @batch = EftBatch.find_or_create_by_for_month(Now.strftime("%Y/%m"))
-    @batch.submit_for_payment!
-    # Return a nice "Yeah it's submitted" indication .. then show "Batch Submitted, ## Payments pending" instead of Submit Batch link.
+    restrict('allow only admins') or begin
+      @batch = EftBatch.find_or_create_by_for_month(Now.strftime("%Y/%m"))
+      @batch.submit_for_payment!
+      # Return a nice "Yeah it's submitted" indication .. then show "Batch Submitted, ## Payments pending" instead of Submit Batch link.
+    end
   end
 
   private
-    def set_for_month
+    def set_month
       @for_month = params[:for_month]
       @for_month ||= Now.strftime("%Y/%m")
     end

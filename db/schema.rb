@@ -2,17 +2,20 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 26) do
+ActiveRecord::Schema.define(:version => 27) do
+
+  create_table "account_setups", :force => true do |t|
+  end
 
   create_table "admins", :force => true do |t|
     t.column "username",               :string
     t.column "friendly_name",          :string,   :limit => 50
-    t.column "social_security_number", :integer,  :limit => 9
     t.column "crypted_password",       :string,   :limit => 40
     t.column "salt",                   :string,   :limit => 40
     t.column "created_at",             :datetime
     t.column "updated_at",             :datetime
     t.column "activated_at",           :datetime
+    t.column "social_security_number", :integer,  :limit => 9
   end
 
   create_table "direct_deposit_authorizations", :force => true do |t|
@@ -29,6 +32,25 @@ ActiveRecord::Schema.define(:version => 26) do
     t.column "date_received",         :date
     t.column "date_pre_note_sent",    :date
     t.column "date_of_first_payroll", :date
+  end
+
+  create_table "eft_batches", :force => true do |t|
+    t.column "for_month",                  :string
+    t.column "submitted_at",               :datetime
+    t.column "submitted_by",               :integer
+    t.column "eft_count",                  :integer
+    t.column "eft_total",                  :integer
+    t.column "eft_count_by_location",      :string,   :default => "--- {}\n\n"
+    t.column "eft_count_by_amount",        :string,   :default => "--- {}\n\n"
+    t.column "eft_total_by_location",      :string,   :default => "--- {}\n\n"
+    t.column "memberships_without_efts",   :integer
+    t.column "members_with_expired_cards", :integer
+  end
+
+  create_table "eft_pendings", :force => true do |t|
+    t.column "eft_batch_id",      :integer
+    t.column "client_profile_id", :integer
+    t.column "amount",            :integer
   end
 
   create_table "form_instances", :force => true do |t|
@@ -199,12 +221,12 @@ ActiveRecord::Schema.define(:version => 26) do
   end
 
   create_table "time_off_requests", :force => true do |t|
-    t.column "employee_name",         :string
-    t.column "date",                  :date
     t.column "time_off_kind",         :string
     t.column "dates_requested",       :string
     t.column "time_left_before_days", :integer
     t.column "time_left_after_days",  :integer
+    t.column "employee_name",         :string
+    t.column "date",                  :date
   end
 
   create_table "users", :force => true do |t|

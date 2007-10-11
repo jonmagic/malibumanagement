@@ -22,29 +22,25 @@
 		<div class="eft_column">
 			<h3>By store and Total</h3>
 			<table>
-				<tr class="bold"><td>Total:</td><td>2270</td></tr>
-				<tr><td>Hillsdale:</td><td>500</td></tr>
-				<tr><td>Jonesville:</td><td>200</td></tr>
-				<tr><td>Coldwater:</td><td>400</td></tr>
-				<tr><td>Angola:</td><td>500</td></tr>
-				<tr><td>Jackson:</td><td>300</td></tr>
-				<tr><td>Hudson:</td><td>100</td></tr>
-				<tr><td>Farmington:</td><td>70</td></tr>
-				<tr><td>Fort Wayne:</td><td>200</td></tr>
+				<tr class="bold"><td>Total:</td><td><%= @batch.eft_count %></td></tr>
+				<% @batch.eft_count_by_location.each do |key,value| -%>
+					<tr><td><%= key %>:</td><td><%= value %></td></tr>
+				<% end -%>
 			</table>
 		</div>
 		<div class="eft_column">
 			<h3>EFT by $ amounts</h3>
 			<ul>
-				<li>$18.88: 2,200</li>
-				<li>$1.88: 70</li>
+				<% @batch.eft_count_by_amount.each do |key,value| -%>
+					<li>$<%= key.to_f/100 %>: <%= value %></li>
+				<% end -%>
 			</ul>
 		</div>
 		<div class="eft_column">
 			<h3>Invalid EFT's</h3>
 			<ul>
-				<li>Missing EFT: 101</li>
-				<li>Invalid Exp: 75</li>
+				<li>Missing EFT: <%= @batch.memberships_without_efts %></li>
+				<li>Expired Cards: <%= @batch.members_with_expired_cards %></li>
 			</ul>
 		</div>
 	</div>
