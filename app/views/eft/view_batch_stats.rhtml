@@ -3,7 +3,7 @@
 		<div id="eft_actions_header" class="eft_header">
 			<h2>&nbsp;<br />Viewing <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
-		<a href="" class="eft_column calc">Generate Batch for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></a>
+		<a href="" class="eft_column resync">Generate Batch for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></a>
 		<a href="" class="eft_column go">Submit Batch for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></a>
 		<a href="" class="eft_column download">Download Return Files</a>
 	</div>
