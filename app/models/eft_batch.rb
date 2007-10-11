@@ -1,6 +1,10 @@
 class EftBatch < ActiveRecord::Base
   attr_accessor :members, :no_eft, :froze, :expired, :no_aba
 
+  serialize :eft_count_by_location, Hash
+  serialize :eft_count_by_amount, Hash
+  serialize :eft_total_by_location, Hash
+
   def initialize(attrs={}) # 2007/11
     # EftBatch.new -- will gather information from Helios::ClientProfile and Helios::Eft.
     # Generate 3 CSV's from live data and save them in that month's directory.
@@ -10,8 +14,9 @@ class EftBatch < ActiveRecord::Base
     @expired = []
     @no_aba = []
     super(attrs)
-    month = attrs[:month] if attrs.has_key?(:month)
-    month ||= '2007/11'
+    month = attrs['for_month'] if attrs.has_key?('for_month')
+  # Sets to the next month after today's month. If today is December, it will roll over the year as well.
+    month ||= (Time.now.strftime("%Y").to_i + Time.now.strftime("%m").to_i/12).to_i.to_s + '/' + Time.now.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
     total_amount = 0
     locations_amounts = {}
     locations_count = {}
@@ -73,5 +78,16 @@ class EftBatch < ActiveRecord::Base
   def submit_for_payment!
     # Sends the generated payment CSV to the payment gateway
     self.update_attributes(:submitted_at => Now)
+  end
+end
+
+class Fixnum
+  # Adds one number to another, but rolls over to the beginning of the range whenever it hits the top of the range.
+  def cyclical_add(addend, cycle_range)
+    raise ArgumentError, "#{self} is not within range #{cycle_range}!" if !cycle_range.include?(self)
+    while(self+addend > cycle_range.last)
+      addend -= cycle_range.last-cycle_range.first+1
+    end
+    return self+addend
   end
 end

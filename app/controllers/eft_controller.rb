@@ -1,41 +1,55 @@
 class EftController < ApplicationController
   layout 'admin'
-  before_filter :set_month
+  before_filter :get_batch
 
-  def generate_batch
-    restrict('allow only admins') or begin
-    # 1) Determine the month this will be active for
-      time = Now.beginning_of_month
-      batch = EftBatch.find_or_create_by_for_month(time.strftime("%Y/%m"))
-      if !batch.submitted_at.blank?
-        time = 5.weeks.from(time).beginning_of_month
-        batch = EftBatch.find_or_create_by_for_month(time.strftime("%Y/%m"))
-      end
-    # 3) Redirect to view_batch_stats of that month
-      redirect_to eft_path(:action => 'view_batch_stats', :for_month => batch.for_month)
-    end
-  end
+  # def generate_batch
+  #   restrict('allow only admins') or begin
+  #   # 1) Determine the month this will be active for
+  #     time = Time.now.beginning_of_month
+  #     batch = EftBatch.find_or_create_by_for_month(time.strftime("%Y/%m"))
+  #     if !batch.submitted_at.blank?
+  #       time = 5.weeks.from(time).beginning_of_month
+  #       batch = EftBatch.find_or_create_by_for_month(time.strftime("%Y/%m"))
+  #     end
+  #   # 3) Redirect to view_batch_stats of that month
+  #     redirect_to eft_path(:action => 'view_batch_stats', :for_month => batch.for_month)
+  #   end
+  # end
   
   def view_batch_stats
     restrict('allow only admins') or begin
       # Just view the numbers in the specified month's EftBatch record
-logger.info(EftBatch.find_by_for_month(@for_month))
-      @batch = EftBatch.find_or_create_by_for_month(@for_month)
+      # month = Now.strftime("%Y/%m")
+      # month = (Time.now.strftime("%Y").to_i + Time.now.strftime("%m").to_i/12).to_i.to_s + '/' + Time.now.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
+      # @batch = EftBatch.find_or_create_by_for_month(@for_month)
     end
   end
   
   def submit_batch
     restrict('allow only admins') or begin
-      @batch = EftBatch.find_or_create_by_for_month(Now.strftime("%Y/%m"))
       @batch.submit_for_payment!
       # Return a nice "Yeah it's submitted" indication .. then show "Batch Submitted, ## Payments pending" instead of Submit Batch link.
     end
   end
 
   private
-    def set_month
+    def get_batch
       @for_month = params[:for_month]
-      @for_month ||= Now.strftime("%Y/%m")
+      @batch = @for_month.nil? ? EftBatch.find(:first, :order => 'id DESC') : EftBatch.find_or_create_by_for_month(@for_month) # Get last-created EftBatch
+      # If there are no batches, create one for the next payment month.
+      if @batch.nil?
+        @for_month = (Time.now.strftime("%Y").to_i + Time.now.strftime("%m").to_i/12).to_i.to_s + '/' + Time.now.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
+        @batch = EftBatch.find_or_create_by_for_month(@for_month)
+      else
+        # If last batch has not been submitted yet, use it.
+        if @batch.submitted_at.blank?
+          @for_month = @batch.for_month
+        else # If last batch has been submitted, create the next one.
+          time = Time.parse(@batch.for_month)
+          @for_month = (time.strftime("%Y").to_i + time.strftime("%m").to_i/12).to_i.to_s + '/' + time.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
+          @batch = EftBatch.find_or_create_by_for_month(@for_month) if @batch.nil? || !@batch.submitted_at.blank?
+        end
+      end
     end
 end
 
