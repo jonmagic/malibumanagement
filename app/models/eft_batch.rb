@@ -73,6 +73,8 @@ class EftBatch < ActiveRecord::Base
     self.memberships_without_efts = @no_eft.length
     # t.column :members_with_expired_cards, :integer
     self.members_with_expired_cards = @expired.length
+
+    
   end
 
   def submit_for_payment!

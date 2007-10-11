@@ -2,35 +2,26 @@ class EftController < ApplicationController
   layout 'admin'
   before_filter :get_batch
 
-  # def generate_batch
-  #   restrict('allow only admins') or begin
-  #   # 1) Determine the month this will be active for
-  #     time = Time.now.beginning_of_month
-  #     batch = EftBatch.find_or_create_by_for_month(time.strftime("%Y/%m"))
-  #     if !batch.submitted_at.blank?
-  #       time = 5.weeks.from(time).beginning_of_month
-  #       batch = EftBatch.find_or_create_by_for_month(time.strftime("%Y/%m"))
-  #     end
-  #   # 3) Redirect to view_batch_stats of that month
-  #     redirect_to eft_path(:action => 'view_batch_stats', :for_month => batch.for_month)
-  #   end
-  # end
+  def regenerate_batch
+    restrict('allow only admins') or begin
+      @batch.update_attributes(EftBatch.new(:for_month => @for_month).attributes)
+      redirect_to eft_path(:for_month => @for_month)
+    end
+  end
   
   def view_batch_stats
-    restrict('allow only admins') or begin
-      # Just view the numbers in the specified month's EftBatch record
-      # month = Now.strftime("%Y/%m")
-      # month = (Time.now.strftime("%Y").to_i + Time.now.strftime("%m").to_i/12).to_i.to_s + '/' + Time.now.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
-      # @batch = EftBatch.find_or_create_by_for_month(@for_month)
-    end
+    restrict('allow only admins')
   end
   
-  def submit_batch
-    restrict('allow only admins') or begin
-      @batch.submit_for_payment!
-      # Return a nice "Yeah it's submitted" indication .. then show "Batch Submitted, ## Payments pending" instead of Submit Batch link.
-    end
-  end
+  # def submit_batch
+  #   restrict('allow only admins') or begin
+  #     @batch.submit_for_payment!
+  #     # Return a nice "Yeah it's submitted" indication .. then show "Batch Submitted, ## Payments pending" instead of Submit Batch link.
+  #   end
+  # end
+
+  # def gather_returns
+  # end
 
   private
     def get_batch
