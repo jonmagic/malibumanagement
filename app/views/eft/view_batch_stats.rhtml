@@ -1,6 +1,6 @@
 <div id="eft">
 	<div id="eft_actions">
-		<div id="eft_actions_header">
+		<div id="eft_actions_header" class="eft_header">
 			<h2>&nbsp;<br />Viewing <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
 		<a href="" class="eft_column calc">Generate Batch for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></a>
@@ -8,7 +8,7 @@
 		<a href="" class="eft_column download">Download Return Files</a>
 	</div>
 	<div id="eft_downloads">
-		<div id="eft_downloads_header">
+		<div id="eft_downloads_header" class="eft_header">
 			<h2>&nbsp;<br />Downloadable Excel files for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
 		<div class="eft_column"><a href="" class="floatleft">Current Batch</a></div>
@@ -16,7 +16,7 @@
 		<div class="eft_column"><ul><li><a href="" class="row1">Invalid Expirations</a></li><li><a href="" class="row2">Invalid Memberships</a></li></ul></div>
 	</div>
 	<div id="eft_stats">
-		<div id="eft_stats_header">
+		<div id="eft_stats_header" class="eft_header">
 			<h2>&nbsp;<br />Statistics for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
 		<div class="eft_column">
