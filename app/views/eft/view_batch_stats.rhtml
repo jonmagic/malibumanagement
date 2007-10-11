@@ -1,7 +1,7 @@
 <div id="eft">
 	<div id="eft_actions">
 		<div id="eft_actions_header">
-			<p>These are the EFT Action buttons</p>
+			<h2>Actions:</h2>
 		</div>
 		<a href="" class="eft_column calc">Generate Batch for November</a>
 		<a href="" class="eft_column go">Submit Batch for November</a>
@@ -9,7 +9,7 @@
 	</div>
 	<div id="eft_downloads">
 		<div id="eft_downloads_header">
-			<p>These are the downloadable lists of the current batch, they will open in excel</p>
+			<h2>Downloadable Excel files for <%= Time.parse(@batch.for_month).strftime("%B %Y") %>:</h2>
 		</div>
 		<div class="eft_column"><a href="" class="floatleft">Current Batch</a></div>
 		<div class="eft_column"><a href="" class="floatleft">Still clearing</a></div>
@@ -17,7 +17,7 @@
 	</div>
 	<div id="eft_stats">
 		<div id="eft_stats_header">
-			<p>These are the stats for November</p>
+			<h2>Statistics for <%= Time.parse(@batch.for_month).strftime("%B %Y") %>:</h2>
 		</div>
 		<div class="eft_column">
 			<h3>By store and Total</h3>
@@ -41,6 +41,7 @@
 			<ul>
 				<li>Missing EFT: <%= @batch.memberships_without_efts %></li>
 				<li>Expired Cards: <%= @batch.members_with_expired_cards %></li>
+				<li>Bank Routing # Missing: <%= @batch.no_aba.length %></li>
 			</ul>
 		</div>
 	</div>

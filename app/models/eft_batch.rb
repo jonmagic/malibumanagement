@@ -1,5 +1,5 @@
 class EftBatch < ActiveRecord::Base
-  attr_accessor :members, :no_eft, :froze, :expired
+  attr_accessor :members, :no_eft, :froze, :expired, :no_aba
 
   def initialize(attrs={}) # 2007/11
     # EftBatch.new -- will gather information from Helios::ClientProfile and Helios::Eft.
@@ -8,6 +8,7 @@ class EftBatch < ActiveRecord::Base
     @no_eft = []
     @froze = []
     @expired = []
+    @no_aba = []
     super(attrs)
     month = attrs[:month] if attrs.has_key?(:month)
     month ||= '2007/11'
@@ -31,18 +32,23 @@ class EftBatch < ActiveRecord::Base
           if(false) # Check credit card expiration
             @expired << cp.id.to_i
           else
+            @no_aba << cp.id.to_i if cp.eft.Bank_ABA.nil? && cp.eft.Acct_Exp.nil?
             @members << cp.id.to_i
 
-            total_amount += (cp.eft.Monthly_Fee.to_f*100).to_i
+            location_code = cp.eft.Location || '00'+cp.eft.Client_No.to_s[0,1]
+            location_str = HELIOS_LOCATION_CODES[location_code] || location_code
+            amount_int = (cp.eft.Monthly_Fee.to_f*100).to_i
 
-            locations_amounts[HELIOS_LOCATION_CODES[cp.eft.Location]] ||= 0
-            locations_amounts[HELIOS_LOCATION_CODES[cp.eft.Location]] += (cp.eft.Monthly_Fee.to_f*100).to_i
+            total_amount += amount_int
 
-            locations_count[HELIOS_LOCATION_CODES[cp.eft.Location]] ||= 0
-            locations_count[HELIOS_LOCATION_CODES[cp.eft.Location]] += 1
+            locations_amounts[location_str] ||= 0
+            locations_amounts[location_str] += amount_int
 
-            amounts_count[(cp.eft.Monthly_Fee.to_f*100).to_i] ||= 0
-            amounts_count[(cp.eft.Monthly_Fee.to_f*100).to_i] += 1
+            locations_count[location_str] ||= 0
+            locations_count[location_str] += 1
+
+            amounts_count[amount_int] ||= 0
+            amounts_count[amount_int] += 1
           end
         else
           @froze << cp.id.to_i

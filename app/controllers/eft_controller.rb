@@ -19,6 +19,7 @@ class EftController < ApplicationController
   def view_batch_stats
     restrict('allow only admins') or begin
       # Just view the numbers in the specified month's EftBatch record
+logger.info(EftBatch.find_by_for_month(@for_month))
       @batch = EftBatch.find_or_create_by_for_month(@for_month)
     end
   end
