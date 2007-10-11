@@ -377,7 +377,7 @@ th.calendar_day {
 
 /* Styles for EFT section */
 .eft_header {vertical-align:bottom;}
-#eft {margin:0;padding:0;}
+#eft {margin-top:-20px;}
 #eft h2 {margin-left:4em;}
 #eft a {color:#2667b6;}
 #eft a:visited {color:#2667b6;}
