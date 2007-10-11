@@ -30,59 +30,61 @@
 				<div id="header_menu">
 					<ul>
 						<li>
-							<li>
-					<% if logged_in? -%>
-									<a href="/logout">Logout</a>
-							</li>
-							<li>
-								<%= link_to 'My Account', admin_account_path %>
-								/
-<% if APP_CONFIG[:FEATURES].include?(:stores) && APP_CONFIG[:FEATURES].include?(:forms) -%>
-							<% if params[:action] == 'forms' or params[:controller] == 'manage/forms' -%>
-								<%= link_to 'Manage', stores_path %>
+						<% if logged_in? -%>
+							<a href="/logout">Logout</a>
+						</li>
+						<li>
+							<%= link_to 'My Account', admin_account_path %>
+							/
+							<% if APP_CONFIG[:FEATURES].include?(:stores) && APP_CONFIG[:FEATURES].include?(:forms) -%>
+								<% if params[:action] == 'forms' or params[:controller] == 'manage/forms' -%>
+									<%= link_to 'Manage', stores_path %>
+								<% else -%>
+									<%= link_to 'Forms', admin_forms_by_status_path('submitted') %>
+								<% end -%>
 							<% else -%>
-								<%= link_to 'Forms', admin_forms_by_status_path('submitted') %>
+								<%= link_to 'Manage', admins_path %>
 							<% end -%>
-<% else -%>
-							<%= link_to 'Manage', admins_path %>
-<% end -%>
-					<% else -%>
-								Not logged in. <a href="/<%= accessed_domain %>/login">Login</a>
-					<% end -%>
+						<% else -%>
+							Not logged in. <a href="/<%= accessed_domain %>/login">Login</a>
+						<% end -%>
 						</li>
 					</ul>
 				</div>
 			</div>
 			<div id="main">
 				<ul id="tabmenu">
-			<% if logged_in? -%>
-					<% if APP_CONFIG[:FEATURES].include?(:forms) && (params[:action] == 'forms' or params[:controller] == 'manage/forms') -%>
-					<li><%= tab_link_to 2.as_status.word('uppercase short singular') + (!FormInstance.find_all_by_status_number(2).blank? ? " (#{FormInstance.find_all_by_status_number(2).count})" : ''), admin_forms_by_status_path(2.as_status.text), :class => "#{2.as_status}_count" %></li>
-					<li><%= tab_link_to 3.as_status.word('uppercase short singular') + (!FormInstance.find_all_by_status_number(3).blank? ? " (#{FormInstance.find_all_by_status_number(3).count})" : ''), admin_forms_by_status_path(3.as_status.text), :class => "#{3.as_status}_count" %></li>
-					<li><%= tab_link_to 4.as_status.word('uppercase short singular'), admin_forms_by_status_path(4.as_status.text) %></li>
+					<% if logged_in? -%>
+						<% if APP_CONFIG[:FEATURES].include?(:forms) && (params[:action] == 'forms' or params[:controller] == 'manage/forms') -%>
+							<li><%= tab_link_to 2.as_status.word('uppercase short singular') + (!FormInstance.find_all_by_status_number(2).blank? ? " (#{FormInstance.find_all_by_status_number(2).count})" : ''), admin_forms_by_status_path(2.as_status.text), :class => "#{2.as_status}_count" %></li>
+							<li><%= tab_link_to 3.as_status.word('uppercase short singular') + (!FormInstance.find_all_by_status_number(3).blank? ? " (#{FormInstance.find_all_by_status_number(3).count})" : ''), admin_forms_by_status_path(3.as_status.text), :class => "#{3.as_status}_count" %></li>
+							<li><%= tab_link_to 4.as_status.word('uppercase short singular'), admin_forms_by_status_path(4.as_status.text) %></li>
+						<% else -%>
+							<% if APP_CONFIG[:FEATURES].include?(:stores) && APP_CONFIG[:FEATURES].include?(:forms) -%>
+								<li><%= tab_link_to "My Account", admin_account_path %></li>
+							<% end -%>
+							<% if APP_CONFIG[:FEATURES].include?(:stores) -%>
+								<li><%= tab_link_to 'Stores', stores_path %></li>
+							<% end -%>
+							<% if APP_CONFIG[:FEATURES].include?(:stores) && APP_CONFIG[:FEATURES].include?(:forms) -%>
+								<li><%= tab_link_to 'Admins', admins_path %></li>
+							<% end -%>
+						<% end -%>
+						<% if APP_CONFIG[:FEATURES].include?(:work_schedules) -%>
+							<li><%= tab_link_to 'Work Schedules', admin_schedule_path('hillsdale'), :class => 'calendar_tab' %></li>
+						<% end -%>
+						<% if APP_CONFIG[:FEATURES].include?(:bulletin_board) -%>
+							<li><%= tab_link_to 'Bulletin Board', admin_bulletin_path %></li>
+						<% end -%>
+						<% if APP_CONFIG[:FEATURES].include?(:open_helios) -%>
+							<li><%= tab_link_to 'OpenHelios', open_helios_path %></li>
+						<% end -%>
+						<% if APP_CONFIG[:FEATURES].include?(:eft) -%>
+							<li><%= tab_link_to 'EFT', eft_path %></li>
+						<% end -%>
 					<% else -%>
-<% if APP_CONFIG[:FEATURES].include?(:stores) && APP_CONFIG[:FEATURES].include?(:forms) -%>
-					<li><%= tab_link_to "My Account", admin_account_path %></li>
-<% end -%>
-<% if APP_CONFIG[:FEATURES].include?(:stores) -%>
-					<li><%= tab_link_to 'Stores', stores_path %></li>
-<% end -%>
-<% if APP_CONFIG[:FEATURES].include?(:stores) && APP_CONFIG[:FEATURES].include?(:forms) -%>
-					<li><%= tab_link_to 'Admins', admins_path %></li>
-<% end -%>
+						<li><%= tab_link_to "Login", admin_login_path %></li>
 					<% end -%>
-<% if APP_CONFIG[:FEATURES].include?(:work_schedules) -%>
-					<li><%= tab_link_to 'Work Schedules', admin_schedule_path('hillsdale'), :class => 'calendar_tab' %></li>
-<% end -%>
-<% if APP_CONFIG[:FEATURES].include?(:bulletin_board) -%>
-					<li><%= tab_link_to 'Bulletin Board', admin_bulletin_path %></li>
-<% end -%>
-<% if APP_CONFIG[:FEATURES].include?(:open_helios) -%>
-					<li><%= tab_link_to 'OpenHelios', helios_path %></li>
-<% end -%>
-			<% else -%>
-					<li><%= tab_link_to "Login", admin_login_path %></li>
-			<% end -%>
 				</ul>
 				<div id="tabmenu_bottom_border"><br /></div><br />
 				<div id="content">
