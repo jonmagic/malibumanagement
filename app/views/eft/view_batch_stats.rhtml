@@ -11,9 +11,12 @@
 		<div id="eft_downloads_header" class="eft_header">
 			<h2>&nbsp;<br />Downloadable Excel files for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
-		<div class="eft_column"><a href="" class="floatleft">Current Batch</a></div>
+		<div class="eft_column"><%= link_to 'Current Batch', eft_path(:action => :download_csv, :file => 'payment'), :class => 'floatleft' %></div>
 		<div class="eft_column"><a href="" class="floatleft">Still clearing</a></div>
-		<div class="eft_column"><ul><li><a href="" class="row1">Invalid Expirations</a></li><li><a href="" class="row2">Invalid Memberships</a></li></ul></div>
+		<div class="eft_column"><ul>
+			<li><%= link_to 'Missing EFTs', eft_path(:action => :download_csv, :file => 'missing_efts'), :class => 'row1' %></li>
+			<li><%= link_to 'Invalid EFTs', eft_path(:action => :download_csv, :file => 'invalid_efts'), :class => 'row2' %></li>
+		</ul></div>
 	</div>
 	<div id="eft_stats">
 		<div id="eft_stats_header" class="eft_header">
@@ -40,8 +43,7 @@
 			<h3>Invalid EFT's</h3>
 			<ul>
 				<li>Missing EFT: <%= @batch.memberships_without_efts %></li>
-				<li>Expired Cards: <%= @batch.members_with_expired_cards %></li>
-				<!-- <li>Bank Routing # Missing: <%# @batch.no_aba.length %></li> -->
+				<li>Invalid EFT's: <%= @batch.members_with_invalid_efts %></li>
 			</ul>
 		</div>
 	</div>

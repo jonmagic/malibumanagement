@@ -23,6 +23,10 @@ class EftController < ApplicationController
   # def gather_returns
   # end
 
+  def download_csv
+    send_file 'EFT/' + @for_month + '/' + params[:file] + '.csv', :type => Mime::Type.lookup_by_extension('csv').to_str, :disposition => 'inline'
+  end
+
   private
     def get_batch
       @for_month = params[:for_month]

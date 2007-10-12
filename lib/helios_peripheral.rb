@@ -56,7 +56,6 @@ module HeliosPeripheral
       self.slaves ||= {}
       self.slaves[location_name] = Class.new(ActiveResource::Base)
       self.slaves[location_name].site = "http://#{uri_base}/"
-ActionController::Base.logger.info "Primary Key: #{self.primary_key}"
       self.slaves[location_name].primary_key = self.primary_key
       self.slaves[location_name].element_name = self.name.split("::").last.underscore
     end

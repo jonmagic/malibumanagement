@@ -35,22 +35,16 @@ ActiveRecord::Schema.define(:version => 27) do
   end
 
   create_table "eft_batches", :force => true do |t|
-    t.column "for_month",                  :string
-    t.column "submitted_at",               :datetime
-    t.column "submitted_by",               :integer
-    t.column "eft_count",                  :integer
-    t.column "eft_total",                  :integer
-    t.column "eft_count_by_location",      :string,   :default => "--- {}\n\n"
-    t.column "eft_count_by_amount",        :string,   :default => "--- {}\n\n"
-    t.column "eft_total_by_location",      :string,   :default => "--- {}\n\n"
-    t.column "memberships_without_efts",   :integer
-    t.column "members_with_expired_cards", :integer
-  end
-
-  create_table "eft_pendings", :force => true do |t|
-    t.column "eft_batch_id",      :integer
-    t.column "client_profile_id", :integer
-    t.column "amount",            :integer
+    t.column "for_month",                 :string
+    t.column "submitted_at",              :datetime
+    t.column "submitted_by",              :integer
+    t.column "eft_count",                 :integer
+    t.column "eft_total",                 :integer
+    t.column "eft_count_by_location",     :string,   :default => "--- {}\n\n"
+    t.column "eft_count_by_amount",       :string,   :default => "--- {}\n\n"
+    t.column "eft_total_by_location",     :string,   :default => "--- {}\n\n"
+    t.column "memberships_without_efts",  :integer
+    t.column "members_with_invalid_efts", :integer
   end
 
   create_table "form_instances", :force => true do |t|
@@ -155,6 +149,12 @@ ActiveRecord::Schema.define(:version => 27) do
     t.column "regional_signature_id",   :integer
     t.column "regional_signature_hash", :string
     t.column "regional_signature_date", :datetime
+  end
+
+  create_table "pending_efts", :force => true do |t|
+    t.column "eft_batch_id",      :integer
+    t.column "client_profile_id", :integer
+    t.column "amount",            :integer
   end
 
   create_table "performance_reviews", :force => true do |t|
