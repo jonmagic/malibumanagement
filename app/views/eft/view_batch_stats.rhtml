@@ -14,8 +14,8 @@
 		<div class="eft_column"><%= link_to 'Current Batch', eft_path(:action => :download_csv, :file => 'payment'), :class => 'floatleft' %></div>
 		<div class="eft_column"><a href="" class="floatleft">Still clearing</a></div>
 		<div class="eft_column"><ul>
-			<li><%= link_to 'Missing EFTs', eft_path(:action => :download_csv, :file => 'missing_efts'), :class => 'row1' %></li>
-			<li><%= link_to 'Invalid EFTs', eft_path(:action => :download_csv, :file => 'invalid_efts'), :class => 'row2' %></li>
+			<li><%= link_to "Missing EFTs (#{@batch.memberships_without_efts})", eft_path(:action => :download_csv, :file => 'missing_efts'), :class => 'row1' %></li>
+			<li><%= link_to "Invalid EFTs (#{@batch.members_with_invalid_efts})", eft_path(:action => :download_csv, :file => 'invalid_efts'), :class => 'row2' %></li>
 		</ul></div>
 	</div>
 	<div id="eft_stats">
@@ -40,7 +40,7 @@
 			</ul>
 		</div>
 		<div class="eft_column">
-			<h3>Invalid EFT's</h3>
+			<h3>EFT Problems</h3>
 			<ul>
 				<li>Missing EFT: <%= @batch.memberships_without_efts %></li>
 				<li>Invalid EFT's: <%= @batch.members_with_invalid_efts %></li>
