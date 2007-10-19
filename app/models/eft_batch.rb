@@ -47,17 +47,48 @@ class EftBatch < ActiveRecord::Base
               @invalid_efts << [cp.id.to_i,'No Routing Number']
             elsif cp.eft.Acct_Exp.blank? && !cp.eft.Bank_ABA.blank? && !validABA?(cp.eft.Bank_ABA)
               @invalid_efts << [cp.id.to_i,'Invalid Routing Number']
-            elsif !cp.eft.Acct_Exp.blank? && cp.eft.Acct_No.blank?
-              @invalid_efts << [cp.id.to_i,'No Credit Card Number']
-            elsif !cp.eft.Acct_Exp.blank? && !cp.eft.Acct_No.blank? && !validCreditCardNumber?(cp.eft.Acct_No)
+            elsif cp.eft.Acct_No.blank?
+              @invalid_efts << [cp.id.to_i,'No '+(cp.eft.credit_card? ? 'Credit Card' : 'Bank Account')+' Number']
+            elsif cp.eft.credit_card? && !cp.eft.Acct_No.blank? && !validCreditCardNumber?(cp.eft.Acct_No)
               @invalid_efts << [cp.id.to_i,'Invalid Credit Card Number']
             else
-              # ['AccountID', 'FirstName', 'LastName', 'BankName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'Authorization']
+              # ['AccountID', 'FirstName', 'LastName', 'BankName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType, 'Authorization']
               location_code = cp.eft.Location || '00'+cp.eft.Client_No.to_s[0,1]
               location_str = HELIOS_LOCATION_CODES[location_code] || location_code
               amount_int = (cp.eft.Monthly_Fee.to_f*100).to_i
 
-              @members << [cp.id.to_i, cp.eft.First_Name, cp.eft.Last_Name, cp.eft.Bank_Name, cp.eft.Bank_ABA, cp.eft.Acct_No, cp.eft.First_Name.to_s + ' ' + cp.eft.Last_Name.to_s, cp.eft.Acct_No_Scan, cp.eft.Acct_Exp, cp.eft.Monthly_Fee.to_f, !cp.eft.Bank_Name.blank? ? 'ACH' : 'Credit Card', !cp.eft.Bank_Name.blank? ? 'Written' : nil]
+# Acct_Type
+# A => American Express
+# C => Checking
+# I => Discover
+# M => Mastercard
+# S => Savings
+# V => Visa
+
+# total == 9315
+# A == exp:70,   noexp:0,    aba:0 (70)
+# C == exp:28,   noexp:3274, aba:3267 (35)
+# I == exp:162,  noexp:0,    aba:7 (155)
+# M == exp:2192, noexp:0,    aba:31 (2161)
+# S == exp:5,    noexp:997,  aba:965 (37)
+# V == exp:2586, noexp:0,    aba:17 (2569)
+
+# Should we be using cp.eft.Client_Name for the credit_card_name?
+              @members << [
+                cp.id.to_i, # AccountID
+                cp.eft.First_Name, # FirstName
+                cp.eft.Last_Name, # LastName
+                cp.eft.Bank_Name, # BankName
+                cp.eft.Bank_ABA, # BankRoutingNumber
+                cp.eft.credit_card? ? nil : cp.eft.Acct_No, # BankAccountNumber
+                cp.eft.First_Name.to_s + ' ' + cp.eft.Last_Name.to_s, # NameOnCard
+                cp.eft.credit_card? ? cp.eft.Acct_No : nil, # CreditCardNumber
+                cp.eft.Acct_Exp.gsub(/\d/,''), # Expiration MMYY
+                cp.eft.Monthly_Fee.to_f, # Amount
+                cp.eft.credit_card? ? 'Credit Card' : 'ACH', # Type
+                cp.eft.Acct_Type,
+                'Written' # Authorization
+              ]
               total_amount += amount_int
 
               locations_amounts[location_str] ||= 0
@@ -92,7 +123,7 @@ class EftBatch < ActiveRecord::Base
     path = 'EFT/'+self.for_month+'/' # should be different for each month and should end in /
     FileUtils.mkpath(path)
     CSV.open(path+'payment.csv', 'w') do |writer|
-      writer << ['AccountID', 'FirstName', 'LastName', 'BankName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'Authorization']
+      writer << ['AccountID', 'FirstName', 'LastName', 'BankName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType', 'Authorization']
       @members.each {|m| writer << m}
     end
     CSV.open(path+'missing_efts.csv', 'w') do |writer|

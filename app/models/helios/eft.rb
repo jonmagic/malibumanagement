@@ -24,6 +24,27 @@ class Helios::Eft < ActiveRecord::Base
   
   include HeliosPeripheral
 
+  def self.delete_these(ids)
+    self.update_satellites = true
+    failed_list = []
+    ids.each do |id|
+      begin
+        eft = self.find(id)
+        eft.destroy
+        failed_list << id if !eft.errors.blank?
+      rescue ActiveRecord::RecordNotFound
+        nil
+      end
+    end
+    puts " * * * * * *" * 5
+    puts "FAILED TO DESTROY:"
+    puts failed_list.inspect
+  end
+
+  def credit_card?
+    ['C','S'].include?(self.Acct_Type.to_s)
+  end
+
   def public_attributes
     self.attributes.reject {|k,v| [self.class.primary_key, 'F_LOC', 'UpdateAll'].include?(k)}
   end
