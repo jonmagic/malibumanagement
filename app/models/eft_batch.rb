@@ -54,7 +54,11 @@ class EftBatch < ActiveRecord::Base
             else
               # ['AccountID', 'FirstName', 'LastName', 'BankName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType, 'Authorization']
               location_code = cp.eft.Location || '00'+cp.eft.Client_No.to_s[0,1]
-              location_str = HELIOS_LOCATION_CODES[location_code] || location_code
+              location_str = HELIOS_LOCATION_CODES[location_code]
+              if(location_str.blank?)
+                ActionController::Base.logger.info("EFT ##{cp.eft.id} has unknown location code of #{location_code}!")
+                location_str = location_code
+              end
               amount_int = (cp.eft.Monthly_Fee.to_f*100).to_i
 
 # Acct_Type
