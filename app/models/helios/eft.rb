@@ -32,16 +32,19 @@ class Helios::Eft < ActiveRecord::Base
       "([Member1] = 'VIP' AND '"+Time.parse(month).strftime("%Y%m%d")+"' >= [Member1_Beg] AND [Member1_Exp] >= '"+Time.parse(month).strftime("%Y%m%d")+"') OR ([Member2] = 'VIP' AND '"+Time.parse(month).strftime("%Y%m%d")+"' >= [Member2_Beg] AND [Member2_Exp] >= '"+Time.parse(month).strftime("%Y%m%d")+"')"
     end
     
+    mems = []
     Helios::ClientProfile.find(:all, :conditions => [sql]).each do |cp|
       if cp.eft.nil?
         yield cp if render_nils && block_given?
       else
         if(!((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= Time.parse(month).to_date : false) && (!cp.eft.Freeze_End.nil? ? Time.parse(month).to_date <= cp.eft.Freeze_End.to_date : false)) && ((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= Time.parse(month).to_date : true) && (!cp.eft.End_Date.nil? ? Time.parse(month).to_date <= cp.eft.End_Date.to_date : true)))
+          mems << cp
           yield cp if block_given?
         end
       end
     end
     
+    mems
   end
 
   def self.delete_these(ids)
