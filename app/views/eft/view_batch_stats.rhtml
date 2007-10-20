@@ -5,7 +5,7 @@
 		</div>
 		<%= link_to "Regenerate Batch for #{Time.parse(@batch.for_month).strftime("%B %Y")}", eft_path(:action => :regenerate_batch, :for_month => @for_month), :class => 'eft_column resync' %>
 		<a href="" class="eft_column go">Submit Batch for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></a>
-		<a href="" class="eft_column download">Download Return Files</a>
+		<a href="" class="eft_column download">Process Return Files</a>
 	</div>
 	<div id="eft_downloads">
 		<div id="eft_downloads_header" class="eft_header">
