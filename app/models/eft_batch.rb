@@ -83,7 +83,7 @@ class EftBatch < ActiveRecord::Base
                 cp.eft.credit_card? ? nil : cp.eft.Acct_No, # BankAccountNumber
                 cp.eft.First_Name.to_s + ' ' + cp.eft.Last_Name.to_s, # NameOnCard
                 cp.eft.credit_card? ? cp.eft.Acct_No : nil, # CreditCardNumber
-                cp.eft.Acct_Exp.gsub(/\d/,''), # Expiration MMYY
+                cp.eft.Acct_Exp.to_s.gsub(/\d/,''), # Expiration MMYY
                 cp.eft.Monthly_Fee.to_f, # Amount
                 cp.eft.credit_card? ? 'Credit Card' : 'ACH', # Type
                 cp.eft.Acct_Type,
