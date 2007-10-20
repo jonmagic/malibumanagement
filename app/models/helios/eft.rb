@@ -42,7 +42,7 @@ class Helios::Eft < ActiveRecord::Base
   end
 
   def credit_card?
-    ['C','S'].include?(self.Acct_Type.to_s)
+    !(['C','S'].include?(self.Acct_Type.to_s))
   end
 
   def public_attributes
