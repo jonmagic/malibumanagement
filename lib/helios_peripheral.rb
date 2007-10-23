@@ -33,7 +33,7 @@ module HeliosPeripheral
           end
         end
       else
-        base.journal << {:save => record.public_attributes}
+        # base.journal << {:save => record.public_attributes}
       end
     end
 
@@ -45,7 +45,7 @@ module HeliosPeripheral
 #           satellite_record.destroy
 #         end
 #       else
-#         base.journal << {:destroy => record.id}
+# #        base.journal << {:destroy => record.id}
 #       end
 #     end
     # * * * *

@@ -20,7 +20,7 @@ class Helios::Transact < ActiveRecord::Base
   set_table_name 'Transactions'
   set_primary_key 'transact_no'
 
-  validates_presence_of :OTNum
+  validates_presence_of :OTNum, :ticket_no
 
   include HeliosPeripheral
 
