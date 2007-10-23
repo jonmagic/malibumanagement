@@ -50,7 +50,7 @@ class Helios::Eft < ActiveRecord::Base
   def self.to_csv(filename, ids)
     CSV.open(filename, 'w') do |csv|
       csv << self.find(:first).attributes.keys
-      ids.each |id|
+      ids.each do |id|
         csv << self.find(id).attributes.values
       end
     end
