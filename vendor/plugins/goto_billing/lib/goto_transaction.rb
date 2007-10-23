@@ -6,10 +6,12 @@ class GotoTransaction < GotoBilling::Base
       location_code = attrs.Location || '0'*(3-ZONE_LOCATION_BITS)+attrs.Client_No.to_s[0,ZONE_LOCATION_BITS]
       amount_int = (attrs.Monthly_Fee.to_f*100).to_i
 
+      ActionController::Base.logger.info(location_code) if !LOCATIONS.has_key?(location_code)
+
       super(
         :account_id => attrs.id.to_i,
-        :merchant_id => LOCATIONS[location_code][:merchant_id],
-        :merchant_pin => LOCATIONS[location_code][:merchant_pin],
+        :merchant_id => LOCATIONS[location_code.to_s][:merchant_id],
+        :merchant_pin => LOCATIONS[location_code.to_s][:merchant_pin],
         :first_name => attrs.First_Name,
         :last_name => attrs.Last_Name,
         :bank_name => attrs.Bank_Name,
