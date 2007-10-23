@@ -1,16 +1,25 @@
 # Configuration for how to display the application
 APP_CONFIG = {
-	:FEATURES => [
-  	:stores,
-  	:forms,
-	  :work_schedules,
-	  :bulletin_board,
+  :FEATURES => [
+    # :stores,
+    # :forms,
+    # :work_schedules,
+    # :bulletin_board,
 	  :open_helios,
+	  :eft,
 	  nil
-	]
+  ]
 }
 
-# Specify the network locations of the OpenHelios clients synching with this server.
-OPENHELIOS_LOCATIONS = {
-	# 'location-name' => 'IP:port'
+# The number of digits from the front of the client_number that are taken to denote the location
+ZONE_LOCATION_BITS = 1
+
+LOCATIONS = {
+  '001' => {
+    :name => 'Location Name',
+    :open_helios => 'IP:Port',
+    :merchant_id => 'merchant_id(integers)',
+    :merchant_pin => 'pin(password)'
+  },
+	# 'etc'...
 }

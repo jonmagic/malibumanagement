@@ -14,8 +14,8 @@ module HeliosPeripheral
     base.cattr_accessor :journal
     base.journal = []
 
-    OPENHELIOS_LOCATIONS.keys.each do |location|
-      base.add_slave(location, OPENHELIOS_LOCATIONS[location])
+    LOCATIONS.reject {|k,v| !v.has_key(:open_helios)}.keys.each do |location|
+      base.add_slave(location, LOCATIONS[location][:open_helios])
     end
 
     # Register the after_save handle

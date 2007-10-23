@@ -21,9 +21,10 @@ class HeliosController < ApplicationController
       @locations = {}
       @locations['Central'] = {'success' => true, 'count' => count}
       last_location_done = nil
-      OPENHELIOS_LOCATIONS.each do |location,site|
-        Thread.current['satellite_status'].status_text = (last_location_done ? (!last_location_done.has_key?('error') ? "#{last_location_done['count']} fixed at #{last_location_done['location']}. " : "#{result['error']} at #{last_location_done['location']}. ") : '') + "Fixing errors at #{location}..."
-        Thread.current['satellite_status'].percent = 100 / (@locations.keys.length) * (OPENHELIOS_LOCATIONS.keys.length+2)
+      open_helios_locations = LOCATIONS.reject {|k,v| !v.has_key?(:open_helios) }
+      open_helios_locations.each do |location,site|
+        # Thread.current['satellite_status'].status_text = (last_location_done ? (!last_location_done.has_key?('error') ? "#{last_location_done['count']} fixed at #{last_location_done['location']}. " : "#{result['error']} at #{last_location_done['location']}. ") : '') + "Fixing errors at #{location}..."
+        # Thread.current['satellite_status'].percent = 100 / (@locations.keys.length) * (open_helios_locations.keys.length+2)
         begin
           conn = ActiveResource::Connection.new("http://#{site}")
           resp = conn.put('/fixmismatch')
@@ -42,8 +43,8 @@ class HeliosController < ApplicationController
           last_location_done = @locations[location].merge('location' => location)
         end
       end
-      Thread.current['satellite_status'].status_text = (last_location_done ? (!last_location_done.has_key?('error') ? "#{last_location_done['count']} fixed at #{last_location_done['location']}. " : "#{result['error']} at #{last_location_done['location']}. ") : '')
-      Thread.current['satellite_status'].percent = 100
+      # Thread.current['satellite_status'].status_text = (last_location_done ? (!last_location_done.has_key?('error') ? "#{last_location_done['count']} fixed at #{last_location_done['location']}. " : "#{result['error']} at #{last_location_done['location']}. ") : '')
+      # Thread.current['satellite_status'].percent = 100
       render :layout => false
     end
   end
