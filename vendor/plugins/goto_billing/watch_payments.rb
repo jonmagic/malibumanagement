@@ -15,12 +15,12 @@ while sleep(60) # Wait one minute between checks.
 end
 
 def http_submit(batch)
-  puts "Submitting #{batch.for_month}..."
   # Sends the generated payment CSV to the payment gateway
-  headers = true
   path = 'EFT/'+batch.for_month+'/'
-  return_file = path+'returns_'+Time.now.strftime("%Y-%m-%d_%H")+'.csv'
   retry_records = {}
+
+  puts "Submitting #{batch.for_month}..."
+  headers = true
   CSV::Reader.parse(File.open(path+'payment.csv', 'rb')) do |row|
     if headers
       headers = false
@@ -31,21 +31,34 @@ def http_submit(batch)
     if t.should_retry?
       retry_records[t.account_id] = t
     else
-      t.record_response(return_file)
+      t.log_csv
     end
+  end
+
+  puts "Charging invalid accounts..."
+  headers = true
+  CSV::Reader.parse(File.open(path+'invalid.csv', 'rb')) do |row|
+    if headers
+      headers = false
+      next
+    end
+    t = GotoTransaction.new_from_csv_row(row)
+    # Post the amount to the client's account
+    
   end
   retry_records.each_value do |t| # Retry once
     t.submit
     if t.received?
-      t.record_response(return_file)
+      t.log_csv
       retry_records.delete(id)
     end
   end
   retry_records.each_value do |t| #Retry again
     t.submit
     t.errors.add_to_base('Caused a timeout 3 times') if t.should_retry?
-    t.record_response(return_file)
+    t.log_csv
   end
+  GotoTransaction.write_csv!(path+'returns_'+Time.now.strftime("%Y-%m-%d_%H")+'.csv')
   batch.update_attributes(:submitted_at => Time.now, :eft_ready => false)
   puts "Done submitting #{batch.for_month}!"
 end

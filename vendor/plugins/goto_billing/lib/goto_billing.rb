@@ -11,6 +11,7 @@ unless defined?(ActiveSupport)
   end
 end
 
+require 'goto_billing/support'
 require 'goto_billing/formats'
 require 'goto_billing/base'
 require 'goto_billing/validations'

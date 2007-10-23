@@ -48,6 +48,7 @@ class Helios::Eft < ActiveRecord::Base
   end
 
   def self.to_csv(filename, ids)
+    require 'csv'
     CSV.open(filename, 'w') do |csv|
       csv << self.find(:first).attributes.keys
       ids.each do |id|

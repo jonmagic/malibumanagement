@@ -126,20 +126,36 @@ module GotoBilling
       @response['description'] =~ /^DUPLICATE_TRANSACTION_ALREADY_APPROVED/ ? true : false
     end
 
-    # The purpose of this method is to write a CSV file in a way that it is the same as a return file from gotobilling would look.
-    def record_response(file)
-      return false unless submitted?
-      CSV.open(file, 'a') do |csv|
-        if !errors.blank?
-          @response['status'] = 'X'
-          @response['description'] = errors.full_messages.to_sentence
-        end
-        # Pull values from the response, or from the GotoTransaction if not in the response
-        # account id, transaction type, merchant id, amount, transaction date, invoice id, status, status description
-        csv << [@response['account_id'] || account_id, @response['type'] || type, @response['merchant_id'] || merchant_id, @response['amount'] || amount, @response['transaction_date'] || Time.now, @response['invoice_id'] || invoice_id, @response['status'], @response['description']]
+    def self.log_csv(obj)
+      return false unless obj.submitted?
+      response = obj.instance_variable_get('@response')
+      @csv ||= []
+      if !obj.errors.blank?
+        response['status'] = 'X'
+        response['description'] = obj.errors.full_messages.to_sentence
+      end
+      # Pull values from the response, or from the GotoTransaction if not in the response
+      # account id, transaction type, merchant id, amount, transaction date, invoice id, status, status description
+      @csv << [
+        response['account_id']        || obj.account_id,
+        response['type']              || obj.type,
+        response['merchant_id']       || obj.merchant_id,
+        response['amount']            || obj.amount,
+        response['transaction_date']  || Time.now,
+        response['invoice_id']        || obj.invoice_id,
+        response['status'],
+        response['description']
+      ]
+    end
+    def log_csv
+      self.class.log_csv(self)
+    end
+    def self.write_csv!(filename)
+      CSV.open(filename, 'w') do |csv|
+        @csv.each {|row| csv << row}
       end
     end
-
+    
     protected
       def connection(refresh = false)
         self.class.connection(refresh)

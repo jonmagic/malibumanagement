@@ -27,6 +27,7 @@ while sleep(3600) # Wait one hour between checks.
 
   puts "Loading pending transactions..."
   pending = {}
+  headers = true
   CSV::Reader.parse(File.open('EFT/'+for_month+'/payment.csv', 'rb')) do |row|
     if headers
       headers = false
@@ -59,5 +60,5 @@ while sleep(3600) # Wait one hour between checks.
       # Declined Credit: 
     end
   end
-  puts "Saving still-pending transactions..."
+  puts "Saving results to batch..."
 end

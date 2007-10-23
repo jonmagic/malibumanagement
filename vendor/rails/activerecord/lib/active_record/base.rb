@@ -454,7 +454,7 @@ module ActiveRecord #:nodoc:
 
       # Creates an object, instantly saves it as a record (if the validation permits it), and returns it. If the save
       # fails under validations, the unsaved object is still returned.
-      def create(attributes = nil)
+      def create(attributes={})
         if attributes.is_a?(Array)
           attributes.collect { |attr| create(attr) }
         else

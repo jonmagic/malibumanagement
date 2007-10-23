@@ -25,4 +25,20 @@ class Helios::Transact < ActiveRecord::Base
   include HeliosPeripheral
 
   belongs_to :client, :class_name => 'Helios::ClientProfile', :foreign_key => 'client_no'
+  
+  def self.accepted_ach
+    # transact_no, ticket_no, client_no, Last_Name, First_Name, Last_Mdt, Code, Descriptions, 
+  end
+
+  def self.declined_ach
+  end
+  
+  def self.accepted_credit
+  end
+  
+  def self.declined_credit
+  end
+  
+  def self.invalid_eft
+  end
 end
