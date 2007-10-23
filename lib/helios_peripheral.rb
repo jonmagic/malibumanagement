@@ -14,7 +14,7 @@ module HeliosPeripheral
     base.cattr_accessor :journal
     base.journal = []
 
-    LOCATIONS.reject {|k,v| !v.has_key(:open_helios)}.keys.each do |location|
+    LOCATIONS.reject {|k,v| !v.has_key?(:open_helios)}.keys.each do |location|
       base.add_slave(location, LOCATIONS[location][:open_helios])
     end
 
