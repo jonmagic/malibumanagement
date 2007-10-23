@@ -13,12 +13,15 @@ class EftController < ApplicationController
     restrict('allow only admins')
   end
   
-  # def submit_batch
-  #   restrict('allow only admins') or begin
-  #     @batch.submit_for_payment!
-  #     # Return a nice "Yeah it's submitted" indication .. then show "Batch Submitted, ## Payments pending" instead of Submit Batch link.
-  #   end
-  # end
+  def submit_batch
+    restrict('allow only admins') or begin
+      @batch.update_attributes(:eft_ready => true)
+      # Return a nice "Yeah it's submitted" indication .. then show "Batch Submitted, ## Payments pending" instead of Submit Batch link.
+      # flash[:notice] = "Batch has been submitted for processing."
+      # Should use my jquery message thingy
+      redirect_to eft_path(:for_month => @for_month)
+    end
+  end
 
   # def gather_returns
   # end

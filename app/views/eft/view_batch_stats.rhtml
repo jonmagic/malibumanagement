@@ -4,7 +4,7 @@
 			<h2>&nbsp;<br />Viewing <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
 		<%= link_to "Regenerate Batch for #{Time.parse(@batch.for_month).strftime("%B %Y")}", eft_path(:action => :regenerate_batch, :for_month => @for_month), :class => 'eft_column resync' %>
-		<a href="" class="eft_column go">Submit Batch for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></a>
+		<%= link_to "Submit Batch for #{Time.parse(@batch.for_month).strftime("%B %Y")}", eft_path(:action => :submit_batch, :for_month => @for_month), :class => 'eft_column go' %>
 		<a href="" class="eft_column download">Process Return Files</a>
 	</div>
 	<div id="eft_downloads">

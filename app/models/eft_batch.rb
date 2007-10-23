@@ -1,7 +1,8 @@
 require 'fileutils'
+require 'csv'
 
 def with(*objects)
-  yield(*objects)
+  yield  *objects
   return *objects
 end
 
@@ -13,7 +14,6 @@ class EftBatch < ActiveRecord::Base
   serialize :eft_total_by_location, Hash
 
   def initialize(attrs={}) # 2007/11
-    require 'csv'
     # EftBatch.new -- will gather information from Helios::ClientProfile and Helios::Eft.
     # Generate 3 CSV's from live data and save them in that month's directory.
     @members = []
@@ -32,70 +32,28 @@ class EftBatch < ActiveRecord::Base
       if cp.eft.nil?
         @missing_efts << [cp.id.to_i]
       else
-        if(cp.eft.Acct_Exp.nil? ? false : Time.parse(cp.eft.Acct_Exp.sub(/\//, '/01/')) < (Time.now+1.day).beginning_of_day) # Check credit card expiration .. does it expire before tomorrow?
-          @invalid_efts << [cp.id.to_i,'Expired Card']
+# ActionController::Base.logger.info("ID #{cp.id.to_i}")
+        t = GotoTransaction.new(cp.eft)
+        if(!t.valid?)
+          @invalid_efts << [cp.id.to_i,t.errors.full_messages.to_sentence]
         else
-          if cp.eft.Acct_Exp.blank? && cp.eft.Bank_ABA.blank?
-            @invalid_efts << [cp.id.to_i,'No Routing Number']
-          elsif cp.eft.Acct_Exp.blank? && !cp.eft.Bank_ABA.blank? && !validABA?(cp.eft.Bank_ABA)
-            @invalid_efts << [cp.id.to_i,'Invalid Routing Number']
-          elsif cp.eft.Acct_No.blank?
-            @invalid_efts << [cp.id.to_i,'No '+(cp.eft.credit_card? ? 'Credit Card' : 'Bank Account')+' Number']
-          elsif cp.eft.credit_card? && !cp.eft.Acct_No.blank? && !validCreditCardNumber?(cp.eft.Acct_No)
-            @invalid_efts << [cp.id.to_i,'Invalid Credit Card Number']
-          else
-            # ['AccountID', 'FirstName', 'LastName', 'BankName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType, 'Authorization']
-            location_code = cp.eft.Location || '0'*(3-ZONE_LOCATION_BITS)+cp.eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
-            location_str = HELIOS_LOCATION_CODES[location_code]
-            if(location_str.blank?)
-              ActionController::Base.logger.info("EFT ##{cp.eft.id} has unknown location code of #{location_code}!")
-              location_str = location_code
-            end
-            amount_int = (cp.eft.Monthly_Fee.to_f*100).to_i
-
-# Acct_Type
-# A => American Express
-# C => Checking
-# I => Discover
-# M => Mastercard
-# S => Savings
-# V => Visa
-
-# total == 9315
-# A == exp:70,   noexp:0,    aba:0 (70)
-# C == exp:28,   noexp:3274, aba:3267 (35)
-# I == exp:162,  noexp:0,    aba:7 (155)
-# M == exp:2192, noexp:0,    aba:31 (2161)
-# S == exp:5,    noexp:997,  aba:965 (37)
-# V == exp:2586, noexp:0,    aba:17 (2569)
-
-# Should we be using cp.eft.Client_Name for the credit_card_name?
-            @members << [
-              cp.id.to_i, # AccountID
-              cp.eft.First_Name, # FirstName
-              cp.eft.Last_Name, # LastName
-              cp.eft.Bank_Name, # BankName
-              cp.eft.Bank_ABA, # BankRoutingNumber
-              cp.eft.credit_card? ? nil : cp.eft.Acct_No, # BankAccountNumber
-              cp.eft.First_Name.to_s + ' ' + cp.eft.Last_Name.to_s, # NameOnCard
-              cp.eft.credit_card? ? cp.eft.Acct_No : nil, # CreditCardNumber
-              cp.eft.Acct_Exp.to_s.gsub(/\d/,''), # Expiration MMYY
-              cp.eft.Monthly_Fee.to_f, # Amount
-              cp.eft.credit_card? ? 'Credit Card' : 'ACH', # Type
-              cp.eft.Acct_Type,
-              'Written' # Authorization
-            ]
-            total_amount += amount_int
-
-            locations_amounts[location_str] ||= 0
-            locations_amounts[location_str] += amount_int
-
-            locations_count[location_str] ||= 0
-            locations_count[location_str] += 1
-
-            amounts_count[amount_int] ||= 0
-            amounts_count[amount_int] += 1
+          location_code = cp.eft.Location || '0'*(3-ZONE_LOCATION_BITS)+cp.eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
+          location_str = LOCATIONS[location_code][:name]
+          if(location_str.blank?)
+            ActionController::Base.logger.info("EFT ##{cp.eft.id} has unknown location code of #{location_code}!")
+            location_str = location_code
           end
+          locations_amounts[location_str] ||= 0
+          locations_count[location_str] ||= 0
+          amounts_count[t.amount] ||= 0
+
+          # Should we be using cp.eft.Client_Name for the credit_card_name?
+          @members << t.to_a
+
+          total_amount += t.amount
+          locations_amounts[location_str] += t.amount
+          locations_count[location_str] += 1
+          amounts_count[t.amount] += 1
         end
       end
     end
@@ -116,7 +74,7 @@ class EftBatch < ActiveRecord::Base
     path = 'EFT/'+self.for_month+'/' # should be different for each month and should end in /
     FileUtils.mkpath(path)
     CSV.open(path+'payment.csv', 'w') do |writer|
-      writer << ['AccountID', 'FirstName', 'LastName', 'BankName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType', 'Authorization']
+      writer << ['AccountId', 'MerchantId', 'FirstName', 'LastName', 'BankName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType', 'Authorization']
       @members.each {|m| writer << m}
     end
     CSV.open(path+'missing_efts.csv', 'w') do |writer|
@@ -128,35 +86,7 @@ class EftBatch < ActiveRecord::Base
       @invalid_efts.each {|m| writer << m}
     end
   end
-
-  def submit_for_payment!
-    # Sends the generated payment CSV to the payment gateway
-    self.update_attributes(:submitted_at => Now)
-  end
-
-  private
-    def validABA?(aba)
-      # 1) Check for all-numbers.
-      # 2) Check length == 9
-      # 3) Total of all digits (each multiplied by 3, 7 or 1 in cycle) should % 10
-      i = 2
-      aba.to_s.gsub(/\D/,'').length == 9 && aba.to_s.gsub(/\D/,'').split('').map {|d| d.to_i*[3,7,1][i=i.cyclical_add(1,0..2)] }.sum % 10 == 0
-    end
-    def validCreditCardNumber?(ccn)
-  # 1) MOD 10 check
-      odd = true
-      ccn.to_s.gsub(/\D/,'').reverse.split('').map(&:to_i).collect { |d|
-        d *= 2 if odd = !odd
-        d > 9 ? d - 9 : d
-      }.sum % 10 == 0 &&
-
-  # 2) Card Prefix Check -X- We don't store the credit card type, so we can't perform this check.
-      true &&
-
-  # 3) Card Length Check -X- We don't store the credit card type, so we can't perform this check.
-      true
-    end
-  end
+end
 
 class Fixnum
   # Adds one number to another, but rolls over to the beginning of the range whenever it hits the top of the range.
