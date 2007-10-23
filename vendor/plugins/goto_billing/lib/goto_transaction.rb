@@ -12,7 +12,6 @@ class GotoTransaction < GotoBilling::Base
         :merchant_pin => LOCATIONS.has_key?(location_code.to_s) ? LOCATIONS[location_code.to_s][:merchant_pin] : nil,
         :first_name => attrs.First_Name,
         :last_name => attrs.Last_Name,
-        :bank_name => attrs.Bank_Name,
         :bank_routing_number => attrs.Bank_ABA,
         :bank_account_number => attrs.credit_card? ? nil : attrs.Acct_No,
         :name_on_card => attrs.First_Name.to_s + ' ' + attrs.Last_Name.to_s,
@@ -36,16 +35,15 @@ class GotoTransaction < GotoBilling::Base
       :merchant_id => row[2],
       :merchant_pin => LOCATIONS[LOCATIONS.reject {|k,v| LOCATIONS[k][:merchant_id] != row[2]}.keys[0]][:merchant_pin],
       :last_name => row[3],
-      :bank_name => row[4],
-      :bank_routing_number => row[5],
-      :bank_account_number => row[6],
-      :name_on_card => row[7],
-      :credit_card_number => row[8],
-      :expiration => row[9],
-      :amount => row[10],
-      :type => row[11],
-      :account_type => row[12],
-      :authorization => row[13]
+      :bank_routing_number => row[4],
+      :bank_account_number => row[5],
+      :name_on_card => row[6],
+      :credit_card_number => row[7],
+      :expiration => row[8],
+      :amount => row[9],
+      :type => row[10],
+      :account_type => row[11],
+      :authorization => row[12]
     )
   end
 
@@ -55,7 +53,6 @@ class GotoTransaction < GotoBilling::Base
       merchant_id,
       first_name,
       last_name,
-      bank_name,
       bank_routing_number,
       bank_account_number,
       name_on_card,
@@ -79,7 +76,6 @@ class GotoTransaction < GotoBilling::Base
       'transaction_id' => 'x_invoice_id',
       'amount' => 'x_amount',
       'authorization' => 'x_ach_payment_type',
-      'bank_name' => 'x_bank_name',
       'bank_routing_number' => 'x_ach_route',
       'bank_account_number' => 'x_ach_account',
       'account_type' => 'x_ach_account_type',
@@ -98,7 +94,6 @@ class GotoTransaction < GotoBilling::Base
       'transaction_id' => lambda {|x| x},
       'amount' => lambda {|x| x},
       'authorization' => lambda {|x| {'Written' => 'PPD', 'Tel' => 'TEL', 'Web' => 'WEB'}[x]},
-      'bank_name' => lambda {|x| x},
       'bank_routing_number' => lambda {|x| x},
       'bank_account_number' => lambda {|x| x},
       'account_type' => lambda {|x| self.type == 'ACH' ? {'C' => 'PC', 'S' => 'PS'}[x] : nil},
@@ -110,9 +105,9 @@ class GotoTransaction < GotoBilling::Base
     }[attr_name.to_s].call(@attributes[attr_name.to_s])
   end
 
-  has_attributes :account_id, :first_name, :last_name, :bank_name, :bank_routing_number, :bank_account_number, :name_on_card, :credit_card_number, :expiration, :amount, :type, :account_type, :authorization, :merchant_id, :merchant_pin
+  has_attributes :account_id, :first_name, :last_name, :bank_routing_number, :bank_account_number, :name_on_card, :credit_card_number, :expiration, :amount, :type, :account_type, :authorization, :merchant_id, :merchant_pin
   validates_presence_of :account_id, :first_name, :last_name, :amount, :type, :account_type, :authorization, :merchant_id, :merchant_pin
-  validates_presence_of :bank_name, :bank_routing_number, :bank_account_number, :if => :ach?
+  validates_presence_of :bank_routing_number, :bank_account_number, :if => :ach?
   validates_presence_of :name_on_card, :credit_card_number, :expiration, :if => :credit_card?
 
   def validate
