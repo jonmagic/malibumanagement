@@ -112,8 +112,8 @@ class GotoTransaction < GotoBilling::Base
 
   def validate
     errors.add_to_base("Expired Card") if credit_card? && Time.parse(expiration[0,2] + '/01/' + expiration[2,2]) < (Time.now+1.day).beginning_of_day
-    errors.add_to_base("Invalid Routing Number") if !credit_card? && !bank_routing_number.blank? && !validABA?(bank_routing_number)
     errors.add_to_base("Invalid Credit Card Number") if credit_card? && !validCreditCardNumber?(credit_card_number)
+    errors.add_to_base("Invalid Routing Number") if !credit_card? && !bank_routing_number.blank? && !validABA?(bank_routing_number)
   end
 
   def credit_card?

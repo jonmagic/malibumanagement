@@ -15,7 +15,7 @@ module HeliosPeripheral
     base.journal = []
 
     LOCATIONS.reject {|k,v| !v.has_key?(:open_helios)}.keys.each do |location|
-      base.add_slave(location, LOCATIONS[location][:open_helios])
+      base.add_slave(LOCATIONS[location][:name], LOCATIONS[location][:open_helios])
     end
 
     # Register the after_save handle

@@ -47,6 +47,12 @@ class Helios::Eft < ActiveRecord::Base
     mems
   end
 
+  def to_csv(filename)
+    CSV.open(filename, 'a') do |csv|
+      csv << self.attributes.values
+    end
+  end
+
   def self.delete_these(ids)
     self.update_satellites = true
     failed_list = []
