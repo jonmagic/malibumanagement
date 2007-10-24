@@ -8,9 +8,13 @@ module HeliosPeripheral
     # base.alias :old_destroy :destroy
     base.send(:include, InstanceMethods)
     base.cattr_accessor :update_satellites
+    base.cattr_accessor :update_master_satellite
     base.update_satellites = false
+    base.update_master_satellite = false
     base.cattr_accessor :slaves
+    base.cattr_accessor :master
     base.slaves = {}
+    base.master = {}
     base.cattr_accessor :journal
     base.journal = []
 
@@ -20,7 +24,7 @@ module HeliosPeripheral
 
     # Register the after_save handle
     base.after_save do |record|
-      if base.update_satellites
+      if base.update_satellites || base.update_master_satellite
         satellite_records = base.propogate_method(:find, record.id)
         satellite_records.each do |location,satellite_record|
           newr = satellite_record.new?
@@ -53,11 +57,13 @@ module HeliosPeripheral
 
   module ClassMethods
     def add_slave(location_name, uri_base)
-      self.slaves ||= {}
       self.slaves[location_name] = Class.new(ActiveResource::Base)
       self.slaves[location_name].site = "http://#{uri_base}/"
       self.slaves[location_name].primary_key = self.primary_key
       self.slaves[location_name].element_name = self.name.split("::").last.underscore
+      if LOCATIONS[LOCATIONS.reject {|k,v| !LOCATIONS[k][:name] == location_name}.keys[0]][:master] == true
+        self.master = self.slaves[location_name]
+      end
     end
 
     def propogate_method(method, *args)
