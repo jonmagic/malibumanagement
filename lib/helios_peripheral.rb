@@ -61,22 +61,23 @@ module HeliosPeripheral
       self.slaves[location[:name]].site = "http://#{location[:open_helios]}/"
       self.slaves[location[:name]].primary_key = self.primary_key
       self.slaves[location[:name]].element_name = self.name.split("::").last.underscore
-      self.master = self.slaves[location[:name]] if location[:master]
+      self.master = location[:name] => self.slaves[location[:name]] if location[:master]
     end
 
     def propogate_method(method, *args)
       retval = {}
-      self.slaves.keys.each do |slave|
+      clients = self.update_master_satellite ? self.master : self.slaves
+      clients.keys.each do |slave|
         begin
 puts "Finding #{args.inspect} at #{slave}"
 ActionController::Base.logger.info "Performing #{method} for #{args.join(', ')} at #{slave}..."
-          if Thread.current['satellite_status'].class.name == 'Helios::SatelliteStatus'
-            Thread.current['satellite_status'].status_text = "Performing #{method} for #{args.join(', ')} at #{slave}..."
-            Thread.current['satellite_status'].percent = 100 / (self.slaves.keys.index(slave)+1) * self.slaves.keys.length
-          end
-          retval[slave] = self.slaves[slave].send(method, *args)
+          # if Thread.current['satellite_status'].class.name == 'Helios::SatelliteStatus'
+          #   Thread.current['satellite_status'].status_text = "Performing #{method} for #{args.join(', ')} at #{slave}..."
+          #   Thread.current['satellite_status'].percent = 100 / (clients.keys.index(slave)+1) * clients.keys.length
+          # end
+          retval[slave] = clients[slave].send(method, *args)
         rescue ActiveResource::ResourceNotFound => e
-          retval[slave] = self.slaves[slave].new
+          retval[slave] = clients[slave].new
         rescue Errno::ETIMEDOUT => e
           err = "Connection Failed"
         rescue Timeout::Error => e
@@ -90,7 +91,7 @@ ActionController::Base.logger.info "Performing #{method} for #{args.join(', ')} 
         ensure
           if err
             ActionController::Base.logger.info "Error: #{err}"
-            retval[slave] = self.slaves[slave].new
+            retval[slave] = clients[slave].new
             retval[slave].errors.add_to_base(err)
           end
         end
