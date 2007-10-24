@@ -761,6 +761,14 @@ ActionController::Base.logger.info "Primary Key: #{self.class.primary_key}"
       super
     end
     
+    # Create (i.e., save to the remote service) the new resource.
+    def create
+      returning connection.post(collection_path, to_xml, self.class.headers) do |response|
+        self.id = id_from_response(response)
+        load_attributes_from_response(response)
+      end
+    end
+    
 
     protected
       def connection(refresh = false)
@@ -774,14 +782,6 @@ ActionController::Base.logger.info "Primary Key: #{self.class.primary_key}"
         end
       end
 
-      # Create (i.e., save to the remote service) the new resource.
-      def create
-        returning connection.post(collection_path, to_xml, self.class.headers) do |response|
-          self.id = id_from_response(response)
-          load_attributes_from_response(response)
-        end
-      end
-      
       def load_attributes_from_response(response)
         if response['Content-size'] != "0" && response.body.strip.size > 0
           load(connection.xml_from_response(response))
