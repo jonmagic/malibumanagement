@@ -28,11 +28,11 @@ class Helios::ClientProfile < ActiveRecord::Base
   def self.search(query, options={})
     limit = options[:limit] || 10
     offset = options[:offset] || 0
-    case ::RAILS_ENV
+    sql = case ::RAILS_ENV
     when 'development'
-      sql = "SELECT * FROM Client_Profile #{craft_sql_condition_for_query(query)} ORDER BY Client_no ASC LIMIT #{limit} OFFSET #{offset}"
+      "SELECT * FROM Client_Profile #{craft_sql_condition_for_query(query)} ORDER BY Client_no ASC LIMIT #{limit} OFFSET #{offset}"
     when 'production'
-      sql = "SELECT * FROM (SELECT TOP #{limit} * FROM (SELECT TOP #{limit + offset} * FROM Client_Profile #{craft_sql_condition_for_query(query)} ORDER BY [Client_no] ASC) AS tmp1 ORDER BY [Client_no] DESC) AS tmp2 ORDER BY [Client_no] ASC"
+      "SELECT * FROM (SELECT TOP #{limit} * FROM (SELECT TOP #{limit + offset} * FROM Client_Profile #{craft_sql_condition_for_query(query)} ORDER BY [Client_no] ASC) AS tmp1 ORDER BY [Client_no] DESC) AS tmp2 ORDER BY [Client_no] ASC"
     end
     ActionController::Base.logger.info "Search SQL: #{sql}"
     self.find_by_sql(sql)
@@ -54,6 +54,46 @@ class Helios::ClientProfile < ActiveRecord::Base
 
   def public_attributes
     self.attributes.reject {|k,v| [self.class.primary_key, 'F_LOC', 'UpdateAll'].include?(k)}
+  end
+
+  def self.has_prepaid_membership?(id)
+    self.find(id).has_prepaid_membership?
+  end
+
+  def self.memberships(ids)
+    ids.each do |id|
+      sql = case ::RAILS_ENV
+      when 'development'
+        "(Code = 'VY' OR Code = 'VY+' OR Code = 'V1M' OR Code = 'V1W') AND client_no = ?"
+      when 'production'
+        "[Code] IN ('VY','VY+','V1M','V1W') AND [client_no] = ? AND [Last_Mdt] > ?"
+      end
+      Helios::Transact.find(:all, :conditions => [sql, id]).each do |t|
+        puts "Code: #{t.Code}, Date: #{t.Last_Mdt}"
+      end
+    end
+    nil
+  end
+
+  def has_prepaid_membership?
+    sql = case ::RAILS_ENV
+    when 'development'
+      "Code IN ('VY','VY+','V1M','V1W') AND client_no = ? AND Last_Mdt > ?"
+    when 'production'
+      "[Code] IN ('VY','VY+','V1M','V1W') AND [client_no] = ? AND [Last_Mdt] > ?"
+    end
+    mem_trans = Helios::Transact.find(:all, :conditions => [sql, self.id, Time.now-47336400])
+    lasting = {
+      'VY'  => Time.now-31557600, # 12 months
+      'VY+' => Time.now-47336400, # 18 months
+      'V1M' => Time.now-2592000,  # 30 days
+      'V1W' => Time.now-604800    # 7 days
+    }
+    mem_trans.each do |t|
+puts "Code: #{t.Code}, Date: #{t.Last_Mdt}"
+      return true if t.Last_Mdt > lasting[t.Code]
+    end
+    return false
   end
 
   def self.fixmismatch
