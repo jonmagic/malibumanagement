@@ -19,7 +19,7 @@ module HeliosPeripheral
     base.journal = []
 
     LOCATIONS.reject {|k,v| !v.has_key?(:open_helios)}.keys.each do |location|
-      base.add_slave(LOCATIONS[location][:name], LOCATIONS[location][:open_helios])
+      base.add_slave(LOCATIONS[location])
     end
 
     # Register the after_save handle
@@ -56,14 +56,12 @@ module HeliosPeripheral
   end
 
   module ClassMethods
-    def add_slave(location_name, uri_base)
-      self.slaves[location_name] = Class.new(ActiveResource::Base)
-      self.slaves[location_name].site = "http://#{uri_base}/"
-      self.slaves[location_name].primary_key = self.primary_key
-      self.slaves[location_name].element_name = self.name.split("::").last.underscore
-      if LOCATIONS[LOCATIONS.reject {|k,v| !LOCATIONS[k][:name] == location_name}.keys[0]][:master] == true
-        self.master = self.slaves[location_name]
-      end
+    def add_slave(location)
+      self.slaves[location[:name]] = Class.new(ActiveResource::Base)
+      self.slaves[location[:name]].site = "http://#{location[:open_helios]}/"
+      self.slaves[location[:name]].primary_key = self.primary_key
+      self.slaves[location[:name]].element_name = self.name.split("::").last.underscore
+      self.master = self.slaves[location[:name]] if location[:master]
     end
 
     def propogate_method(method, *args)
