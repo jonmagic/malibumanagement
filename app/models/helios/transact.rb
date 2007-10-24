@@ -25,6 +25,13 @@ class Helios::Transact < ActiveRecord::Base
   include HeliosPeripheral
 
   belongs_to :client, :class_name => 'Helios::ClientProfile', :foreign_key => 'client_no'
+
+  def self.next_OTNum
+    self.connection.select_value('SELECT MAX([OTNum]) AS yup FROM Transactions', 'yup').to_i+1
+  end
+  def self.next_ticket_no
+    self.connection.select_value('SELECT MAX([ticket_no]) AS yup FROM Transactions WHERE [ticket_no] > 990000000', 'yup').to_i+1
+  end
   
   def self.accepted_ach
     # transact_no, ticket_no, client_no, Last_Name, First_Name, Last_Mdt, Code, Descriptions, 
