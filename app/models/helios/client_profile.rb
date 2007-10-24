@@ -66,7 +66,7 @@ class Helios::ClientProfile < ActiveRecord::Base
       when 'development'
         "(Code = 'VY' OR Code = 'VY+' OR Code = 'V1M' OR Code = 'V1W') AND client_no = ?"
       when 'production'
-        "[Code] IN ('VY','VY+','V1M','V1W') AND [client_no] = ? AND [Last_Mdt] > ?"
+        "[Code] IN ('VY','VY+','V1M','V1W') AND [client_no] = ?"
       end
       Helios::Transact.find(:all, :conditions => [sql, id]).each do |t|
         puts "Code: #{t.Code}, Date: #{t.Last_Mdt}"
