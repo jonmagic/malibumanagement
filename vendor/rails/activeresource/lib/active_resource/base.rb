@@ -86,7 +86,7 @@ module ActiveResource
       # while <tt>resource.new?</tt> will still return <tt>true</tt>.
       #      
       def create(attributes = {}, prefix_options = {})
-        returning(self.new(attributes, prefix_options)) { |res| res.save }        
+        returning(self.new(attributes, prefix_options)) { |res| res.save }
       end
 
       # Core method for finding resources.  Used similarly to ActiveRecord's find method.
@@ -247,6 +247,13 @@ module ActiveResource
       self
     end
 
+    # Create (i.e., save to the remote service) the new resource.
+    def create
+      returning connection.post(collection_path, to_xml) do |response|
+        self.id = id_from_response(response)
+      end
+    end
+
     protected
       def connection(refresh = false)
         self.class.connection(refresh)
@@ -255,13 +262,6 @@ module ActiveResource
       # Update the resource on the remote service.
       def update
         connection.put(element_path, to_xml)
-      end
-
-      # Create (i.e., save to the remote service) the new resource.
-      def create
-        returning connection.post(collection_path, to_xml) do |response|
-          self.id = id_from_response(response)
-        end
       end
 
       # Takes a response from a typical create post and pulls the ID out
