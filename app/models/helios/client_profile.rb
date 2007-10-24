@@ -69,7 +69,7 @@ class Helios::ClientProfile < ActiveRecord::Base
     end
     mem_trans = Helios::Transact.find(:all, :conditions => [sql, self.id, Time.now-47336400])
     lasting = {
-      'VY'  => Time.now-31557600, # 12 months
+      'VY'  => Time.now-47336400, # 18 months
       'VY+' => Time.now-47336400, # 18 months
       'V1M' => Time.now-2592000,  # 30 days
       'V1W' => Time.now-604800    # 7 days
