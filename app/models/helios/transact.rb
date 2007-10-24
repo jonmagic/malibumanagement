@@ -21,9 +21,9 @@ class Helios::Transact < ActiveRecord::Base
   set_primary_key 'transact_no'
 
   validates_presence_of :OTNum, :ticket_no
-  before_save do
-    self.OTNum = self.class.next_OTNum
-    self.ticket_no = self.class.next_ticket_no
+  before_save do |record|
+    record.OTNum = record.class.next_OTNum
+    record.ticket_no = record.class.next_ticket_no
   end
 
   include HeliosPeripheral
