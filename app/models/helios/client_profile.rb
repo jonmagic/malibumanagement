@@ -60,21 +60,6 @@ class Helios::ClientProfile < ActiveRecord::Base
     self.find(id).has_prepaid_membership?
   end
 
-  def self.memberships(ids)
-    ids.each do |id|
-      sql = case ::RAILS_ENV
-      when 'development'
-        "(Code = 'VY' OR Code = 'VY+' OR Code = 'V1M' OR Code = 'V1W') AND client_no = ?"
-      when 'production'
-        "[Code] IN ('VY','VY+','V1M','V1W') AND [client_no] = ?"
-      end
-      Helios::Transact.find(:all, :conditions => [sql, id]).each do |t|
-        puts "Code: #{t.Code}, Date: #{t.Last_Mdt}"
-      end
-    end
-    nil
-  end
-
   def has_prepaid_membership?
     sql = case ::RAILS_ENV
     when 'development'
@@ -90,7 +75,6 @@ class Helios::ClientProfile < ActiveRecord::Base
       'V1W' => Time.now-604800    # 7 days
     }
     mem_trans.each do |t|
-puts "Code: #{t.Code}, Date: #{t.Last_Mdt}"
       return true if t.Last_Mdt > lasting[t.Code]
     end
     return false

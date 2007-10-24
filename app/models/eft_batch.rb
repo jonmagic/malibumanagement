@@ -30,7 +30,7 @@ class EftBatch < ActiveRecord::Base
 
     Helios::Eft.memberships(month, true) do |cp|
       if cp.eft.nil?
-        @missing_efts << [cp.id.to_i]
+        @missing_efts << [cp.id.to_i] unless cp.has_prepaid_membership?
       else
 # ActionController::Base.logger.info("ID #{cp.id.to_i}")
         t = GotoTransaction.new(cp.eft)
