@@ -34,7 +34,9 @@ class Helios::Transact < ActiveRecord::Base
     self.connection.select_value('SELECT MAX([OTNum]) AS yup FROM Transactions', 'yup').to_i+1
   end
   def self.next_ticket_no
-    self.connection.select_value('SELECT MAX([ticket_no]) AS yup FROM Transactions WHERE [ticket_no] > 990000000', 'yup').to_i+1
+    last = self.connection.select_value('SELECT MAX([ticket_no]) AS yup FROM Transactions WHERE [ticket_no] > 990000000', 'yup').to_i
+    last = 990000000 if last == 0
+    last+1
   end
   
   def self.accepted_ach
