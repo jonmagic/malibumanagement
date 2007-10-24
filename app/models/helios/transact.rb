@@ -32,10 +32,11 @@ class Helios::Transact < ActiveRecord::Base
 
   belongs_to :client, :class_name => 'Helios::ClientProfile', :foreign_key => 'client_no'
 
-  def self.create_transaction
-    self.update_satellites = true
+  alias :public_attributes :attributes
+
+  def self.create_transaction_on_master(*args)
     self.update_master_satellite = true
-    
+    self.create(*args)
   end
 
   def self.next_OTNum
