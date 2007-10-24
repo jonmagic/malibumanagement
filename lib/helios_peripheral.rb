@@ -61,7 +61,7 @@ module HeliosPeripheral
       self.slaves[location[:name]].site = "http://#{location[:open_helios]}/"
       self.slaves[location[:name]].primary_key = self.primary_key
       self.slaves[location[:name]].element_name = self.name.split("::").last.underscore
-      self.master = location[:name] => self.slaves[location[:name]] if location[:master]
+      self.master = {location[:name] => self.slaves[location[:name]]} if location[:master]
     end
 
     def propogate_method(method, *args)
