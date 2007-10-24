@@ -21,6 +21,8 @@ class Helios::Transact < ActiveRecord::Base
   set_primary_key 'transact_no'
 
   validates_presence_of :OTNum, :ticket_no
+  validates_length_of :Descriptions, :maximum => 25
+
   before_validation do |record|
     record.OTNum ||= record.class.next_OTNum
     record.ticket_no ||= record.class.next_ticket_no
@@ -29,6 +31,12 @@ class Helios::Transact < ActiveRecord::Base
   include HeliosPeripheral
 
   belongs_to :client, :class_name => 'Helios::ClientProfile', :foreign_key => 'client_no'
+
+  def self.create_transaction
+    self.update_satellites = true
+    self.update_master_satellite = true
+    
+  end
 
   def self.next_OTNum
     self.connection.select_value('SELECT MAX([OTNum]) AS yup FROM Transactions', 'yup').to_i+1
