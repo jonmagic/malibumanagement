@@ -62,3 +62,20 @@ while sleep(3600) # Wait one hour between checks.
   end
   puts "Saving results to batch..."
 end
+
+# transact_no   ?
+# ticket_no   ?
+# client_no   client.id
+# Last_Name   client.FirstName
+# First_Name    client.LastName
+# Last_Mdt    Now
+# Code      EFT Active
+# Description   ?
+# CType     ?
+# Division    zone1: 2, zone2: 1
+# Department    zone1: 7, zone2: 2
+# Price     eft.price
+# Check     if checking/savings   and cleared   then eft.price
+# Charge      if creditcard     and cleared   then eft.price
+# Credit      if check/savings/credit and NOTCLEARED  then eft.price
+# Modified    if updating transaction then copy Last_Mdt to here and update Last_Mdt
