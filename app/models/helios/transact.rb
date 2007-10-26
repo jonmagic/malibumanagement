@@ -23,9 +23,9 @@ class Helios::Transact < ActiveRecord::Base
   validates_presence_of :OTNum, :ticket_no
   validates_length_of :Descriptions, :maximum => 25
 
-  before_validation do |record|
-    record.OTNum ||= record.class.next_OTNum
-    record.ticket_no ||= record.class.next_ticket_no
+  def before_validation_on_create
+    self.OTNum ||= self.class.next_OTNum
+    self.ticket_no ||= self.class.next_ticket_no
   end
 
   include HeliosPeripheral
@@ -40,10 +40,22 @@ class Helios::Transact < ActiveRecord::Base
   end
 
   def self.next_OTNum
-    self.connection.select_value('SELECT MAX([OTNum]) AS yup FROM Transactions', 'yup').to_i+1
+    sql = case ::RAILS_ENV
+    when 'development'
+      'SELECT MAX(OTNum) AS yup FROM Transactions'
+    when 'production'
+      'SELECT MAX([OTNum]) AS yup FROM Transactions'
+    end
+    self.connection.select_value(sql, 'yup').to_i+1
   end
   def self.next_ticket_no
-    last = self.connection.select_value('SELECT MAX([ticket_no]) AS yup FROM Transactions WHERE [ticket_no] > 990000000', 'yup').to_i
+    sql = case ::RAILS_ENV
+    when 'development'
+      'SELECT MAX(ticket_no) AS yup FROM Transactions WHERE ticket_no > 990000000'
+    when 'production'
+      'SELECT MAX([ticket_no]) AS yup FROM Transactions WHERE [ticket_no] > 990000000'
+    end
+    last = self.connection.select_value(sql, 'yup').to_i
     last = 990000000 if last == 0
     last+1
   end
