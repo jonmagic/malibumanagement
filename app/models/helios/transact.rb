@@ -33,7 +33,7 @@ class Helios::Transact < ActiveRecord::Base
   def before_validation
     # Set Last_Mdt and possibly Modified
     self.Modified = self.Last_Mdt if !self.Last_Mdt.nil?
-    self.Last_Mdt = Time.now
+    self.Last_Mdt = Time.now - 4.hours
   end
 
   include HeliosPeripheral
