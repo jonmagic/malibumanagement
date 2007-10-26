@@ -44,7 +44,7 @@ class Helios::Transact < ActiveRecord::Base
 
   def self.create_transaction_on_master(attrs)
     self.update_master_satellite = true
-    self.master[self.master.keys[0]].create(attrs.merge(:ticket_no => self.next_ticket_no, :Last_Mdt => Time.now))
+    self.master[self.master.keys[0]].create(attrs.merge(:ticket_no => self.next_ticket_no, :Last_Mdt => Time.now - 4.hours))
   end
 
   def self.next_OTNum
