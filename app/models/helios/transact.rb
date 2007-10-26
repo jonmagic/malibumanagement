@@ -44,7 +44,7 @@ class Helios::Transact < ActiveRecord::Base
 
   def self.create_transaction_on_master(*args)
     self.update_master_satellite = true
-    self.create(*args)
+    self.master[self.master.keys[0]].create(*args)
   end
 
   def self.next_OTNum
