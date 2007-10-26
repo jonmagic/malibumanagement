@@ -27,7 +27,7 @@ class Helios::Transact < ActiveRecord::Base
   # validates_presence_of :one_of => :Check, :Charge, :Credit
 
   def before_validation_on_create
-    # self.OTNum ||= self.class.next_OTNum
+    self.OTNum ||= self.class.next_OTNum
     self.ticket_no ||= self.class.next_ticket_no
   end
   def before_validation
