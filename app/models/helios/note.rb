@@ -1,4 +1,4 @@
-class Helios::Transact < ActiveRecord::Base
+class Helios::Note < ActiveRecord::Base
   case ::RAILS_ENV
   when 'development'
     self.establish_connection(
