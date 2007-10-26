@@ -42,9 +42,23 @@ def http_submit(batch)
       headers = false
       next
     end
-    t = GotoTransaction.new_from_csv_row(row)
+    t = GotoTransaction.new_from_eft(Helios::Eft.find(row[0]))
     # Post the amount to the client's account
-    
+    Helios::Transact.create_transaction_on_master(
+      :Descriptions => 'VIP Monthly Charge: INVALID EFT', # Needs to include certain information for different cases
+      :client_no => t.account_id,
+      :Last_Name => t.last_name,
+      :First_Name => t.first_name,
+      :CType => 'S',
+      :Code => 'EFT Active',
+      :Division => ZONE[:Division], # 2 for zone1
+      :Department => ZONE[:Department], # 7 for zone1
+      :Location => t.location,
+      :Price => t.amount,
+      :Check => t.accepted? && t.ach? ? t.amount : 0,
+      :Charge => t.accepted? && t.credit_card? ? t.amount : 0,
+      :Credit => !t.accepted? ? t.amount : 0
+    )
   end
   retry_records.each_value do |t| # Retry once
     t.submit

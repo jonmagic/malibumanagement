@@ -54,6 +54,22 @@ while sleep(3600) # Wait one hour between checks.
       t.instance_variable_set('@new_record', false)
       # Now 't' is just as if we just now submitted the transaction and got a response back into it.
 
+# Actually this should be grabbing and EDITing transactions, not creating them.
+      Helios::Transact.create_transaction_on_master(
+        :Descriptions => 'VIP Monthly Charge', # Needs to include certain information for different cases
+        :client_no => t.account_id,
+        :Last_Name => t.last_name,
+        :First_Name => t.first_name,
+        :CType => 'S',
+        :Code => 'EFT Active',
+        :Division => ZONE[:Division], # 2 for zone1
+        :Department => ZONE[:Department], # 7 for zone1
+        :Location => t.location,
+        :Price => t.amount,
+        :Check => t.ach? ? t.amount : 0,
+        :Charge => t.credit_card? ? t.amount : 0,
+        :Credit => t.declined? ? t.amount : 0
+      )
       # Accepted ACH: 
       # Accepted Credit: 
       # Declined ACH: 
@@ -62,20 +78,3 @@ while sleep(3600) # Wait one hour between checks.
   end
   puts "Saving results to batch..."
 end
-
-# transact_no   ?
-# ticket_no   ?
-# client_no   client.id
-# Last_Name   client.FirstName
-# First_Name    client.LastName
-# Last_Mdt    Now
-# Code      EFT Active
-# Description   ?
-# CType     ?
-# Division    zone1: 2, zone2: 1
-# Department    zone1: 7, zone2: 2
-# Price     eft.price
-# Check     if checking/savings   and cleared   then eft.price
-# Charge      if creditcard     and cleared   then eft.price
-# Credit      if check/savings/credit and NOTCLEARED  then eft.price
-# Modified    if updating transaction then copy Last_Mdt to here and update Last_Mdt

@@ -48,8 +48,19 @@ class Helios::ClientProfile < ActiveRecord::Base
     (!self.HPhone.blank? && !self.HPhoneAc.blank? && (self.HPhoneAc.to_s + self.HPhone.to_s).length > 1) ? '(' + self.HPhoneAc.to_s + ') ' + self.HPhone[0,3] + '-' + self.HPhone[3,4] : '(phone)'
   end
 
-  def last_transaction
-    self.transactions.find(:first)
+  def self.find_on_master(id)
+    self.master[self.master.keys[0]].find(id)
+  end
+
+  def self.destroy_on_master(id)
+    self.find_on_master(id).destroy
+  end
+
+  def self.touch_on_master(id)
+    rec = self.master[self.master.keys[0]].new
+    rec.id = id
+    rec.Last_Mdt = Time.now-4.hours
+    rec.save
   end
 
   def public_attributes
@@ -86,13 +97,6 @@ class Helios::ClientProfile < ActiveRecord::Base
     find_all_by_member1_flex(nil).each {|faulty| count += 1 if faulty.update_attributes(:member1_flex => 0) }
     find_all_by_member2_flex(nil).each {|faulty| count += 1 if faulty.update_attributes(:member2_flex => 0) }
     count
-  end
-
-  def self.touch_on_master(id)
-    rec = self.master[self.master.keys[0]].new
-    rec.id = id
-    rec.Last_Mdt = Time.now-4.hours
-    rec.save
   end
 
   def self.delete_these(ids)
