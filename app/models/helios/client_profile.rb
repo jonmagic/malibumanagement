@@ -88,6 +88,13 @@ class Helios::ClientProfile < ActiveRecord::Base
     count
   end
 
+  def self.touch_on_master(id)
+    rec = self.master[self.master.keys[0]].new
+    rec.id = id
+    rec.Last_Mdt = Time.now-4.hours
+    rec.save
+  end
+
   def self.delete_these(ids)
     self.update_satellites = true
     failed_list = []
