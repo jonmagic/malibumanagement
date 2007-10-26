@@ -23,7 +23,8 @@ class Helios::Transact < ActiveRecord::Base
   validates_presence_of :OTNum, :ticket_no, :transact_no, :Last_Mdt, :Modified
   validates_length_of :Descriptions, :maximum => 25 if :has_descriptions
 
-  validates_presence_of :client_no, :Last_Name, :First_Name, :Code, :Description, :CType, :Division, :Department, :Price, :Check, :Charge, :Credit
+  validates_presence_of :Descriptions, :client_no, :Last_Name, :First_Name, :Code, :CType, :Division, :Department, :Price
+  # validates_presence_of :one_of => :Check, :Charge, :Credit
 
   def before_validation_on_create
     # self.OTNum ||= self.class.next_OTNum
