@@ -20,12 +20,19 @@ class Helios::Transact < ActiveRecord::Base
   set_table_name 'Transactions'
   set_primary_key 'transact_no'
 
-  validates_presence_of :OTNum, :ticket_no
-  validates_length_of :Descriptions, :maximum => 25
+  validates_presence_of :OTNum, :ticket_no, :transact_no, :Last_Mdt, :Modified
+
+  validates_presence_of :client_no, :Last_Name, :First_Name, :Code, :Description, :CType, :Division, :Department, :Price, :Check, :Charge, :Credit
+  validates_length_of :Descriptions, :maximum => 25 if :has_descriptions
 
   def before_validation_on_create
     self.OTNum ||= self.class.next_OTNum
     self.ticket_no ||= self.class.next_ticket_no
+  end
+  def before_validation
+    # Set Last_Mdt and possibly Modified
+    self.Modified = self.Last_Mdt if !self.Last_Mdt.nil?
+    self.Last_Mdt = Time.now
   end
 
   include HeliosPeripheral
@@ -75,4 +82,9 @@ class Helios::Transact < ActiveRecord::Base
   
   def self.invalid_eft
   end
+
+  private
+    def has_descriptions
+      !self.Descriptions.nil?
+    end
 end
