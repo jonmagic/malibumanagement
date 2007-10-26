@@ -44,7 +44,7 @@ def http_submit(batch)
     end
     t = GotoTransaction.new_from_eft(Helios::Eft.find(row[0]))
     # Post the amount to the client's account
-    Helios::Transact.create_transaction_on_master(
+    Helios::Transact.create_on_master(
       :Descriptions => 'VIP Monthly Charge: INVALID EFT', # Needs to include certain information for different cases
       :client_no => t.account_id,
       :Last_Name => t.last_name,
@@ -59,6 +59,9 @@ def http_submit(batch)
       :Charge => t.accepted? && t.credit_card? ? t.amount : 0,
       :Credit => !t.accepted? ? t.amount : 0
     )
+    # Helios::Note.create_on_master(
+    #   
+    # )
   end
   retry_records.each_value do |t| # Retry once
     t.submit

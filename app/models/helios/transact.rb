@@ -33,7 +33,7 @@ class Helios::Transact < ActiveRecord::Base
   def before_validation
     # Set Last_Mdt and possibly Modified
     self.Modified = self.Last_Mdt if !self.Last_Mdt.nil?
-    self.Last_Mdt = Time.now - 4.hours
+    self.Last_Mdt = Time.now
   end
 
   include HeliosPeripheral
@@ -43,7 +43,6 @@ class Helios::Transact < ActiveRecord::Base
   alias :public_attributes :attributes
 
   def self.create_on_master(attrs)
-    self.update_master_satellite = true
     self.master[self.master.keys[0]].create(attrs.merge(:ticket_no => self.next_ticket_no, :Last_Mdt => Time.now - 4.hours))
     Helios::ClientProfile.touch_on_master(attrs[:client_no])
   end
