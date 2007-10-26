@@ -17,6 +17,8 @@ class Helios::Note < ActiveRecord::Base
     )
   end
 
+  include HeliosPeripheral
+
   set_table_name 'Notes'
   set_primary_key 'transact_no'
 
