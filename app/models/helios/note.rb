@@ -20,7 +20,7 @@ class Helios::Note < ActiveRecord::Base
   include HeliosPeripheral
 
   set_table_name 'Notes'
-  set_primary_key 'transact_no'
+  set_primary_key 'Rec_no'
 
   belongs_to :client, :class_name => 'Helios::ClientProfile', :foreign_key => 'client_no'
 

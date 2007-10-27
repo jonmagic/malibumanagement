@@ -48,22 +48,10 @@ class Helios::Transact < ActiveRecord::Base
   end
 
   def self.next_OTNum
-    sql = case ::RAILS_ENV
-    when 'development'
-      'SELECT MAX(OTNum) AS yup FROM Transactions'
-    when 'production'
-      'SELECT MAX([OTNum]) AS yup FROM Transactions'
-    end
-    self.connection.select_value(sql, 'yup').to_i+1
+    self.connection.select_value("SELECT MAX(#{quote_column_name('OTNum')}) AS yup FROM #{quote_column_name('Transactions')}", 'yup').to_i+1
   end
   def self.next_ticket_no
-    sql = case ::RAILS_ENV
-    when 'development'
-      'SELECT MAX(ticket_no) AS yup FROM Transactions WHERE ticket_no > 990000000'
-    when 'production'
-      'SELECT MAX([ticket_no]) AS yup FROM Transactions WHERE [ticket_no] > 990000000'
-    end
-    last = self.connection.select_value(sql, 'yup').to_i
+    last = self.connection.select_value("SELECT MAX(#{quote_column_name('ticket_no')}) AS yup FROM #{quote_column_name('Transactions')} WHERE #{quote_column_name('ticket_no')} > 990000000", 'yup').to_i
     last = 990000000 if last == 0
     last+1
   end
