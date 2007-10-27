@@ -22,13 +22,13 @@ class Helios::Note < ActiveRecord::Base
   set_table_name 'Notes'
   set_primary_key 'Rec_no'
 
-  belongs_to :client, :class_name => 'Helios::ClientProfile', :foreign_key => 'client_no'
+  belongs_to :client, :class_name => 'Helios::ClientProfile', :foreign_key => 'Client_no'
 
-  validates_presence_of :OTNum, :Location, :Last_Mdt
+  validates_presence_of :OTNum, :Location, :Last_Mdt, :Client_no
 
   def self.create_on_master(attrs)
     self.master[self.master.keys[0]].create(attrs.merge(:Last_Mdt => Time.now - 4.hours, :Location => LOCATIONS.reject {|k,v| v[:name] != self.master.keys[0]}.keys[0] ))
-    Helios::ClientProfile.touch_on_master(attrs[:client_no])
+    Helios::ClientProfile.touch_on_master(attrs[:Client_no])
   end
 
   def self.for_invalid_transaction(transaction_or_id)
