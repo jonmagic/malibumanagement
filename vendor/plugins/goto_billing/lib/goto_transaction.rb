@@ -43,7 +43,7 @@ class GotoTransaction < GotoBilling::Base
       :amount => row[9],
       :type => row[10],
       :account_type => row[11],
-      :authorization => row[12]
+      :authorization => row[12],
     # Response attributes
       :status => row[13],
       :order_number => row[14],
