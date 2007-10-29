@@ -136,7 +136,7 @@ class GotoTransaction < GotoBilling::Base
   def recorded?
     @recorded
   end
-  def recorded?=(v)
+  def recorded=(v)
     @recorded = v ? true : false
   end
   def credit_card?
