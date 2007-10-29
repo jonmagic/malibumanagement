@@ -46,6 +46,11 @@ class Helios::Transact < ActiveRecord::Base
     self.master[self.master.keys[0]].create(attrs.merge(:ticket_no => self.next_ticket_no, :Last_Mdt => Time.now - 4.hours))
     Helios::ClientProfile.touch_on_master(attrs[:client_no])
   end
+  def self.update_on_master(attrs)
+    t = self.master[self.master.keys[0]].find(attrs[:id])
+    t.attributes = attrs.merge(:ticket_no => self.next_ticket_no, :Last_Mdt => Time.now - 4.hours)
+    t.save && Helios::ClientProfile.touch_on_master(attrs[:client_no])
+  end
 
   def self.next_OTNum
     self.connection.select_value("SELECT MAX(#{quote_column_name('OTNum')}) AS yup FROM #{quote_column_name('Transactions')}", 'yup').to_i+1
@@ -56,22 +61,6 @@ class Helios::Transact < ActiveRecord::Base
     last+1
   end
   
-  def self.accepted_ach
-    # transact_no, ticket_no, client_no, Last_Name, First_Name, Last_Mdt, Code, Descriptions, 
-  end
-
-  def self.declined_ach
-  end
-  
-  def self.accepted_credit
-  end
-  
-  def self.declined_credit
-  end
-  
-  def self.invalid_eft
-  end
-
   private
     def has_descriptions
       !self.Descriptions.nil?

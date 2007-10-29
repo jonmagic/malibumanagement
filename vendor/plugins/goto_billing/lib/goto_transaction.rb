@@ -44,6 +44,15 @@ class GotoTransaction < GotoBilling::Base
       :type => row[10],
       :account_type => row[11],
       :authorization => row[12]
+    # Response attributes
+      :status => row[13],
+      :order_number => row[14],
+      :term_code => row[15],
+      :tran_date => row[16],
+      :tran_time => row[17],
+      :auth_code => row[18],
+      :description => row[19],
+      :recorded => row[20]
     )
   end
 
@@ -61,7 +70,15 @@ class GotoTransaction < GotoBilling::Base
       amount,
       type,
       account_type,
-      authorization
+      authorization,
+      response['status'],
+      response['order_number'],
+      response['term_code'],
+      response['tran_date'],
+      response['tran_time'],
+      response['auth_code'],
+      response['description'],
+      recorded?
     ]
   end
 
@@ -116,6 +133,12 @@ class GotoTransaction < GotoBilling::Base
     errors.add_to_base("Invalid Routing Number") if !credit_card? && !bank_routing_number.blank? && !validABA?(bank_routing_number)
   end
 
+  def recorded?
+    @recorded
+  end
+  def recorded?=(v)
+    @recorded = v ? true : false
+  end
   def credit_card?
     !['C','S'].include?(@attributes['account_type'])
   end

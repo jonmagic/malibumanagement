@@ -81,7 +81,8 @@ module GotoBilling
       return if new_attributes.nil?
       with(new_attributes.dup) do |a|
         a.stringify_keys!
-        a.each {|k,v| send(k + "=", v)}
+        a.each {|k,v| send(k + "=", a.delete(k)) if self.respond_to?("#{k}=")}
+        self.response = a # All the rest of the attributes go into response
       end
     end
 
@@ -97,6 +98,11 @@ module GotoBilling
       http_attr
     end
 
+    def response
+      return nil unless @response
+      @response.freeze
+    end
+
     def submit
       @new_record = false
       @response = connection.get(self.class.site.path, self.http_attributes)
@@ -104,6 +110,9 @@ module GotoBilling
     alias :save :submit
     alias :commit :submit
 
+    def invalid?
+      !valid?
+    end
     def submitted?
       !@new_record
     end
@@ -126,36 +135,6 @@ module GotoBilling
       @response['description'] =~ /^DUPLICATE_TRANSACTION_ALREADY_APPROVED/ ? true : false
     end
 
-    def self.log_csv(obj)
-      return false unless obj.submitted?
-      response = obj.instance_variable_get('@response')
-      @csv ||= []
-      if !obj.errors.blank?
-        response['status'] = 'X'
-        response['description'] = obj.errors.full_messages.to_sentence
-      end
-      # Pull values from the response, or from the GotoTransaction if not in the response
-      # account id, transaction type, merchant id, amount, transaction date, invoice id, status, status description
-      @csv << [
-        response['account_id']        || obj.account_id,
-        response['type']              || obj.type,
-        response['merchant_id']       || obj.merchant_id,
-        response['amount']            || obj.amount,
-        response['transaction_date']  || Time.now,
-        response['invoice_id']        || obj.invoice_id,
-        response['status'],
-        response['description']
-      ]
-    end
-    def log_csv
-      self.class.log_csv(self)
-    end
-    def self.write_csv!(filename)
-      CSV.open(filename, 'w') do |csv|
-        @csv.each {|row| csv << row}
-      end
-    end
-    
     protected
       def connection(refresh = false)
         self.class.connection(refresh)

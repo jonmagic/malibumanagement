@@ -26,22 +26,4 @@ class Helios::Note < ActiveRecord::Base
 
   validates_presence_of :OTNum, :Location, :Last_Mdt, :Client_no
 
-  def self.create_on_master(attrs)
-    self.master[self.master.keys[0]].create(attrs.merge(:Last_Mdt => Time.now - 4.hours, :Location => LOCATIONS.reject {|k,v| v[:name] != self.master.keys[0]}.keys[0] ))
-    Helios::ClientProfile.touch_on_master(attrs[:Client_no])
-  end
-
-  def self.for_invalid_transaction(transaction_or_id)
-    transact = transaction_or_id.is_a?(Helios::Transact) ? transaction_or_id : Helios::Transact.find(transaction_or_id)
-    # Client_no -> from transaction
-    # Last_Name
-    # First_Name
-    # Comments
-    # EmpCode
-    # Interrupt
-    # Deleted -> false
-    # Location
-    # OTNum
-  end
-
 end

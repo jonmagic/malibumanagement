@@ -47,6 +47,10 @@ class Helios::Eft < ActiveRecord::Base
     mems
   end
 
+  def self.eft_path
+    @path ||= 'EFT/'+self.for_month+'/'
+  end
+
   def self.to_csv(filename, ids)
     require 'csv'
     CSV.open(filename, 'w') do |csv|
