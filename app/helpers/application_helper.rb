@@ -150,15 +150,6 @@ class Array < Object
   end
 end
 
-class Hash < Object
-# Given self and a hash, return the duplicate keys with different values
-  def changed_values(hash)
-    new_attribs = {}
-    self.merge(hash.reject {|k,v| k=='updated_at'}) {|key,old,nw| new_attribs[key] = old unless old == nw}
-    new_attribs
-  end
-end
-
 class Time
   def self.tomorrow
     1.day.from_now

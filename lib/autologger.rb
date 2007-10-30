@@ -16,6 +16,15 @@
 #   belongs_to :object, :polymorphic => true #optional
 #   belongs_to :agent,  :polymorphic => true #optional
 
+class Hash < Object
+# Given self and a hash, return the duplicate keys with different values
+  def changed_values(hash)
+    new_attribs = {}
+    self.merge(hash.reject {|k,v| k=='updated_at'}) {|key,old,nw| new_attribs[key] = old unless old == nw}
+    new_attribs
+  end
+end
+
 module Autologger
   def self.append_features(base)
     base.after_create do |model|
