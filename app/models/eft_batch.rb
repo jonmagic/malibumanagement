@@ -44,8 +44,8 @@ class EftBatch < ActiveRecord::Base
             ActionController::Base.logger.info("EFT ##{cp.eft.id} has unknown location code of #{location_code}!")
             location_str = location_code
           end
-          locations_amounts[location_str] ||= 0
-          locations_count[location_str] ||= 0
+          locations_amounts[location_code] ||= 0
+          locations_count[location_code] ||= 0
           amounts_count[t.amount] ||= 0
           @location_members[location_code] ||= []
 
@@ -54,8 +54,8 @@ class EftBatch < ActiveRecord::Base
           @location_members[location_code] << [t.account_id, t.last_name, t.first_name]
 
           total_amount += t.amount
-          locations_amounts[location_str] += t.amount
-          locations_count[location_str] += 1
+          locations_amounts[location_code] += t.amount
+          locations_count[location_code] += 1
           amounts_count[t.amount] += 1
         end
       end
