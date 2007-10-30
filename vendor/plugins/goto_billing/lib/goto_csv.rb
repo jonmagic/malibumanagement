@@ -43,7 +43,11 @@ module GotoCsv
           when !goto.paid_now?, 'I'
         end
       }
-      trans_attrs[:id] ? Helios::Transact.update_on_master(trans_attrs) : Helios::Transact.create_on_master(trans_attrs)
+      if trans_attrs[:id]
+        Helios::Transact.update_on_master(trans_attrs)
+      else
+        goto.transaction_id = Helios::Transact.create_on_master(trans_attrs)
+      end
       Helios::Note.create_on_master(
         :Client_no => goto.account_id,
         :Last_Name => goto.last_name,
