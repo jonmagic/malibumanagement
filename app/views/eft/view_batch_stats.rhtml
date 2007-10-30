@@ -26,8 +26,8 @@
 			<h3>By store and Total</h3>
 			<table>
 				<tr class="bold"><td>Total:</td><td><%= @batch.eft_count %></td></tr>
-				<% @batch.eft_count_by_location.each do |key,value| -%>
-					<tr><td><%= key %>:</td><td><%= value %></td></tr>
+				<% @batch.eft_count_by_location.each do |key,location_name| -%>
+					<tr><td><%= key %>:</td><td><%= link_to location_name, eft_path(:action => :download_csv, :file => LOCATIONS.reject {|k,v| v[:name] != location_name}.keys[0]) %></td></tr>
 				<% end -%>
 			</table>
 		</div>

@@ -19,6 +19,7 @@ class EftBatch < ActiveRecord::Base
     @members = []
     @missing_efts = []
     @invalid_efts = []
+    @location_members = {}
     super(attrs)
     month = attrs['for_month'] if attrs.has_key?('for_month')
   # Sets to the next month after today's month. If today is December, it will roll over the year as well.
@@ -46,9 +47,11 @@ class EftBatch < ActiveRecord::Base
           locations_amounts[location_str] ||= 0
           locations_count[location_str] ||= 0
           amounts_count[t.amount] ||= 0
+          @location_members[location_code] ||= []
 
           # Should we be using cp.eft.Client_Name for the credit_card_name?
           @members << t.to_a
+          @location_members[location_code] << [t.account_id, t.last_name, t.first_name]
 
           total_amount += t.amount
           locations_amounts[location_str] += t.amount
@@ -76,6 +79,12 @@ class EftBatch < ActiveRecord::Base
     CSV.open(path+'payment.csv', 'w') do |writer|
       writer << ['AccountId', 'MerchantId', 'FirstName', 'LastName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType', 'Authorization']
       @members.each {|m| writer << m}
+    end
+    @location_members.each do |loc_code,members|
+      CSV.open(path+loc_code.to_s+'.csv', 'w') do |writer|
+        writer << ['Client_No','LastName', 'FirstName']
+        members.each {|m| writer << m}
+      end
     end
     CSV.open(path+'missing_efts.csv', 'w') do |writer|
       writer << ['Client_No']

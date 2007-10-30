@@ -48,6 +48,7 @@ class EftController < ApplicationController
           @batch = EftBatch.find_or_create_by_for_month(@for_month) if @batch.nil? || !@batch.submitted_at.blank?
         end
       end
+      # logger.info(@for_month)
     end
 end
 
