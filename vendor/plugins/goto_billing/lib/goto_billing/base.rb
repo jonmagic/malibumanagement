@@ -11,6 +11,8 @@ module GotoBilling
   end
 
   class Base
+    attr_accessor :response
+    
     class << self
       def has_attributes(*attrs)
         attrs.each do |atr|
@@ -98,14 +100,9 @@ module GotoBilling
       http_attr
     end
 
-    def response
-      return nil unless @response
-      @response.freeze
-    end
-
     def submit
       @new_record = false
-      @response = connection.get(self.class.site.path, self.http_attributes)
+      self.response = connection.get(self.class.site.path, self.http_attributes)
     end
     alias :save :submit
     alias :commit :submit
