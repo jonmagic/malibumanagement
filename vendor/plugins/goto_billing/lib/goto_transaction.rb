@@ -49,12 +49,13 @@ class GotoTransaction < GotoBilling::Base
     # Response attributes
       :status => row[14],
       :order_number => row[15],
-      :term_code => row[16],
-      :tran_date => row[17],
-      :tran_time => row[18],
-      :auth_code => row[19],
-      :description => row[20],
-      :recorded => row[21]
+      :transaction_id => row[16],
+      :term_code => row[17],
+      :tran_date => row[18],
+      :tran_time => row[19],
+      :auth_code => row[20],
+      :description => row[21],
+      :recorded => row[22]
     )
   end
 
@@ -76,6 +77,7 @@ class GotoTransaction < GotoBilling::Base
       authorization,
       response['status'],
       response['order_number'],
+      transaction_id,
       response['term_code'],
       response['tran_date'],
       response['tran_time'],
@@ -123,11 +125,12 @@ class GotoTransaction < GotoBilling::Base
       'expiration' => lambda {|x| x},
       'merchant_id' => lambda {|x| x},
       'merchant_pin' => lambda {|x| x},
-      'location' => lambda {nil}
+      'location' => lambda {nil},
+      'transaction_id' => lambda {|x| x}
     }[attr_name.to_s].call(@attributes[attr_name.to_s])
   end
 
-  has_attributes :account_id, :location, :first_name, :last_name, :bank_routing_number, :bank_account_number, :name_on_card, :credit_card_number, :expiration, :amount, :type, :account_type, :authorization, :merchant_id, :merchant_pin
+  has_attributes :account_id, :location, :first_name, :last_name, :bank_routing_number, :bank_account_number, :name_on_card, :credit_card_number, :expiration, :amount, :type, :account_type, :authorization, :merchant_id, :merchant_pin, :transaction_id
   validates_presence_of :account_id, :first_name, :last_name, :amount, :type, :account_type, :authorization, :merchant_id, :merchant_pin
   validates_presence_of :bank_routing_number, :bank_account_number, :if => :ach?
   validates_presence_of :name_on_card, :credit_card_number, :expiration, :if => :credit_card?
