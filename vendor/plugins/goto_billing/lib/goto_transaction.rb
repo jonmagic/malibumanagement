@@ -123,7 +123,7 @@ class GotoTransaction < GotoBilling::Base
       'expiration' => lambda {|x| x},
       'merchant_id' => lambda {|x| x},
       'merchant_pin' => lambda {|x| x},
-      'location' => nil
+      'location' => lambda {nil}
     }[attr_name.to_s].call(@attributes[attr_name.to_s])
   end
 
