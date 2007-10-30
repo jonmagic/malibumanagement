@@ -53,10 +53,10 @@ class Helios::Transact < ActiveRecord::Base
   end
 
   def self.next_OTNum
-    self.connection.select_value("SELECT MAX(#{quote_column_name('OTNum')}) AS yup FROM #{quote_column_name('Transactions')}", 'yup').to_i+1
+    self.connection.select_value("SELECT MAX(#{connection.quote_column_name('OTNum')}) AS yup FROM #{connection.quote_column_name('Transactions')}", 'yup').to_i+1
   end
   def self.next_ticket_no
-    last = self.connection.select_value("SELECT MAX(#{quote_column_name('ticket_no')}) AS yup FROM #{quote_column_name('Transactions')} WHERE #{quote_column_name('ticket_no')} > 990000000", 'yup').to_i
+    last = self.connection.select_value("SELECT MAX(#{connection.quote_column_name('ticket_no')}) AS yup FROM #{connection.quote_column_name('Transactions')} WHERE #{connection.quote_column_name('ticket_no')} > 990000000", 'yup').to_i
     last = 990000000 if last == 0
     last+1
   end

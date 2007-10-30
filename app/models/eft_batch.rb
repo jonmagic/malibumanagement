@@ -81,7 +81,7 @@ class EftBatch < ActiveRecord::Base
     path = 'EFT/'+self.for_month+'/' # should be different for each month and should end in /
     FileUtils.mkpath(path)
     CSV.open(path+'payment.csv', 'w') do |writer|
-      writer << ['AccountId', 'MerchantId', 'FirstName', 'LastName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType', 'Authorization']
+      writer << ['AccountId', 'Location', 'MerchantId', 'FirstName', 'LastName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType', 'Authorization']
       @members.each {|m| writer << m}
     end
     @location_members.each do |loc_code,members|

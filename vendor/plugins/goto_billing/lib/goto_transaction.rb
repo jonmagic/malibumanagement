@@ -125,7 +125,7 @@ class GotoTransaction < GotoBilling::Base
     }[attr_name.to_s].call(@attributes[attr_name.to_s])
   end
 
-  has_attributes :account_id, :first_name, :last_name, :bank_routing_number, :bank_account_number, :name_on_card, :credit_card_number, :expiration, :amount, :type, :account_type, :authorization, :merchant_id, :merchant_pin
+  has_attributes :account_id, :location, :first_name, :last_name, :bank_routing_number, :bank_account_number, :name_on_card, :credit_card_number, :expiration, :amount, :type, :account_type, :authorization, :merchant_id, :merchant_pin
   validates_presence_of :account_id, :first_name, :last_name, :amount, :type, :account_type, :authorization, :merchant_id, :merchant_pin
   validates_presence_of :bank_routing_number, :bank_account_number, :if => :ach?
   validates_presence_of :name_on_card, :credit_card_number, :expiration, :if => :credit_card?

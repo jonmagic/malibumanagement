@@ -38,7 +38,7 @@ class EftController < ApplicationController
       if @batch.nil?
         @for_month = (Time.now.strftime("%Y").to_i + Time.now.strftime("%m").to_i/12).to_i.to_s + '/' + Time.now.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
         @batch = EftBatch.find_or_create_by_for_month(@for_month)
-      else
+      elsif !params[:for_month]
         # If last batch has not been submitted yet, use it.
         if @batch.submitted_at.blank?
           @for_month = @batch.for_month

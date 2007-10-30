@@ -8,8 +8,17 @@ module GotoCsv
       true
     end
 
+#ok, for declined accounts we need to set client_profile.payment_amount = client_profile.payment_amount + 18.88 + 5
+#and set client_profile.balance = client_profile.balance + 18.88 + 5
+#thats for zone2 of course
+#zone1 will have to be 19.99
+#oh, and set client_profile.Date_Due = today
+#it was Payment_Amount not payment_amount
+#and Balance  not balance
+
     def record(goto) # Receives credit-card payments after they've been processed, invalids without being processed, and ach payments after they've been processed. All come in the form of a GotoTransaction, with response values either injected or returned from GotoBilling.
       self.payments_csv ||= []
+      amnt = (goto.amount.to_f/100).to_s
       trans_attrs = {
         :Descriptions => case # Needs to include certain information for different cases
           when goto.invalid?, "VIP: Invalid EFT: ##{goto.errors.full_messages.to_sentence}"
@@ -24,10 +33,15 @@ module GotoCsv
         :Division => ZONE[:Division], # 2 for zone1
         :Department => ZONE[:Department], # 7 for zone1
         :Location => goto.location,
-        :Price => goto.amount,
-        :Check => goto.paid_now? && goto.ach? ? goto.amount : 0,
-        :Charge => goto.paid_now? && goto.credit_card? ? goto.amount : 0,
-        :Credit => !goto.accepted? ? goto.amount : 0
+        :Price => amnt,
+        :Check => goto.paid_now? && goto.ach? ? amnt : 0,
+        :Charge => goto.paid_now? && goto.credit_card? ? amnt : 0,
+        :Credit => !goto.paid_now? ? amnt : 0,
+        :Wait_For => case
+          when goto.paid_now? && goto.ach?, 'K'
+          when goto.paid_now? && goto.credit_card?, 'N'
+          when !goto.paid_now?, 'I'
+        end
       }
       trans_attrs[:id] ? Helios::Transact.update_on_master(trans_attrs) : Helios::Transact.create_on_master(trans_attrs)
       Helios::Note.create_on_master(
@@ -47,6 +61,7 @@ module GotoCsv
       backup = "payment_backup-#{Time.now.strftime("%j-%H%M")}.csv"
       File.copy(@eft_path + 'payment.csv', @eft_path + backup)
       CSV.open(@eft_path + 'payment.csv', 'w') do |csv|
+        csv << ['AccountId', 'Location', 'MerchantId', 'FirstName', 'LastName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType', 'Authorization']
         self.payments_csv.each {|row| csv << row}
       end
       true
