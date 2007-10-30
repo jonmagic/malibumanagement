@@ -89,6 +89,7 @@ class GotoTransaction < GotoBilling::Base
     {
       'account_id' => 'x_customer_id',
       'merchant_id' => 'merchant_id',
+      'location' => 'xxx_location_code',
       'merchant_pin' => 'merchant_pin',
       'last_name' => 'x_last_name',
       'first_name' => 'x_first_name',
@@ -121,7 +122,8 @@ class GotoTransaction < GotoBilling::Base
       'credit_card_number' => lambda {|x| x},
       'expiration' => lambda {|x| x},
       'merchant_id' => lambda {|x| x},
-      'merchant_pin' => lambda {|x| x}
+      'merchant_pin' => lambda {|x| x},
+      'location' => nil
     }[attr_name.to_s].call(@attributes[attr_name.to_s])
   end
 
