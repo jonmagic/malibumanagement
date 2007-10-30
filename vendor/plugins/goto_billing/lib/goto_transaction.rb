@@ -8,6 +8,7 @@ class GotoTransaction < GotoBilling::Base
 
       super(
         :account_id => attrs.id.to_i,
+        :location => location_code,
         :merchant_id => LOCATIONS.has_key?(location_code.to_s) ? LOCATIONS[location_code.to_s][:merchant_id] : nil,
         :merchant_pin => LOCATIONS.has_key?(location_code.to_s) ? LOCATIONS[location_code.to_s][:merchant_pin] : nil,
         :first_name => attrs.First_Name,
@@ -31,34 +32,36 @@ class GotoTransaction < GotoBilling::Base
   def self.new_from_csv_row(row)
     new(
       :account_id => row[0],
-      :first_name => row[1],
+      :location => row[1],
       :merchant_id => row[2],
       :merchant_pin => LOCATIONS[LOCATIONS.reject {|k,v| LOCATIONS[k][:merchant_id] != row[2]}.keys[0]][:merchant_pin],
-      :last_name => row[3],
-      :bank_routing_number => row[4],
-      :bank_account_number => row[5],
-      :name_on_card => row[6],
-      :credit_card_number => row[7],
-      :expiration => row[8],
-      :amount => row[9],
-      :type => row[10],
-      :account_type => row[11],
-      :authorization => row[12],
+      :first_name => row[3],
+      :last_name => row[4],
+      :bank_routing_number => row[5],
+      :bank_account_number => row[6],
+      :name_on_card => row[7],
+      :credit_card_number => row[8],
+      :expiration => row[9],
+      :amount => row[10],
+      :type => row[11],
+      :account_type => row[12],
+      :authorization => row[13],
     # Response attributes
-      :status => row[13],
-      :order_number => row[14],
-      :term_code => row[15],
-      :tran_date => row[16],
-      :tran_time => row[17],
-      :auth_code => row[18],
-      :description => row[19],
-      :recorded => row[20]
+      :status => row[14],
+      :order_number => row[15],
+      :term_code => row[16],
+      :tran_date => row[17],
+      :tran_time => row[18],
+      :auth_code => row[19],
+      :description => row[20],
+      :recorded => row[21]
     )
   end
 
   def to_a
     [
       account_id,
+      location,
       merchant_id,
       first_name,
       last_name,

@@ -13,6 +13,10 @@ class EftBatch < ActiveRecord::Base
   serialize :eft_count_by_amount, Hash
   serialize :eft_total_by_location, Hash
 
+  def eft_path
+    'EFT/'+self.for_month+'/'
+  end
+
   def initialize(attrs={}) # 2007/11
     # EftBatch.new -- will gather information from Helios::ClientProfile and Helios::Eft.
     # Generate 3 CSV's from live data and save them in that month's directory.

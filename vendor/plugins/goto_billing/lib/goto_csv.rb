@@ -4,6 +4,8 @@ module GotoCsv
 
     def initialize(eft_path)
       @eft_path = eft_path
+      self.payments_csv = []
+      true
     end
 
     def record(goto) # Receives credit-card payments after they've been processed, invalids without being processed, and ach payments after they've been processed. All come in the form of a GotoTransaction, with response values either injected or returned from GotoBilling.
@@ -41,10 +43,10 @@ module GotoCsv
       self.payments_csv << goto.to_a
     end
 
-    def to_file!(filename)
-      backup = "payments_backup-#{Time.now.strftime("%j-%H%M")}.csv"
-      File.copy(@eft_path + 'payments.csv', @eft_path + backup)
-      CSV.open(filename, 'w') do |csv|
+    def to_file!
+      backup = "payment_backup-#{Time.now.strftime("%j-%H%M")}.csv"
+      File.copy(@eft_path + 'payment.csv', @eft_path + backup)
+      CSV.open(@eft_path + 'payment.csv', 'w') do |csv|
         self.payments_csv.each {|row| csv << row}
       end
       true
