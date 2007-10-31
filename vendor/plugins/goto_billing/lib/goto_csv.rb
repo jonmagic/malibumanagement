@@ -21,10 +21,13 @@ module GotoCsv
       amnt = (goto.amount.to_f/100).to_s
       trans_attrs = {
         :Descriptions => case # Needs to include certain information for different cases
-          when goto.invalid?, "VIP: Invalid EFT: ##{goto.errors.full_messages.to_sentence}"
-          when goto.declined?, "VIP: Declined: ##{goto.response['term_code']}"
-          else "VIP: Accepted ##{goto.response['auth_code']}"
-        end,
+          when goto.invalid?
+            "VIP: Invalid EFT: ##{goto.errors.full_messages.to_sentence}"
+          when goto.declined?
+            "VIP: Declined: ##{goto.response['term_code']}"
+          else
+            "VIP: Accepted ##{goto.response['auth_code']}"
+          end,
         :client_no => goto.account_id,
         :Last_Name => goto.last_name,
         :First_Name => goto.first_name,
@@ -38,10 +41,13 @@ module GotoCsv
         :Charge => goto.paid_now? && goto.credit_card? ? amnt : 0,
         :Credit => !goto.paid_now? ? amnt : 0,
         :Wait_For => case
-          when goto.paid_now? && goto.ach?, 'K'
-          when goto.paid_now? && goto.credit_card?, 'N'
-          when !goto.paid_now?, 'I'
-        end
+          when goto.paid_now? && goto.ach?
+            'K'
+          when goto.paid_now? && goto.credit_card?
+            'N'
+          else
+            'I'
+          end
       }
       if trans_attrs[:id]
         Helios::Transact.update_on_master(trans_attrs)
@@ -50,6 +56,7 @@ module GotoCsv
       end
       Helios::Note.create_on_master(
         :Client_no => goto.account_id,
+        :Location => goto.location,
         :Last_Name => goto.last_name,
         :First_Name => goto.first_name,
         :Comments => goto.invalid? ? "Invalid EFT: #{goto.errors.full_messages.to_sentence}" : "Declined: #{goto.response['description']}",
