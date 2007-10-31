@@ -145,6 +145,7 @@ class GotoTransaction < GotoBilling::Base
     @recorded
   end
   def recorded=(v)
+    v = true if v == 'true' || v == 1
     @recorded = v ? true : false
   end
   def credit_card?
