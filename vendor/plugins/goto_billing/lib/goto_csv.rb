@@ -67,7 +67,7 @@ module GotoCsv
       
       file = File.open(self.payments_csv, 'a')
         raise "Could not open returns file for record-keeping!!" if file.nil?
-        file.write(goto.to_return.map {|x| x = "\"#{x}\"" if x =~ /,/; x}.join(','))
+        file.write(goto.to_return.map {|x| x = "\"#{x}\"" if x =~ /,/; x}.join(',') + "\n")
         file.close
     end
 
