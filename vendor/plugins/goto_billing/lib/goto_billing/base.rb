@@ -75,7 +75,6 @@ module GotoBilling
       @attributes = {}
       @response = {}
       self.attributes = attrs unless attrs.nil?
-      @new_record = true
       self
     end
 
@@ -101,7 +100,6 @@ module GotoBilling
     end
 
     def submit
-      @new_record = false
       self.response = connection.get(self.class.site.path, self.http_attributes)
     end
     alias :save :submit
@@ -111,7 +109,7 @@ module GotoBilling
       !valid?
     end
     def submitted?
-      !@new_record
+      !['G', 'A', 'D', 'C'].include?(@response['status']) # Not paid_now, not accepted, not declined, and not cancelled. The only left is Timed-out, and not submitted at all - both really aren't submitted.
     end
     def received?
       submitted? && !@response['status'].nil? && @response['status'] != 'T'

@@ -29,8 +29,8 @@ puts "Submitting #{batch.for_month}..."
         headers = false
         next
       end
-#      if row
-        goto = GotoTransaction.new_from_csv_row(row)
+      goto = GotoTransaction.new_from_csv_row(row)
+      unless goto.submitted?
 ActionController::Base.logger.info("Submitting ##{goto.account_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}")
 puts "Submitting ##{goto.account_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}"
         goto.submit # (Validates before submitting)
@@ -41,7 +41,7 @@ puts({'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Late
         else
           @returns.record(goto)
         end
-#      end
+      end
     end
     retry_records.each do |k,goto| # Retry once
 ActionController::Base.logger.info("Retrying ##{goto.account_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}")
