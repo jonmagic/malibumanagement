@@ -80,4 +80,4 @@ begin
       API == 'http' ? http_submit(batch) : sftp_submit(batch)
     end
   end
-end while sleep(60) # Wait one minute between checks.
+end while sleep(120) # Wait one minute between checks.

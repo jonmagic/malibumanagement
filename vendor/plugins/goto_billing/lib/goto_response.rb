@@ -59,12 +59,12 @@ module Goto
         amount,
         sent_date || Time.now.strftime('%Y%m%d'),
         tran_date || Time.now.strftime('%Y%m%d'),
-        transaction_id,
+        order_number,
         status,
         description
       ]
     end
 
-    
+#     [1009104, "006", 158796, "Daniel", "Parker", "072402694", "5500024889", "Daniel Parker", nil, nil, "18.88", "ACH", "C", "Written", nil, false, "158796-20071031-124001", nil, "20071031", "164017", "R", nil, "0", nil]
   end
 end
