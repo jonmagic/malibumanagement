@@ -41,6 +41,8 @@ module Goto
 
     alias :tran_amount :amount
     alias :tran_amount= :amount=
+    alias :transaction_id :invoice_id
+    alias :transaction_id= :invoice_id=
 
     def [](attr_name)
       self.send(attr_name.to_s)
