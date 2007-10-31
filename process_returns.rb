@@ -53,7 +53,6 @@ begin # Wait thirty seconds between checks.
   @payment = {}
   @responses = {}
   @batch = EftBatch.find_or_create_by_for_month(@for_month)
-  @returns = GotoCsv::Base.new(@batch.eft_path)
 
   step "Downloading files from GotoBilling" do
     download_sftp_files
