@@ -64,7 +64,7 @@ puts({'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Late
     end
   end
   begin # Finishing up
-    @returns.to_file! #(batch.eft_path+'returns_'+Time.now.strftime("%Y-%m-%d_%H")+'.csv')
+    # @returns.to_file! #(batch.eft_path+'returns_'+Time.now.strftime("%Y-%m-%d_%H")+'.csv')
     # batch.update_attributes(:submitted_at => Time.now, :eft_ready => false)
 ActionController::Base.logger.info("Done submitting #{batch.for_month}!")
 puts "Done submitting #{batch.for_month}!"

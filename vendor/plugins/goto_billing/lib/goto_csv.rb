@@ -4,7 +4,7 @@ module GotoCsv
 
     def initialize(eft_path)
       @eft_path = eft_path
-      self.payments_csv = []
+      self.payments_csv = eft_path + 'returns_immediate.csv'
       true
     end
 
@@ -17,7 +17,6 @@ module GotoCsv
 #and Balance  not balance
 
     def record(goto) # Receives credit-card payments after they've been processed, invalids without being processed, and ach payments after they've been processed. All come in the form of a GotoTransaction, with response values either injected or returned from GotoBilling.
-      self.payments_csv ||= []
       amnt = (goto.amount.to_f/100).to_s
       trans_attrs = {
         :Descriptions => case # Needs to include certain information for different cases
@@ -59,24 +58,27 @@ module GotoCsv
         :Location => goto.location,
         :Last_Name => goto.last_name,
         :First_Name => goto.first_name,
-        :Comments => goto.invalid? ? "Invalid EFT: #{goto.errors.full_messages.to_sentence}" : "Declined: #{goto.response['description']}",
+        :Comments => goto.invalid? ? "Invalid EFT: #{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response['description']}",
         :EmpCode => 'EC',
         :Interrupt => true,
         :Deleted => false
       ) if (goto.invalid? || goto.declined?) && !goto.recorded?
       goto.recorded = true if goto.paid_now? || goto.declined?
-      self.payments_csv << goto.to_a
+      
+      file = File.open(self.payments_csv, 'a') || raise "Could not open returns file for record-keeping!!"
+        file.write(goto.to_return.map {|x|, x = "\"#{x}\"" if x =~ /,/}.join(','))
+        file.close
     end
 
-    def to_file!
-      backup = "payment_backup-#{Time.now.strftime("%j-%H%M")}.csv"
-      File.copy(@eft_path + 'payment.csv', @eft_path + backup)
-      CSV.open(@eft_path + 'payment.csv', 'w') do |csv|
-        csv << ['AccountId', 'Location', 'MerchantId', 'FirstName', 'LastName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType', 'Authorization']
-        self.payments_csv.each {|row| csv << row}
-      end
-      true
-    end
+    # def to_file!
+    #   backup = "payment_backup-#{Time.now.strftime("%j-%H%M")}.csv"
+    #   File.copy(@eft_path + 'payment.csv', @eft_path + backup)
+    #   CSV.open(@eft_path + 'payment.csv', 'w') do |csv|
+    #     csv << ['AccountId', 'Location', 'MerchantId', 'FirstName', 'LastName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType', 'Authorization']
+    #     self.payments_csv.each {|row| csv << row}
+    #   end
+    #   true
+    # end
   end
 
   

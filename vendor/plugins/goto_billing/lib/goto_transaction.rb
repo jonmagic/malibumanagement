@@ -59,6 +59,22 @@ class GotoTransaction < GotoBilling::Base
     )
   end
 
+  def to_return
+    # MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,Status,Description
+    [
+      merchant_id,
+      first_name,
+      last_name,
+      account_id,
+      amount,
+      Time.now.strftime('%Y%m%d'),
+      Time.now.strftime('%Y%m%d'),
+      transaction_id,
+      response['status'],
+      response['description']
+    ]
+  end
+
   def to_a
     [
       account_id,
