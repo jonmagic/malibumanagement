@@ -91,7 +91,7 @@ module GotoBilling
 
     def http_attributes
       http_attr = {}
-      self.http_attribute_mapping.each do |k,v|
+      self.class.http_attribute_mapping.each do |k,v|
         http_attr[self.class.http_attribute_mapping[k.to_s]] = self.http_attribute_convert(k.to_s) unless self.http_attribute_convert(k.to_s).nil?
       end
       http_attr
