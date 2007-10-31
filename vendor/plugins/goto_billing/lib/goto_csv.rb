@@ -66,7 +66,7 @@ module GotoCsv
       goto.recorded = true if goto.paid_now? || goto.declined?
       
       file = File.open(self.payments_csv, 'a') || raise "Could not open returns file for record-keeping!!"
-        file.write(goto.to_return.map {|x|, x = "\"#{x}\"" if x =~ /,/}.join(','))
+        file.write(goto.to_return.map {|x| x = "\"#{x}\"" if x =~ /,/}.join(','))
         file.close
     end
 
