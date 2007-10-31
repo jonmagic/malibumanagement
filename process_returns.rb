@@ -59,7 +59,7 @@ begin # Wait thirty seconds between checks.
     last_sftp_check = Time.now
   end if last_sftp_check < Time.now-1800 # More than an hour ago
 
-  @return_files = Dir.open('EFT/'+@for_month).collect.reject {|a| a !~ /returns_.*\.csv$/}.sort.collect {|f| 'EFT/'+@for_month+'/'+f} #Should be sorting by date
+  @return_files = Dir.open('EFT/'+@for_month).collect.reject {|a| a !~ /returns_.*\.csv$/}.sort.collect {|f| 'EFT/'+@for_month+'/'+f}
 
   if !@return_files.blank?
     returns_new_updated = returns_last_updated
@@ -101,10 +101,16 @@ begin # Wait thirty seconds between checks.
                 headers = false
                 next
               end
-              # MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,Status,Description
               resp = Goto::Response.new(row)
               @responses[resp.client_id.to_i] = resp
-              @payment[resp.client_id.to_i].response = @responses[resp.client_id.to_i] if @payment[resp.client_id.to_i]
+              if @payment[resp.client_id.to_i]
+                @payment[resp.client_id.to_i].response = @responses[resp.client_id.to_i]
+                unless @payment[resp.client_id.to_i].recorded?
+                  step "Recording Transaction #{resp.client_id} to Helios" do
+                    GotoCsv::Extras.push_to_helios(@payment[resp.client_id.to_i])
+                  end
+                end
+              end
             end
           end
         end
