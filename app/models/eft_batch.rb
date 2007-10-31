@@ -34,33 +34,35 @@ class EftBatch < ActiveRecord::Base
     amounts_count = {}
 
     Helios::Eft.memberships(month, true) do |cp|
-      if cp.eft.nil?
-        @missing_efts << [cp.id.to_i] unless cp.has_prepaid_membership?
-      else
-# ActionController::Base.logger.info("ID #{cp.id.to_i}")
-        t = GotoTransaction.new(cp.eft)
-        if(!t.valid?)
-          @invalid_efts << [cp.id.to_i,t.errors.full_messages.to_sentence]
+      unless cp.has_prepaid_membership?
+        if cp.eft.nil?
+          @missing_efts << [cp.id.to_i]
         else
-          location_code = cp.eft.Location || '0'*(3-ZONE_LOCATION_BITS)+cp.eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
-          location_str = LOCATIONS[location_code][:name]
-          if(location_str.blank?)
-            ActionController::Base.logger.info("EFT ##{cp.eft.id} has unknown location code of #{location_code}!")
-            location_str = location_code
+  # ActionController::Base.logger.info("ID #{cp.id.to_i}")
+          t = GotoTransaction.new(cp.eft)
+          if(!t.valid?)
+            @invalid_efts << [cp.id.to_i,t.errors.full_messages.to_sentence]
+          else
+            location_code = cp.eft.Location || '0'*(3-ZONE_LOCATION_BITS)+cp.eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
+            location_str = LOCATIONS[location_code][:name]
+            if(location_str.blank?)
+              ActionController::Base.logger.info("EFT ##{cp.eft.id} has unknown location code of #{location_code}!")
+              location_str = location_code
+            end
+            locations_amounts[location_code] ||= 0
+            locations_count[location_code] ||= 0
+            amounts_count[t.amount] ||= 0
+            @location_members[location_code] ||= []
+
+            # Should we be using cp.eft.Client_Name for the credit_card_name?
+            @members << t.to_a
+            @location_members[location_code] << [t.account_id, t.last_name, t.first_name]
+
+            total_amount += t.amount
+            locations_amounts[location_code] += t.amount
+            locations_count[location_code] += 1
+            amounts_count[t.amount] += 1
           end
-          locations_amounts[location_code] ||= 0
-          locations_count[location_code] ||= 0
-          amounts_count[t.amount] ||= 0
-          @location_members[location_code] ||= []
-
-          # Should we be using cp.eft.Client_Name for the credit_card_name?
-          @members << t.to_a
-          @location_members[location_code] << [t.account_id, t.last_name, t.first_name]
-
-          total_amount += t.amount
-          locations_amounts[location_code] += t.amount
-          locations_count[location_code] += 1
-          amounts_count[t.amount] += 1
         end
       end
     end
