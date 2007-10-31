@@ -47,6 +47,7 @@ def download_sftp_files
 end
 
 last_sftp_check = Time.now-3600 # Pretend last check was two hours ago
+payment_last_updated = Time.now-3600
 begin # Wait thirty seconds between checks.
   @for_month = Time.now.strftime("%Y") + '/' + (Time.now.strftime("%m").to_i+1).to_s
   @payment = {}
@@ -59,42 +60,46 @@ begin # Wait thirty seconds between checks.
     last_sftp_check = Time.now
   end if last_sftp_check < Time.now-1800 # More than an hour ago
 
-  step "Loading Payments" do
-    headers = true
-    CSV::Reader.parse(File.open('EFT/'+@for_month+'/payment.csv', 'rb')) do |row|
-      if headers
-        headers = false
-        next
+  if File.mtime('EFT/'+@for_month+'/payment.csv') > payment_last_updated
+    payment_last_updated = File.mtime('EFT/'+@for_month+'/payment.csv')
+  else
+    step "Loading Payments" do
+      headers = true
+      CSV::Reader.parse(File.open('EFT/'+@for_month+'/payment.csv', 'rb')) do |row|
+        if headers
+          headers = false
+          next
+        end
+        goto = GotoTransaction.new_from_csv_row(row)
+        @payment[goto.client_id.to_i] = goto
       end
-      goto = GotoTransaction.new_from_csv_row(row)
-      @payment[goto.client_id.to_i] = goto
     end
-  end
 
-  step "Weaving in GotoBilling responses" do
-    Dir.open('EFT/'+@for_month).collect.reject {|a| a !~ /returns_.*\.csv$/}.sort.each do |file| #Should be sorting by date
-      step "Weaving in #{file}" do
-        headers = true
-        CSV::Reader.parse(File.open("EFT/"+@for_month+'/'+file, 'rb')) do |row|
-          if headers
-            headers = false
-            next
+    step "Weaving in GotoBilling responses" do
+      Dir.open('EFT/'+@for_month).collect.reject {|a| a !~ /returns_.*\.csv$/}.sort.each do |file| #Should be sorting by date
+        step "Weaving in #{file}" do
+          headers = true
+          CSV::Reader.parse(File.open("EFT/"+@for_month+'/'+file, 'rb')) do |row|
+            if headers
+              headers = false
+              next
+            end
+            # MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,Status,Description
+            resp = Goto::Response.new(row)
+            @responses[resp.client_id.to_i] = resp
+            @payment[resp.client_id.to_i].response = @responses[resp.client_id.to_i] if @payment[resp.client_id.to_i]
           end
-          # MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,Status,Description
-          resp = Goto::Response.new(row)
-          @responses[resp.client_id.to_i] = resp
-          @payment[resp.client_id.to_i].response = @responses[resp.client_id.to_i] if @payment[resp.client_id.to_i]
         end
       end
     end
-  end
 
-  step "Saving updated Payments file" do
-    File.rename('EFT/'+@for_month+'/payment.csv', 'EFT/'+@for_month+"/payment_unmerged_#{Time.now.strftime("%j_%H-%M-%S")}.csv")
-    CSV.open('EFT/'+@for_month+'/payment.csv', 'w') do |writer|
-      writer << GotoTransaction.headers
-      @payment.each_value do |goto|
-        writer << goto.to_a
+    step "Saving updated Payments file" do
+      File.rename('EFT/'+@for_month+'/payment.csv', 'EFT/'+@for_month+"/payment_unmerged_#{Time.now.strftime("%j_%H-%M-%S")}.csv")
+      CSV.open('EFT/'+@for_month+'/payment.csv', 'w') do |writer|
+        writer << GotoTransaction.headers
+        @payment.each_value do |goto|
+          writer << goto.to_a
+        end
       end
     end
   end
