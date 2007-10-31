@@ -71,7 +71,6 @@ module GotoBilling
 
     def initialize(attrs={})
       @attributes = {}
-      @response = {}
       self.attributes = attrs unless attrs.nil?
       self
     end
@@ -110,7 +109,7 @@ module GotoBilling
       self.amount = response['amount'] if response['amount']
       self.tran_date = response['tran_date'] if response['tran_date']
       self.tran_time = response['tran_time'] if response['tran_time']
-      self.invoice_id = response['invoice_id'] if response['invoice_id']
+      self.transaction_id = response['invoice_id'] if response['invoice_id']
       self.auth_code = response['auth_code'] if response['auth_code']
       self.description = response['description'] if response['description']
     end
@@ -124,25 +123,22 @@ module GotoBilling
       !valid?
     end
     def submitted?
-      ['G', 'R', 'D', 'C'].include?(@response['status'])
-    end
-    def received?
-      submitted? && !@response['status'].nil? && @response['status'] != 'T'
+      ['G', 'R', 'D', 'C'].include?(response['status'])
     end
     def should_retry?
-      !received?
+      !submitted?
     end
     def accepted?
-      received? && (@response['status'] == 'R' || @response['status'] == 'G')
+      submitted? && (response['status'] == 'R' || response['status'] == 'G')
     end
     def paid_now?
-      received? && @response['status'] == 'G'
+      submitted? && response['status'] == 'G'
     end
     def declined?
-      received? ? !accepted? : false
+      submitted? ? !accepted? : false
     end
     def duplicate?
-      @response['description'] =~ /^DUPLICATE_TRANSACTION_ALREADY_APPROVED/ ? true : false
+      response['description'] =~ /^DUPLICATE_TRANSACTION_ALREADY_APPROVED/ ? true : false
     end
 
     protected
