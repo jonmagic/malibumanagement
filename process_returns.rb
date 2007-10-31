@@ -61,6 +61,7 @@ begin # Wait thirty seconds between checks.
   end if last_sftp_check < Time.now-1800 # More than an hour ago
 
   @return_files = Dir.open('EFT/'+@for_month).collect.reject {|a| a !~ /returns_.*\.csv$/}.sort.collect {|f| 'EFT/'+@for_month+'/'+f} #Should be sorting by date
+puts @return_files.inspect
 
   if @return_files
     returns_new_updated = returns_last_updated
