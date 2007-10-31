@@ -90,7 +90,7 @@ begin # Wait thirty seconds between checks.
           File.rename(file, file+'.recorded')
           step "Weaving in #{file}" do
             headers = true
-            CSV::Reader.parse(File.open("EFT/"+@for_month+'/'+file+'.recorded', 'rb')) do |row|
+            CSV::Reader.parse(File.open(file+'.recorded', 'rb')) do |row|
               if headers
                 headers = false
                 next
