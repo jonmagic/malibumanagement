@@ -109,7 +109,7 @@ module GotoBilling
       !valid?
     end
     def submitted?
-      !['G', 'R', 'D', 'C'].include?(@response['status']) # Not paid_now, not received, not declined, and not cancelled. The only left is Timed-out, and not submitted at all - both really aren't submitted.
+      ['G', 'R', 'D', 'C'].include?(@response['status']) # Not paid_now, not received, not declined, and not cancelled. The only left is Timed-out, and not submitted at all - both really aren't submitted.
     end
     def received?
       submitted? && !@response['status'].nil? && @response['status'] != 'T'
