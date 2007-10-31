@@ -1,3 +1,4 @@
+#!/usr/bin/env /Users/daniel/Sites/sixsigma/branches/malibu/script/runner -e development
 
 # The Process:
 # Check the sftp site every hour for files from gotobilling, download them and process them as responses to GotoTransactions.
@@ -67,37 +68,38 @@ begin # Wait thirty seconds between checks.
       mm = File.mtime(f)
       returns_new_updated = mm if mm > returns_last_updated
     end
-  if returns_new_updated > returns_last_updated
-    returns_last_updated = returns_new_updated
-  else
-    step "Loading Payments" do
-      headers = true
-      new_name = "payment_unmerged_#{Time.now.strftime("%d%H%M")}.csv"
-      File.rename('EFT/'+@for_month+'/payment.csv', 'EFT/'+@for_month+"/"+new_name)
-      CSV::Reader.parse(File.open('EFT/'+@for_month+'/'+new_name, 'rb')) do |row|
-        if headers
-          headers = false
-          next
+    if returns_new_updated > returns_last_updated
+      returns_last_updated = returns_new_updated
+    else
+      step "Loading Payments" do
+        headers = true
+        new_name = "payment_unmerged_#{Time.now.strftime("%d%H%M")}.csv"
+        File.rename('EFT/'+@for_month+'/payment.csv', 'EFT/'+@for_month+"/"+new_name)
+        CSV::Reader.parse(File.open('EFT/'+@for_month+'/'+new_name, 'rb')) do |row|
+          if headers
+            headers = false
+            next
+          end
+          goto = GotoTransaction.new_from_csv_row(row)
+          @payment[goto.client_id.to_i] = goto
         end
-        goto = GotoTransaction.new_from_csv_row(row)
-        @payment[goto.client_id.to_i] = goto
       end
-    end
 
-    step "Weaving in GotoBilling responses" do
-      @return_files.each do |file| #Should be sorting by date
-        File.rename(file, file+'.recorded')
-        step "Weaving in #{file}" do
-          headers = true
-          CSV::Reader.parse(File.open(file+'.recorded', 'rb')) do |row|
-            if headers
-              headers = false
-              next
+      step "Weaving in GotoBilling responses" do
+        @return_files.each do |file| #Should be sorting by date
+          File.rename(file, file+'.recorded')
+          step "Weaving in #{file}" do
+            headers = true
+            CSV::Reader.parse(File.open("EFT/"+@for_month+'/'+file+'.recorded', 'rb')) do |row|
+              if headers
+                headers = false
+                next
+              end
+              # MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,Status,Description
+              resp = Goto::Response.new(row)
+              @responses[resp.client_id.to_i] = resp
+              @payment[resp.client_id.to_i].response = @responses[resp.client_id.to_i] if @payment[resp.client_id.to_i]
             end
-            # MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,Status,Description
-            resp = Goto::Response.new(row)
-            @responses[resp.client_id.to_i] = resp
-            @payment[resp.client_id.to_i].response = @responses[resp.client_id.to_i] if @payment[resp.client_id.to_i]
           end
         end
       end
