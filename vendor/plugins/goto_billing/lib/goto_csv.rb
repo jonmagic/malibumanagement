@@ -5,7 +5,7 @@ module GotoCsv
 
     def initialize(eft_path)
       @eft_path = eft_path
-      self.payments_csv = eft_path + 'returns_immed_'+ Time.now.to_f.split(/\./).join('')[-10,10] +'.csv'
+      self.payments_csv = eft_path + 'returns_immed_'+ Time.now.to_f.to_s.split(/\./).join('')[-10,10] +'.csv'
       file = File.open(self.payments_csv, 'w')
         raise "Could not open returns file for record-keeping!!" if file.nil?
         file.write(Goto::Response.headers.map {|x| x = "\"#{x}\"" if x =~ /,/; x}.join(',') + "\n")
