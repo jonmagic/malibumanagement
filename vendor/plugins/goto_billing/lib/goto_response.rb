@@ -48,6 +48,10 @@ module Goto
       self.send(attr_name.to_s)
     end
 
+    def self.headers
+      ['MerchantID', 'FirstName', 'LastName', 'CustomerID', 'Amount', 'SentDate', 'SettleDate', 'TransactionID', 'Status', 'Description']
+    end
+
     # :merchant_id, :first_name, :status, :client_id, :order_number, :term_code, :tran_amount, :tran_date, :tran_time, :invoice_id, :auth_code, :description
     # MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,Status,Description
     def to_a

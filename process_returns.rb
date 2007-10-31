@@ -47,7 +47,7 @@ def download_sftp_files
 end
 
 last_sftp_check = Time.now-3600 # Pretend last check was two hours ago
-returns_last_updated = Time.now-3600
+returns_last_updated = Time.now-30
 begin # Wait thirty seconds between checks.
   @for_month = Time.now.strftime("%Y") + '/' + (Time.now.strftime("%m").to_i+1).to_s
   @payment = {}
