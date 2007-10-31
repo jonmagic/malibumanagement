@@ -1,4 +1,4 @@
-#!/usr/bin/env /Users/daniel/Sites/sixsigma/branches/malibu/script/runner
+#!/usr/bin/env /Users/daniel/Sites/sixsigma/branches/malibu/script/runner -e development
 
 # The Process:
 # Check the sftp site every hour for files from gotobilling, download them and process them as responses to GotoTransactions.
@@ -8,65 +8,99 @@ require 'net/ssh'
 require 'net/sftp'
 require 'goto_csv'
 
-host = 'sftp.malibutan.com' || 'sftp.malibu-tanning.com'
-username = 'malibu2' || 'malibu'
-password = 'gn1nn4t'
-path = "/home/#{username}/gotobilling"
-while sleep(1800) # Wait one hour between checks.
+SFTP_CONFIG = {
+  :host => 'sftp.malibutan.com' || 'sftp.malibu-tanning.com',
+  :username => 'malibu2' || 'malibu',
+  :password => 'gn1nn4t',
+}
+SFTP_CONFIG[:path] = "/home/#{SFTP_CONFIG[:username]}/gotobilling"
+
+def step(description)
+  puts(description+'...')
+  ActionController::Base.logger.info(description+'...')
+  begin
+    yield if block_given?
+    puts(description+" -> Done.")
+    ActionController::Base.logger.info(description+" -> Done.")
+  rescue => e
+    puts("["+description+"] Caused Errors: {#{e}}")
+    ActionController::Base.logger.info("["+description+"] Caused Errors: {#{e}}")
+  end
+end
+
+def download_sftp_files
   files = []
-  for_month = Time.now.strftime("%Y") + '/' + Time.now.strftime("%m")
-  @batch = EftBatch.find_or_create_by_for_month(for_month)
-  @returns = GotoCsv::Base.new(@batch.eft_path)
-  Net::SFTP.start(host, username, password) do |sftp|
-    handle = sftp.opendir(path)
-    items = sftp.readdir(handle)
-    files = items.collect {|i| i.filename}.reject {|a| a !~ /\.csv$/}
-    sftp.close_handle(handle)
-    files.each do |file|
-      puts "Downloading file #{file}..."
-      sftp.remove(path+'/'+file) if sftp.get_file(path+'/'+file, "EFT/"+for_month+'/'+file)
+  step("Connecting SFTP Session") do
+    Net::SFTP.start(SFTP_CONFIG[:host], SFTP_CONFIG[:username], SFTP_CONFIG[:password]) do |sftp|
+      handle = sftp.opendir(SFTP_CONFIG[:path])
+      items = sftp.readdir(handle)
+      files = items.collect {|i| i.filename}.reject {|a| a !~ /\.csv$/}
+      sftp.close_handle(handle)
+      files.each do |file|
+        step("Downloading file #{file}") do
+          sftp.remove(SFTP_CONFIG[:path]+'/'+file) if sftp.get_file(SFTP_CONFIG[:path]+'/'+file, "EFT/"+@for_month+'/'+file)
+        end
+      end
     end
   end
+  files.length
+end
 
-ActionController::Base.logger.info("Loading GotoBilling responses...")
+last_sftp_check = Time.now-3600 # Pretend last check was two hours ago
+begin # Wait thirty seconds between checks.
+  @for_month = Time.now.strftime("%Y") + '/' + (Time.now.strftime("%m").to_i+1).to_s
+  @payment = {}
   @responses = {}
-  Dir.open('EFT/'+for_month).collect.reject {|a| a !~ /returns.*\.csv$/}.each do |file|
-    headers = []
-    CSV::Reader.parse(File.open("EFT/"+for_month+'/'+file, 'rb')) do |row|
-      if headers.blank?
-        headers = row.map {|r| r.underscore}
+  @batch = EftBatch.find_or_create_by_for_month(@for_month)
+  @returns = GotoCsv::Base.new(@batch.eft_path)
+
+  step "Downloading files from GotoBilling" do
+    download_sftp_files
+    last_sftp_check = Time.now
+  end if last_sftp_check < Time.now-1800 # More than an hour ago
+
+  step "Loading Payments" do
+    headers = true
+    CSV::Reader.parse(File.open('EFT/'+@for_month+'/payment.csv', 'rb')) do |row|
+      if headers
+        headers = false
         next
       end
-      response = {}
-      headers.length.times do |i|
-        response[headers[i]] = row[i]
+      goto = GotoTransaction.new_from_csv_row(row)
+      @payment[goto.client_id.to_i] = goto
+    end
+  end
+
+  step "Weaving in GotoBilling responses" do
+    Dir.open('EFT/'+@for_month).collect.reject {|a| a !~ /returns_.*\.csv$/}.sort.each do |file| #Should be sorting by date
+      step "Weaving in #{file}" do
+        headers = true
+        CSV::Reader.parse(File.open("EFT/"+@for_month+'/'+file, 'rb')) do |row|
+          if headers
+            headers = false
+            next
+          end
+          # MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,Status,Description
+          resp = Goto::Response.new(row)
+          @responses[resp.client_id.to_i] = resp
+          @payment[resp.client_id.to_i].response = @responses[resp.client_id.to_i] if @payment[resp.client_id.to_i]
+        end
       end
-      goto = pending[response['invoice_id']]
-      goto.instance_variable_set('@response', response)
-      goto.instance_variable_set('@new_record', false)
-      # Now 't' is just as if we just now submitted the transaction and got a response back into it.
-      @responses[goto.account_id] = goto
     end
-    File.rename(file, file+'.recorded')
   end
 
-ActionController::Base.logger.info("Loading pending transactions...")
-  pending = {}
-  headers = true
-  CSV::Reader.parse(File.open('EFT/'+for_month+'/payment.csv', 'rb')) do |row|
-    if headers
-      headers = false
-      next
+  step "Saving updated Payments file" do
+    File.rename('EFT/'+@for_month+'/payment.csv', 'EFT/'+@for_month+"/payment_unmerged_#{Time.now.strftime("%j_%H-%M-%S")}.csv")
+    CSV.open('EFT/'+@for_month+'/payment.csv', 'w') do |writer|
+      writer << GotoTransaction.headers
+      @payment.each_value do |goto|
+        writer << goto.to_a
+      end
     end
-    goto = GotoTransaction.new_from_csv_row(row)
-    goto.attributes = {
-      
-    } if response = @responses[goto.account_id]
-    @returns.record(goto)
   end
-ActionController::Base.logger.info("Processing responses...")
-
-ActionController::Base.logger.info("Saving results to batch...")
-  @returns.to_file!(batch.eft_path+'returns_'+Time.now.strftime("%Y-%m-%d_%H")+'.csv')
-  # batch.update_attributes(:submitted_at => Time.now, :eft_ready => false)
-end
+  
+  # step "Saving results to batch" do
+  #   @returns.to_file!(batch.eft_path+'returns_'+Time.now.strftime("%Y-%m-%d_%H")+'.csv')
+  #   # batch.update_attributes(:submitted_at => Time.now, :eft_ready => false)
+  # end
+end while sleep(30)

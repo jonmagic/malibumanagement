@@ -56,7 +56,7 @@ class EftBatch < ActiveRecord::Base
 
             # Should we be using cp.eft.Client_Name for the credit_card_name?
             @members << t.to_a
-            @location_members[location_code] << [t.account_id, t.last_name, t.first_name]
+            @location_members[location_code] << [t.client_id, t.last_name, t.first_name]
 
             total_amount += t.amount
             locations_amounts[location_code] += t.amount
@@ -83,7 +83,7 @@ class EftBatch < ActiveRecord::Base
     path = 'EFT/'+self.for_month+'/' # should be different for each month and should end in /
     FileUtils.mkpath(path)
     CSV.open(path+'payment.csv', 'w') do |writer|
-      writer << ['AccountId', 'Location', 'MerchantId', 'FirstName', 'LastName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType', 'Authorization']
+      writer << GotoTransaction.headers
       @members.each {|m| writer << m}
     end
     @location_members.each do |loc_code,members|

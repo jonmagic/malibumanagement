@@ -1,3 +1,4 @@
+require 'csv'
 module GotoCsv
   class Base
     attr_accessor :payments_csv
@@ -27,7 +28,7 @@ module GotoCsv
           else
             "VIP: Accepted ##{goto.response['auth_code']}"
           end,
-        :client_no => goto.account_id,
+        :client_no => goto.client_id,
         :Last_Name => goto.last_name,
         :First_Name => goto.first_name,
         :CType => 'S',
@@ -54,7 +55,7 @@ module GotoCsv
         goto.transaction_id = Helios::Transact.create_on_master(trans_attrs)
       end
       Helios::Note.create_on_master(
-        :Client_no => goto.account_id,
+        :Client_no => goto.client_id,
         :Location => goto.location,
         :Last_Name => goto.last_name,
         :First_Name => goto.first_name,
@@ -67,48 +68,10 @@ module GotoCsv
       
       file = File.open(self.payments_csv, 'a')
         raise "Could not open returns file for record-keeping!!" if file.nil?
-        file.write(goto.to_return.map {|x| x = "\"#{x}\"" if x =~ /,/; x}.join(',') + "\n")
+        file.write(goto.response.to_a.map {|x| x = "\"#{x}\"" if x =~ /,/; x}.join(',') + "\n")
         file.close
     end
-
-    # def to_file!
-    #   backup = "payment_backup-#{Time.now.strftime("%j-%H%M")}.csv"
-    #   File.copy(@eft_path + 'payment.csv', @eft_path + backup)
-    #   CSV.open(@eft_path + 'payment.csv', 'w') do |csv|
-    #     csv << ['AccountId', 'Location', 'MerchantId', 'FirstName', 'LastName', 'BankRoutingNumber', 'BankAccountNumber', 'NameOnCard', 'CreditCardNumber', 'Expiration', 'Amount', 'Type', 'AccountType', 'Authorization']
-    #     self.payments_csv.each {|row| csv << row}
-    #   end
-    #   true
-    # end
   end
-
-  
-  # def self.log_this(obj)
-  #   return false unless obj.submitted?
-  #   response = obj.instance_variable_get('@response')
-  #   @csv ||= []
-  #   if !obj.errors.blank?
-  #     response['status'] = 'X'
-  #     response['description'] = obj.errors.full_messages.to_sentence
-  #   end
-  #   # Pull values from the response, or from the GotoTransaction if not in the response
-  #   # account id, transaction type, merchant id, amount, transaction date, invoice id, status, status description
-  #   @csv << [
-  #     response['account_id']        || obj.account_id,
-  #     response['type']              || obj.type,
-  #     response['merchant_id']       || obj.merchant_id,
-  #     response['amount']            || obj.amount,
-  #     response['transaction_date']  || Time.now,
-  #     response['invoice_id']        || obj.invoice_id,
-  #     response['status'],
-  #     response['description']
-  #   ]
-  # end
-  # def log_this
-  #   self.class.log_this(self)
-  # end
-
-  
 
   def self.included?(base)
     Helios::Note.extend(NotesExt)

@@ -11,8 +11,6 @@ module GotoBilling
   end
 
   class Base
-    attr_accessor :response
-    
     class << self
       def has_attributes(*attrs)
         attrs.each do |atr|
@@ -93,23 +91,40 @@ module GotoBilling
 
     def http_attributes
       http_attr = {}
-      self.attributes.each do |k,v|
+      self.http_attribute_mapping.each do |k,v|
         http_attr[self.class.http_attribute_mapping[k.to_s]] = self.http_attribute_convert(k.to_s) unless self.http_attribute_convert(k.to_s).nil?
       end
       http_attr
     end
 
     def submit
-      self.response = connection.get(self.class.site.path, self.http_attributes)
+      self.response = Goto::Response.new(connection.get(self.class.site.path, self.http_attributes))
     end
     alias :save :submit
     alias :commit :submit
+
+    def merge_response(response)
+      self.status = response['status'] if response['status']
+      self.order_number = response['order_number'] if response['order_number']
+      self.term_code = response['term_code'] if response['term_code']
+      self.amount = response['amount'] if response['amount']
+      self.tran_date = response['tran_date'] if response['tran_date']
+      self.tran_time = response['tran_time'] if response['tran_time']
+      self.invoice_id = response['invoice_id'] if response['invoice_id']
+      self.auth_code = response['auth_code'] if response['auth_code']
+      self.description = response['description'] if response['description']
+    end
+    alias :response= :merge_response
+
+    def response
+      Goto::Response.new(self.attributes)
+    end
 
     def invalid?
       !valid?
     end
     def submitted?
-      ['G', 'R', 'D', 'C'].include?(@response['status']) # Not paid_now, not received, not declined, and not cancelled. The only left is Timed-out, and not submitted at all - both really aren't submitted.
+      ['G', 'R', 'D', 'C'].include?(@response['status'])
     end
     def received?
       submitted? && !@response['status'].nil? && @response['status'] != 'T'

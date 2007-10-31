@@ -1,83 +1,75 @@
 class GotoTransaction < GotoBilling::Base
   self.site = 'https://www.gotobilling.com/os/system/gateway/transact.php'
 
-  def initialize(attrs={})
-    if(attrs.is_a?(Helios::Eft))
-      location_code = attrs.Location || '0'*(3-ZONE_LOCATION_BITS)+attrs.Client_No.to_s[0,ZONE_LOCATION_BITS]
-      amount_int = (attrs.Monthly_Fee.to_f*100).to_i
+  def self.headers
+    ["ClientId", "Location", "MerchantId", "FirstName", "LastName", "BankRoutingNumber", "BankAccountNumber", "NameOnCard", "CreditCardNumber", "Expiration", "Amount", "Type", "AccountType", "Authorization", "TransactionId", "Recorded", "OrderNumber", "SentDate", "TranDate", "TranTime", "Status", "Description", "TermCode", "AuthCode"]
+  end
 
-      super(
-        :account_id => attrs.id.to_i,
-        :location => location_code,
-        :merchant_id => LOCATIONS.has_key?(location_code.to_s) ? LOCATIONS[location_code.to_s][:merchant_id] : nil,
-        :merchant_pin => LOCATIONS.has_key?(location_code.to_s) ? LOCATIONS[location_code.to_s][:merchant_pin] : nil,
-        :first_name => attrs.First_Name,
-        :last_name => attrs.Last_Name,
-        :bank_routing_number => attrs.Bank_ABA,
-        :bank_account_number => attrs.credit_card? ? nil : attrs.Acct_No,
-        :name_on_card => attrs.First_Name.to_s + ' ' + attrs.Last_Name.to_s,
-        :credit_card_number => attrs.credit_card? ? attrs.Acct_No : nil,
-        :expiration => attrs.Acct_Exp.to_s.gsub(/\D/,''),
-        :amount => amount_int,
-        :type => attrs.credit_card? ? 'Credit Card' : 'ACH',
-        :account_type => attrs.Acct_Type,
-        :authorization => 'Written'
-      )
-      errors.add_to_base("Invalid Location Code!") if !LOCATIONS.has_key?(location_code.to_s)
-    else
+  def initialize(attrs={})
+    # if(attrs.is_a?(Helios::Eft))
+    #   location_code = attrs.Location || '0'*(3-ZONE_LOCATION_BITS)+attrs.Client_No.to_s[0,ZONE_LOCATION_BITS]
+    #   amount_int = (attrs.Monthly_Fee.to_f*100).to_i
+    # 
+    #   super(
+    #     :client_id => attrs.id.to_i,
+    #     :location => location_code,
+    #     :merchant_id => LOCATIONS.has_key?(location_code.to_s) ? LOCATIONS[location_code.to_s][:merchant_id] : nil,
+    #     :merchant_pin => LOCATIONS.has_key?(location_code.to_s) ? LOCATIONS[location_code.to_s][:merchant_pin] : nil,
+    #     :first_name => attrs.First_Name,
+    #     :last_name => attrs.Last_Name,
+    #     :bank_routing_number => attrs.Bank_ABA,
+    #     :bank_account_number => attrs.credit_card? ? nil : attrs.Acct_No,
+    #     :name_on_card => attrs.First_Name.to_s + ' ' + attrs.Last_Name.to_s,
+    #     :credit_card_number => attrs.credit_card? ? attrs.Acct_No : nil,
+    #     :expiration => attrs.Acct_Exp.to_s.gsub(/\D/,''),
+    #     :amount => amount_int,
+    #     :type => attrs.credit_card? ? 'Credit Card' : 'ACH',
+    #     :account_type => attrs.Acct_Type,
+    #     :authorization => 'Written'
+    #   )
+    #   errors.add_to_base("Invalid Location Code!") if !LOCATIONS.has_key?(location_code.to_s)
+    # else
       super(attrs)
-    end
+    # end
   end
 
   def self.new_from_csv_row(row)
+    i = -1
+# client_id, location, merchant_id, merchant_pin, first_name, last_name, bank_routing_number, bank_account_number, name_on_card, credit_card_number, expiration, amount, type, account_type, authorization, transaction_id, recorded, order_number, sent_date, tran_date, tran_time, status, description, term_code, auth_code
     new(
-      :account_id => row[0],
-      :location => row[1],
-      :merchant_id => row[2],
-      :merchant_pin => LOCATIONS[LOCATIONS.reject {|k,v| LOCATIONS[k][:merchant_id] != row[2]}.keys[0]][:merchant_pin],
-      :first_name => row[3],
-      :last_name => row[4],
-      :bank_routing_number => row[5],
-      :bank_account_number => row[6],
-      :name_on_card => row[7],
-      :credit_card_number => row[8],
-      :expiration => row[9],
-      :amount => row[10],
-      :type => row[11],
-      :account_type => row[12],
-      :authorization => row[13],
+      :client_id => row[i+=1],
+      :location => row[i+=1],
+      :merchant_id => row[i+=1],
+      :merchant_pin => LOCATIONS[row[1]][:merchant_pin],
+      :first_name => row[i+=1],
+      :last_name => row[i+=1],
+      :bank_routing_number => row[i+=1],
+      :bank_account_number => row[i+=1],
+      :name_on_card => row[i+=1],
+      :credit_card_number => row[i+=1],
+      :expiration => row[i+=1],
+      :amount => row[i+=1],
+      :type => row[i+=1],
+      :account_type => row[i+=1],
+      :authorization => row[i+=1],
+      :transaction_id => row[i+=1],
+      :recorded => row[i+=1],
     # Response attributes
-      :status => row[14],
-      :order_number => row[15],
-      :transaction_id => row[16],
-      :term_code => row[17],
-      :tran_date => row[18],
-      :tran_time => row[19],
-      :auth_code => row[20],
-      :description => row[21],
-      :recorded => row[22]
+      :order_number => row[i+=1],
+      :sent_date => row[i+=1],
+      :tran_date => row[i+=1],
+      :tran_time => row[i+=1],
+      :status => row[i+=1],
+      :description => row[i+=1],
+      :term_code => row[i+=1],
+      :auth_code => row[i+=1]
     )
   end
 
-  def to_return
-    # MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,Status,Description
-    [
-      merchant_id,
-      first_name,
-      last_name,
-      account_id,
-      amount,
-      Time.now.strftime('%Y%m%d'),
-      Time.now.strftime('%Y%m%d'),
-      transaction_id,
-      response['status'],
-      response['description']
-    ]
-  end
-
   def to_a
+# client_id, location, merchant_id, first_name, last_name, bank_routing_number, bank_account_number, name_on_card, credit_card_number, expiration, amount, type, account_type, authorization, transaction_id, recorded, order_number, sent_date, tran_date, tran_time, status, description, term_code, auth_code
     [
-      account_id,
+      client_id,
       location,
       merchant_id,
       first_name,
@@ -91,23 +83,23 @@ class GotoTransaction < GotoBilling::Base
       type,
       account_type,
       authorization,
-      response['status'],
-      response['order_number'],
       transaction_id,
-      response['term_code'],
-      response['tran_date'],
-      response['tran_time'],
-      response['auth_code'],
-      response['description'],
-      recorded?
+      recorded?,
+      order_number,
+      sent_date,
+      tran_date,
+      tran_time,
+      status,
+      description,
+      term_code,
+      auth_code
     ]
   end
 
   def self.http_attribute_mapping
     {
-      'account_id' => 'x_customer_id',
+      'client_id' => 'x_customer_id',
       'merchant_id' => 'merchant_id',
-      'location' => 'xxx_location_code',
       'merchant_pin' => 'merchant_pin',
       'last_name' => 'x_last_name',
       'first_name' => 'x_first_name',
@@ -126,7 +118,7 @@ class GotoTransaction < GotoBilling::Base
 
   def http_attribute_convert(attr_name)
     {
-      'account_id' => lambda {|x| x},
+      'client_id' => lambda {|x| x},
       'last_name' => lambda {|x| x},
       'first_name' => lambda {|x| x},
       'type' => lambda {|x| {'ACH' => 'DH', 'Credit Card' => 'ES'}[x]},
@@ -146,8 +138,8 @@ class GotoTransaction < GotoBilling::Base
     }[attr_name.to_s].call(@attributes[attr_name.to_s])
   end
 
-  has_attributes :account_id, :location, :first_name, :last_name, :bank_routing_number, :bank_account_number, :name_on_card, :credit_card_number, :expiration, :amount, :type, :account_type, :authorization, :merchant_id, :merchant_pin, :transaction_id
-  validates_presence_of :account_id, :first_name, :last_name, :amount, :type, :account_type, :authorization, :merchant_id, :merchant_pin
+  has_attributes :client_id, :location, :merchant_id, :merchant_pin, :first_name, :last_name, :bank_routing_number, :bank_account_number, :name_on_card, :credit_card_number, :expiration, :amount, :type, :account_type, :authorization, :transaction_id, :recorded, :order_number, :sent_date, :tran_date, :tran_time, :status, :description, :term_code, :auth_code
+  validates_presence_of :client_id, :first_name, :last_name, :amount, :type, :account_type, :authorization, :merchant_id, :merchant_pin
   validates_presence_of :bank_routing_number, :bank_account_number, :if => :ach?
   validates_presence_of :name_on_card, :credit_card_number, :expiration, :if => :credit_card?
 
