@@ -26,4 +26,8 @@ class Helios::Note < ActiveRecord::Base
 
   validates_presence_of :OTNum, :Location, :Last_Mdt, :Client_no
 
+  def self.create_on_master(attrs)
+    rec = self.master[self.master.keys[0]].create(attrs.merge(:Last_Mdt => Time.now - 4.hours))
+    rec.id
+  end
 end
