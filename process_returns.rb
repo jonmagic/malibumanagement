@@ -74,6 +74,7 @@ begin # Wait thirty seconds between checks.
         @payment[goto.client_id.to_i] = goto
       end
     end
+    File.rename('EFT/'+@for_month+'/payment.csv', 'EFT/'+@for_month+"/payment_unmerged_#{Time.now.strftime("%j_%H-%M-%S")}.csv")
 
     step "Weaving in GotoBilling responses" do
       Dir.open('EFT/'+@for_month).collect.reject {|a| a !~ /returns_.*\.csv$/}.sort.each do |file| #Should be sorting by date
@@ -94,7 +95,6 @@ begin # Wait thirty seconds between checks.
     end
 
     step "Saving updated Payments file" do
-      File.rename('EFT/'+@for_month+'/payment.csv', 'EFT/'+@for_month+"/payment_unmerged_#{Time.now.strftime("%j_%H-%M-%S")}.csv")
       CSV.open('EFT/'+@for_month+'/payment.csv', 'w') do |writer|
         writer << GotoTransaction.headers
         @payment.each_value do |goto|
