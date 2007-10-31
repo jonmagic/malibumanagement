@@ -65,7 +65,9 @@ begin # Wait thirty seconds between checks.
   else
     step "Loading Payments" do
       headers = true
-      CSV::Reader.parse(File.open('EFT/'+@for_month+'/payment.csv', 'rb')) do |row|
+      new_name = "payment_unmerged_#{Time.now.strftime("%d%H%M")}.csv"
+      File.rename('EFT/'+@for_month+'/payment.csv', 'EFT/'+@for_month+"/"+new_name)
+      CSV::Reader.parse(File.open('EFT/'+@for_month+'/'+new_name, 'rb')) do |row|
         if headers
           headers = false
           next
@@ -77,9 +79,10 @@ begin # Wait thirty seconds between checks.
 
     step "Weaving in GotoBilling responses" do
       Dir.open('EFT/'+@for_month).collect.reject {|a| a !~ /returns_.*\.csv$/}.sort.each do |file| #Should be sorting by date
+        File.rename('EFT/'+@for_month+'/'+file, 'EFT/'+@for_month+'/'+file+'.recorded')
         step "Weaving in #{file}" do
           headers = true
-          CSV::Reader.parse(File.open("EFT/"+@for_month+'/'+file, 'rb')) do |row|
+          CSV::Reader.parse(File.open("EFT/"+@for_month+'/'+file+'.recorded', 'rb')) do |row|
             if headers
               headers = false
               next
@@ -94,7 +97,6 @@ begin # Wait thirty seconds between checks.
     end
 
     step "Saving updated Payments file" do
-      # File.rename('EFT/'+@for_month+'/payment.csv', 'EFT/'+@for_month+"/payment_unmerged_#{Time.now.strftime("%d%H%M")}.csv")
       CSV.open('EFT/'+@for_month+'/payment.csv', 'w') do |writer|
         writer << GotoTransaction.headers
         @payment.each_value do |goto|
