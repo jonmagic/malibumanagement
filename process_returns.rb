@@ -47,7 +47,7 @@ def download_sftp_files
 end
 
 last_sftp_check = Time.now-3600 # Pretend last check was two hours ago
-payment_last_updated = Time.now-3600
+returns_last_updated = Time.now-3600
 begin # Wait thirty seconds between checks.
   @for_month = Time.now.strftime("%Y") + '/' + (Time.now.strftime("%m").to_i+1).to_s
   @payment = {}
@@ -60,8 +60,16 @@ begin # Wait thirty seconds between checks.
     last_sftp_check = Time.now
   end if last_sftp_check < Time.now-1800 # More than an hour ago
 
-  if File.mtime('EFT/'+@for_month+'/payment.csv') > payment_last_updated
-    payment_last_updated = File.mtime('EFT/'+@for_month+'/payment.csv')
+  @return_files = Dir.open('EFT/'+@for_month).collect.reject {|a| a !~ /returns_.*\.csv$/}.sort.each.collect {|f| 'EFT/'+@for_month+'/'+f} #Should be sorting by date
+
+  if @return_files
+    returns_new_updated = returns_last_updated
+    @return_files.each do |f|
+      mm = File.mtime(f)
+      returns_new_updated = mm if mm > returns_last_updated
+    end
+  if returns_new_updated > returns_last_updated
+    returns_last_updated = returns_new_updated
   else
     step "Loading Payments" do
       headers = true
@@ -78,11 +86,11 @@ begin # Wait thirty seconds between checks.
     end
 
     step "Weaving in GotoBilling responses" do
-      Dir.open('EFT/'+@for_month).collect.reject {|a| a !~ /returns_.*\.csv$/}.sort.each do |file| #Should be sorting by date
-        File.rename('EFT/'+@for_month+'/'+file, 'EFT/'+@for_month+'/'+file+'.recorded')
+      @return_files.each do |file| #Should be sorting by date
+        File.rename(file, file+'.recorded')
         step "Weaving in #{file}" do
           headers = true
-          CSV::Reader.parse(File.open("EFT/"+@for_month+'/'+file+'.recorded', 'rb')) do |row|
+          CSV::Reader.parse(File.open(file+'.recorded', 'rb')) do |row|
             if headers
               headers = false
               next
