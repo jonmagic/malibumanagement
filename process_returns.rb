@@ -103,13 +103,13 @@ begin # Wait thirty seconds between checks.
           end
         end
       end
-    end
 
-    step "Saving updated Payments file" do
-      CSV.open('EFT/'+@for_month+'/payment.csv', 'w') do |writer|
-        writer << GotoTransaction.headers
-        @payment.each_value do |goto|
-          writer << goto.to_a
+      step "Saving updated Payments file" do
+        CSV.open('EFT/'+@for_month+'/payment.csv', 'w') do |writer|
+          writer << GotoTransaction.headers
+          @payment.each_value do |goto|
+            writer << goto.to_a
+          end
         end
       end
     end
