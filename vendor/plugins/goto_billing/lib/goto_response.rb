@@ -1,6 +1,6 @@
 module Goto
   class Response
-    attr_accessor :merchant_id, :first_name, :last_name, :status, :client_id, :order_number, :term_code, :amount, :tran_date, :tran_time, :invoice_id, :auth_code, :description
+    attr_accessor :merchant_id, :first_name, :last_name, :status, :client_id, :order_number, :term_code, :amount, :sent_date, :tran_date, :tran_time, :invoice_id, :auth_code, :description
     def attributes=(new_attributes)
       return if new_attributes.nil?
       with(new_attributes.dup) do |a|
@@ -27,6 +27,7 @@ module Goto
           :order_number => nattrs[7],
           :term_code    => nil,
           :tran_amount  => nattrs[4],
+          :sent_date    => nattrs[5],
           :tran_date    => nattrs[6],
           :tran_time    => nattrs[6],
           :invoice_id   => nil,
