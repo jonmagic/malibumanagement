@@ -73,15 +73,22 @@ begin # Wait thirty seconds between checks.
     else
       step "Loading Payments" do
         headers = true
-        new_name = "payment_unmerged_#{Time.now.strftime("%d%H%M")}.csv"
-        File.rename('EFT/'+@for_month+'/payment.csv', 'EFT/'+@for_month+"/"+new_name)
-        CSV::Reader.parse(File.open('EFT/'+@for_month+'/'+new_name, 'rb')) do |row|
+        CSV::Reader.parse(File.open('EFT/'+@for_month+'/payment.csv', 'rb')) do |row|
           if headers
             headers = false
             next
           end
           goto = GotoTransaction.new_from_csv_row(row)
           @payment[goto.client_id.to_i] = goto
+        end
+      end
+
+      step "Backing up Payments file" do
+        CSV.open('EFT/'+@for_month+'/'+"payment_unmerged_#{Time.now.strftime("%d%H%M")}.csv", 'w') do |writer|
+          writer << GotoTransaction.headers
+          @payment.each_value do |goto|
+            writer << goto.to_a
+          end
         end
       end
 
@@ -114,9 +121,4 @@ begin # Wait thirty seconds between checks.
       end
     end
   end
-  
-  # step "Saving results to batch" do
-  #   @returns.to_file!(batch.eft_path+'returns_'+Time.now.strftime("%Y-%m-%d_%H")+'.csv')
-  #   # batch.update_attributes(:submitted_at => Time.now, :eft_ready => false)
-  # end
 end while sleep(30)
