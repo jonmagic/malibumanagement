@@ -6,31 +6,31 @@ class GotoTransaction < GotoBilling::Base
   end
 
   def initialize(attrs={})
-    # if(attrs.is_a?(Helios::Eft))
-    #   location_code = attrs.Location || '0'*(3-ZONE_LOCATION_BITS)+attrs.Client_No.to_s[0,ZONE_LOCATION_BITS]
-    #   amount_int = (attrs.Monthly_Fee.to_f*100).to_i
-    # 
-    #   super(
-    #     :client_id => attrs.id.to_i,
-    #     :location => location_code,
-    #     :merchant_id => LOCATIONS.has_key?(location_code.to_s) ? LOCATIONS[location_code.to_s][:merchant_id] : nil,
-    #     :merchant_pin => LOCATIONS.has_key?(location_code.to_s) ? LOCATIONS[location_code.to_s][:merchant_pin] : nil,
-    #     :first_name => attrs.First_Name,
-    #     :last_name => attrs.Last_Name,
-    #     :bank_routing_number => attrs.Bank_ABA,
-    #     :bank_account_number => attrs.credit_card? ? nil : attrs.Acct_No,
-    #     :name_on_card => attrs.First_Name.to_s + ' ' + attrs.Last_Name.to_s,
-    #     :credit_card_number => attrs.credit_card? ? attrs.Acct_No : nil,
-    #     :expiration => attrs.Acct_Exp.to_s.gsub(/\D/,''),
-    #     :amount => amount_int,
-    #     :type => attrs.credit_card? ? 'Credit Card' : 'ACH',
-    #     :account_type => attrs.Acct_Type,
-    #     :authorization => 'Written'
-    #   )
-    #   errors.add_to_base("Invalid Location Code!") if !LOCATIONS.has_key?(location_code.to_s)
-    # else
+    if(attrs.is_a?(Helios::Eft))
+      location_code = attrs.Location || '0'*(3-ZONE_LOCATION_BITS)+attrs.Client_No.to_s[0,ZONE_LOCATION_BITS]
+      amount_int = (attrs.Monthly_Fee.to_f.to_s.split(/\./).join('')).to_i
+    
+      super(
+        :client_id => attrs.id.to_i,
+        :location => location_code,
+        :merchant_id => LOCATIONS.has_key?(location_code.to_s) ? LOCATIONS[location_code.to_s][:merchant_id] : nil,
+        :merchant_pin => LOCATIONS.has_key?(location_code.to_s) ? LOCATIONS[location_code.to_s][:merchant_pin] : nil,
+        :first_name => attrs.First_Name,
+        :last_name => attrs.Last_Name,
+        :bank_routing_number => attrs.Bank_ABA,
+        :bank_account_number => attrs.credit_card? ? nil : attrs.Acct_No,
+        :name_on_card => attrs.First_Name.to_s + ' ' + attrs.Last_Name.to_s,
+        :credit_card_number => attrs.credit_card? ? attrs.Acct_No : nil,
+        :expiration => attrs.Acct_Exp.to_s.gsub(/\D/,''),
+        :amount => amount_int,
+        :type => attrs.credit_card? ? 'Credit Card' : 'ACH',
+        :account_type => attrs.Acct_Type,
+        :authorization => 'Written'
+      )
+      errors.add_to_base("Invalid Location Code!") if !LOCATIONS.has_key?(location_code.to_s)
+    else
       super(attrs)
-    # end
+    end
   end
 
   def self.new_from_csv_row(row)

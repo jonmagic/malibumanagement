@@ -3,7 +3,8 @@ module GotoCsv
   class Extras
     class << self
       def push_to_helios(goto)
-        amnt = (goto.amount.to_f/100).to_s
+        a = goto.amount.to_f.to_s.split(/\./).join('')
+        amnt = a.chop.chop+'.'+a[-2,2]
         trans_attrs = {
           :Descriptions => case # Needs to include certain information for different cases
             when goto.invalid?
