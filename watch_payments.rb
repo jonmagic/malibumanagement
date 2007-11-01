@@ -4,12 +4,24 @@ require 'ftools'
 require 'goto_csv'
 API = 'http'
 
+def step(description)
+  puts(description+'...')
+  ActionController::Base.logger.info(description+'...')
+  begin
+    yield if block_given?
+    puts(description+" -> Done.")
+    ActionController::Base.logger.info(description+" -> Done.")
+  rescue => e
+    puts("["+description+"] Caused Errors: {#{e}}")
+    ActionController::Base.logger.info("["+description+"] Caused Errors: {#{e}}")
+  end
+end
+
 def http_submit(batch) # Sends the generated payment CSV to the payment gateway
   @returns = GotoCsv::Base.new(batch.eft_path)
-  begin # Charging invalid accounts
-    retry_records = {}
-ActionController::Base.logger.info("Charging invalid accounts...")
-puts "Charging invalid accounts..."
+  retry_records = {}
+
+  step "Charging invalid accounts" do
     headers = true
     CSV::Reader.parse(File.open(batch.eft_path+'invalid_efts.csv', 'rb')) do |row|
       if headers
@@ -20,9 +32,7 @@ puts "Charging invalid accounts..."
       @returns.record(t)
     end
   end
-  begin # Submitting payments to gotobilling
-ActionController::Base.logger.info("Submitting #{batch.for_month}...")
-puts "Submitting #{batch.for_month}..."
+  step "Submitting #{batch.for_month}" do
     headers = true
     CSV::Reader.parse(File.open(batch.eft_path+'payment.csv', 'rb')) do |row|
       if headers
@@ -44,30 +54,31 @@ puts({'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Late
       end
     end
     retry_records.each do |k,goto| # Retry once
-ActionController::Base.logger.info("Retrying ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}")
-puts "Retrying ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}"
+      msg = "Retrying ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}"
+        ActionController::Base.logger.info(msg)
+        puts msg
       goto.submit
-ActionController::Base.logger.info({'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']])
-puts({'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']])
+      msg = {'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']]
+        ActionController::Base.logger.info(msg)
+        puts msg
       if goto.received?
         @returns.record(goto)
         retry_records.delete(k)
       end
     end
     retry_records.each_value do |goto| #Retry again
-ActionController::Base.logger.info("Retrying ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}")
-puts "Retrying ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}"
+      msg = "Retrying ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}"
+        ActionController::Base.logger.info(msg)
+        puts msg
       goto.submit
-ActionController::Base.logger.info({'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']])
-puts({'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']])
+      msg = {'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']]
+        ActionController::Base.logger.info(msg)
+        puts msg
       @returns.record(goto)
     end
   end
-  begin # Finishing up
-    # @returns.to_file! #(batch.eft_path+'returns_'+Time.now.strftime("%Y-%m-%d_%H")+'.csv')
-    # batch.update_attributes(:submitted_at => Time.now, :eft_ready => false)
-ActionController::Base.logger.info("Done submitting #{batch.for_month}!")
-puts "Done submitting #{batch.for_month}!"
+  step "Finishing up #{batch.for_month}"
+    batch.update_attributes(:submitted_at => Time.now, :eft_ready => false)
   end
 end
 
@@ -76,8 +87,6 @@ end
 
 begin
   EftBatch.find_all_by_eft_ready(true).each do |batch|
-    unless batch.submitted_at
-      API == 'http' ? http_submit(batch) : sftp_submit(batch)
-    end
+    API == 'http' ? http_submit(batch) : sftp_submit(batch)
   end
 end while sleep(120) # Wait one minute between checks.

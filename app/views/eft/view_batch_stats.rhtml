@@ -3,7 +3,7 @@
 		<div id="eft_actions_header" class="eft_header">
 			<h2>&nbsp;<br />Viewing <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
-		<%= link_to "Regenerate Batch for #{Time.parse(@batch.for_month).strftime("%B %Y")}", 'javascript:void(0);', :onclick => "Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' />Regenerating EFT Batch, this can take several minutes...</div>', {fade : true, overlayCloseOnClick : false}); window.location='#{eft_path(:action => :regenerate_batch, :for_month => @for_month)}';", :class => 'eft_column resync' %>
+		<%= link_to "Regenerate Batch for #{Time.parse(@batch.for_month).strftime("%B %Y")}", 'javascript:void(0);', :onclick => "Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' />Regenerating EFT Batch, this can take several minutes...</div>', {fade : true, overlayCloseOnClick : false}); window.location='#{eft_path(:action => :regenerate_batch, :for_month => params[:for_month])}';", :class => 'eft_column resync' %>
 		<%= link_to "Submit Batch for #{Time.parse(@batch.for_month).strftime("%B %Y")}", eft_path(:action => :submit_batch, :for_month => @for_month), :class => 'eft_column go' %>
 		<a href="" class="eft_column download">Process Return Files</a>
 	</div>
@@ -11,11 +11,11 @@
 		<div id="eft_downloads_header" class="eft_header">
 			<h2>&nbsp;<br />Downloadable Excel files for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
-		<div class="eft_column"><%= link_to 'Current Batch', eft_path(:action => :download_csv, :file => 'payment'), :class => 'floatleft' %></div>
+		<div class="eft_column"><%= link_to 'Current Batch', eft_path(:action => :download_csv, :file => 'payment', :for_month => params[:for_month]), :class => 'floatleft' %></div>
 		<div class="eft_column"><a href="" class="floatleft">Still clearing</a></div>
 		<div class="eft_column"><ul>
-			<li><%= link_to "Missing EFTs (#{@batch.memberships_without_efts})", eft_path(:action => :download_csv, :file => 'missing_efts'), :class => 'row1' %></li>
-			<li><%= link_to "Invalid EFTs (#{@batch.members_with_invalid_efts})", eft_path(:action => :download_csv, :file => 'invalid_efts'), :class => 'row2' %></li>
+			<li><%= link_to "Missing EFTs (#{@batch.memberships_without_efts})", eft_path(:action => :download_csv, :file => 'missing_efts', :for_month => params[:for_month]), :class => 'row1' %></li>
+			<li><%= link_to "Invalid EFTs (#{@batch.members_with_invalid_efts})", eft_path(:action => :download_csv, :file => 'invalid_efts', :for_month => params[:for_month]), :class => 'row2' %></li>
 		</ul></div>
 	</div>
 	<div id="eft_stats">
@@ -27,7 +27,7 @@
 			<table>
 				<tr class="bold"><td>Total:</td><td><%= @batch.eft_count %></td></tr>
 				<% @batch.eft_count_by_location.each do |location_code,count| -%>
-					<tr><td><%= LOCATIONS[location_code][:name] %>:</td><td><%= link_to count, eft_path(:action => :download_csv, :file => location_code) %></td></tr>
+					<tr><td><%= LOCATIONS[location_code][:name] %>:</td><td><%= link_to count, eft_path(:action => :location_csv, :location => location_code, :for_month => params[:for_month]) %></td></tr>
 				<% end -%>
 			</table>
 		</div>

@@ -96,6 +96,18 @@ class GotoTransaction < GotoBilling::Base
     ]
   end
 
+  def to_managers_a
+    [
+      client_id,
+      first_name,
+      last_name,
+      amount,
+      transaction_id,
+      {'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[status],
+      description
+    ]
+  end
+
   def self.http_attribute_mapping
     {
       'client_id' => 'x_customer_id',

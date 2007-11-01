@@ -63,6 +63,13 @@ class Helios::ClientProfile < ActiveRecord::Base
     rec.save
   end
 
+  def self.update_on_master(attrs)
+    t = self.master[self.master.keys[0]].find(attrs[:id])
+    t.attributes = {:Last_Mdt => Time.now - 4.hours}.merge(attrs)
+    t.save
+    attrs[:id]
+  end
+
   def public_attributes
     self.attributes.reject {|k,v| [self.class.primary_key, 'F_LOC', 'UpdateAll'].include?(k)}
   end

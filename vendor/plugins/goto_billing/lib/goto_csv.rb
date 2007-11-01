@@ -25,7 +25,7 @@ module GotoCsv
           :Price => amnt,
           :Check => goto.paid_now? && goto.ach? ? amnt : 0,
           :Charge => goto.paid_now? && goto.credit_card? ? amnt : 0,
-          :Credit => !goto.paid_now? ? amnt : 0,
+          :Credit => goto.declined? || goto.invalid? ? amnt : 0,
           :Wait_For => case
             when goto.paid_now? && goto.ach?
               'K'
@@ -40,16 +40,25 @@ module GotoCsv
         else
           goto.transaction_id = Helios::Transact.create_on_master(trans_attrs)
         end
-        Helios::Note.create_on_master(
-          :Client_no => goto.client_id,
-          :Location => goto.location,
-          :Last_Name => goto.last_name,
-          :First_Name => goto.first_name,
-          :Comments => goto.invalid? ? "Invalid EFT: #{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response['description']}",
-          :EmpCode => 'EC',
-          :Interrupt => true,
-          :Deleted => false
-        ) if (goto.invalid? || goto.declined?) && !goto.recorded?
+        if (goto.declined? || goto.invalid?) && !goto.recorded?
+          cp = Helios::ClientProfile.find(goto.account_id.to_i)
+          # Helios::ClientProfile.update_on_master(
+          #   :id => cp.id,
+          #   :Payment_Amount => cp.Payment_Amount + goto.amount + (goto.submitted? ? 5 : 0),
+          #   :Balance => cp.Balance + goto.amount + (goto.submitted? ? 5 : 0),
+          #   :Date_Due = Time.now
+          # )
+          Helios::Note.create_on_master(
+            :Client_no => goto.client_id,
+            :Location => goto.location,
+            :Last_Name => goto.last_name,
+            :First_Name => goto.first_name,
+            :Comments => goto.invalid? ? "Invalid EFT: #{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response['description']}",
+            :EmpCode => 'EC',
+            :Interrupt => true,
+            :Deleted => false
+          )
+        end
         goto.recorded = true if goto.paid_now? || goto.declined? || goto.invalid?
         return goto
       end
@@ -68,14 +77,6 @@ module GotoCsv
         file.close
       true
     end
-
-#ok, for declined accounts we need to set client_profile.payment_amount = client_profile.payment_amount + 18.88 + 5
-#and set client_profile.balance = client_profile.balance + 18.88 + 5
-#thats for zone2 of course
-#zone1 will have to be 19.99
-#oh, and set client_profile.Date_Due = today
-#it was Payment_Amount not payment_amount
-#and Balance  not balance
 
     def record(goto) # Receives credit-card payments after they've been processed, invalids without being processed, and ach payments after they've been processed. All come in the form of a GotoTransaction, with response values either injected or returned from GotoBilling.
       file = File.open(self.payments_csv, 'a')
