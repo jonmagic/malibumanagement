@@ -29,12 +29,14 @@ class EftController < ApplicationController
   
   def location_csv
     stream_csv(params[:location] + '_payments.csv') do |csv|
+      csv << GotoTransaction.managers_headers
       CSV::Reader.parse(File.open(@batch.eft_path+'payment.csv', 'rb')) do |row|
         if headers
           headers = false
           next
         end
         goto = GotoTransaction.new_from_csv_row(row)
+ActionController::Base.logger.info("L:#{goto.location}==#{params[:location]}")
         csv << goto.to_managers_a if goto.location == params[:location]
       end
     end
@@ -53,10 +55,7 @@ class EftController < ApplicationController
         headers["Content-Type"] ||= 'text/csv'
         headers["Content-Disposition"] = "attachment; filename=\"#{filename}\"" 
       end
-      render :text => Proc.new { |response, output|
-        csv = FasterCSV.new(output, :row_sep => "\r\n")
-        yield csv
-      }
+      render :text => Proc.new { |response, output| yield FasterCSV.new(output, :row_sep => "\r\n") }
     end
 
     def get_batch

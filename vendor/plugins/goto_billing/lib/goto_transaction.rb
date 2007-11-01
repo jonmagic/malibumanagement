@@ -96,6 +96,9 @@ class GotoTransaction < GotoBilling::Base
     ]
   end
 
+  def self.managers_headers
+    ['ClientId', 'FirstName', 'LastName', 'Amount', 'TransactionId', 'Status', 'Description']
+  end
   def to_managers_a
     [
       client_id,
