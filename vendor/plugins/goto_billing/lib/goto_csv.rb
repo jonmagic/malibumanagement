@@ -101,20 +101,27 @@ module GotoCsv
 
     def initialize(eft_path)
       @eft_path = eft_path
-      self.payments_csv = eft_path + 'returns_immed_'+ Time.now.to_f.to_s.split(/\./).join('')[-10,10] +'.csv'
-      file = File.open(self.payments_csv, 'w')
-        raise "Could not open returns file for record-keeping!!" if file.nil?
-        file.write(Goto::Response.headers.map {|x| x = "\"#{x}\"" if x =~ /,/; x}.join(',') + "\n")
-        file.close
+      self.payments_csv = 'bogus_value/text'
       true
     end
 
     def record(goto) # Receives credit-card payments after they've been processed, invalids without being processed, and ach payments after they've been processed. All come in the form of a GotoTransaction, with response values either injected or returned from GotoBilling.
+      gen_payments_csv() unless File.exists?(self.payments_csv)
       file = File.open(self.payments_csv, 'a')
         raise "Could not open returns file for record-keeping!!" if file.nil?
         file.write(goto.response.to_a.map {|x| x = "\"#{x}\"" if x =~ /,/; x}.join(',') + "\n")
         file.close
     end
+    
+    private
+      def gen_payments_csv
+        self.payments_csv = @eft_path + 'returns_immed_'+ Time.now.to_f.to_s.split(/\./).join('')[-10,10] +'.csv'
+        file = File.open(self.payments_csv, 'w')
+          raise "Could not open returns file for record-keeping!!" if file.nil?
+          file.write(Goto::Response.headers.map {|x| x = "\"#{x}\"" if x =~ /,/; x}.join(',') + "\n")
+          file.close
+        return self.payments_csv
+      end
   end
 
   def self.included?(base)
