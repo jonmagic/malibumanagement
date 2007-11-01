@@ -3,7 +3,7 @@ module GotoCsv
   class Extras
     class << self
       def push_to_helios(goto)
-        a = goto.amount.to_f.to_s.split(/\./).join('').to_i.to_s
+        a = goto.amount.to_s.split(/\./).join('')
         amnt = a.chop.chop+'.'+a[-2,2]
         trans_attrs = {
           :id => goto.transaction_id.to_i > 0 ? goto.transaction_id.to_i : nil,
