@@ -75,7 +75,7 @@ puts({'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Late
       @returns.record(goto)
     end
   end
-  step "Finishing up #{batch.for_month}"
+  step "Finishing up #{batch.for_month}" do
     batch.update_attributes(:submitted_at => Time.now, :eft_ready => false)
   end
 end
