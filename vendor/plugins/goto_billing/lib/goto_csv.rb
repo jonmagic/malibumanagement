@@ -37,9 +37,13 @@ module GotoCsv
             end
         }
         if trans_attrs[:id]
-          Helios::Transact.update_on_master(trans_attrs)
+          step "Creating transaction on master" do
+            Helios::Transact.update_on_master(trans_attrs)
+          end
         else
-          goto.transaction_id = Helios::Transact.create_on_master(trans_attrs)
+          step "Updating transaction ##{trans_attrs[:id]} on master" do
+            goto.transaction_id = Helios::Transact.create_on_master(trans_attrs)
+          end
         end
         if (goto.declined? || goto.invalid?) && !goto.recorded?
           cp = Helios::ClientProfile.find(goto.client_id.to_i)
@@ -58,19 +62,34 @@ module GotoCsv
           #   :Date_Due = n,
           #   :Last_Mdt = Time.gm(n.year, n.month, n.mday, n.hour+1, 0, 0)
           # )
-          Helios::Note.create_on_master(
-            :Client_no => goto.client_id,
-            :Location => goto.location,
-            :Last_Name => goto.last_name,
-            :First_Name => goto.first_name,
-            :Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response['description']}",
-            :EmpCode => 'EC',
-            :Interrupt => true,
-            :Deleted => false
-          )
+          step "Creating popup Note on client ##{goto.client_id.to_s}" do
+            Helios::Note.create_on_master(
+              :Client_no => goto.client_id,
+              :Location => goto.location,
+              :Last_Name => goto.last_name,
+              :First_Name => goto.first_name,
+              :Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response['description']}",
+              :EmpCode => 'EC',
+              :Interrupt => true,
+              :Deleted => false
+            )
+          end
         end
         goto.recorded = true if goto.paid_now? || goto.declined? || goto.invalid?
         return goto
+      end
+    private
+      def step(description)
+        puts(description+'...')
+        ActionController::Base.logger.info(description+'...')
+        begin
+          yield if block_given?
+          puts(description+" -> Done.")
+          ActionController::Base.logger.info(description+" -> Done.")
+        rescue => e
+          puts("["+description+"] Caused Errors: {#{e}}")
+          ActionController::Base.logger.info("["+description+"] Caused Errors: {#{e}}")
+        end
       end
     end
   end
