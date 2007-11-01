@@ -37,11 +37,11 @@ module GotoCsv
             end
         }
         if trans_attrs[:id]
-          step "Creating transaction on master" do
+          step "Updating transaction ##{trans_attrs[:id]} on master" do
             Helios::Transact.update_on_master(trans_attrs)
           end
         else
-          step "Updating transaction ##{trans_attrs[:id]} on master" do
+          step "Creating transaction on master" do
             goto.transaction_id = Helios::Transact.create_on_master(trans_attrs)
           end
         end
