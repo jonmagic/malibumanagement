@@ -57,6 +57,7 @@ class EftBatch < ActiveRecord::Base
 
             # Should we be using cp.eft.Client_Name for the credit_card_name?
             @members << t.to_a
+puts "Status: #{@members.length}" if (@members.length % 50) == 0
             @location_members[location_code] << [t.client_id, t.last_name, t.first_name]
 
             total_amount += t.amount
