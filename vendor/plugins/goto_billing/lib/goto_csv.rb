@@ -80,16 +80,20 @@ module GotoCsv
       end
     private
       def step(description)
-        puts(description+'...')
-        ActionController::Base.logger.info(description+'...')
+        logit = lambda {|txt|
+          begin
+            puts txt
+            ActionController::Base.logger.info(txt)
+          rescue
+          end
+        }
+        logit.call(description+'...')
         begin
           v = yield if block_given?
-          puts(description+" -> Done.")
-          ActionController::Base.logger.info(description+" -> Done.")
+          logit.call(description+" -> Done.")
           return v
         rescue => e
-          puts("["+description+"] Caused Errors: {#{e}}")
-          ActionController::Base.logger.info("["+description+"] Caused Errors: {#{e}}")
+          logit.call("["+description+"] Caused Errors: {#{e}}")
           return false
         end
       end

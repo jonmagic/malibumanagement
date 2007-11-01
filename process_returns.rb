@@ -77,18 +77,18 @@ begin # Wait thirty seconds between checks.
         end
       end
 
-      step "Backing up Payments file" do
-        CSV.open('EFT/'+@for_month+'/'+"payment_unmerged_#{Time.now.strftime("%d%H%M")}.csv", 'w') do |writer|
-          writer << GotoTransaction.headers
-          @payment.each_value do |goto|
-            writer << goto.to_a
-          end
-        end
-      end
-
       step "Weaving in GotoBilling responses" do
         @return_files.each do |file| #Should be sorting by date
           File.rename(file, file+'.recorded')
+          step "Backing up Payments file" do
+            CSV.open('EFT/'+@for_month+'/'+"payment_unmerged_#{Time.now.strftime("%d%H%M")}.csv", 'w') do |writer|
+              writer << GotoTransaction.headers
+              @payment.each_value do |goto|
+                writer << goto.to_a
+              end
+            end
+          end
+
           step "Weaving in #{file}" do
             headers = true
             CSV::Reader.parse(File.open(file+'.recorded', 'rb')) do |row|
@@ -108,14 +108,14 @@ begin # Wait thirty seconds between checks.
               end
             end
           end
-        end
-      end
 
-      step "Saving updated Payments file" do
-        CSV.open('EFT/'+@for_month+'/payment.csv', 'w') do |writer|
-          writer << GotoTransaction.headers
-          @payment.each_value do |goto|
-            writer << goto.to_a
+          step "Saving updated Payments file" do
+            CSV.open('EFT/'+@for_month+'/payment.csv', 'w') do |writer|
+              writer << GotoTransaction.headers
+              @payment.each_value do |goto|
+                writer << goto.to_a
+              end
+            end
           end
         end
       end
