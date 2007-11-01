@@ -69,15 +69,10 @@ class EftBatch < ActiveRecord::Base
     self.for_month = month
     self.eft_count = @members.length
     self.eft_total = total_amount
-    # t.column :eft_count_by_location, :string, :default => {}.to_yaml
     self.eft_count_by_location = locations_count
-    # t.column :eft_count_by_amount, :string, :default => {}.to_yaml
     self.eft_count_by_amount = amounts_count
-    # t.column :eft_total_by_location, :string, :default => {}.to_yaml
     self.eft_total_by_location = locations_amounts
-    # t.column :memberships_without_efts, :integer
     self.memberships_without_efts = @missing_efts.length
-    # t.column :members_with_expired_cards, :integer
     self.members_with_invalid_efts = @invalid_efts.length
 
     path = 'EFT/'+self.for_month+'/' # should be different for each month and should end in /
@@ -86,12 +81,6 @@ class EftBatch < ActiveRecord::Base
       writer << GotoTransaction.headers
       @members.each {|m| writer << m}
     end
-    # @location_members.each do |loc_code,members|
-    #   CSV.open(path+loc_code.to_s+'.csv', 'w') do |writer|
-    #     writer << ['Client_No','LastName', 'FirstName']
-    #     members.each {|m| writer << m}
-    #   end
-    # end
     CSV.open(path+'missing_efts.csv', 'w') do |writer|
       writer << ['Client_No']
       @missing_efts.each {|m| writer << m}
