@@ -39,40 +39,40 @@ def http_submit(batch) # Sends the generated payment CSV to the payment gateway
       end
       goto = GotoTransaction.new_from_csv_row(row)
       unless goto.submitted?
-ActionController::Base.logger.info("Submitting ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}")
-puts "Submitting ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}"
-        goto.submit # (Validates before submitting)
-ActionController::Base.logger.info({'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']])
-puts({'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']])
-        if goto.should_retry?
-          retry_records[goto.client_id] = goto
-        else
-          @returns.record(goto)
+        step "Submitting ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}" do
+          retry_records[goto.client_id] = goto # First add to retry, remove when successful
+          goto.submit # (Validates before submitting)
+          ActionController::Base.logger.info({'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']])
+          puts({'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']])
+          unless goto.should_retry?
+            retry_records.delete(goto.client_id)
+            @returns.record(goto)
+          end
         end
       end
     end
     retry_records.each do |k,goto| # Retry once
-      msg = "Retrying ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}"
-        ActionController::Base.logger.info(msg)
-        puts msg
-      goto.submit
-      msg = {'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']]
-        ActionController::Base.logger.info(msg)
-        puts msg
-      if goto.received?
-        @returns.record(goto)
-        retry_records.delete(k)
+      step "Retrying ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}" do
+        goto.submit
+        msg = {'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']]
+          ActionController::Base.logger.info(msg)
+          puts msg
+        if goto.received?
+          @returns.record(goto)
+          retry_records.delete(k)
+        end
       end
     end
     retry_records.each_value do |goto| #Retry again
-      msg = "Retrying ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}"
-        ActionController::Base.logger.info(msg)
-        puts msg
-      goto.submit
-      msg = {'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']]
-        ActionController::Base.logger.info(msg)
-        puts msg
-      @returns.record(goto)
+      step "Retrying ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}" do
+          ActionController::Base.logger.info(msg)
+          puts msg
+        goto.submit
+        msg = {'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[goto.response['status']]
+          ActionController::Base.logger.info(msg)
+          puts msg
+        @returns.record(goto)
+      end
     end
   end
   step "Finishing up #{batch.for_month}" do
