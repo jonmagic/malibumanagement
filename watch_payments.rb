@@ -27,7 +27,7 @@ def http_submit(batch) # Sends the generated payment CSV to the payment gateway
         next
       end
       t = GotoTransaction.new(Helios::Eft.find(row[0]))
-      @returns.record(t)
+      GotoCsv::Extras.push_to_helios(t)
     end
   end
   step "Submitting #{batch.for_month}" do

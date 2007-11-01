@@ -6,13 +6,14 @@ module GotoCsv
         a = goto.amount.to_f.to_s.split(/\./).join('')
         amnt = a.chop.chop+'.'+a[-2,2]
         trans_attrs = {
+          :id => goto.transaction_id.to_i,
           :Descriptions => case # Needs to include certain information for different cases
             when goto.invalid?
-              "VIP: Invalid EFT: ##{goto.errors.full_messages.to_sentence}"
+              "#{'VIP: Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}"
             when goto.declined?
               "VIP: Declined: ##{goto.response['term_code']}"
             else
-              "VIP: Accepted ##{goto.response['auth_code']}"
+              "VIP: Accepted: ##{goto.response['auth_code']}"
             end,
           :client_no => goto.client_id,
           :Last_Name => goto.last_name,
@@ -27,12 +28,12 @@ module GotoCsv
           :Charge => goto.paid_now? && goto.credit_card? ? amnt : 0,
           :Credit => goto.declined? || goto.invalid? ? amnt : 0,
           :Wait_For => case
-            when goto.paid_now? && goto.ach?
-              'K'
-            when goto.paid_now? && goto.credit_card?
-              'N'
-            else
+            when goto.declined? || goto.invalid?
               'I'
+            when goto.ach?
+              'K'
+            when goto.credit_card?
+              'N'
             end
         }
         if trans_attrs[:id]
@@ -62,7 +63,7 @@ module GotoCsv
             :Location => goto.location,
             :Last_Name => goto.last_name,
             :First_Name => goto.first_name,
-            :Comments => goto.invalid? ? "Invalid EFT: #{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response['description']}",
+            :Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response['description']}",
             :EmpCode => 'EC',
             :Interrupt => true,
             :Deleted => false
