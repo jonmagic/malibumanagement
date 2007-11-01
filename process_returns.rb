@@ -49,7 +49,7 @@ end
 last_sftp_check = Time.now-3600 # Pretend last check was two hours ago
 returns_last_updated = Time.now-30
 begin # Wait thirty seconds between checks.
-  @for_month = Time.now.strftime("%Y") + '/' + (Time.now.strftime("%m").to_i+1).to_s
+  @for_month = Time.now.strftime("%Y") + '/' + (Time.now.strftime("%m").to_i).to_s
   @payment = {}
   @responses = {}
   @batch = EftBatch.find_or_create_by_for_month(@for_month)
