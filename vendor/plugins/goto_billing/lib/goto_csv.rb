@@ -46,8 +46,8 @@ module GotoCsv
           cp.update_attributes(
             :Payment_Amount => cp.Payment_Amount.to_f + goto.amount + (goto.submitted? ? 5 : 0),
             :Balance => cp.Balance.to_f + goto.amount + (goto.submitted? ? 5 : 0),
-            :Date_Due = n,
-            :Last_Mdt = Time.gm(n.year, n.month, n.mday, n.hour+1, 0, 0)
+            :Date_Due => n,
+            :Last_Mdt => Time.gm(n.year, n.month, n.mday, n.hour+1, 0, 0)
           ) # if Time.now > Time.parse('2007/11/01 07:00:00')
 
           # Helios::ClientProfile.update_on_master(
