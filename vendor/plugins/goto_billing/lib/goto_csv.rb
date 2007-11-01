@@ -59,8 +59,8 @@ module GotoCsv
             :id => cp.id,
             :Payment_Amount => cp.Payment_Amount.to_f + goto.amount + (goto.submitted? ? 5 : 0),
             :Balance => cp.Balance.to_f + goto.amount + (goto.submitted? ? 5 : 0),
-            :Date_Due = n,
-            :Last_Mdt = Time.gm(n.year, n.month, n.mday, n.hour+1, 0, 0)
+            :Date_Due => n,
+            :Last_Mdt => Time.gm(n.year, n.month, n.mday, n.hour+1, 0, 0)
           )
           step "Creating popup Note on client ##{goto.client_id.to_s}" do
             Helios::Note.create_on_master(
