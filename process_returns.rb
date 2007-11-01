@@ -54,22 +54,17 @@ begin # Wait thirty seconds between checks.
   @responses = {}
   @batch = EftBatch.find_or_create_by_for_month(@for_month)
 
-  step "Downloading files from GotoBilling" do
-    download_sftp_files
-    last_sftp_check = Time.now
-  end if last_sftp_check < Time.now-1800 # More than an hour ago
-
   @return_files = Dir.open('EFT/'+@for_month).collect.reject {|a| a !~ /returns_.*\.csv$/}.sort.collect {|f| 'EFT/'+@for_month+'/'+f}
 
-  if !@return_files.blank?
-    returns_new_updated = returns_last_updated
-    @return_files.each do |f|
-      mm = File.mtime(f)
-      returns_new_updated = mm if mm > returns_last_updated
-    end
-    if returns_new_updated > returns_last_updated
-      returns_last_updated = returns_new_updated
-    else
+  # if !@return_files.blank?
+  #   returns_new_updated = returns_last_updated
+  #   @return_files.each do |f|
+  #     mm = File.mtime(f)
+  #     returns_new_updated = mm if mm > returns_last_updated
+  #   end
+  #   if returns_new_updated > returns_last_updated
+  #     returns_last_updated = returns_new_updated
+  #   else
       step "Loading Payments" do
         headers = true
         CSV::Reader.parse(File.open('EFT/'+@for_month+'/payment.csv', 'rb')) do |row|
@@ -124,6 +119,12 @@ begin # Wait thirty seconds between checks.
           end
         end
       end
-    end
-  end
-end while sleep(30)
+  #   end
+  # end
+
+  step "Downloading files from GotoBilling" do
+    download_sftp_files
+    last_sftp_check = Time.now
+  end if last_sftp_check < Time.now-1800 # More than an hour ago
+
+end while sleep(150)
