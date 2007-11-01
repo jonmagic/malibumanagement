@@ -25,6 +25,7 @@ class EftBatch < ActiveRecord::Base
     @invalid_efts = []
     @location_members = {}
     super(attrs)
+    attrs.stringify_keys!
     month = attrs['for_month'] if attrs.has_key?('for_month')
   # Sets to the next month after today's month. If today is December, it will roll over the year as well.
     month ||= (Time.now.strftime("%Y").to_i + Time.now.strftime("%m").to_i/12).to_i.to_s + '/' + Time.now.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
