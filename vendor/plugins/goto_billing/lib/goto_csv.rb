@@ -3,7 +3,7 @@ module GotoCsv
   class Extras
     class << self
       def push_to_helios(goto)
-        a = goto.amount.to_f.to_s.split(/\./).join('')
+        a = goto.amount.to_f.to_s.split(/\./).join('').to_i.to_s
         amnt = a.chop.chop+'.'+a[-2,2]
         trans_attrs = {
           :id => goto.transaction_id.to_i > 0 ? goto.transaction_id.to_i : nil,
@@ -42,7 +42,7 @@ module GotoCsv
           goto.transaction_id = Helios::Transact.create_on_master(trans_attrs)
         end
         if (goto.declined? || goto.invalid?) && !goto.recorded?
-          cp = Helios::ClientProfile.find(goto.account_id.to_i)
+          cp = Helios::ClientProfile.find(goto.client_id.to_i)
           n = Time.now.gmtime
           cp.update_attributes(
             :Payment_Amount => cp.Payment_Amount.to_f + goto.amount + (goto.submitted? ? 5 : 0),
