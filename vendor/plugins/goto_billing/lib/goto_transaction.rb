@@ -184,23 +184,35 @@ class GotoTransaction < GotoBilling::Base
   end
   def account_type=(value)
     return if value.blank?
-    raise GotoBilling::AttributeError, "AccountType (got #{value}) can only be A, C, I, M, S or V." unless ['A','C','I','M','S','V'].include?(value)
-    @attributes['account_type'] = value
+    # raise GotoBilling::AttributeError, "AccountType (got #{value}) can only be A, C, I, M, S or V." unless ['A','C','I','M','S','V'].include?(value)
+    if ['A','C','I','M','S','V'].include?(value)
+      @attributes['account_type'] = value
+    end
+    @attributes['account_type']
   end
   def authorization=(value)
     return if value.blank?
-    raise GotoBilling::AttributeError, "Authorization (got #{value}) can only be Written, Tel, or Web." unless ['Written', 'Tel', 'Web'].include?(value)
-    @attributes['authorization'] = value
+    # raise GotoBilling::AttributeError, "Authorization (got #{value}) can only be Written, Tel, or Web." unless ['Written', 'Tel', 'Web'].include?(value)
+    if ['Written', 'Tel', 'Web'].include?(value)
+      @attributes['authorization'] = value
+    end
+    @attributes['authorization']
   end
   def type=(value)
     return if value.blank?
-    raise GotoBilling::AttributeError, "Type (got #{value}) can only be ACH or Credit Card." unless ['ACH', 'Credit Card'].include?(value)
-    @attributes['type'] = value
+    # raise GotoBilling::AttributeError, "Type (got #{value}) can only be ACH or Credit Card." unless ['ACH', 'Credit Card'].include?(value)
+    if ['ACH', 'Credit Card'].include?(value)
+      @attributes['type'] = value
+    end
+    @attributes['type']
   end
   def expiration=(value)
     return if value.blank?
-    raise GotoBilling::AttributeError, "Expiration (got #{value}) should be a string containing 4 numbers, representing MM and YY." unless value.gsub(/\D/,'').length == 4
-    @attributes['expiration'] = value.gsub(/\D/,'')
+    # raise GotoBilling::AttributeError, "Expiration (got #{value}) should be a string containing 4 numbers, representing MM and YY." unless value.gsub(/\D/,'').length == 4
+    if value.gsub(/\D/,'').length == 4
+      @attributes['expiration'] = value.gsub(/\D/,'')
+    end
+    @attributes['expiration']
   end
 
   private
