@@ -170,11 +170,9 @@ class GotoTransaction < GotoBilling::Base
     end
   end
 
-  def recorded?
-    @recorded
-  end
+  alias :recorded? :recorded
   def recorded=(v)
-    @recorded = (v == 'true' || v == 1 ? true : false)
+    @attributes['recorded'] = (v == 'true' || v == 1 ? true : false)
   end
   def credit_card?
     !['C','S'].include?(@attributes['account_type'])
