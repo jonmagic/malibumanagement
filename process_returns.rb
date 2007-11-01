@@ -79,7 +79,6 @@ begin # Wait thirty seconds between checks.
 
       step "Weaving in GotoBilling responses" do
         @return_files.each do |file| #Should be sorting by date
-          File.rename(file, file+'.recorded')
           step "Backing up Payments file" do
             CSV.open('EFT/'+@for_month+'/'+"payment_unmerged_#{Time.now.strftime("%d%H%M")}.csv", 'w') do |writer|
               writer << GotoTransaction.headers
@@ -90,6 +89,7 @@ begin # Wait thirty seconds between checks.
           end
 
           step "Weaving in #{file}" do
+            File.rename(file, file+'.recorded')
             headers = true
             CSV::Reader.parse(File.open(file+'.recorded', 'rb')) do |row|
               if headers

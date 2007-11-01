@@ -5,7 +5,6 @@
 		</div>
 		<%= link_to "Regenerate Batch for #{Time.parse(@batch.for_month).strftime("%B %Y")}", 'javascript:void(0);', :onclick => "Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' />Regenerating EFT Batch, this can take several minutes...</div>', {fade : true, overlayCloseOnClick : false}); window.location='#{eft_path(:action => :regenerate_batch, :for_month => params[:for_month])}';", :class => 'eft_column resync' %>
 		<%= link_to "Submit Batch for #{Time.parse(@batch.for_month).strftime("%B %Y")}", eft_path(:action => :submit_batch, :for_month => @for_month), :class => 'eft_column go' %>
-		<a href="" class="eft_column download">Process Return Files</a>
 	</div>
 	<div id="eft_downloads">
 		<div id="eft_downloads_header" class="eft_header">

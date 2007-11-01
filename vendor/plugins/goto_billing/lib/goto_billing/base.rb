@@ -38,7 +38,7 @@ module GotoBilling
       end
 
       def connection(refresh = false)
-        @connection = Connection.new(site, '70.238.94.50', format) if refresh || @connection.nil?
+        @connection = Connection.new(site, ZONE[:IP], format) if refresh || @connection.nil?
         @connection
       end
 

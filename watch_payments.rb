@@ -32,11 +32,13 @@ def http_submit(batch) # Sends the generated payment CSV to the payment gateway
   end
   step "Submitting #{batch.for_month}" do
     headers = true
+    rows_submitted = 0
     CSV::Reader.parse(File.open(batch.eft_path+'payment.csv', 'rb')) do |row|
       if headers
         headers = false
         next
       end
+      rows_submitted += 1
       goto = GotoTransaction.new_from_csv_row(row)
       unless goto.submitted?
         step "Submitting ##{goto.client_id}, #{goto.account_type == 'C' ? 'Bank: Checking' : (goto.account_type == 'S' ? 'Bank: Savings' : 'Credit Card')}, $#{goto.amount}" do
@@ -87,6 +89,8 @@ end
 
 begin
   EftBatch.find_all_by_eft_ready(true).each do |batch|
-    API == 'http' ? http_submit(batch) : sftp_submit(batch)
+    if Dir.open('EFT/'+batch.for_month).collect.reject {|a| a !~ /returns_.*\.csv$/}.empty?
+      API == 'http' ? http_submit(batch) : sftp_submit(batch)
+    end
   end
 end while sleep(120) # Wait one minute between checks.
