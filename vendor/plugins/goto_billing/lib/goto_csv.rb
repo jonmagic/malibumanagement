@@ -6,7 +6,7 @@ module GotoCsv
         a = goto.amount.to_f.to_s.split(/\./).join('')
         amnt = a.chop.chop+'.'+a[-2,2]
         trans_attrs = {
-          :id => goto.transaction_id.to_i,
+          :id => goto.transaction_id.to_i > 0 ? goto.transaction_id.to_i : nil,
           :Descriptions => case # Needs to include certain information for different cases
             when goto.invalid?
               "#{'VIP: Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}"
