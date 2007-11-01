@@ -30,7 +30,7 @@ class EftController < ApplicationController
   def location_csv
     stream_csv(params[:location] + '_payments.csv') do |csv|
       csv << GotoTransaction.managers_headers
-      CSV::Reader.parse(File.open(@batch.eft_path+'payment.csv', 'rb')) do |row|
+      CSV::Reader.parse(File.open('EFT/' + @for_month + '/payment.csv', 'rb')) do |row|
         if headers
           headers = false
           next
