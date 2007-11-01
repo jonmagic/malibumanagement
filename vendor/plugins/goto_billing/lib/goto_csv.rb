@@ -42,12 +42,20 @@ module GotoCsv
         end
         if (goto.declined? || goto.invalid?) && !goto.recorded?
           cp = Helios::ClientProfile.find(goto.account_id.to_i)
-          # Helios::ClientProfile.update_on_master(
-          #   :id => cp.id,
-          #   :Payment_Amount => cp.Payment_Amount + goto.amount + (goto.submitted? ? 5 : 0),
-          #   :Balance => cp.Balance + goto.amount + (goto.submitted? ? 5 : 0),
-          #   :Date_Due = Time.now
+          n = Time.now.gmtime
+          # cp.update_attributes(
+          #   :Payment_Amount => cp.Payment_Amount.to_f + goto.amount + (goto.submitted? ? 5 : 0),
+          #   :Balance => cp.Balance.to_f + goto.amount + (goto.submitted? ? 5 : 0),
+          #   :Date_Due = n,
+          #   :Last_Mdt = Time.gm(n.year, n.month, n.mday, n.hour+1, 0, 0)
           # )
+          Helios::ClientProfile.update_on_master(
+            :id => cp.id,
+            :Payment_Amount => cp.Payment_Amount.to_f + goto.amount + (goto.submitted? ? 5 : 0),
+            :Balance => cp.Balance.to_f + goto.amount + (goto.submitted? ? 5 : 0),
+            :Date_Due = n,
+            :Last_Mdt = Time.gm(n.year, n.month, n.mday, n.hour+1, 0, 0)
+          )
           Helios::Note.create_on_master(
             :Client_no => goto.client_id,
             :Location => goto.location,
