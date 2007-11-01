@@ -86,12 +86,12 @@ class EftBatch < ActiveRecord::Base
       writer << GotoTransaction.headers
       @members.each {|m| writer << m}
     end
-    @location_members.each do |loc_code,members|
-      CSV.open(path+loc_code.to_s+'.csv', 'w') do |writer|
-        writer << ['Client_No','LastName', 'FirstName']
-        members.each {|m| writer << m}
-      end
-    end
+    # @location_members.each do |loc_code,members|
+    #   CSV.open(path+loc_code.to_s+'.csv', 'w') do |writer|
+    #     writer << ['Client_No','LastName', 'FirstName']
+    #     members.each {|m| writer << m}
+    #   end
+    # end
     CSV.open(path+'missing_efts.csv', 'w') do |writer|
       writer << ['Client_No']
       @missing_efts.each {|m| writer << m}
