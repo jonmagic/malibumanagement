@@ -1,5 +1,3 @@
-#!/usr/bin/env /Users/daniel/Sites/sixsigma/branches/malibu/script/runner
-
 require 'ftools'
 require 'goto_csv'
 API = 'http'
