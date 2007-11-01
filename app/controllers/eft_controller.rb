@@ -30,13 +30,13 @@ class EftController < ApplicationController
   def location_csv
     stream_csv(params[:location] + '_payments.csv') do |csv|
       csv << GotoTransaction.managers_headers
+      headers = true
       CSV::Reader.parse(File.open('EFT/' + @for_month + '/payment.csv', 'rb')) do |row|
         if headers
           headers = false
           next
         end
         goto = GotoTransaction.new_from_csv_row(row)
-ActionController::Base.logger.info("L:#{goto.location}==#{params[:location]}")
         csv << goto.to_managers_a if goto.location == params[:location]
       end
     end
