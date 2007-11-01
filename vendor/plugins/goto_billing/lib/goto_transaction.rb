@@ -175,7 +175,7 @@ class GotoTransaction < GotoBilling::Base
   end
   def recorded=(v)
     v = true if v == 'true' || v == 1
-    @recorded = v ? true : false
+    @recorded = (v ? true : false)
   end
   def credit_card?
     !['C','S'].include?(@attributes['account_type'])
