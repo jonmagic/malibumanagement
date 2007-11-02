@@ -1,3 +1,5 @@
+require 'ftools'
+require 'csv'
 
 # 1) Look for transaction
 #   +) If transaction exists
