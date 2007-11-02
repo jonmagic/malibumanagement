@@ -48,7 +48,7 @@ class Helios::Transact < ActiveRecord::Base
     rec.id
   end
   def self.update_on_master(attrs)
-    self.primary_key = 'OTNum'
+    self.master[self.master.keys[0]].primary_key = 'OTNum'
     t = self.master[self.master.keys[0]].new
     attrs.stringify_keys!
     attrs.merge('Last_Mdt' => Time.now - 4.hours).each do |k,v|
