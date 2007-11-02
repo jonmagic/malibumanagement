@@ -32,6 +32,7 @@ class Helios::Note < ActiveRecord::Base
   end
 
   def self.update_on_master(attrs)
+    self.primary_key = 'OTNum'
     t = self.master[self.master.keys[0]].new
     attrs.stringify_keys!
     t.id = attrs.delete('id') || attrs.delete('OTNum')
