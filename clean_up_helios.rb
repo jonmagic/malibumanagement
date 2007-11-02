@@ -89,7 +89,6 @@ end
 @payments = clients_from_payment_csv()
 step "Scrubbing accounts" do
   @payments.each do |goto|
-    next unless goto.client_id.to_s == '1006754'
     puts "\n"
     step "Scrubbing Transactions for #{goto.client_id}" do
       transactions = find_vip_transactions_for_client(goto.client_id)
