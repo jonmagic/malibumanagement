@@ -1,5 +1,3 @@
-#!/usr/bin/env /Users/daniel/Sites/sixsigma/branches/malibu/script/runner -e development
-
 # The Process:
 # Check the sftp site every hour for files from gotobilling, download them and process them as responses to GotoTransactions.
 

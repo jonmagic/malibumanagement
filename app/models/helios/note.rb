@@ -30,4 +30,18 @@ class Helios::Note < ActiveRecord::Base
     rec = self.master[self.master.keys[0]].create(attrs.merge(:Last_Mdt => Time.now - 4.hours))
     rec.id
   end
+
+  def self.update_on_master(attrs)
+    t = self.master[self.master.keys[0]].new
+    attrs.stringify_keys!
+    t.id = attrs.delete('id') || attrs.delete('Rec_no')
+    attrs.merge('Last_Mdt' => Time.now - 4.hours).each do |k,v|
+      t.send(k+'=', v)
+    end
+    t.save && attrs.has_key?('Client_no') && Helios::ClientProfile.touch_on_master(attrs['Client_no'])
+    t.id
+  end
+  def update_on_master(attrs)
+    self.class.update_on_master(:Rec_no => self.id, :Client_no => self.Client_no)
+  end
 end
