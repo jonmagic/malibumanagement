@@ -32,8 +32,9 @@ def step(description)
 end
 
 class CsvLogger
-  def initialize(path, headers)
+  def initialize(path, prefix, headers)
     @path = path
+    @prefix = prefix
     @headers = headers
     @csv = "filename_that_can't_exist_$%^&*##!@$...!!!"
   end
@@ -48,7 +49,7 @@ class CsvLogger
   
   private
     def gen_csv
-      @csv = @path + 'transactions_' + Time.now.to_f.to_s.split(/\./).join('')[-10,10] +'.csv'
+      @csv = @path + @prefix + '_' + Time.now.to_f.to_s.split(/\./).join('')[-10,10] +'.csv'
       file = File.open(@csv, 'w')
         raise "Could not open returns file for record-keeping!!" if file.nil?
         file.write(@headers.map {|x| x = "\"#{x}\"" if x =~ /,/; x}.join(',') + "\n")
@@ -72,18 +73,21 @@ def clients_from_payment_csv
 end
 
 def find_vip_transactions_for_client(id)
-  Helios::Transact.find(:all, :conditions => ["[client_no]=? AND [Last_Mdt] > '2007-11-01 00:00:00'", id], :order => '[Last_Mdt]')
+  Helios::Transact.find(:all, :conditions => ["[client_no]=? AND [Last_Mdt] > ? AND [Code] LIKE ?", id, Time.parse('2007/11/01'), '%EFT%'], :order => '[Last_Mdt]')
 end
 def find_vip_notes_for_client(id)
-  Helios::Note.find(:all, :conditions => ["[Client_no]=? AND [Last_Mdt] > '2007-11-01 00:00:00' AND [Comments] LIKE '%EFT%'", id])
+  Helios::Note.find(:all, :conditions => ["[Client_no]=? AND [Last_Mdt] > ? AND [Comments] LIKE ?", id, Time.parse('2007/11/01'), '%EFT%'])
 end
 
 
 
 @for_month = Time.now.strftime("%Y") + '/' + (Time.now.strftime("%m").to_i).to_s
-@logger = CsvLogger.new('EFT/' + @for_month + '/')
+@logger = CsvLogger.new('EFT/' + @for_month + '/', 'transactions', GotoTransaction.headers)
+@balances = CsvLogger.new('EFT/' + @for_month + '/', 'balances', ['ClientId', 'Balance'])
+@payments = clients_from_payment_csv()
+
 step "Scrubbing accounts" do
-  clients_from_payment_csv().each do |goto|
+  @payments.each do |goto|
     step "Scrubbing Transactions for #{goto.client_id}" do
       transactions = find_vip_transactions_for_client(goto.client_id)
       transaction = transactions.pop
@@ -146,13 +150,20 @@ step "Scrubbing accounts" do
           n.update_on_master(:Deleted => true) # update_on_master takes care of the rest
         end
       end
+      note.update_on_master(:Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response.description}")
     end
 
     step "Gathering and reporting Balances for #{goto.client_id}" do
+      cp = Helios::ClientProfile.find(goto.client_id)
+      @balances.log([cp.id, cp.Balance])
     end
   end
 end
 
 step "Recording transaction numbers in payment.csv" do
+  CSV.open('EFT/' + @for_month + '/payment.csv', 'w') do |writer|
+    writer << GotoTransaction.headers
+    @payments.each {|goto| writer << goto.to_a }
+  end
 end
 
