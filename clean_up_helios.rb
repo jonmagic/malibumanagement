@@ -75,10 +75,10 @@ def clients_from_payment_csv
 end
 
 def find_vip_transactions_for_client(id)
-  Helios::Transact.find(:all, :conditions => ["[client_no]=? AND [Last_Mdt] > ? AND [Code] LIKE ?", id, Time.parse('2007/11/01'), '%EFT%'], :order => '[Last_Mdt]')
+  Helios::Transact.find(:all, :conditions => ["[client_no]=? AND [Last_Mdt] >= ? AND [Code] LIKE ?", id, Time.parse('2007/10/31'), '%EFT%'], :order => '[Last_Mdt]')
 end
 def find_vip_notes_for_client(id)
-  Helios::Note.find(:all, :conditions => ["[Client_no]=? AND [Last_Mdt] > ? AND [Comments] LIKE ?", id, Time.parse('2007/11/01'), '%EFT%'])
+  Helios::Note.find(:all, :conditions => ["[Client_no]=? AND [Last_Mdt] >= ? AND [Comments] LIKE ?", id, Time.parse('2007/10/31'), '%EFT%'])
 end
 
 
@@ -87,15 +87,17 @@ end
 @logger = CsvLogger.new('EFT/' + @for_month + '/', 'transactions', GotoTransaction.headers)
 @balances = CsvLogger.new('EFT/' + @for_month + '/', 'balances', ['ClientId', 'Balance'])
 @payments = clients_from_payment_csv()
+
 step "Scrubbing accounts" do
   @payments.each do |goto|
+    next unless goto.client_id.to_s == '1006754'
     puts "\n"
     step "Scrubbing Transactions for #{goto.client_id}" do
       transactions = find_vip_transactions_for_client(goto.client_id)
       transaction = transactions.pop
       transactions.each do |t|
         step "Deleting extraneous transaction #{t.id}" do
-          t.update_on_master(:Deleted => true) # update_on_master takes care of the rest
+          t.update_on_master(:OTNum => t.OTNum, :Deleted => true) # update_on_master takes care of the rest
         end
       end
       a = goto.amount.to_s.split(/\./).join('')
@@ -139,7 +141,6 @@ step "Scrubbing accounts" do
       else
         step "Updating Transaction ##{transaction.id}" do
           Helios::Transact.update_on_master(trans_attrs)
-          goto.transaction_id = transaction.id
         end
       end
       #   +) Record transaction number to csv (log it)
@@ -154,39 +155,23 @@ step "Scrubbing accounts" do
           n.update_on_master(:Deleted => true) # update_on_master takes care of the rest
         end
       end
-      should_be_note = (goto.declined? || goto.invalid?) ? true : false
-      if should_be_note
-        if note.nil?
-          step "Creating Note on master" do
-            note = Helios::Note.create_on_master(
-              :Client_no => goto.client_id,
-              :Location => goto.location,
-              :Last_Name => goto.last_name,
-              :First_Name => goto.first_name,
-              :Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response['description']}",
-              :EmpCode => 'EC',
-              :Interrupt => true,
-              :Deleted => false
-            )
-          end
-        else
-          step "Updating Note on master" do
-            note.update_on_master(:Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response.description}")
-          end
-        end
+      if note.nil?
       else
-        if !note.nil?
-          step "Deleting note on master" do
-            
-          end
-        end
+        note.update_on_master(:OTNum => note.OTNum, :Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response.description}")
       end
     end
 
     step "Gathering and reporting Balances for #{goto.client_id}" do
       cp = Helios::ClientProfile.find(goto.client_id)
-      puts "BALANCE:     $#{cp.Balance.to_s}"
       @balances.log([cp.id, cp.Balance])
     end
   end
 end
+
+step "Recording transaction numbers in payment.csv" do
+  CSV.open('EFT/' + @for_month + '/payment.csv', 'w') do |writer|
+    writer << GotoTransaction.headers
+    @payments.each {|goto| writer << goto.to_a }
+  end
+end if false
+
