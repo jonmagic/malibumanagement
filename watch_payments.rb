@@ -37,6 +37,8 @@ def http_submit(batch) # Sends the generated payment CSV to the payment gateway
       if headers
         headers = false
         next
+      elsif row.nil?
+        next
       end
       rows_submitted += 1
       goto = GotoTransaction.new_from_csv_row(row)

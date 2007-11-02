@@ -39,29 +39,40 @@ module GotoCsv
         if trans_attrs[:id]
           step "Updating transaction ##{trans_attrs[:id]} on master" do
             Helios::Transact.update_on_master(trans_attrs)
-          end
+          end if true
         else
           step "Creating transaction on master" do
             goto.transaction_id = Helios::Transact.create_on_master(trans_attrs)
-          end
+          end if true
         end
         if (goto.declined? || goto.invalid?) && !goto.recorded?
-          cp = Helios::ClientProfile.find(goto.client_id.to_i)
-          n = Time.now.gmtime
-          cp.update_attributes(
-            :Payment_Amount => cp.Payment_Amount.to_f + amnt.to_f + (goto.submitted? ? 5 : 0),
-            :Balance => cp.Balance.to_f + amnt.to_f + (goto.submitted? ? 5 : 0),
-            :Date_Due => n,
-            :Last_Mdt => Time.gm(n.year, n.month, n.mday, n.hour+1, 0, 0)
-          ) if Time.now > Time.parse('2007/11/01 07:00:00')
+          step "Recording Balance in ClientProfile" do
+            cp = Helios::ClientProfile.find(goto.client_id.to_i)
+            n = Time.now.gmtime
+#            cp.update_attributes(
+#              :Payment_Amount => cp.Payment_Amount.to_f + amnt.to_f + (goto.submitted? ? 5 : 0),
+#              :Balance => cp.Balance.to_f + amnt.to_f + (goto.submitted? ? 5 : 0),
+#              :Date_Due => n,
+#              :Last_Mdt => Time.gm(n.year, n.month, n.mday, n.hour+1, 0, 0)
+#            )
 
-          Helios::ClientProfile.update_on_master(
-            :id => cp.id,
-            :Payment_Amount => cp.Payment_Amount.to_f + goto.amount + (goto.submitted? ? 5 : 0),
-            :Balance => cp.Balance.to_f + goto.amount + (goto.submitted? ? 5 : 0),
-            :Date_Due => n,
-            :Last_Mdt => Time.gm(n.year, n.month, n.mday, n.hour+1, 0, 0)
-          )
+            rec = Helios::ClientProfile.master[Helios::ClientProfile.master.keys[0]].new
+            rec.id = cp.id
+            rec.Payment_Amount = cp.Payment_Amount.to_f + amnt.to_f + (goto.submitted? ? 5 : 0)
+            rec.Balance = cp.Balance.to_f + amnt.to_f + (goto.submitted? ? 5 : 0)
+            rec.Date_Due = n
+            rec.Last_Mdt = Time.gm(n.year, n.month, n.mday, n.hour+1, 0, 0)
+            rec.save
+
+#            Helios::ClientProfile.update_on_master(
+#               :Client_no => cp.id,
+#               :Payment_Amount => cp.Payment_Amount.to_f + amnt.to_f + (goto.submitted? ? 5 : 0),
+#               :Balance => cp.Balance.to_f + amnt.to_f + (goto.submitted? ? 5 : 0),
+#               :Date_Due => n,
+#               :Last_Mdt => Time.gm(n.year, n.month, n.mday, n.hour+1, 0, 0)
+#            )
+          end if true
+
           step "Creating popup Note on client ##{goto.client_id.to_s}" do
             Helios::Note.create_on_master(
               :Client_no => goto.client_id,
@@ -73,9 +84,8 @@ module GotoCsv
               :Interrupt => true,
               :Deleted => false
             )
-          end
+          end if true
         end
-        goto.recorded = true if goto.paid_now? || goto.declined? || goto.invalid?
         return goto
       end
     private
