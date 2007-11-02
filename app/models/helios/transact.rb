@@ -51,7 +51,6 @@ class Helios::Transact < ActiveRecord::Base
     self.primary_key = 'OTNum'
     t = self.master[self.master.keys[0]].new
     attrs.stringify_keys!
-    t.id = attrs.delete('id') || attrs.delete('OTNum')
     attrs.merge('Last_Mdt' => Time.now - 4.hours).each do |k,v|
       t.send(k+'=', v)
     end
@@ -59,7 +58,7 @@ class Helios::Transact < ActiveRecord::Base
     t.id
   end
   def update_on_master(attrs)
-    self.class.update_on_master(:OTNum => self.OTNum, :client_no => self.client_no)
+    self.class.update_on_master({:OTNum => self.OTNum, :client_no => self.client_no}.merge(attrs))
   end
 
   def self.next_OTNum

@@ -43,6 +43,6 @@ class Helios::Note < ActiveRecord::Base
     t.id
   end
   def update_on_master(attrs)
-    self.class.update_on_master(:Rec_no => self.id, :Client_no => self.Client_no)
+    self.class.update_on_master({:Rec_no => self.id, :Client_no => self.Client_no}.merge(attrs))
   end
 end
