@@ -129,6 +129,7 @@ step "Scrubbing accounts" do
             'N'
           end
       }
+      trans_attrs[:OTNum] = transaction.OTNum if !transaction.OTNum.nil?
       if transaction.nil?
         step "Creating Transaction for #{goto.client_id}" do
           goto.transaction_id = Helios::Transact.create_on_master(trans_attrs)

@@ -34,7 +34,7 @@ class Helios::Note < ActiveRecord::Base
   def self.update_on_master(attrs)
     t = self.master[self.master.keys[0]].new
     attrs.stringify_keys!
-    t.id = attrs.delete('id') || attrs.delete('Rec_no')
+    t.id = attrs.delete('id') || attrs.delete('OTNum')
     attrs.merge('Last_Mdt' => Time.now - 4.hours).each do |k,v|
       t.send(k+'=', v)
     end
