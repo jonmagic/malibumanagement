@@ -82,14 +82,13 @@ def find_vip_notes_for_client(id)
 end
 
 
-
 @for_month = Time.now.strftime("%Y") + '/' + (Time.now.strftime("%m").to_i).to_s
 @logger = CsvLogger.new('EFT/' + @for_month + '/', 'transactions', GotoTransaction.headers)
 @balances = CsvLogger.new('EFT/' + @for_month + '/', 'balances', ['ClientId', 'Balance'])
 @payments = clients_from_payment_csv()
 step "Scrubbing accounts" do
   @payments.each do |goto|
-    next unless goto.client_id.to_s == '1006754'
+#    next unless goto.client_id.to_s == '1006754' || goto.client_id.to_s == '4009110' || goto.client_id.to_s == '3003499'
     puts "\n"
     step "Scrubbing Transactions for #{goto.client_id}" do
       transactions = find_vip_transactions_for_client(goto.client_id)
@@ -102,7 +101,6 @@ step "Scrubbing accounts" do
       a = goto.amount.to_s.split(/\./).join('')
       amnt = a.chop.chop+'.'+a[-2,2]
       trans_attrs = {
-        :id => goto.transaction_id.to_i > 0 ? goto.transaction_id.to_i : nil,
         :Descriptions => case # Needs to include certain information for different cases
           when goto.invalid?
             "#{'VIP: Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}"
@@ -135,7 +133,7 @@ step "Scrubbing accounts" do
       trans_attrs[:OTNum] = transaction.OTNum if !transaction.OTNum.nil?
       if transaction.nil?
         step "Creating Transaction for #{goto.client_id}" do
-          goto.transaction_id = Helios::Transact.create_on_master(trans_attrs)
+          goto.transaction_id = Helios::Transact.create_on_master(trans_attrs.merge(:ticket_no => '990000014'))
         end
       else
         step "Updating Transaction ##{transaction.id}" do
@@ -152,7 +150,7 @@ step "Scrubbing accounts" do
       note = notes.pop
       notes.each do |n|
         step "Deleting extraneous note #{n.id}" do
-          n.update_on_master(:Deleted => true) # update_on_master takes care of the rest
+          n.delete_from_master # update_on_master takes care of the rest
         end
       end
       should_be_note = (goto.declined? || goto.invalid?) ? true : false
@@ -188,6 +186,6 @@ step "Scrubbing accounts" do
       cp = Helios::ClientProfile.find(goto.client_id)
       puts "BALANCE:     $#{cp.Balance.to_s}"
       @balances.log([cp.id, cp.Balance])
-    end if false
+    end
   end
 end
