@@ -87,7 +87,6 @@ end
 @logger = CsvLogger.new('EFT/' + @for_month + '/', 'transactions', GotoTransaction.headers)
 @balances = CsvLogger.new('EFT/' + @for_month + '/', 'balances', ['ClientId', 'Balance'])
 @payments = clients_from_payment_csv()
-
 step "Scrubbing accounts" do
   @payments.each do |goto|
     step "Scrubbing Transactions for #{goto.client_id}" do
@@ -139,6 +138,7 @@ step "Scrubbing accounts" do
       else
         step "Updating Transaction ##{transaction.id}" do
           Helios::Transact.update_on_master(trans_attrs)
+          goto.transaction_id = transaction.id
         end
       end
       #   +) Record transaction number to csv (log it)
@@ -173,6 +173,12 @@ step "Scrubbing accounts" do
             note.update_on_master(:Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response.description}")
           end
         end
+      else
+        if !note.nil?
+          step "Deleting note on master" do
+            
+          end
+        end
       end
     end
 
@@ -183,11 +189,3 @@ step "Scrubbing accounts" do
     end
   end
 end
-
-step "Recording transaction numbers in payment.csv" do
-  CSV.open('EFT/' + @for_month + '/payment.csv', 'w') do |writer|
-    writer << GotoTransaction.headers
-    @payments.each {|goto| writer << goto.to_a }
-  end
-end
-
