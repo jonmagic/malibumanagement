@@ -177,8 +177,8 @@ step "Scrubbing accounts" do
         end
       else
         if !note.nil?
-          step "Deleting note on master" do
-            
+          step "Deleting note from master" do
+            note.delete_from_master
           end
         end
       end
