@@ -185,7 +185,7 @@ step "Scrubbing accounts" do
       cp = Helios::ClientProfile.find(goto.client_id)
       puts "BALANCE:     $#{cp.Balance.to_s}"
       @balances.log([cp.id, cp.Balance])
-    end if false
+    end
   end
 end
 
