@@ -156,24 +156,29 @@ step "Scrubbing accounts" do
       should_be_note = (goto.declined? || goto.invalid?) ? true : false
       if should_be_note
         if note.nil?
-          note = Helios::Note.create_on_master(
-            :Client_no => goto.client_id,
-            :Location => goto.location,
-            :Last_Name => goto.last_name,
-            :First_Name => goto.first_name,
-            :Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response['description']}",
-            :EmpCode => 'EC',
-            :Interrupt => true,
-            :Deleted => false
-          )
+          step "Creating Note on master" do
+            note = Helios::Note.create_on_master(
+              :Client_no => goto.client_id,
+              :Location => goto.location,
+              :Last_Name => goto.last_name,
+              :First_Name => goto.first_name,
+              :Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response['description']}",
+              :EmpCode => 'EC',
+              :Interrupt => true,
+              :Deleted => false
+            )
+          end
         else
-          note.update_on_master(:Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response.description}")
+          step "Updating Note on master" do
+            note.update_on_master(:Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response.description}")
+          end
         end
       end
     end
 
     step "Gathering and reporting Balances for #{goto.client_id}" do
       cp = Helios::ClientProfile.find(goto.client_id)
+      puts "BALANCE:     $#{cp.Balance.to_s}"
       @balances.log([cp.id, cp.Balance])
     end
   end
