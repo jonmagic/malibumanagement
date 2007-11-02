@@ -60,6 +60,9 @@ class Helios::Transact < ActiveRecord::Base
   def update_on_master(attrs)
     self.class.update_on_master({:OTNum => self.OTNum, :client_no => self.client_no}.merge(attrs))
   end
+  def delete_from_master
+    self.update_on_master(:CType => 1)
+  end
 
   def self.next_OTNum
     self.connection.select_value("SELECT MAX(#{connection.quote_column_name('OTNum')}) AS yup FROM #{connection.quote_column_name('Transactions')}", 'yup').to_i+1
