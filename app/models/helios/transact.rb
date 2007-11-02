@@ -48,7 +48,7 @@ class Helios::Transact < ActiveRecord::Base
     rec.id
   end
   def self.update_on_master(attrs)
-    t.class.primary_key = 'OTNum'
+    self.primary_key = 'OTNum'
     t = self.master[self.master.keys[0]].new
     attrs.stringify_keys!
     t.id = attrs.delete('id') || attrs.delete('OTNum')
