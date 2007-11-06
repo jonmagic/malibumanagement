@@ -116,7 +116,7 @@ step "Scrubbing accounts" do
         :Code => 'EFT Active',
         :Division => ZONE[:Division], # 2 for zone1
         :Department => ZONE[:Department], # 7 for zone1
-        :Location => goto.location,
+        :Location => '001',
         :Price => amnt,
         :Check => goto.paid_now? && goto.ach? ? amnt : 0,
         :Charge => goto.paid_now? && goto.credit_card? ? amnt : 0,
