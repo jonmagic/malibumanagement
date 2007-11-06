@@ -143,7 +143,7 @@ module GotoCsv
   end
   module NotesExt
     def self.create_on_master(attrs)
-      self.master[self.master.keys[0]].create(attrs.merge(:Last_Mdt => Time.now - 3.hours, :Location => LOCATIONS.reject {|k,v| v[:name] != self.master.keys[0]}.keys[0] ))
+      self.master[self.master.keys[0]].create(attrs.merge(:Last_Mdt => Time.now.utc, :Location => LOCATIONS.reject {|k,v| v[:name] != self.master.keys[0]}.keys[0] ))
       Helios::ClientProfile.touch_on_master(attrs[:Client_no])
     end
   end

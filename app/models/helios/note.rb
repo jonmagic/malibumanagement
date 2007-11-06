@@ -27,7 +27,7 @@ class Helios::Note < ActiveRecord::Base
   validates_presence_of :OTNum, :Location, :Last_Mdt, :Client_no
 
   def self.create_on_master(attrs)
-    rec = self.master[self.master.keys[0]].create(attrs.merge(:Last_Mdt => Time.now - 3.hours))
+    rec = self.master[self.master.keys[0]].create(attrs.merge(:Last_Mdt => Time.now.utc))
     rec.id
   end
 
@@ -36,7 +36,7 @@ class Helios::Note < ActiveRecord::Base
     t = self.master[self.master.keys[0]].new
     attrs.stringify_keys!
     t.OTNum = attrs.delete('id') || attrs.delete('OTNum')
-    attrs.merge('Last_Mdt' => Time.now - 3.hours).each do |k,v|
+    attrs.merge('Last_Mdt' => Time.now.utc).each do |k,v|
       t.send(k+'=', v)
     end
     t.save && attrs.has_key?('Client_no') && Helios::ClientProfile.touch_on_master(attrs['Client_no'])
