@@ -43,7 +43,7 @@ class Helios::Transact < ActiveRecord::Base
   alias :public_attributes :attributes
 
   def self.create_on_master(attrs)
-    rec = self.master[self.master.keys[0]].create(attrs.merge(:ticket_no => self.next_ticket_no, :Last_Mdt => Time.now - 4.hours))
+    rec = self.master[self.master.keys[0]].create(attrs.merge(:ticket_no => self.next_ticket_no, :Last_Mdt => Time.now - 3.hours))
     Helios::ClientProfile.touch_on_master(attrs[:client_no])
     rec.id
   end
@@ -51,7 +51,7 @@ class Helios::Transact < ActiveRecord::Base
     self.master[self.master.keys[0]].primary_key = 'OTNum'
     t = self.master[self.master.keys[0]].new
     attrs.stringify_keys!
-    attrs.merge('Last_Mdt' => Time.now - 4.hours).each do |k,v|
+    attrs.merge('Last_Mdt' => Time.now - 3.hours).each do |k,v|
       t.send(k+'=', v)
     end
     t.save && attrs.has_key?('client_no') && Helios::ClientProfile.touch_on_master(attrs['client_no'])

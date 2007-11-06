@@ -59,7 +59,7 @@ class Helios::ClientProfile < ActiveRecord::Base
   def self.touch_on_master(id)
     rec = self.master[self.master.keys[0]].new
     rec.id = id
-    rec.Last_Mdt = Time.now-4.hours
+    rec.Last_Mdt = Time.now - 3.hours
     rec.save
   end
 
