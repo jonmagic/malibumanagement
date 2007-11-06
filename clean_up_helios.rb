@@ -158,7 +158,7 @@ step "Scrubbing accounts" do
           step "Creating Note on master" do
             note = Helios::Note.create_on_master(
               :Client_no => goto.client_id,
-              :Location => goto.location,
+              :Location => '001',
               :Last_Name => goto.last_name,
               :First_Name => goto.first_name,
               :Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response['description']}",
@@ -169,7 +169,7 @@ step "Scrubbing accounts" do
           end
         else
           step "Updating Note on master" do
-            note.update_on_master(:Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response.description}")
+            note.update_on_master(:Interrupt => true, :Deleted => false, :Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response.description}")
           end
         end
       else
