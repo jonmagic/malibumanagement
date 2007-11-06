@@ -145,16 +145,16 @@ step "Scrubbing accounts" do
     end
 
     step "Scrubbing Notes for #{goto.client_id}" do
-      notes = find_vip_notes_for_client(goto.client_id)
-      note = notes.pop
-      notes.each do |n|
-        step "Deleting extraneous note #{n.id}" do
-          n.update_on_master(:Deleted => true) # update_on_master takes care of the rest
-        end
-      end
+      # notes = find_vip_notes_for_client(goto.client_id)
+      # note = notes.pop
+      # notes.each do |n|
+      #   step "Deleting extraneous note #{n.id}" do
+      #     n.update_on_master(:Deleted => true) # update_on_master takes care of the rest
+      #   end
+      # end
       should_be_note = (goto.declined? || goto.invalid?) ? true : false
       if should_be_note
-        if note.nil?
+        # if note.nil?
           step "Creating Note on master" do
             note = Helios::Note.create_on_master(
               :Client_no => goto.client_id,
@@ -167,17 +167,17 @@ step "Scrubbing accounts" do
               :Deleted => false
             )
           end
-        else
-          step "Updating Note on master" do
-            note.update_on_master(:Interrupt => true, :Deleted => false, :Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response.description}")
-          end
-        end
+        # else
+        #   step "Updating Note on master" do
+        #     note.update_on_master(:Interrupt => true, :Deleted => false, :Comments => goto.invalid? ? "#{'Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}" : "EFT Declined: #{goto.response.description}")
+        #   end
+        # end
       else
-        if !note.nil?
-          step "Deleting note from master" do
-            note.delete_from_master
-          end
-        end
+        # if !note.nil?
+        #   step "Deleting note from master" do
+        #     note.delete_from_master
+        #   end
+        # end
       end
     end
 
