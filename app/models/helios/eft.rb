@@ -66,16 +66,38 @@ class Helios::Eft < ActiveRecord::Base
     failed_list = []
     ids.each do |id|
       begin
-        eft = self.find(id)
-        eft.destroy
-        failed_list << id if !eft.errors.blank?
+        cp = self.find(id)
+        cp.destroy
+        failed_list << id if !cp.errors.blank?
+      rescue ActiveRecord::RecordNotFound
+        nil
+      end
+    end
+    puts "Retrying ONCE for #{failed_list.length} of them..."
+    second_failed = []
+    failed_list.each do |id|
+      begin
+        cp = self.find(id)
+        cp.destroy
+        second_failed << id if !cp.errors.blank?
+      rescue ActiveRecord::RecordNotFound
+        nil
+      end
+    end
+    puts "Retrying TWICE for #{second_failed.length} of them..."
+    really_failed = []
+    second_failed.each do |id|
+      begin
+        cp = self.find(id)
+        cp.destroy
+        really_failed << id if !cp.errors.blank?
       rescue ActiveRecord::RecordNotFound
         nil
       end
     end
     puts " * * * * * *" * 5
     puts "FAILED TO DESTROY:"
-    puts failed_list.inspect
+    puts really_failed.inspect
   end
 
   def credit_card?
