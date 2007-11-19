@@ -83,6 +83,9 @@ ActionController::Base.logger.info("Filters in query_and_filters: #{filters.insp
       end
       def render_filter_condition(filters)
 ActionController::Base.logger.info("Filters in render_filter_condition: #{filters.inspect}")
+puts "Filters in render_filter_condition: #{filters.inspect}"
+ActionController::Base.logger.info("@filter_comparisons: #{@filter_comparisons.inspect}")
+puts "@filter_comparisons: #{@filter_comparisons.inspect}"
         [1, filters.reject {|f,v| !@filter_comparisons[f].nil? }.collect do |key,val|
             val = "%#{val}%" if @filter_comparisons[key.to_s] =~ /LIKE/
             self.replace_bind_variables(@filter_comparisons[key.to_s], [val])
