@@ -35,6 +35,10 @@ class EftBatch < ActiveRecord::Base
     new(*args).save
   end
 
+  def for_month=(v)
+    write_attribute(:for_month, Time.parse(v.to_s).strftime("%Y/%m"))
+  end
+
   # EftBatch.create(:for_month => '2007/12').generate -- will gather information from Helios::ClientProfile and Helios::Eft.
   def generate(for_location=nil)
     if new_record?
