@@ -86,7 +86,7 @@ ActionController::Base.logger.info("Filters in render_filter_condition: #{filter
 puts "Filters in render_filter_condition: #{filters.inspect}"
 ActionController::Base.logger.info("@filter_comparisons: #{@filter_comparisons.inspect}")
 puts "@filter_comparisons: #{@filter_comparisons.inspect}"
-        [1, filters.reject {|f,v| !@filter_comparisons[f].nil? }.collect do |key,val|
+        [1, filters.reject {|f,v| @filter_comparisons[f].nil? }.collect do |key,val|
             val = "%#{val}%" if @filter_comparisons[key.to_s] =~ /LIKE/
             self.replace_bind_variables(@filter_comparisons[key.to_s], [val])
           end].flatten.compact.join(' AND ')
