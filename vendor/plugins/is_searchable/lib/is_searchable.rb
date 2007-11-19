@@ -70,15 +70,10 @@ module IsSearchable
         self.replace_named_bind_variables(@query_condition, {:query => query, :like_query => '%' + query.to_s + '%'})
       end
       def render_filter_condition(filters)
-        [
-          1,
-          filters.reject do |f,v|
-            !@filter_comparisons[f].nil?
-          end.collect do |key,val|
+        [1, filters.reject {|f,v| !@filter_comparisons[f].nil? }.collect do |key,val|
             val = "%#{val}%" if @filter_comparisons[key.to_s] =~ /LIKE/
             self.replace_bind_variables(@filter_comparisons[key.to_s], [val])
-          end
-        ].flatten.join(' AND ')
+          end].flatten.join(' AND ')
       end
     end
   end
