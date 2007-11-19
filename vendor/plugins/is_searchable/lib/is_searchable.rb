@@ -72,7 +72,7 @@ module IsSearchable
       def render_filter_condition(filters)
         [
           1,
-          filters.reject do |f|
+          filters.reject do |f,v|
             !@filter_comparisons[f].nil?
           end.collect do |key,val|
             val = "%#{val}%" if @filter_comparisons[key.to_s] =~ /LIKE/
