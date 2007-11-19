@@ -49,8 +49,7 @@ class EftBatch < ActiveRecord::Base
 puts "Generating for #{Time.parse(for_month).month_name}..."
     timestart = Time.now
     Helios::Eft.memberships(for_month, true) do |cp|
-      the_location = cp.eft.Location || '0'*(3-ZONE_LOCATION_BITS)+cp.eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
-      if for_location.nil? || for_location == the_location
+      if for_location.nil?
         unless cp.has_prepaid_membership?
           t = GotoTransaction.new(cp.eft)
           t.batch = self
@@ -58,10 +57,20 @@ puts "Generating for #{Time.parse(for_month).month_name}..."
             t.no_eft = true
             self.no_eft_count += 1
           else
-            t.location = the_location
+            t.location = cp.eft.Location || '0'*(3-ZONE_LOCATION_BITS)+cp.eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
             self.invalid_count += 1 if t.goto_is_invalid?
           end
           t.save
+        end
+      else
+        if !cp.eft.nil?
+          the_location = cp.eft.Location || '0'*(3-ZONE_LOCATION_BITS)+cp.eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
+          if for_location == the_location && !cp.has_prepaid_membership?
+            t = GotoTransaction.new(cp.eft)
+            t.batch = self
+            t.location = the_location
+            t.save
+          end
         end
       end
     end
