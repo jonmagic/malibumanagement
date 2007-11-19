@@ -7,7 +7,7 @@ module ActionView
         value = options.delete('value') || value_before_type_cast(object)
         display_value = value.respond_to?(:strftime) ? value.strftime('%b %d, %Y') : value.to_s
         display_value = '[ choose date ]' if display_value.blank?
-        value = Time.parse(value) unless value.respond_to?(:strftime)
+        value = Time.parse(value ? value.to_s : Time.now.to_s) unless value.respond_to?(:strftime)
 
         add_default_name_and_id(options)
 
@@ -205,7 +205,7 @@ module ActionView
       def date_picker_tag(name, value = nil, options = {})
         display_value = value.respond_to?(:strftime) ? value.strftime('%b %d, %Y') : value.to_s
         display_value = '[ choose date ]' if display_value.blank?
-        value = Time.parse(value) unless value.respond_to?(:strftime)
+        value = Time.parse(value ? value.to_s : Time.now.to_s) unless value.respond_to?(:strftime)
 
         out = hidden_field_tag(name, value.strftime('%Y-%m-%d'))
         out << content_tag('a', display_value, :href => '#',
