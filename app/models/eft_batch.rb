@@ -32,7 +32,9 @@ class EftBatch < ActiveRecord::Base
   end
 
   def self.create(*args)
-    new(*args).save
+    b = new(*args)
+    b.save
+    b
   end
 
   def for_month=(v)
