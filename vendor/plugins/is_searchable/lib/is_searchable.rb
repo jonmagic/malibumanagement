@@ -38,6 +38,7 @@ module IsSearchable
 # sorta private methods
       def _bulk_count(query, options={})
         filters = options[:filters] || {}
+puts "SELECT COUNT(*) FROM (SELECT #{self.table_name}.* FROM #{self.table_name} #{render_condition_for_query_and_filters(query, filters)} GROUP BY #{self.table_name}.id) as tmpA"
         self.count_by_sql("SELECT COUNT(*) FROM (SELECT #{self.table_name}.* FROM #{self.table_name} #{render_condition_for_query_and_filters(query, filters)} GROUP BY #{self.table_name}.id) as tmpA")
       end
       def _bulk_search(query, options={})
