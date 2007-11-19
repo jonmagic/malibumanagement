@@ -112,10 +112,10 @@ logger.info "Search Results: #{@results.length} -- #{@results}"
         :form_type => current_form_model, #Automatically creates the connected form data via the appropriate (given) model
         :status => 'draft'
       )
-      if @form.save
+      if !@form.id.nil? && !@form.data.id.nil?
         redirect_to store_forms_url(:form_status => 'draft', :form_type => @form.data_type, :action => 'draft', :form_id => @form.id)
       else
-        render :action => 'draft'
+        raise RuntimeError, "Could not save the Form requested!"
       end
     end
   end
@@ -167,21 +167,24 @@ logger.info "Search Results: #{@results.length} -- #{@results}"
       end
 
       if !params[:form_instance].nil?
-        if !params[:form_instance][:status].blank? &&
-          !(params[:form_instance][:status].as_status.number == @form.status.as_status.number)
-          @form.status = params[:form_instance].delete(:status)
-          status_changed = true
-          params[:form_instance].delete(:assigned_to)
-        elsif @form.assigned_to != params[:form_instance][:assigned_to]
+        if @form.assigned_to.to_s != params[:form_instance][:assigned_to].to_s
+logger.info "Updating Assigned-to Only: #{@form.assigned_to.to_s} != #{params[:form_instance][:assigned_to].to_s}"
           assigned_to_changed = true
           @form.assigned = User.find_by_id(params[:form_instance][:assigned_to])
           params[:form_instance].delete(:status)
+        elsif !params[:form_instance][:status].blank? &&
+          params[:form_instance][:status].as_status.number != @form.status.as_status.number
+logger.info "Updating Status Only: #{params[:form_instance][:status].as_status.number} != #{@form.status.as_status.number}"
+          @form.status = params[:form_instance].delete(:status)
+          status_changed = true
+          params[:form_instance].delete(:assigned_to)
         end
       end
 
 # THIS IS MESSY! (Just thought I'd let you know...)
       @data = @form.data
       if !assigned_to_changed && @form.data.update_attributes(params[params[:form_type]]) # & @form.update
+        FormInstance.no_validate_data!
         if @form.update_attributes(params[:form_instance])
           @save_status = "Draft saved at " + Time.now.strftime("%I:%M %p").downcase + ' ' + @form.data.save_status.to_s
         else
@@ -189,10 +192,12 @@ logger.error "Error updating @form attributes?! (#{@form.errors.full_messages.to
           flash[:notice] = "ERROR Submitting draft!"
         end
       else
+        FormInstance.no_validate_data!
         unless @form.update_attributes(params[:form_instance])
           @save_status << " ERROR auto-saving! (#{@form.errors.full_messages.to_sentence} / #{@form.data.errors.full_messages.to_sentence})"
         end
       end
+      FormInstance.validate_data!
       if @form.data.respond_to?(:is_signed?) && !@form.data.is_signed?
         @form.status = 'draft'
         status_changed = false
@@ -203,6 +208,7 @@ logger.info "Save Status: #{@save_status}"
 
       respond_to do |format|
         if @form.errors.length > 0
+logger.info "there were errors...?"
           flash[:error] = @form.data.errors.collect {|err| "#{err[0].humanize} #{err[1]}"}.join('</p><p class="error_message">')
           format.html do
             redirect_to store_forms_url(:form_type => @form.data_type, :form_id => @form.id)
@@ -221,12 +227,20 @@ logger.info "Save Status: #{@save_status}"
               page.redirect_to store_dashboard_url
             end
           end
-        elsif params[:reload_page] == 'true' || (@save_status =~ /signature accepted/i) #Reloads the page automatically if it included a signature submit.
+        elsif params[:reload_page] == 'true'
 logger.info "params[:reload_page] told us to reload"
           format.html { redirect_to store_forms_url(:form_type => @form.data_type, :form_id => @form.id) }
           format.js do
             render :update do |page|
               page.redirect_to store_forms_url(:form_type => @form.data_type, :form_id => @form.id)
+            end
+          end
+        elsif @save_status =~ /signature accepted/i #Reloads the page automatically if it included a signature submit.
+logger.info "Reloading page, then returning to dashboard in 5 seconds."
+          format.html { redirect_to store_forms_url(:form_type => @form.data_type, :form_id => @form.id, :return_soon => 5) }
+          format.js do
+            render :update do |page|
+              page.redirect_to store_forms_url(:form_type => @form.data_type, :form_id => @form.id) # Except for ajax -- we'd still need to submit the form.
             end
           end
         else

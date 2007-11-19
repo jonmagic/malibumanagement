@@ -33,7 +33,7 @@ draft_observe = new Form.Observer('<%= 'form_'+@form.data_type.fromCamelCase %>'
 <% else -%>
 	<% form_for(@form.data_type, :html => {:id => 'form_'+@form.data_type.fromCamelCase}, :url => store_forms_path(:form_type => @form.data_type, :action => 'update', :form_id => @form.id)) do |f| %>
 	<% if current_user.is_store_admin? -%>
-	<label for="form_instance_assigned_to">Assign this form to be completed by: </label><%= select(:form_instance, :assigned_to, current_store.users.collect {|u| [ u.friendly_name, u.id ] }, { :include_blank => true, :selected => @form.assigned_to }, {:onchange => "this.form.action = this.form.action + '?leave_page=true'; this.form.submit()"}) %>
+	<label for="form_instance_assigned_to">Assign this form to be completed by: </label><%= select(:form_instance, :assigned_to, current_store.users.collect {|u| [ u.friendly_name, u.id ] }, { :include_blank => true, :selected => @form.assigned_to }, {:onchange => "this.form['form_instance[status]'].value = this.form['form_instance[status]'].value-1; this.form.action = this.form.action + '?leave_page=true'; this.form.submit()"}) %>
 	<% end -%>
 
 
@@ -45,3 +45,9 @@ draft_observe = new Form.Observer('<%= 'form_'+@form.data_type.fromCamelCase %>'
 <% end -%>
 
 <%= render :partial => 'notes/form_notes', :locals => {:form => @form} %>
+
+<% if params[:return_soon] -%>
+<script type="text/javascript" charset="utf-8">
+	setTimeout("window.location='<%= store_dashboard_url() %>'", <%= params[:return_soon] %>000)
+</script>
+<% end -%>

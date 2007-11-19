@@ -211,6 +211,13 @@ class Duration
   def each_second(&block)
     self.each(Second.length,&block)
   end
+  def collect(use_unit=self.class.length,&block)
+    ary = []
+    self.each(use_unit) do |x|
+      ary << (block_given? ? yield(x) : x)
+    end
+    ary
+  end
   def each(use_unit=self.class.length)
     (@length.to_f / use_unit).ceil.times do |i|
       yield self.start_time.nil? ? Duration.new(1, use_unit) : Duration.new(1, use_unit, (self.start_time + (use_unit * i)))
@@ -226,7 +233,16 @@ class Duration
   def create_find_within_method_for(other, method_name, other_method_name)
     self.bind_object_method(other, method_name, other_method_name, [[], ['self.start_time', 'self.end_time']])
   end
+  def self.create_find_within_method_for(other, method_name, other_method_name)
+    self.bind_class_object_method(other, method_name, other_method_name, [[], ['self.start_time', 'self.end_time']])
+  end
   # * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+  def method_missing(method_name, *args)
+    # Delegate any missing methods to the start_time Time object, if we have a start_time and the method exists there.
+    return self.start_time.send(method_name, *args) if self.anchored? && self.start_time.respond_to?(method_name)
+    super
+  end
 
   private
     def auto_class(obj=self)
@@ -388,6 +404,13 @@ class Time
     )
   end
 
+  def day_name
+    self.strftime("%A")
+  end
+  def month_name
+    self.strftime("%B")
+  end
+
   # Seconds since midnight: Time.now.seconds_since_midnight
   def seconds_since_midnight
     self.to_i - self.change(:hour => 0).to_i + (self.usec/1.0e+6)
@@ -411,6 +434,16 @@ class Time
     ::DateTime.civil(year, month, day, hour, min, sec, offset, 0)
   end
 
+  # wraps class method time_with_datetime_fallback with utc_or_local == :utc
+  def self.utc_time(*args)
+    time_with_datetime_fallback(:utc, *args)
+  end
+
+  # wraps class method time_with_datetime_fallback with utc_or_local == :local
+  def self.local_time(*args)
+    time_with_datetime_fallback(:local, *args)
+  end
+
   def self.local_time(*args)
     time_with_datetime_fallback(:local, *args)
   end
@@ -430,6 +463,10 @@ class Time
   def self.today
     Time.now.beginning_of_day
   end
+  def self.next_month
+    today.change(:day => 1, :month => today.month + 1)
+  end
+
   def until(end_time)
     Duration.new(end_time - self, self)
   end
@@ -475,11 +512,23 @@ class Time
 end
 
 class Object
-  def bind_object_method(other, self_method_name, other_method_name, args=[[],[]])
-    self.instance_variable_set("@#{self_method_name}_OBJ", other)
-    eval "def self.#{self_method_name}(#{args[0].join(', ')})
-      @#{self_method_name}_OBJ.#{other_method_name}(#{args[1].join(', ')})
+  def bind_class_object_method(other, self_method_name, other_method_name, args=[[],[]])
+    # Since I can't pass the 'other' object into eval as a string, I have to
+    #   set a class instance variable and copy the contents to a class variable
+    #   so that the generated method will play nicely with subclasses.
+    self.instance_variable_set("@#{self_method_name.to_s}_OBJ", other)
+    self.send :eval, "@@#{self_method_name.to_s}_OBJ = @#{self_method_name.to_s}_OBJ
+    def #{self_method_name.to_s}(#{args[0].join(', ')})
+      @@#{self_method_name.to_s}_OBJ.#{other_method_name.to_s}(#{args[1].join(', ')})
     end"
+    self
+  end
+  def bind_object_method(other, self_method_name, other_method_name, args=[[],[]])
+    self.instance_variable_set("@#{self_method_name.to_s}_OBJ", other)
+    eval "def self.#{self_method_name.to_s}(#{args[0].join(', ')})
+      @#{self_method_name.to_s}_OBJ.#{other_method_name.to_s}(#{args[1].join(', ')})
+    end"
+    self
   end
 end
 

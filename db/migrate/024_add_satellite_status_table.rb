@@ -8,6 +8,6 @@ class AddSatelliteStatusTable < ActiveRecord::Migration
   end
 
   def self.down
-    remove_table :satellite_statuses
+    drop_table :satellite_statuses
   end
 end

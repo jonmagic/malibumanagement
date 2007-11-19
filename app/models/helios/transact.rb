@@ -1,4 +1,6 @@
 class Helios::Transact < ActiveRecord::Base
+  @nologging = true
+
   case ::RAILS_ENV
   when 'development'
     self.establish_connection(

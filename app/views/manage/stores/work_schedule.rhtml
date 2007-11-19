@@ -17,18 +17,18 @@
 		//]]>
 		</script>
 </div>
-<% 4.calendar_weeks.from(@start.beginning_of_week).with_events(@cal).weeks.each do |w| -%>
+<% 4.weeks.starting(@start.beginning_of_week).each do |w| -%>
 <table class="calendar_table">
 	<caption><%= @store.friendly_name %>, Week of <%= w.start_time.humanize_date('long') %></caption>
   <thead>
-  	<% w.days.each do |d| -%>
-		<th class="calendar_day"><%= d.number %>-<%= d.name %></th>
+  	<% w.in_days.each do |d| -%>
+		<th class="calendar_day"><%= d.day %>-<%= d.day_name %></th>
 		<% end -%>
   </thead>
 	<tbody>
 		<tr>
-			<% w.days.each do |d| -%>
-			<td class='<%= d.even? ? 'even' : 'odd' %>'>
+			<% w.in_days.each do |d| -%>
+			<td class='<%= d.yday.even? ? 'even' : 'odd' %>'>
 				<% d.events.each do |event| -%>
 				<p><%= event.summary %> <%= event.start_time.humanize_time %> - <%= event.end_time.humanize_time %></p>
 				<% end -%>

@@ -1,0 +1,52 @@
+<% model_name = 'client_members' -%>
+<% show_null_results ||= 'no' -%>
+<% proxy_partial ||= 'live_search_results' -%>
+<p>Showing <%= ((params[:page] || 1).to_i * @clients.length) - @clients.length + 1 %>-<%= (params[:page] || 1).to_i * @clients.length %> of <%= @total %> <%= @total == 1 ? model_name.singularize.humanize : model_name.humanize %> <%= @query.blank? ? 'total' :  "containing <em>#{@query}</em>" %><%= @clients.length > 0 ? ':' : '!' %></p><br />
+<p><a href="javascript:void(0)" onclick="Element.show('<%= model_name %>_search_loading'); new Ajax.Updater('<%= model_name %>_livesearch_results', '<%= search_client_members_path(:format => 'html', :filter_by => params[:filter_by], :for_month => params[:for_month], 'Time[next_month]' => params[:Time][:next_month], :page => params[:page] ? params[:page].to_i-1 : 0, :query => @query) %>', {asynchronous:true, evalScripts:true, onComplete:function(){Element.hide('<%= model_name %>_search_loading')}, method:'get'}); return false;">&lt;&lt;</a> = <a href="javascript:void(0)" onclick="Element.show('<%= model_name %>_search_loading'); new Ajax.Updater('<%= model_name %>_livesearch_results', '<%= search_client_members_path(:format => 'html', :filter_by => params[:filter_by], :for_month => params[:for_month], 'Time[next_month]' => params[:Time][:next_month], :page => params[:page] ? params[:page].to_i+1 : 2, :query => @query) %>', {asynchronous:true, evalScripts:true, onComplete:function(){Element.hide('<%= model_name %>_search_loading')}, method:'get'}); return false;">&gt;&gt;</a></p>
+<div id='<%= model_name %>_livesearch_results_list'>
+	<table>
+		<thead>
+			<th>Client ID</th>
+			<th>Name</th>
+			<th>Charge Type</th>
+			<th>Expiration</th>
+			<th>Amount</th>
+			<th>Error Messages</th>
+		</thead>
+
+	<% if !(show_null_results == 'no') || @clients.length > 0 -%>
+		<% rownum = 0 -%>
+		<% @clients.sort {|a,b| a.full_name <=> b.full_name}.each do |client| -%>
+			<% rownum += 1 -%>
+			<% begin %>
+				<%= render :partial => 'client_members/client_listing', :locals => {:client => client, :rownum => rownum} %>
+			<% rescue ActionView::TemplateError %>
+				<%= render :partial => 'client_members/client_listing', :locals => {:client => GotoTransaction.new(:first_name => 'ERROR', :last_name => 'Rendering!'), :rownum => rownum} %>
+			<% end %>
+		<% end -%>
+	<% else -%>
+		<tr class="livesearch_result client_listing listing even">
+			<td>(none)</td>
+			<td>No Search Results</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+	<% end -%>
+	</table>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+document.getElementsByClassName('destroy_link').each(
+	function(link){
+		new Control.Modal(link, {loading: 'Deleting...', requestOptions: {postBody: '_method=delete', method: 'post', evalScripts: true}})
+	}
+);
+document.getElementsByClassName('ajax_link').each(
+	function(link){
+		new Control.Modal(link, {method: 'post'})
+	}
+);
+//]]>
+</script>

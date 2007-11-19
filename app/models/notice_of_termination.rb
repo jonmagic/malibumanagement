@@ -16,7 +16,7 @@ class NoticeOfTermination < ActiveRecord::Base
   before_update :create_signature_hashes
 
   def is_signed?
-    manager_signed? && regional_signed?
+    manager_signed?
   end
   def manager_signed?
     !self.manager_signature_hash.blank? && !self.manager_signature_id.blank?

@@ -33,39 +33,6 @@ class GotoTransaction < GotoBilling::Base
     end
   end
 
-  def self.new_from_csv_row(row)
-    i = -1
-# client_id, location, merchant_id, merchant_pin, first_name, last_name, bank_routing_number, bank_account_number, name_on_card, credit_card_number, expiration, amount, type, account_type, authorization, transaction_id, recorded, order_number, sent_date, tran_date, tran_time, status, description, term_code, auth_code
-    new(
-      :client_id => row[i+=1],
-      :location => row[i+=1],
-      :merchant_id => row[i+=1],
-      :merchant_pin => LOCATIONS[row[1]][:merchant_pin],
-      :first_name => row[i+=1],
-      :last_name => row[i+=1],
-      :bank_routing_number => row[i+=1],
-      :bank_account_number => row[i+=1],
-      :name_on_card => row[i+=1],
-      :credit_card_number => row[i+=1],
-      :expiration => row[i+=1],
-      :amount => row[i+=1],
-      :type => row[i+=1],
-      :account_type => row[i+=1],
-      :authorization => row[i+=1],
-      :transaction_id => row[i+=1],
-      :recorded => row[i+=1],
-    # Response attributes
-      :order_number => row[i+=1],
-      :sent_date => row[i+=1],
-      :tran_date => row[i+=1],
-      :tran_time => row[i+=1],
-      :status => row[i+=1],
-      :description => row[i+=1],
-      :term_code => row[i+=1],
-      :auth_code => row[i+=1]
-    )
-  end
-
   def to_a
 # client_id, location, merchant_id, first_name, last_name, bank_routing_number, bank_account_number, name_on_card, credit_card_number, expiration, amount, type, account_type, authorization, transaction_id, recorded, order_number, sent_date, tran_date, tran_time, status, description, term_code, auth_code
     [

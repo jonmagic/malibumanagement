@@ -1,9 +1,9 @@
 View for Date:
 <div id='calendar_controls'>
-  <input id="Time_now" name="Time[now]" type="hidden" value="<%= params[:start] || Time.now.strfsql %>" /><a class="_date_picker_link" href="#" id="_Time_now_link" onclick="DatePicker.toggleDatePicker('Time_now'); return false;"><%= @start.strftime('%b %d, %Y') %></a><span class="date_picker" id="_Time_now_calendar" style="display: none">&nbsp;</span>
+	<%= date_picker_field Time, :now, :value => @start %>
 	<script type="text/javascript">
 	//<![CDATA[
-	thedate = '<%= params[:start] || Time.now.strfsql %>'
+	thedate = '<%= @start.strftime('%Y-%m-%d') %>'
 	new PeriodicalExecuter(function() {
 		if(thedate != document.getElementById('Time_now').value) {
 			thedate = document.getElementById('Time_now').value
@@ -13,18 +13,18 @@ View for Date:
 	//]]>
 	</script>
 </div>
-<% 4.calendar_weeks.from(@start.beginning_of_week).with_events(@cal).weeks.each do |w| -%>
+<% 4.weeks.starting(@start.beginning_of_week).each do |w| -%>
 <table class="calendar_table">
 	<caption><%= @store.friendly_name %>, Week of <%= w.start_time.strftime("%B %d, %Y") %></caption>
   <thead>
-  	<% w.days.each do |d| -%>
-		<th class="calendar_day"><%= d.number %> <%= d.name %></th>
+  	<% w.in_days.each do |d| -%>
+		<th class="calendar_day"><%= d.day %> <%= d.day_name %></th>
 		<% end -%>
   </thead>
 	<tbody>
 		<tr>
-			<% w.days.each do |d| -%>
-			<td class='<%= d.even? ? 'even' : 'odd' %>'>
+			<% w.in_days.each do |d| -%>
+			<td class='<%= d.day.even? ? 'even' : 'odd' %>'>
 				<% d.events.each do |event| -%>
 				<p><%= event.summary %> <%= event.start_time.humanize_time %> - <%= event.end_time.humanize_time %></p>
 				<% end -%>

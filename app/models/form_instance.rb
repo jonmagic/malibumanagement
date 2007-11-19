@@ -9,8 +9,19 @@ class FormInstance < ActiveRecord::Base
 
   before_save :unassign_if_submitted
 
+  @validate_data = true
+  def self.validate_data!
+    @validate_data = true
+  end
+  def self.no_validate_data!
+    @validate_data = false
+  end
+  def self.validate_data?
+    @validate_data
+  end
+
   def validate
-    errors.add_to_base("Form data is not valid") unless self.data.valid?
+    errors.add_to_base("Form data is not valid") if self.class.validate_data? && !self.data.valid?
   end
 
 #Creating a new FormInstance:

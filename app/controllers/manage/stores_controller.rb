@@ -97,6 +97,7 @@ class Manage::StoresController < ApplicationController
       redirect_to admin_dashboard_path if @store.nil? || @store.gcal_url.blank?
       @cal = Calendar.new(@store.gcal_url)
       redirect_to admin_dashboard_path if @cal.nil?
+      Duration.create_find_within_method_for(@cal, 'events', 'events_in_range')
       @start = params[:start] ? Time.utc(params[:start].split('-')[0], params[:start].split('-')[1], params[:start].split('-')[2]) : Time.now
     end
   end

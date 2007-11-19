@@ -9,7 +9,7 @@ class EftController < ApplicationController
     end
   end
   
-  def view_batch_stats
+  def admin_eft
     restrict('allow only admins')
   end
   

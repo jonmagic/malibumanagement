@@ -16,7 +16,7 @@
 		<%= javascript_include_tag 'form_effects' %>
 		<%= javascript_include_tag 'controls' %>
 		<%= javascript_include_tag 'dragdrop' %>
-		<%= javascript_include_tag 'date-picker' %>
+		<%= javascript_include_tag 'date_picker' %>
 		<%= javascript_include_tag 'rounded' %>
 		<%= javascript_include_tag 'control.modal.js' %>		
 	</head>
@@ -58,6 +58,9 @@
 					<% end -%>
 					<li><%= tab_link_to 'Work Schedule', store_schedule_path %></li>
 					<li><%= tab_link_to 'Bulletin Board', bulletin_board_path %></li>
+					<% if current_user.is_store_admin? -%>
+					<li><%= tab_link_to 'EFT', store_eft_path %></li>
+					<% end -%>
 					<% else -%>
 					<li><%= tab_link_to "Login", store_login_path %></li>
 					<% end -%>
