@@ -73,10 +73,10 @@ module IsSearchable
         [
           1,
           filters.reject do |f|
-            !@filter_comparisons[f].nil?}.collect do |key,val|
-              val = "%#{val}%" if @filter_comparisons[key.to_s] =~ /LIKE/
-              self.replace_bind_variables(@filter_comparisons[key.to_s], [val])
-            end
+            !@filter_comparisons[f].nil?
+          end.collect do |key,val|
+            val = "%#{val}%" if @filter_comparisons[key.to_s] =~ /LIKE/
+            self.replace_bind_variables(@filter_comparisons[key.to_s], [val])
           end
         ].flatten.join(' AND ')
       end
