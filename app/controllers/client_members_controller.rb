@@ -8,14 +8,14 @@ class ClientMembersController < ApplicationController
         bid = EftBatch.find_or_create_by_for_month(Time.parse(params[:Time][:next_month]).strftime("%Y/%m")).id
         filters = case params[:filter_by]
         when 'All'
-          {'batch_id' => bid}
+          {}
         when 'Invalid'
-          {'has_eft' => 1, 'goto_invalid' => '%--- []%', 'batch_id' => bid}
+          {'has_eft' => 1, 'goto_invalid' => '%--- []%'}
         when 'Missing EFT'
-          {'no_eft' => 1, 'goto_valid' => '%--- []%', 'batch_id' => bid}
+          {'no_eft' => 1, 'goto_valid' => '%--- []%'}
         when 'Valid'
-          {'has_eft' => 1, 'goto_valid' => '%--- []%', 'batch_id' => bid}
-        end
+          {'has_eft' => 1, 'goto_valid' => '%--- []%'}
+        end.merge('batch_id' => bid, 'location' => LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0])
         @total = GotoTransaction.search_count(@query, :filters => filters)
         @pages = Paginator.new self, @total, per_page, params[:page]
         @clients = GotoTransaction.search(@query, :filters => filters, :limit => @pages.current.to_sql[0], :offset => @pages.current.to_sql[1])
