@@ -15,7 +15,8 @@ class ClientMembersController < ApplicationController
           {'no_eft' => 1, 'goto_valid' => '%--- []%'}
         when 'Valid'
           {'has_eft' => 1, 'goto_valid' => '%--- []%'}
-        end.merge('batch_id' => bid, 'location' => LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0])
+        end
+        filters = filters.merge('batch_id' => bid, 'location' => LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0])
         @total = GotoTransaction.search_count(@query, :filters => filters)
         @pages = Paginator.new self, @total, per_page, params[:page]
         @clients = GotoTransaction.search(@query, :filters => filters, :limit => @pages.current.to_sql[0], :offset => @pages.current.to_sql[1])
