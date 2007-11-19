@@ -45,7 +45,8 @@ module IsSearchable
         limit = options[:limit] || 10
         offset = options[:offset] || 0
         filters = options[:filters] || {}
-        puts "SELECT #{self.table_name}.* FROM #{self.table_name} #{render_condition_for_query_and_filters(query, filters)} GROUP BY #{self.table_name}.id LIMIT #{limit} OFFSET #{offset}"
+puts "SELECT #{self.table_name}.* FROM #{self.table_name} #{render_condition_for_query_and_filters(query, filters)} GROUP BY #{self.table_name}.id LIMIT #{limit} OFFSET #{offset}"
+ActionController::Base.logger.info "SELECT #{self.table_name}.* FROM #{self.table_name} #{render_condition_for_query_and_filters(query, filters)} GROUP BY #{self.table_name}.id LIMIT #{limit} OFFSET #{offset}"
         @search_caches[query+'_'+filters.values.join('-')] ||= self.find_by_sql("SELECT #{self.table_name}.* FROM #{self.table_name} #{render_condition_for_query_and_filters(query, filters)} GROUP BY #{self.table_name}.id LIMIT #{limit} OFFSET #{offset}")
       end
       def _method_search(query, options={})
