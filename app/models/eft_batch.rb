@@ -43,7 +43,7 @@ class EftBatch < ActiveRecord::Base
 puts "Generating for #{Time.parse(for_month).month_name}..."
     timestart = Time.now
     Helios::Eft.memberships(for_month, true) do |cp|
-puts "Client ##{cp.id}"
+# puts "Client ##{cp.id.to_s}"
       unless cp.has_prepaid_membership?
         t = GotoTransaction.new(cp.eft)
         t.batch = self
