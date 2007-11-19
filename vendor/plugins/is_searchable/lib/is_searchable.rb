@@ -74,7 +74,7 @@ ActionController::Base.logger.info "SELECT #{self.table_name}.* FROM #{self.tabl
         [1, filters.reject {|f,v| !@filter_comparisons[f].nil? }.collect do |key,val|
             val = "%#{val}%" if @filter_comparisons[key.to_s] =~ /LIKE/
             self.replace_bind_variables(@filter_comparisons[key.to_s], [val])
-          end].flatten.join(' AND ')
+          end].flatten.compact.join(' AND ')
       end
     end
   end

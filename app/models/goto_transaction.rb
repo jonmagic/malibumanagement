@@ -20,7 +20,7 @@ class GotoTransaction < ActiveRecord::Base
   serialize :goto_invalid, Array
 
   is_searchable :by_query => 'goto_transactions.first_name LIKE :like_query OR goto_transactions.last_name LIKE :like_query OR goto_transactions.credit_card_number LIKE :like_query OR goto_transactions.bank_account_number LIKE :like_query',
-    :filters => {
+    :and_filters => {
       'has_eft' => '(goto_transactions.no_eft != ? OR goto_transactions.no_eft IS NULL)', # Should be a 1
       'no_eft' => 'goto_transactions.no_eft = ?', # Should be a 1
       'goto_invalid' => '(goto_transactions.goto_invalid IS NOT NULL AND NOT(goto_transactions.goto_invalid LIKE ?))',
