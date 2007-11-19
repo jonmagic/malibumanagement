@@ -4,7 +4,7 @@ class StoreEftController < ApplicationController
 
   def regenerate_batch # To be called only by ajax
     restrict('allow only store admins') or begin
-      @batch.generate
+      @batch.generate(LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0])
       render :text => 'Done.'
     end
   end

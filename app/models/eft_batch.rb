@@ -36,25 +36,27 @@ class EftBatch < ActiveRecord::Base
   end
 
   # EftBatch.create(:for_month => '2007/12').generate -- will gather information from Helios::ClientProfile and Helios::Eft.
-  def generate
+  def generate(for_location=nil)
     if new_record?
       return(false) unless save
     end
 puts "Generating for #{Time.parse(for_month).month_name}..."
     timestart = Time.now
     Helios::Eft.memberships(for_month, true) do |cp|
-# puts "Client ##{cp.id.to_s}"
-      unless cp.has_prepaid_membership?
-        t = GotoTransaction.new(cp.eft)
-        t.batch = self
-        if cp.eft.nil?
-          t.no_eft = true
-          self.no_eft_count += 1
-        else
-          t.location = cp.eft.Location || '0'*(3-ZONE_LOCATION_BITS)+cp.eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
-          self.invalid_count += 1 if t.goto_is_invalid?
+      the_location = cp.eft.Location || '0'*(3-ZONE_LOCATION_BITS)+cp.eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
+      if for_location.nil? || for_location == the_location
+        unless cp.has_prepaid_membership?
+          t = GotoTransaction.new(cp.eft)
+          t.batch = self
+          if cp.eft.nil?
+            t.no_eft = true
+            self.no_eft_count += 1
+          else
+            t.location = the_location
+            self.invalid_count += 1 if t.goto_is_invalid?
+          end
+          t.save
         end
-        t.save
       end
     end
     self.save
