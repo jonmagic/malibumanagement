@@ -4,6 +4,7 @@ class LengthenLogDataField < ActiveRecord::Migration
   end
 
   def self.down
-    change_column :logs, :data, :string
+    # There's really no discernable difference worth reverting...
+    # change_column :logs, :data, :string
   end
 end
