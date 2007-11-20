@@ -32,22 +32,23 @@ class GotoTransaction < ActiveRecord::Base
   def initialize(*attrs)
     attrs = {} if attrs.blank?
     if(attrs[1].is_a?(Helios::Eft))
-      location_code = attrs.Location || '0'*(3-ZONE_LOCATION_BITS)+attrs.Client_No.to_s[0,ZONE_LOCATION_BITS]
-      amount_int = attrs.Monthly_Fee.to_f.to_s
+      eft = attrs[1]
+      location_code = eft.Location || '0'*(3-ZONE_LOCATION_BITS)+eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
+      amount_int = eft.Monthly_Fee.to_f.to_s
     
       super(
-        :client_id => attrs.id.to_i,
+        :client_id => eft.id.to_i,
         :location => location_code,
-        :first_name => attrs.First_Name,
-        :last_name => attrs.Last_Name,
-        :bank_routing_number => attrs.Bank_ABA,
-        :bank_account_number => attrs.credit_card? ? nil : attrs.Acct_No,
-        :name_on_card => attrs.First_Name.to_s + ' ' + attrs.Last_Name.to_s,
-        :credit_card_number => attrs.credit_card? ? attrs.Acct_No : nil,
-        :expiration => attrs.Acct_Exp.to_s.gsub(/\D/,''),
+        :first_name => eft.First_Name,
+        :last_name => eft.Last_Name,
+        :bank_routing_number => eft.Bank_ABA,
+        :bank_account_number => eft.credit_card? ? nil : eft.Acct_No,
+        :name_on_card => eft.First_Name.to_s + ' ' + eft.Last_Name.to_s,
+        :credit_card_number => eft.credit_card? ? eft.Acct_No : nil,
+        :expiration => eft.Acct_Exp.to_s.gsub(/\D/,''),
         :amount => amount_int,
-        :type => attrs.credit_card? ? 'Credit Card' : 'ACH',
-        :account_type => attrs.Acct_Type,
+        :type => eft.credit_card? ? 'Credit Card' : 'ACH',
+        :account_type => eft.Acct_Type,
         :authorization => 'Written'
       )
       self.batch_id = attrs[0]
