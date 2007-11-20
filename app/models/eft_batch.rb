@@ -46,7 +46,7 @@ class EftBatch < ActiveRecord::Base
     if new_record?
       return(false) unless save
     end
-puts "Generating for #{Time.parse(for_month).month_name}..."
+puts "Generating for #{Time.parse(for_month).month_name}#{" at location "+for_location if for_location}..."
 timestart = Time.now
     Helios::Eft.memberships(for_month, true) do |cp|
       if for_location.nil?
