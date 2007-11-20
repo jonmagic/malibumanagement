@@ -1,5 +1,5 @@
 begin
-  EftBatch.find(:first, :conditions => ['regenerate_now IS NOT NULL']).each do |batch|
+  if batch = EftBatch.find(:first, :conditions => ['regenerate_now IS NOT NULL'])
     location = batch.regenerate_now == 'all' ? nil : batch.regenerate_now
     batch.regenerate(location)
   end
