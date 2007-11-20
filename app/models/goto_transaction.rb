@@ -35,9 +35,17 @@ class GotoTransaction < ActiveRecord::Base
       eft = attrs[1]
       location_code = eft.Location || '0'*(3-ZONE_LOCATION_BITS)+eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
       amount_int = eft.Monthly_Fee.to_f.to_s
-    
+
+      self.client_id = eft.id.to_i
+      self.batch_id = attrs[0]
+      # Pretend we're the already-made batch if one for this month already exists
+      if exis = self.class.find_by_batch_id_and_client_id(self.batch_id, self.client_id)
+        super(exis.attributes)
+        self.id = exis.id
+        @new_record = false
+      end
+
       super(
-        :client_id => eft.id.to_i,
         :location => location_code,
         :first_name => eft.First_Name,
         :last_name => eft.Last_Name,
@@ -51,13 +59,6 @@ class GotoTransaction < ActiveRecord::Base
         :account_type => eft.Acct_Type,
         :authorization => 'Written'
       )
-      self.batch_id = attrs[0]
-
-      # Pretend we're the already-made batch if one for this month already exists
-      if exis = self.class.find_by_batch_id_and_client_id(self.batch_id, self.client_id)
-        self.id = exis.id
-        @new_record = false
-      end
     else
       super(*attrs)
     end
