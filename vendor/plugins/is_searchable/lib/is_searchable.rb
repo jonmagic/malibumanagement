@@ -76,6 +76,7 @@ module IsSearchable
       end
       def render_condition_for_query_and_filters(query, filters) #search in: first_name, last_name, identifier
 # ActionController::Base.logger.info("Filters in query_and_filters: #{filters.inspect}")
+ActionController::Base.logger.info("**Searching: WHERE (#{self.render_query_condition(query)}) AND (#{self.render_filter_condition(filters)})")
         "WHERE (#{self.render_query_condition(query)}) AND (#{self.render_filter_condition(filters)})"
       end
       def render_query_condition(query)
