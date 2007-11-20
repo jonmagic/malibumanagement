@@ -63,7 +63,7 @@ class StoreEftController < ApplicationController
     end
 
     def get_batch
-      @for_month = params[:for_month]
+      @for_month = Time.parse(params[:for_month]).strftime('%Y/%m') if params[:for_month]
       @batch = @for_month.nil? ? EftBatch.find(:first, :order => 'id DESC') : EftBatch.find_or_create_by_for_month(@for_month) # Get last-created EftBatch
       # If there are no batches, create one for the next payment month.
       if @batch.nil?

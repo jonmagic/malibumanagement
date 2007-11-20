@@ -47,7 +47,7 @@ class EftBatch < ActiveRecord::Base
       return(false) unless save
     end
 puts "Generating for #{Time.parse(for_month).month_name}..."
-    timestart = Time.now
+timestart = Time.now
     Helios::Eft.memberships(for_month, true) do |cp|
       if for_location.nil?
         unless cp.has_prepaid_membership?
@@ -75,7 +75,7 @@ puts "Generating for #{Time.parse(for_month).month_name}..."
       end
     end
     self.save
-    timeend = Time.now
+timeend = Time.now
 puts "Generate Finished. Took #{timeend - timestart} seconds."
   end
 end
