@@ -29,8 +29,8 @@ class GotoTransaction < ActiveRecord::Base
       'location' => 'goto_transactions.location = ?'
     }
 
-  def initialize(attrs={})
-    attrs = {} if attrs.nil?
+  def initialize(*attrs)
+    attrs = {} if attrs.blank?
     if(attrs[1].is_a?(Helios::Eft))
       location_code = attrs.Location || '0'*(3-ZONE_LOCATION_BITS)+attrs.Client_No.to_s[0,ZONE_LOCATION_BITS]
       amount_int = attrs.Monthly_Fee.to_f.to_s
@@ -58,7 +58,7 @@ class GotoTransaction < ActiveRecord::Base
         @new_record = false
       end
     else
-      super(attrs)
+      super(*attrs)
     end
   end
 
