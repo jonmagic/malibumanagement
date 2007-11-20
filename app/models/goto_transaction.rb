@@ -31,7 +31,7 @@ class GotoTransaction < ActiveRecord::Base
 
   def initialize(attrs={})
     attrs = {} if attrs.nil?
-    if(attrs.is_a?(Helios::Eft))
+    if(attrs[1].is_a?(Helios::Eft))
       location_code = attrs.Location || '0'*(3-ZONE_LOCATION_BITS)+attrs.Client_No.to_s[0,ZONE_LOCATION_BITS]
       amount_int = attrs.Monthly_Fee.to_f.to_s
     
@@ -50,9 +50,10 @@ class GotoTransaction < ActiveRecord::Base
         :account_type => attrs.Acct_Type,
         :authorization => 'Written'
       )
+      self.batch_id = attrs[0]
 
       # Pretend we're the already-made batch if one for this month already exists
-      if exis = self.class.find_by_client_id(self.client_id)
+      if exis = self.class.find_by_batch_id_and_client_id(self.batch_id, self.client_id)
         self.id = exis.id
         @new_record = false
       end

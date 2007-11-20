@@ -51,8 +51,7 @@ timestart = Time.now
     Helios::Eft.memberships(for_month, true) do |cp|
       if for_location.nil?
         unless cp.has_prepaid_membership?
-          t = GotoTransaction.new(cp.eft)
-          t.batch = self
+          t = GotoTransaction.new(self.id, cp.eft)
           if cp.eft.nil?
             t.no_eft = true
             self.no_eft_count += 1
