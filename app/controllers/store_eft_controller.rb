@@ -54,22 +54,8 @@ class StoreEftController < ApplicationController
     end
 
     def get_batch
-      @for_month = Time.parse(params[:for_month]).strftime('%Y/%m') if params[:for_month]
-      @batch = @for_month.nil? ? EftBatch.find(:first, :order => 'id DESC') : EftBatch.find_or_create_by_for_month(@for_month) # Get last-created EftBatch
-      # If there are no batches, create one for the next payment month.
-      if @batch.nil?
-        @for_month = (Time.now.strftime("%Y").to_i + Time.now.strftime("%m").to_i/12).to_i.to_s + '/' + Time.now.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
-        @batch = EftBatch.find_or_create_by_for_month(@for_month)
-      elsif !params[:for_month]
-        # If last batch has not been submitted yet, use it.
-        if @batch.submitted_at.blank?
-          @for_month = @batch.for_month
-        else # If last batch has been submitted, create the next one.
-          time = Time.parse(@batch.for_month)
-          @for_month = (time.strftime("%Y").to_i + time.strftime("%m").to_i/12).to_i.to_s + '/' + time.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
-          @batch = EftBatch.find_or_create_by_for_month(@for_month) if @batch.nil? || !@batch.submitted_at.blank?
-        end
-      end
+      @for_month = params[:for_month] ? Time.parse(params[:for_month]).strftime('%Y/%m') : (Time.now.strftime("%Y").to_i + Time.now.strftime("%m").to_i/12).to_i.to_s + '/' + Time.now.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
+      @batch = EftBatch.find_or_create_by_for_month(@for_month) # Get last-created EftBatch
     end
 end
 
