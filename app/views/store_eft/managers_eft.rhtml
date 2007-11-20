@@ -7,7 +7,7 @@
 				<span style="margin-left:20pt;">
 				<%= link_to 'Regenerate for this month', store_eft_path(:action => 'regenerate_batch'), :onclick => "this.href = this.href + '?for_month=' + $('Time_next_month').value; return true;" %>
 				<% gens = EftBatch.find(:all, :conditions => ['regenerate_now = ?', LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0]]).collect {|x| Time.parse(x.for_month).month_name} -%>
-				&nbsp;<%= (gens.to_sentence + ' are currently regenerating') if !gens.blank? %>
+				&nbsp;<%= (gens.to_sentence + (gens.length > 1 ? ' are' : ' is') + ' currently regenerating') if !gens.blank? %>
 				</span>
 			</p>
 			<div id="filter_buttons">
