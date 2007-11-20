@@ -2,7 +2,13 @@
 <div class="livesearch_container">
 	<div class="livesearch_form">
 		<form id="<%= model_name %>_livesearch_form" onsubmit="Element.show('<%= model_name %>_search_loading'); new Ajax.Request('<%= self.send('formatted_search_'+model_name+'_path', :format => 'js') %>', {asynchronous:true, evalScripts:true, parameters:Form.serialize(this), onComplete: function(){Element.hide('<%= model_name %>_search_loading')}}); return false;" method="post" action="<%= self.send('formatted_search_'+model_name+'_path', :format => 'js') %>">
-			<p style="margin-bottom:12pt">Showing for the month of: <span style="border-top:2px solid #848484; border-left:2px solid #848484; border-bottom:2px solid #FAFAFA; border-right:2px solid #FAFAFA; padding:1px 3px 3px 2px"><%= date_picker_field(Time, :next_month, :value => Time.next_month.strftime('%B %Y'), :display_as => "function(date){return(getMonthName(date.getMonth()) + ' ' + date.getFullYear())}") %></span><span style="margin-left:20pt;"><a href="#" id='regenerate_link' onclick="new Ajax.Request('<%= store_eft_path(:action => 'regenerate_batch') %>?for_month='+$('Time_next_month').value, {asynchronous:true, evalScripts:true, onComplete:function(){$('regenerate_link').innerHTML = 'Regenerated. Regenerate again?'}}); this.innerHTML = 'Regenerating, please be patient...'; return false;">Regenerate for this month</a></span></p>
+			<p style="margin-bottom:12pt">
+				Showing for the month of: <span style="border-top:2px solid #848484; border-left:2px solid #848484; border-bottom:2px solid #FAFAFA; border-right:2px solid #FAFAFA; padding:1px 3px 3px 2px"><%= date_picker_field(Time, :next_month, :value => Time.next_month.strftime('%B %Y'), :display_as => "function(date){return(getMonthName(date.getMonth()) + ' ' + date.getFullYear())}") %></span>
+				<span style="margin-left:20pt;">
+				<%= link_to 'Regenerate for this month', store_eft_path(:action => 'regenerate_batch'), :onclick => "this.href = this.href + '?for_month=' + $('Time_next_month').value; return true;" %>
+				&nbsp;<%= EftBatch.find(:all, :conditions => ['regenerate_now = ?', LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0]]).collect {|x| Time.parse(x.for_month).month_name}.to_sentence + ' are currently regenerating' %>
+				</span>
+			</p>
 			<div id="filter_buttons">
 				<span id="filter_1" class="filter_button button_selected" onclick="filter_selected(this)">All</span>
 				<span id="filter_2" class="filter_button" onclick="filter_selected(this)">Invalid</span>

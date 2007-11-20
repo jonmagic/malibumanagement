@@ -73,6 +73,7 @@ timestart = Time.now
         end
       end
     end
+    self.regenerate_now = nil
     self.save
 timeend = Time.now
 puts "Generate Finished. Took #{timeend - timestart} seconds."

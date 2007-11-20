@@ -5,7 +5,7 @@ class StoreEftController < ApplicationController
   def regenerate_batch # To be called only by ajax
     restrict('allow only store admins') or begin
       @batch.generate(LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0])
-      render :text => 'Done.'
+      redirect_to store_eft_path(:for_month => @for_month)
     end
   end
   
@@ -13,38 +13,28 @@ class StoreEftController < ApplicationController
     restrict('allow only store admins')
   end
   
-  def submit_batch
-    restrict('allow only admins') or begin
-      @batch.update_attributes(:eft_ready => true)
-      # Return a nice "Yeah it's submitted" indication .. then show "Batch Submitted, ## Payments pending" instead of Submit Batch link.
-      # flash[:notice] = "Batch has been submitted for processing."
-      # Should use my jquery message thingy
-      redirect_to eft_path(:for_month => @for_month)
-    end
-  end
-
-  def download_csv
-    restrict('allow only store admins') or begin
-      send_file 'EFT/' + @for_month + '/' + params[:file] + '.csv', :type => Mime::Type.lookup_by_extension('csv').to_str, :disposition => 'inline'
-    end
-  end
+  # def download_csv
+  #   restrict('allow only store admins') or begin
+  #     send_file 'EFT/' + @for_month + '/' + params[:file] + '.csv', :type => Mime::Type.lookup_by_extension('csv').to_str, :disposition => 'inline'
+  #   end
+  # end
   
-  def location_csv
-    restrict('allow only store admins') or begin
-      stream_csv(params[:location] + '_payments.csv') do |csv|
-        csv << GotoTransaction.managers_headers
-        headers = true
-        CSV::Reader.parse(File.open('EFT/' + @for_month + '/payment.csv', 'rb')) do |row|
-          if headers
-            headers = false
-            next
-          end
-          goto = GotoTransaction.new_from_csv_row(row)
-          csv << goto.to_managers_a if goto.location == params[:location]
-        end
-      end
-    end
-  end
+  # def location_csv
+  #   restrict('allow only store admins') or begin
+  #     stream_csv(params[:location] + '_payments.csv') do |csv|
+  #       csv << GotoTransaction.managers_headers
+  #       headers = true
+  #       CSV::Reader.parse(File.open('EFT/' + @for_month + '/payment.csv', 'rb')) do |row|
+  #         if headers
+  #           headers = false
+  #           next
+  #         end
+  #         goto = GotoTransaction.new_from_csv_row(row)
+  #         csv << goto.to_managers_a if goto.location == params[:location]
+  #       end
+  #     end
+  #   end
+  # end
 
   private
     def stream_csv(filename)
