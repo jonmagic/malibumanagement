@@ -8,6 +8,17 @@ function numbersonly(e){
 	}
 }
 
+function flash(txt){
+	Control.Modal.open('<div>\
+		<div class="dialog_content">\
+			<div class="dialog_body">'+txt+'</div>\
+			<div id="dialog_buttons" class="dialog_buttons">\
+				<input id="dialog-button" type="button" value="Ok" onclick="Control.Modal.close();" class="dialog-button"/>\
+			</div>\
+		</div>\
+	</div>', {fade:true, overlayCloseOnClick:false, afterOpen:function(){setTimeout(function(){$('dialog-button').focus()},500)}});
+}
+
 function deleteModal(id_to_delete, friendly_name){
 	Control.Modal.open('<div>\
 		<h2>Delete Client?</h2>\
@@ -18,7 +29,7 @@ function deleteModal(id_to_delete, friendly_name){
 				<input type="button" value="Cancel" onclick="Control.Modal.close();" class="dialog-button"/>\
 			</div>\
 		</div>\
-	</div>', {fade: true, overlayCloseOnClick: false});
+	</div>', {fade:true, overlayCloseOnClick:false});
 }
 
 function mismatchModal(){

@@ -68,9 +68,9 @@ class Helios::Eft < ActiveRecord::Base
     failed_list = []
     ids.each do |id|
       begin
-        cp = self.find(id)
-        cp.destroy
-        failed_list << id if !cp.errors.blank?
+        eft = self.find(id)
+        eft.destroy
+        failed_list << id if !eft.errors.blank?
       rescue ActiveRecord::RecordNotFound
         nil
       end
@@ -79,9 +79,9 @@ class Helios::Eft < ActiveRecord::Base
     second_failed = []
     failed_list.each do |id|
       begin
-        cp = self.find(id)
-        cp.destroy
-        second_failed << id if !cp.errors.blank?
+        eft = self.find(id)
+        eft.destroy
+        second_failed << id if !eft.errors.blank?
       rescue ActiveRecord::RecordNotFound
         nil
       end
@@ -90,9 +90,9 @@ class Helios::Eft < ActiveRecord::Base
     really_failed = []
     second_failed.each do |id|
       begin
-        cp = self.find(id)
-        cp.destroy
-        really_failed << id if !cp.errors.blank?
+        eft = self.find(id)
+        eft.destroy
+        really_failed << id if !eft.errors.blank?
       rescue ActiveRecord::RecordNotFound
         nil
       end

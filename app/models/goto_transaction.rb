@@ -17,6 +17,7 @@ class GotoTransaction < ActiveRecord::Base
   @nologging = true
 
   belongs_to :batch, :class_name => 'EftBatch', :foreign_key => 'batch_id'
+  belongs_to :client, :class_name => 'Helios::ClientProfile', :foreign_key => 'client_id'
   serialize :goto_invalid, Array
 
   is_searchable :by_query => 'goto_transactions.first_name LIKE :like_query OR goto_transactions.last_name LIKE :like_query OR goto_transactions.credit_card_number LIKE :like_query OR goto_transactions.bank_account_number LIKE :like_query OR goto_transactions.client_id = :query',
@@ -157,6 +158,17 @@ class GotoTransaction < ActiveRecord::Base
   end
   def merchant_pin
     LOCATIONS.has_key?(location) ? LOCATIONS[location][:merchant_pin] : nil
+  end
+
+  def remove_vip!
+    #take out the vip from the client profile and destroy the eft
+    self.client.remove_vip! if self.client
+    self.destroy
+  end
+
+  def reload_eft!
+    self.client.eft.destroy if self.client && self.client.eft
+    self.client.eft = Helios::Eft.new(Helios::Eft.master[Helios::Eft.master.keys[0]].find(self.client_id).attributes) if self.client
   end
 
   def self.csv_headers

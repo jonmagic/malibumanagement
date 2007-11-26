@@ -41,6 +41,57 @@ class ClientMembersController < ApplicationController
     search(true)
   end
 
+  def remove_vip
+    gt = GotoTransaction.find(params[:id])
+    gt.remove_vip!
+    respond_to do |format|
+      format.html {
+        flash[:notice] = "Removed VIP from client ##{gt.client_id}."
+        redirect_to store_eft_path()
+      }
+      format.js {
+        render :update do |page|
+          page.flash("Removed VIP from client ##{gt.client_id}.")
+          page["client_listing_#{params[:id]}"].remove
+        end
+      }
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.html {raise}
+      format.js {
+        render :update do |page|
+          page.flash("Client was not found.")
+        end
+      }
+    end
+  end
+
+  def reload_vip
+    gt = GotoTransaction.find(params[:id])
+    gt.reload_eft!
+    respond_to do |format|
+      format.html {
+        flash[:notice] = "Reloaded VIP from client ##{gt.client_id}."
+        redirect_to store_eft_path()
+      }
+      format.js {
+        render :update do |page|
+          page.flash("Reloaded VIP from client ##{gt.client_id}.")
+        end
+      }
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.html {raise}
+      format.js {
+        render :update do |page|
+          page.flash("Client was not found.")
+        end
+      }
+    end
+  end
+
   private
     def stream_csv(filename)
       require 'fastercsv'

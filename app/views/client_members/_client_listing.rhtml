@@ -5,4 +5,5 @@
 	<td><%= client.expiration %></td>
 	<td><%= client.amount %></td>
 	<td><%= client.goto_invalid.to_a.to_sentence %></td>
+	<td><%= link_to_remote 'Remove VIP', :url => formatted_remove_vip_client_member_path(:format => 'js', :id => client.id) %> | <%= link_to_remote 'Reload VIP', :url => formatted_reload_vip_client_member_path(:format => 'js', :id => client.id) %> | </td>
 </tr>

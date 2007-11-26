@@ -35,7 +35,7 @@ ActionController::Routing::Routes.draw do |map|
   map.admin_bulletin '/malibu/bulletin_board', :controller => 'stores', :action => 'bulletin_board'
   map.resources :posts, :name_prefix => 'admin_', :path_prefix => '/malibu/bulletin_board', :collection => { :live_search => :any, :search => :any }, :member => {:attachment => :get}
   map.resources :helios_clients, :path_prefix => '/malibu/helios', :collection => {:live_search => :any, :search => :any}, :member => { :exists => :any }
-  map.resources :client_members, :path_prefix => '/malibu/helios', :collection => {:live_search => :any, :search => :any}, :member => { :exists => :any }
+  map.resources :client_members, :path_prefix => '/malibu/helios', :collection => {:live_search => :any, :search => :any}, :member => { :remove_vip => :any, :reload_eft => :any }
 
   map.open_helios '/malibu/helios/:action/:id', :controller => 'helios', :action => 'index'
   map.helios '/malibu/helios/:action', :controller => 'helios', :action => 'index', :format => 'html'

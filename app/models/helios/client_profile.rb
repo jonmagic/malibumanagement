@@ -140,6 +140,16 @@ class Helios::ClientProfile < ActiveRecord::Base
     puts really_failed.inspect
   end
 
+  def remove_vip!
+    if(self.Member1 == 'VIP')
+      self.update_attributes(:Member1 => '', :Member1_Beg => '', :Member1_Exp => '', :Member1_FreezeStart => '', :Member1_FreezeEnd => '')
+    elsif(self.Member2 == 'VIP')
+      self.update_attributes(:Member2 => '', :Member2_Beg => '', :Member2_Exp => '', :Member2_FreezeStart => '', :Member2_FreezeEnd => '')
+    end
+    self.eft.class.destroy_these(self.eft.id) if self.eft
+    true
+  end
+
   protected
     def self.craft_sql_condition_for_query(query) #search in: Client_no, First_Name, Last_Name, Address
       query = '%' + query + '%'

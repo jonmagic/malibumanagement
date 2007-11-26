@@ -394,6 +394,9 @@ module ActionView
             ActiveSupport::JSON::Variable.new(code.to_s)
           end
           
+          def flash(message)
+            call 'flash', message
+          end
           # Returns a collection reference by finding it through a CSS +pattern+ in the DOM. This collection can then be
           # used for further method calls. Examples:
           #
