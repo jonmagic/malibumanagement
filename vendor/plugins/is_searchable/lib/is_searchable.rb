@@ -52,6 +52,7 @@ module IsSearchable
         sql = "SELECT #{self.table_name}.* FROM #{self.table_name} #{render_condition_for_query_and_filters(query, filters)} GROUP BY #{self.table_name}.id"
         sql = sql+" LIMIT #{limit}" if limit > 0
         sql = sql+" OFFSET #{offset}" if offset > 0
+ActionController::Base.logger.info("Search SQL: #{sql}")
         @search_caches[query+'_'+filters.values.join('-')] ||= self.find_by_sql(sql)
       end
       def _method_search(query, options={})
@@ -62,9 +63,11 @@ module IsSearchable
         results = []
 
         begin
-          next_rec = self.find_by_sql("SELECT #{self.table_name}.* FROM #{self.table_name} #{render_condition_for_query_and_filters(query, filters)} GROUP BY #{self.table_name}.id LIMIT 1 OFFSET #{results.length}")
+          sql = "SELECT #{self.table_name}.* FROM #{self.table_name} #{render_condition_for_query_and_filters(query, filters)} GROUP BY #{self.table_name}.id LIMIT 1 OFFSET #{results.length}"
+ActionController::Base.logger.info("Search SQL: #{sql}")
+          next_rec = self.find_by_sql(sql)
           results << next_rec if true # Do the method search methods and add the record to results if the methods all return true.
-        end until next_rec.nil? || (limit > 0 && results.length == limit)
+        end until next_rec.nil? || (limit > 0 && results.length == limit+offset)
 
         @search_caches[query+'_'+options[:filters].each_value.join('-')] ||= results[offset-1..results.length]
       end
