@@ -16,8 +16,8 @@ class AddGotoTransactions < ActiveRecord::Migration
       t.column :account_type,         :string
       t.column :authorization,        :string
       # Recorded bits
-      t.column :no_eft,               :boolean # Shows up for 'Missing' search
-      t.column :goto_invalid,         :string  # Shows up for 'Invalid' search
+      t.column :no_eft,               :boolean, :default => false # Shows up for 'Missing' search
+      t.column :goto_invalid,         :string, :default => [].to_yaml  # Shows up for 'Invalid' search
       t.column :transaction_id,       :integer # OTNum field
       t.column :note_id,              :integer # OTNum field
       t.column :recorded,             :boolean

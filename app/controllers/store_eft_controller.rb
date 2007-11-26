@@ -2,10 +2,9 @@ class StoreEftController < ApplicationController
   layout 'store'
   before_filter :get_batch
 
-  def regenerate_batch # To be called only by ajax
+  def regenerate_batch
     restrict('allow only store admins') or begin
       @batch.update_attributes(:regenerate_now => LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0])
-      # @batch.generate(LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0])
       redirect_to store_eft_path(:for_month => @for_month)
     end
   end
@@ -13,13 +12,7 @@ class StoreEftController < ApplicationController
   def managers_eft
     restrict('allow only store admins')
   end
-  
-  # def download_csv
-  #   restrict('allow only store admins') or begin
-  #     send_file 'EFT/' + @for_month + '/' + params[:file] + '.csv', :type => Mime::Type.lookup_by_extension('csv').to_str, :disposition => 'inline'
-  #   end
-  # end
-  
+
   # def location_csv
   #   restrict('allow only store admins') or begin
   #     stream_csv(params[:location] + '_payments.csv') do |csv|

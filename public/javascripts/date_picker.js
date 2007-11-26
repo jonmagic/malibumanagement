@@ -28,16 +28,6 @@ var DatePicker = {
 		matches = re.exec(link_el.className);
 		if(matches){
 			if(date_pickerzes['_'+matches[1]]){
-				// var that = date_pickerzes['_'+matches[1]];
-				// that.link_element.innerHTML = that._priorLinkText;
-				// that.form_element.value = that.priorDate;
-				// // 'unwrite' the calendar
-				// pren = that.calendar_element.parentNode;
-				// pren.removeChild(that.calendar_element);
-				// that.calendar_element = null;
-				// 
-				// delete date_pickerzes[that.link_element];
-				// delete date_pickerzes[that.picker_id];
 				date_pickerzes['_'+matches[1]].hideDatePicker();
 			}
 		}

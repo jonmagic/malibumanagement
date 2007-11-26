@@ -70,6 +70,8 @@ ActionController::Routing::Routes.draw do |map|
     map.store_dashboard                        '/stores/:domain',        :controller => 'stores',   :action => 'work_schedule'
   elsif APP_CONFIG[:FEATURES].include?(:bulletin_board)
     map.store_dashboard                        '/stores/:domain',        :controller => 'stores',   :action => 'bulletin_board'
+  elsif APP_CONFIG[:FEATURES].include?(:eft)
+    map.store_dashboard                        '/stores/:domain',        :controller => 'store_eft',   :action => 'managers_eft', :format => 'html'
   end
   map.store_dashboard '/stores/:domain', :controller => 'stores', :action => 'dashboard'
   map.store_schedule '/stores/:domain/work_schedule', :controller => 'stores', :action => 'work_schedule'

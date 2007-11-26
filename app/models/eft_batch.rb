@@ -17,6 +17,8 @@ def with(*objects)
 end
 
 class EftBatch < ActiveRecord::Base
+  has_many :payments, :class_name => 'GotoTransaction', :foreign_key => 'batch_id'
+
   def initialize(attrs={})
     super
     # Auto-sets to the next month after today's month. If today is December, it will roll over the year as well.
@@ -41,6 +43,25 @@ class EftBatch < ActiveRecord::Base
     write_attribute(:for_month, Time.parse(v.to_s).strftime("%Y/%m"))
   end
 
+  def locations_counts
+    @locations_counts ||= begin
+      it = {}
+      self.payments.each do |pm|
+        it[pm.location] ||= {}
+        it[pm.location][:all] ||= 0
+        it[pm.location][:valid] ||= 0
+        it[pm.location][:no_eft] ||= 0
+        it[pm.location][:invalid] ||= 0
+
+        it[pm.location][:all] += 1
+        it[pm.location][:valid] += 1 if !pm.no_eft && pm.goto_invalid.to_s == ''
+        it[pm.location][:no_eft] += 1 if pm.no_eft
+        it[pm.location][:invalid] += 1 if pm.goto_invalid.to_s != ''
+      end
+      it
+    end
+  end
+
   # EftBatch.create(:for_month => '2007/12').generate -- will gather information from Helios::ClientProfile and Helios::Eft.
   def generate(for_location=nil)
     if new_record?
@@ -51,7 +72,7 @@ timestart = Time.now
     Helios::Eft.memberships(for_month, true) do |cp|
       if for_location.nil?
         unless cp.has_prepaid_membership?
-          t = GotoTransaction.new(self.id, cp.eft)
+          t = GotoTransaction.new(self.id, cp)
           if cp.eft.nil?
             t.no_eft = true
             self.no_eft_count += 1

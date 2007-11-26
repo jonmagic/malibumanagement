@@ -31,21 +31,31 @@ class GotoTransaction < ActiveRecord::Base
 
   def initialize(*attrs)
     attrs = {} if attrs.blank?
+    if(attrs[1].is_a?(Helios::ClientProfile))
+      batch_id = attrs[0]
+      cp = attrs[1]
+      if(cp.eft.nil?)
+        location_code = '0'*(3-ZONE_LOCATION_BITS)+cp.id.to_s[0,ZONE_LOCATION_BITS]
+        attrs = {
+          :batch_id => batch_id,
+          :client_id => cp.id.to_i,
+          :location => location_code,
+          :first_name => cp.First_Name,
+          :last_name => cp.Last_Name
+        }
+      else
+        attrs[1] = cp.eft
+      end
+    end
     if(attrs[1].is_a?(Helios::Eft))
+      batch_id = attrs[0]
       eft = attrs[1]
       location_code = eft.Location || '0'*(3-ZONE_LOCATION_BITS)+eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
       amount_int = eft.Monthly_Fee.to_f.to_s
 
-      self.client_id = eft.id.to_i
-      self.batch_id = attrs[0]
-      # Pretend we're the already-made batch if one for this month already exists
-      if exis = self.class.find_by_batch_id_and_client_id(self.batch_id, self.client_id)
-        super(exis.attributes)
-        self.id = exis.id
-        @new_record = false
-      end
-
-      super(
+      attrs = {
+        :batch_id => batch_id,
+        :client_id => eft.id.to_i,
         :location => location_code,
         :first_name => eft.First_Name,
         :last_name => eft.Last_Name,
@@ -58,9 +68,17 @@ class GotoTransaction < ActiveRecord::Base
         :type => eft.credit_card? ? 'Credit Card' : 'ACH',
         :account_type => eft.Acct_Type,
         :authorization => 'Written'
-      )
+      }
+      # Pretend we're the already-made batch if one for this month already exists
+      if exis = self.class.find_by_batch_id_and_client_id(attrs[:batch_id], attrs[:client_id])
+        super(exis.attributes.merge(attrs))
+        self.id = exis.id
+        @new_record = false
+      else
+        super(attrs)
+      end
     else
-      super(*attrs)
+      super(attrs)
     end
   end
 
