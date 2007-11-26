@@ -19,8 +19,7 @@ class ClientMembersController < ApplicationController
         filters = filters.merge('batch_id' => bid, 'location' => LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0])
         @total = GotoTransaction.search_count(@query, :filters => filters)
         @pages = Paginator.new self, @total, per_page, params[:page]
-        @clients = params[:format] == 'csv' ? GotoTransaction.search(@query, :filters => filters)
-         : GotoTransaction.search(@query, :filters => filters, :limit => @pages.current.to_sql[0], :offset => @pages.current.to_sql[1])
+        @clients = (params[:format] == 'csv' ? GotoTransaction.search(@query, :filters => filters) : GotoTransaction.search(@query, :filters => filters, :limit => @pages.current.to_sql[0], :offset => @pages.current.to_sql[1]))
         respond_to do |format|
           format.html # Render the template file
           format.js   # Render the rjs file
