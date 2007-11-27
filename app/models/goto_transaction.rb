@@ -108,6 +108,9 @@ class GotoTransaction < ActiveRecord::Base
         inv << "Invalid Routing Number"
       end
     end
+    if !description.blank?
+      inv << description
+    end
     self.goto_invalid = inv
     return self.goto_invalid.blank?
   end
@@ -218,7 +221,7 @@ class GotoTransaction < ActiveRecord::Base
   end
 
   def self.managers_csv_headers
-    ['ClientId', 'FirstName', 'LastName', 'Amount', 'TransactionId', 'Status', 'Description']
+    ['ClientId', 'FirstName', 'LastName', 'Amount', 'TransactionId', 'Status', 'Messages']
   end
   def to_managers_csv_row
     [
@@ -228,7 +231,7 @@ class GotoTransaction < ActiveRecord::Base
       amount,
       transaction_id,
       {'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[status],
-      description
+      goto_invalid.to_sentence
     ]
   end
 

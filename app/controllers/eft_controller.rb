@@ -13,7 +13,39 @@ class EftController < ApplicationController
     restrict('allow only admins')
   end
   
+  def location_csv
+    restrict('allow only admins') or begin
+      stream_csv(params[:location] + '_payments.csv') do |csv|
+        csv << GotoTransaction.managers_headers
+        headers = true
+        CSV::Reader.parse(File.open('EFT/' + @for_month + '/payment.csv', 'rb')) do |row|
+          if headers
+            headers = false
+            next
+          end
+          goto = GotoTransaction.new_from_csv_row(row)
+          csv << goto.to_managers_a if goto.location == params[:location]
+        end
+      end
+    end
+  end
+
   private
+    def stream_csv(filename)
+      require 'fastercsv'
+      if request.env['HTTP_USER_AGENT'] =~ /msie/i
+        headers['Pragma'] = 'public'
+        headers["Content-type"] = "text/plain" 
+        headers['Cache-Control'] = 'no-cache, must-revalidate, post-check=0, pre-check=0'
+        headers['Content-Disposition'] = "attachment; filename=\"#{filename}\"" 
+        headers['Expires'] = "0" 
+      else
+        headers["Content-Type"] ||= 'text/csv'
+        headers["Content-Disposition"] = "attachment; filename=\"#{filename}\"" 
+      end
+      render :text => Proc.new { |response, output| yield FasterCSV.new(output, :row_sep => "\r\n") }
+    end
+
     def get_batch
       @for_month = params[:for_month] ? Time.parse(params[:for_month]).strftime('%Y/%m') : (Time.now.strftime("%Y").to_i + Time.now.strftime("%m").to_i/12).to_i.to_s + '/' + Time.now.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
       @batch = EftBatch.find_or_create_by_for_month(@for_month) # Get last-created EftBatch

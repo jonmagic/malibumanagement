@@ -43,9 +43,24 @@ class EftBatch < ActiveRecord::Base
     write_attribute(:for_month, Time.parse(v.to_s).strftime("%Y/%m"))
   end
 
+  def amounts_counts
+    @amounts_counts ||= begin
+      it = {}
+      EftBatch.find(:first).payments.connection.select_values('SELECT amount FROM goto_transactions GROUP BY amount').compact.each do |amount|
+        it[amount] = EftBatch.find(:first).payments.connection.select_value('SELECT COUNT(*) FROM goto_transactions WHERE amount="'+amount.to_s+'"').to_i
+      end
+      it
+    end
+  end
+
   def locations_counts
     @locations_counts ||= begin
       it = {}
+      it['all'] ||= {}
+      it['all'][:all] ||= 0
+      it['all'][:valid] ||= 0
+      it['all'][:no_eft] ||= 0
+      it['all'][:invalid] ||= 0
       self.payments.each do |pm|
         it[pm.location] ||= {}
         it[pm.location][:all] ||= 0
@@ -57,6 +72,10 @@ class EftBatch < ActiveRecord::Base
         it[pm.location][:valid] += 1 if !pm.no_eft && pm.goto_invalid.to_s == ''
         it[pm.location][:no_eft] += 1 if pm.no_eft
         it[pm.location][:invalid] += 1 if pm.goto_invalid.to_s != ''
+        it['all'][:all] += 1
+        it['all'][:valid] += 1 if !pm.no_eft && pm.goto_invalid.to_s == ''
+        it['all'][:no_eft] += 1 if pm.no_eft
+        it['all'][:invalid] += 1 if pm.goto_invalid.to_s != ''
       end
       it
     end
@@ -69,6 +88,10 @@ class EftBatch < ActiveRecord::Base
     end
 puts "Generating for #{Time.parse(for_month).month_name}#{" at location "+for_location if for_location}..."
 timestart = Time.now
+    if for_location.nil?
+      self.no_eft_count  = 0
+      self.invalid_count = 0
+    end
     Helios::Eft.memberships(for_month, true) do |cp|
       if for_location.nil?
         unless cp.has_prepaid_membership?
@@ -87,6 +110,7 @@ timestart = Time.now
         end
       end
     end
+    self.last_total_regenerate = Time.now if for_location.nil?
     self.regenerate_now = ''
     self.save
 timeend = Time.now

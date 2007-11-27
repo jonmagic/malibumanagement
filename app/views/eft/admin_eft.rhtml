@@ -3,49 +3,51 @@
 		<div id="eft_actions_header" class="eft_header">
 			<h2>&nbsp;<br />Viewing <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
-		<%= link_to "Regenerate Batch for #{Time.parse(@batch.for_month).strftime("%B %Y")}", 'javascript:void(0);', :onclick => "Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' />Regenerating EFT Batch, this can take several minutes...</div>', {fade : true, overlayCloseOnClick : false}); window.location='#{eft_path(:action => :regenerate_batch, :for_month => params[:for_month])}';", :class => 'eft_column resync' %>
+		<p>Showing for the month of: <span style="border-top:2px solid #848484; border-left:2px solid #848484; border-bottom:2px solid #FAFAFA; border-right:2px solid #FAFAFA; padding:1px 3px 3px 2px"><%= date_picker_field(Time, :next_month, :value => Time.parse(@for_month).strftime('%B %Y'), :display_as => "function(date){return(getMonthName(date.getMonth()) + ' ' + date.getFullYear())}") %></span>
+			<span style="margin-left:20pt;">
+			<%= link_to 'Regenerate for this month', eft_path(:action => 'regenerate_batch'), :onclick => "this.href = this.href + '?for_month=' + $('Time_next_month').value; return true;" %>
+			<% gens = EftBatch.find(:all, :conditions => ['regenerate_now = ?', 'all']).collect {|x| Time.parse(x.for_month).month_name} -%>
+			&nbsp;<%= (gens.to_sentence + (gens.length > 1 ? ' are' : ' is') + ' currently regenerating') if !gens.blank? %>
+			</span>
 	</div>
 	<div id="eft_downloads">
 		<div id="eft_downloads_header" class="eft_header">
 			<h2>&nbsp;<br />Downloadable Excel files for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
-		<div class="eft_column"><%= link_to 'Current Batch', eft_path(:action => :download_csv, :file => 'payment', :for_month => params[:for_month]), :class => 'floatleft' %></div>
-		<div class="eft_column"><a href="" class="floatleft">Still clearing</a></div>
-		<div class="eft_column"><ul>
-			<li><%= link_to "Missing EFTs (#{@batch.no_eft_count})", eft_path(:action => :download_csv, :file => 'missing_efts', :for_month => params[:for_month]), :class => 'row1' %></li>
-			<li><%= link_to "Invalid EFTs (#{@batch.invalid_count})", eft_path(:action => :download_csv, :file => 'invalid_efts', :for_month => params[:for_month]), :class => 'row2' %></li>
+		<div class="eft_left_column"><ul>
+			<li><%= link_to 'Current Batch', formatted_search_client_members_path(:format => 'csv', :filter_by => 'All', :query => ''), :onclick => "this.href = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return true;", :class => 'row1' %></li>
+			<li><a href="" class="row2">Still clearing</a></li>
+		</ul></div>
+		<div class="eft_right_column"><ul>
+			<li><%= link_to "Missing EFTs (#{@batch.no_eft_count})", formatted_search_client_members_path(:format => 'csv', :filter_by => 'Missing EFT', :query => ''), :onclick => "this.href = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return true;", :class => 'row1' %></li>
+			<li><%= link_to "Invalid EFTs (#{@batch.invalid_count})", formatted_search_client_members_path(:format => 'csv', :filter_by => 'Invalid', :query => ''), :onclick => "this.href = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return true;", :class => 'row2' %></li>
 		</ul></div>
 	</div>
 	<div id="eft_stats">
 		<div id="eft_stats_header" class="eft_header">
 			<h2>&nbsp;<br />Statistics for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
-		<div class="eft_column">
+		<div class="eft_left_column">
 			<h3>By store and Total</h3>
 			<table>
-				<tr class="bold"><td>Total:</td><td><%= @batch.payments.count %></td></tr>
+				<tr class="bold"><td>Total:</td><td><%= @batch.payments.count %> (<%= (@batch.locations_counts['all'][:valid].to_f / @batch.locations_counts['all'][:all].to_f * 100).to_i %>% billable)</td></tr>
 				<% @batch.locations_counts.each do |location_code,counts| -%>
+				<% next if location_code == 'all' -%>
 					<tr><td><%= LOCATIONS[location_code][:name] %>:</td>
-						<td><%= link_to "#{counts[:valid]} valid", eft_path(:action => :location_csv, :location => location_code, :filter_by => 'All', :for_month => @for_month) %>,
-							<%= link_to "#{counts[:invalid]} invalid", eft_path(:action => :location_csv, :location => location_code, :filter_by => 'Invalid', :for_month => @for_month) %>,
-							<%= link_to "#{counts[:no_eft]} missing eft", eft_path(:action => :location_csv, :location => location_code, :filter_by => 'Missing EFT', :for_month => @for_month) %>
+						<td><%= link_to "#{counts[:valid]} valid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Valid', :query => ''), :onclick => "this.href = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return true;" %>,
+							<%= link_to "#{counts[:invalid]} invalid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Invalid', :query => ''), :onclick => "this.href = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return true;" %>,
+							<%= link_to "#{counts[:no_eft]} no eft", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Missing EFT', :query => ''), :onclick => "this.href = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return true;" %>
+							(<%= (counts[:valid].to_f / counts[:all].to_f * 100.to_f).to_i %>% billable)
 						</td></tr>
 				<% end -%>
 			</table>
 		</div>
-		<div class="eft_column">
+		<div class="eft_right_column">
 			<h3>EFT by $ amounts</h3>
 			<ul>
-				<% @batch.eft_count_by_amount.each do |key,value| -%>
-					<li>$<%= key.to_f/100 %>: <%= value %></li>
+				<% @batch.amounts_counts.each do |key,value| -%>
+					<li>$<%= key %>: <%= value %></li>
 				<% end -%>
-			</ul>
-		</div>
-		<div class="eft_column">
-			<h3>EFT Problems</h3>
-			<ul>
-				<li>Missing EFT: <%= @batch.memberships_without_efts %></li>
-				<li>Invalid EFT's: <%= @batch.members_with_invalid_efts %></li>
 			</ul>
 		</div>
 	</div>

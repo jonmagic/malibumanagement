@@ -16,15 +16,21 @@ class ClientMembersController < ApplicationController
         when 'Valid'
           {'has_eft' => 1, 'goto_valid' => '--- []'}
         end
-        filters = filters.merge('batch_id' => bid, 'location' => LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0])
-        @total = GotoTransaction.search_count(@query, :filters => filters)
-        @pages = Paginator.new self, @total, per_page, params[:page]
-        @clients = (params[:format] == 'csv' ? GotoTransaction.search(@query, :filters => filters) : GotoTransaction.search(@query, :filters => filters, :limit => @pages.current.to_sql[0], :offset => @pages.current.to_sql[1]))
+        filters = filters.merge('batch_id' => bid)
+        filters = filters.merge('location' => LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0]) unless params[:domain].blank?
+        if params[:format] == 'csv'
+          @clients = GotoTransaction.search(@query, :filters => filters)
+        else
+          @clients = GotoTransaction.search(@query, :filters => filters, :limit => @pages.current.to_sql[0], :offset => @pages.current.to_sql[1])
+          @total = GotoTransaction.search_count(@query, :filters => filters)
+          @pages = Paginator.new self, @total, per_page, params[:page]
+        end
         respond_to do |format|
           format.html # Render the template file
           format.js   # Render the rjs file
           format.csv {
-            stream_csv(LOCATIONS[LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]][:name].underscore + '-' + params[:filter_by].to_s.underscore + '.csv') do |csv|
+            domain_name = params[:domain].blank? ? 'malibu' : LOCATIONS[LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]][:name].underscore
+            stream_csv(domain_name + '-' + params[:filter_by].to_s.underscore + '.csv') do |csv|
               csv << GotoTransaction.managers_csv_headers
               @clients.each do |client|
                 csv << client.to_managers_csv_row
@@ -42,79 +48,83 @@ class ClientMembersController < ApplicationController
   end
 
   def remove_vip
-    gt = GotoTransaction.find(params[:id])
-    if gt.remove_vip!
-      respond_to do |format|
-        format.html {
-          flash[:notice] = "Removed VIP from client ##{gt.client_id}."
-          redirect_to store_eft_path()
-        }
-        format.js {
-          render :update do |page|
-            page.flash("Removed VIP from client ##{gt.client_id}.", 'Ok')
-            page["client_listing_#{params[:id]}"].remove
-          end
-        }
-      end
-    else
-      respond_to do |format|
-        format.html {
-          flash[:notice] = "Could not remove VIP from client ##{gt.client_id}. Please try again."
-          redirect_to store_eft_path()
-        }
-        format.js {
-          render :update do |page|
-            page.flash("Could not remove VIP from client ##{gt.client_id}. Please try again.", 'Ok')
-          end
-        }
-      end
-    end
-  rescue ActiveRecord::RecordNotFound
-    respond_to do |format|
-      format.html {raise}
-      format.js {
-        render :update do |page|
-          page.flash("Client was not found.")
+    restrict('allow only store admins') or begin
+      gt = GotoTransaction.find(params[:id])
+      if gt.remove_vip!
+        respond_to do |format|
+          format.html {
+            flash[:notice] = "Removed VIP from client ##{gt.client_id}."
+            redirect_to store_eft_path()
+          }
+          format.js {
+            render :update do |page|
+              page.flash("Removed VIP from client ##{gt.client_id}.", 'Ok')
+              page["client_listing_#{params[:id]}"].remove
+            end
+          }
         end
-      }
+      else
+        respond_to do |format|
+          format.html {
+            flash[:notice] = "Could not remove VIP from client ##{gt.client_id}. Please try again."
+            redirect_to store_eft_path()
+          }
+          format.js {
+            render :update do |page|
+              page.flash("Could not remove VIP from client ##{gt.client_id}. Please try again.", 'Ok')
+            end
+          }
+        end
+      end
+    rescue ActiveRecord::RecordNotFound
+      respond_to do |format|
+        format.html {raise}
+        format.js {
+          render :update do |page|
+            page.flash("Client was not found.")
+          end
+        }
+      end
     end
   end
 
   def reload_eft
-    gt = GotoTransaction.find(params[:id])
-    if gt.reload_eft!
-      respond_to do |format|
-        format.html {
-          flash[:notice] = "Reloaded VIP for client ##{gt.client_id} from #{LOCATIONS[gt.location][:name]}."
-          redirect_to store_eft_path()
-        }
-        format.js {
-          render :update do |page|
-            page.flash("Reloaded VIP for client ##{gt.client_id} from #{LOCATIONS[gt.location][:name]}.")
-          end
-        }
-      end
-    else
-      respond_to do |format|
-        format.html {
-          flash[:notice] = "Could not reload VIP from #{LOCATIONS[gt.location][:name]}."
-          redirect_to store_eft_path()
-        }
-        format.js {
-          render :update do |page|
-            page.flash("Could not reload VIP from #{LOCATIONS[gt.location][:name]}.")
-          end
-        }
-      end
-    end
-  rescue ActiveRecord::RecordNotFound
-    respond_to do |format|
-      format.html {raise}
-      format.js {
-        render :update do |page|
-          page.flash("Client was not found.")
+    restrict('allow only store admins') or begin
+      gt = GotoTransaction.find(params[:id])
+      if gt.reload_eft!
+        respond_to do |format|
+          format.html {
+            flash[:notice] = "Reloaded VIP for client ##{gt.client_id} from #{LOCATIONS[gt.location][:name]}."
+            redirect_to store_eft_path()
+          }
+          format.js {
+            render :update do |page|
+              page.flash("Reloaded VIP for client ##{gt.client_id} from #{LOCATIONS[gt.location][:name]}.")
+            end
+          }
         end
-      }
+      else
+        respond_to do |format|
+          format.html {
+            flash[:notice] = "Could not reload VIP from #{LOCATIONS[gt.location][:name]}."
+            redirect_to store_eft_path()
+          }
+          format.js {
+            render :update do |page|
+              page.flash("Could not reload VIP from #{LOCATIONS[gt.location][:name]}.")
+            end
+          }
+        end
+      end
+    rescue ActiveRecord::RecordNotFound
+      respond_to do |format|
+        format.html {raise}
+        format.js {
+          render :update do |page|
+            page.flash("Client was not found.")
+          end
+        }
+      end
     end
   end
 

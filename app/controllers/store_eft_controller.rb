@@ -13,23 +13,6 @@ class StoreEftController < ApplicationController
     restrict('allow only store admins')
   end
 
-  # def location_csv
-  #   restrict('allow only store admins') or begin
-  #     stream_csv(params[:location] + '_payments.csv') do |csv|
-  #       csv << GotoTransaction.managers_headers
-  #       headers = true
-  #       CSV::Reader.parse(File.open('EFT/' + @for_month + '/payment.csv', 'rb')) do |row|
-  #         if headers
-  #           headers = false
-  #           next
-  #         end
-  #         goto = GotoTransaction.new_from_csv_row(row)
-  #         csv << goto.to_managers_a if goto.location == params[:location]
-  #       end
-  #     end
-  #   end
-  # end
-
   private
     def stream_csv(filename)
       require 'fastercsv'

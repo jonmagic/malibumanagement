@@ -6,6 +6,7 @@ class AddEftBatch < ActiveRecord::Migration
       t.column :no_eft_count, :integer
       t.column :invalid_count, :integer
       t.column :regenerate_now, :string
+      t.column :last_total_regenerate, :datetime
     end
   end
   def self.down

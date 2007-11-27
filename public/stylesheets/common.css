@@ -408,14 +408,14 @@ th.calendar_day {
 #eft_downloads {position:relative;margin-top:4em;}
 #eft_downloads_header {position:relative;width:100%;height:50px;border-bottom:5px solid #ff80d7;background-image:url(/images/eft/csv.gif);background-repeat:no-repeat;background-position:20px;}
 #eft_downloads_header p {position:absolute;left:80px;top:10px;}
-#eft_downloads a {background-image:url(/images/eft/csv-small.gif);background-repeat:no-repeat;margin-top:1em;text-indent:20px;}
+#eft_downloads a {background-image:url(/images/eft/csv-small.gif);background-repeat:no-repeat;text-indent:6em;}
+#eft_downloads a:before {content:". . ";}
 #eft_downloads ul {margin-top:0;margin-left:-40px;}
-#eft_downloads ul li {list-style:none;}
-#eft_downloads .row1 {position:absolute;}
-#eft_downloads .row2 {position:absolute;top:90px;}
+#eft_downloads ul li {list-style:none;display:block;padding-left:2em;margin-top:1em;}
 #eft_stats {position:relative;margin-top:4em;}
 #eft_stats_header {position:relative;width:100%;height:55px;border-bottom:5px solid #80a2ff;background-image:url(/images/eft/stats.gif);background-repeat:no-repeat;background-position:20px;}
 #eft_stats_header p {position:absolute;left:80px;top:15px;}
-.eft_column {display:block;width:25%;float:left;margin-left:40px;}
+.eft_left_column {display:block;width:60%;float:left;margin-left:25px;}
+.eft_right_column {display:block;width:22%;float:left;margin-left:25px;}
 .bold {font-weight:bold;}
 .floatleft {float:left;}
