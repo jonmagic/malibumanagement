@@ -23,7 +23,6 @@
 				<%= render :partial => 'client_members/client_listing', :locals => {:client => client, :rownum => rownum} %>
 			<% rescue ActionView::TemplateError => e %>
 				<%= render :partial => 'client_members/client_listing', :locals => {:client => GotoTransaction.new(:first_name => 'ERROR', :last_name => 'Rendering!'), :rownum => rownum} %>
-				<p style="display:none"><%= e %></p>
 			<% end %>
 		<% end -%>
 	<% else -%>
