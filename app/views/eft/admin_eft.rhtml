@@ -23,12 +23,12 @@
 		<div class="eft_column">
 			<h3>By store and Total</h3>
 			<table>
-				<tr class="bold"><td>Total:</td><td><%= @batch.eft_count %></td></tr>
+				<tr class="bold"><td>Total:</td><td><%= @batch.payments.count %></td></tr>
 				<% @batch.locations_counts.each do |location_code,counts| -%>
 					<tr><td><%= LOCATIONS[location_code][:name] %>:</td>
-						<td><%= link_to counts[:valid]+" valid", eft_path(:action => :location_csv, :location => location_code, :filter_by => 'All', :for_month => @for_month) %>,
-							<%= link_to counts[:invalid]+" invalid", eft_path(:action => :location_csv, :location => location_code, :filter_by => 'Invalid', :for_month => @for_month) %>,
-							<%= link_to counts[:no_eft]+" missing eft", eft_path(:action => :location_csv, :location => location_code, :filter_by => 'Missing EFT', :for_month => @for_month) %>
+						<td><%= link_to "#{counts[:valid]} valid", eft_path(:action => :location_csv, :location => location_code, :filter_by => 'All', :for_month => @for_month) %>,
+							<%= link_to "#{counts[:invalid]} invalid", eft_path(:action => :location_csv, :location => location_code, :filter_by => 'Invalid', :for_month => @for_month) %>,
+							<%= link_to "#{counts[:no_eft]} missing eft", eft_path(:action => :location_csv, :location => location_code, :filter_by => 'Missing EFT', :for_month => @for_month) %>
 						</td></tr>
 				<% end -%>
 			</table>

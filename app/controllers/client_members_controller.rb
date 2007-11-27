@@ -51,7 +51,7 @@ class ClientMembersController < ApplicationController
         }
         format.js {
           render :update do |page|
-            page.flash("Removed VIP from client ##{gt.client_id}.")
+            page.flash("Removed VIP from client ##{gt.client_id}.", 'Ok')
             page["client_listing_#{params[:id]}"].remove
           end
         }
@@ -64,7 +64,7 @@ class ClientMembersController < ApplicationController
         }
         format.js {
           render :update do |page|
-            page.flash("Could not remove VIP from client ##{gt.client_id}. Please try again.")
+            page.flash("Could not remove VIP from client ##{gt.client_id}. Please try again.", 'Ok')
           end
         }
       end

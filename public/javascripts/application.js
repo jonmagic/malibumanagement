@@ -8,15 +8,26 @@ function numbersonly(e){
 	}
 }
 
-function flash(txt){
+function flash(txt, close_button, close_on_overlay_click, stay_open){
+	if(close_button == undefined) close_button = false;
+	if(close_on_overlay_click == undefined) close_on_overlay_click = false;
+	if(close_button != false){
+		buttons = '<div id="dialog_buttons" class="dialog_buttons">\
+			<input id="dialog-button" type="button" value="'+close_button+'" onclick="Control.Modal.close();" class="dialog-button"/>\
+		</div>';
+		after_open = function(){setTimeout(function(){$('dialog-button').focus()},500)};
+	} else {
+		buttons = '';
+		after_open = function(){true};
+	}
 	Control.Modal.open('<div>\
 		<div class="dialog_content">\
-			<div class="dialog_body">'+txt+'</div>\
-			<div id="dialog_buttons" class="dialog_buttons">\
-				<input id="dialog-button" type="button" value="Ok" onclick="Control.Modal.close();" class="dialog-button"/>\
-			</div>\
-		</div>\
-	</div>', {fade:true, overlayCloseOnClick:false, afterOpen:function(){setTimeout(function(){$('dialog-button').focus()},500)}});
+			<div class="dialog_body">'+txt+'</div>'+buttons+
+		'</div>\
+	</div>', {fade:true, overlayCloseOnClick:close_on_overlay_click, afterOpen:after_open});
+	if(stay_open == false || (close_button == false && close_on_overlay_click == false && stay_open != false)){
+		setTimeout(function(){Control.Modal.close()}, 4500); // auto-close after 4.5 seconds
+	}
 }
 
 function deleteModal(id_to_delete, friendly_name){
