@@ -80,8 +80,8 @@ class GotoTransaction < ActiveRecord::Base
         :account_type => eft.Acct_Type,
         :authorization => 'Written'
       }
-    else
-      attrs = attrs.shift
+    elsif attrs.is_a?(Array)
+      attrs = *attrs
     end
 
     # With only {attributes} at this point, make sure we're not duplicating records.
