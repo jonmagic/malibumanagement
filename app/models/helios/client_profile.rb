@@ -146,7 +146,7 @@ class Helios::ClientProfile < ActiveRecord::Base
     elsif(self.Member2 == 'VIP')
       self.update_attributes(:Member2 => '', :Member2_Beg => '', :Member2_Exp => '', :Member2_FreezeStart => '', :Member2_FreezeEnd => '')
     end
-    self.eft.class.destroy_these(self.eft.id) if self.eft
+    Helios::Eft.destroy_these(self.eft.id) if self.eft
     true
   end
 
