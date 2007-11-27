@@ -30,11 +30,17 @@ class GotoTransaction < ActiveRecord::Base
       'location' => 'goto_transactions.location = ?'
     }
 
+  #Give me:
+  #batch_id, cp
+  #batch_id, eft
+  #or just {attributes}
   def initialize(*attrs)
     attrs = {} if attrs.blank?
+    # If we're looking at a cp, change the attrs to look at it's eft, or simple attributes if no eft.
     if(attrs[1].is_a?(Helios::ClientProfile))
       batch_id = attrs[0]
       cp = attrs[1]
+      # If there is no eft, turn straight into {attributes}
       if(cp.eft.nil?)
         location_code = '0'*(3-ZONE_LOCATION_BITS)+cp.id.to_s[0,ZONE_LOCATION_BITS]
         attrs = {
@@ -44,10 +50,13 @@ class GotoTransaction < ActiveRecord::Base
           :first_name => cp.First_Name,
           :last_name => cp.Last_Name
         }
-      else
+      else # If there is an eft, turn attrs into [batch_id, eft]
         attrs[1] = cp.eft
       end
     end
+
+    # At this point, attrs is either [batch_id, eft] or {attributes}
+    # Handle [batch_id, eft]: turn them into {attributes}
     if(attrs[1].is_a?(Helios::Eft))
       batch_id = attrs[0]
       eft = attrs[1]
@@ -70,17 +79,20 @@ class GotoTransaction < ActiveRecord::Base
         :account_type => eft.Acct_Type,
         :authorization => 'Written'
       }
-      # Pretend we're the already-made batch if one for this month already exists
-      if exis = self.class.find_by_batch_id_and_client_id(attrs[:batch_id], attrs[:client_id])
-        super(exis.attributes.merge(attrs))
-        self.id = exis.id
-        @new_record = false
-      else
-        super(attrs)
-      end
+    else
+      attrs = attrs.shift
+    end
+
+    # With only {attributes} at this point, make sure we're not duplicating records.
+    if exis = self.class.find_by_batch_id_and_client_id(attrs[:batch_id], attrs[:client_id])
+      super(exis.attributes.merge(attrs))
+      self.id = exis.id
+      @new_record = false
     else
       super(attrs)
     end
+    # Refresh the invalid status field
+    self.goto_is_valid?
   end
 
   def goto_is_valid?
