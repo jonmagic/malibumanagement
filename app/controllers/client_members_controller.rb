@@ -10,11 +10,11 @@ class ClientMembersController < ApplicationController
         when 'All'
           {}
         when 'Invalid'
-          {'has_eft' => 1, 'goto_invalid' => '%--- []%'}
+          {'has_eft' => 1, 'goto_invalid' => '--- []'}
         when 'Missing EFT'
-          {'no_eft' => 1, 'goto_valid' => '%--- []%'}
+          {'no_eft' => 1}
         when 'Valid'
-          {'has_eft' => 1, 'goto_valid' => '%--- []%'}
+          {'has_eft' => 1, 'goto_valid' => '--- []'}
         end
         filters = filters.merge('batch_id' => bid, 'location' => LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0])
         @total = GotoTransaction.search_count(@query, :filters => filters)
@@ -43,18 +43,31 @@ class ClientMembersController < ApplicationController
 
   def remove_vip
     gt = GotoTransaction.find(params[:id])
-    gt.remove_vip!
-    respond_to do |format|
-      format.html {
-        flash[:notice] = "Removed VIP from client ##{gt.client_id}."
-        redirect_to store_eft_path()
-      }
-      format.js {
-        render :update do |page|
-          page.flash("Removed VIP from client ##{gt.client_id}.")
-          page["client_listing_#{params[:id]}"].remove
-        end
-      }
+    if gt.remove_vip!
+      respond_to do |format|
+        format.html {
+          flash[:notice] = "Removed VIP from client ##{gt.client_id}."
+          redirect_to store_eft_path()
+        }
+        format.js {
+          render :update do |page|
+            page.flash("Removed VIP from client ##{gt.client_id}.")
+            page["client_listing_#{params[:id]}"].remove
+          end
+        }
+      end
+    else
+      respond_to do |format|
+        format.html {
+          flash[:notice] = "Could not remove VIP from client ##{gt.client_id}. Please try again."
+          redirect_to store_eft_path()
+        }
+        format.js {
+          render :update do |page|
+            page.flash("Could not remove VIP from client ##{gt.client_id}. Please try again.")
+          end
+        }
+      end
     end
   rescue ActiveRecord::RecordNotFound
     respond_to do |format|
@@ -67,19 +80,32 @@ class ClientMembersController < ApplicationController
     end
   end
 
-  def reload_vip
+  def reload_eft
     gt = GotoTransaction.find(params[:id])
-    gt.reload_eft!
-    respond_to do |format|
-      format.html {
-        flash[:notice] = "Reloaded VIP from client ##{gt.client_id}."
-        redirect_to store_eft_path()
-      }
-      format.js {
-        render :update do |page|
-          page.flash("Reloaded VIP from client ##{gt.client_id}.")
-        end
-      }
+    if gt.reload_eft!
+      respond_to do |format|
+        format.html {
+          flash[:notice] = "Reloaded VIP for client ##{gt.client_id} from #{LOCATIONS[gt.location][:name]}."
+          redirect_to store_eft_path()
+        }
+        format.js {
+          render :update do |page|
+            page.flash("Reloaded VIP for client ##{gt.client_id} from #{LOCATIONS[gt.location][:name]}.")
+          end
+        }
+      end
+    else
+      respond_to do |format|
+        format.html {
+          flash[:notice] = "Could not reload VIP from #{LOCATIONS[gt.location][:name]}."
+          redirect_to store_eft_path()
+        }
+        format.js {
+          render :update do |page|
+            page.flash("Could not reload VIP from #{LOCATIONS[gt.location][:name]}.")
+          end
+        }
+      end
     end
   rescue ActiveRecord::RecordNotFound
     respond_to do |format|
