@@ -73,13 +73,8 @@ timestart = Time.now
       if for_location.nil?
         unless cp.has_prepaid_membership?
           t = GotoTransaction.new(self.id, cp)
-          if cp.eft.nil?
-            t.no_eft = true
-            self.no_eft_count += 1
-          else
-            t.location = cp.eft.Location || '0'*(3-ZONE_LOCATION_BITS)+cp.eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
-            self.invalid_count += 1 if t.goto_is_invalid?
-          end
+          self.no_eft_count += 1 if cp.eft.nil?
+          self.invalid_count += 1 if t.goto_is_invalid?
           t.save
         end
       else
@@ -87,7 +82,6 @@ timestart = Time.now
           the_location = cp.eft.Location || '0'*(3-ZONE_LOCATION_BITS)+cp.eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
           if for_location == the_location && !cp.has_prepaid_membership?
             t = GotoTransaction.new(self.id, cp.eft)
-            t.location = the_location
             t.save
           end
         end

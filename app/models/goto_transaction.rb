@@ -48,7 +48,8 @@ class GotoTransaction < ActiveRecord::Base
           :client_id => cp.id.to_i,
           :location => location_code,
           :first_name => cp.First_Name,
-          :last_name => cp.Last_Name
+          :last_name => cp.Last_Name,
+          :no_eft => true
         }
       else # If there is an eft, turn attrs into [batch_id, eft]
         attrs[1] = cp.eft
