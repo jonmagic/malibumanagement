@@ -98,7 +98,7 @@ class GotoTransaction < ActiveRecord::Base
   def goto_is_valid?
     # Validates the record for sending to gotobilling.
     self.goto_invalid = [1]
-    self.goto_invalid << "Expired Card" if credit_card? && Time.parse(expiration[0,2] + '/01/' + expiration[2,2]) < Time.parse(self.batch.for_month)
+    self.goto_invalid << "Expired Card" if credit_card? && expiration && Time.parse(expiration[0,2] + '/01/' + expiration[2,2]) < Time.parse(self.batch.for_month)
     self.goto_invalid << "Invalid Credit Card Number" if credit_card? && !validCreditCardNumber?(credit_card_number)
     if !credit_card? && !bank_routing_number.blank? && !validABA?(bank_routing_number)
       if bank_routing_number.to_s == '123'
