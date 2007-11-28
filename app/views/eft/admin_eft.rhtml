@@ -59,14 +59,12 @@
 	</div>
 </div>
 <div id="gotobilling_links" style="display:none">
-<div id="gotobilling_links_content" style="margin:2em">
-	<ul>
-	<% LOCATIONS.values.sort {|a,b| a[:name] <=> b[:name]}.each do |location| -%>
-	<li><%= link_to location[:name], formatted_search_client_members_path(:format => 'csv', :gotoready => 'YES', :domain => location[:domain], :filter_by => 'Valid', :query => ''), :onclick => "window.location = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return false;" %></li>
-	<% end -%>
-	</ul>
+	<div id="gotobilling_links_content" style="margin:2em">
+		<ul>
+		<% LOCATIONS.values.sort {|a,b| a[:name] <=> b[:name]}.each do |location| -%>
+		<li><%= link_to location[:name], formatted_search_client_members_path(:format => 'csv', :gotoready => 'YES', :domain => location[:domain], :filter_by => 'Valid', :query => ''), :onclick => "window.location = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return false;" %></li>
+		<% end -%>
+		</ul>
+	</div>
 </div>
-</div>
-<br />
-<br />
-<p>.</p>
+<div class="clear"><br /><br /><p>.</p></div>
