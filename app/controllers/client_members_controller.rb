@@ -21,9 +21,9 @@ class ClientMembersController < ApplicationController
         if params[:format] == 'csv'
           @clients = GotoTransaction.search(@query, :filters => filters)
         else
-          @clients = GotoTransaction.search(@query, :filters => filters, :limit => @pages.current.to_sql[0], :offset => @pages.current.to_sql[1])
           @total = GotoTransaction.search_count(@query, :filters => filters)
           @pages = Paginator.new self, @total, per_page, params[:page]
+          @clients = GotoTransaction.search(@query, :filters => filters, :limit => @pages.current.to_sql[0], :offset => @pages.current.to_sql[1])
         end
         respond_to do |format|
           format.html # Render the template file
@@ -132,14 +132,16 @@ class ClientMembersController < ApplicationController
     def stream_csv(filename)
       require 'fastercsv'
       if request.env['HTTP_USER_AGENT'] =~ /msie/i
+logger.info("CONTENT TYPE: text/plain")
         headers['Pragma'] = 'public'
-        headers["Content-type"] = "text/plain" 
+        headers["Content-type"] = "text/plain"
         headers['Cache-Control'] = 'no-cache, must-revalidate, post-check=0, pre-check=0'
-        headers['Content-Disposition'] = "attachment; filename=\"#{filename}\"" 
-        headers['Expires'] = "0" 
+        headers['Content-Disposition'] = "attachment; filename=\"#{filename}\""
+        headers['Expires'] = "0"
       else
+logger.info("CONTENT TYPE: text/csv")
         headers["Content-Type"] ||= 'text/csv'
-        headers["Content-Disposition"] = "attachment; filename=\"#{filename}\"" 
+        headers["Content-Disposition"] = "attachment; filename=\"#{filename}\""
       end
       render :text => Proc.new { |response, output| yield FasterCSV.new(output, :row_sep => "\r\n") }
     end
