@@ -77,7 +77,7 @@ class GotoTransaction < ActiveRecord::Base
         :credit_card_number => eft.credit_card? ? eft.Acct_No : nil,
         :expiration => eft.Acct_Exp.to_s.gsub(/\D/,''),
         :amount => amount_int,
-        :type => eft.credit_card? ? 'Credit Card' : 'ACH',
+        :tran_type => eft.credit_card? ? 'Credit Card' : 'ACH',
         :account_type => eft.Acct_Type,
         :authorization => 'Written'
       }
@@ -126,7 +126,7 @@ class GotoTransaction < ActiveRecord::Base
       'merchant_pin' => 'merchant_pin',
       'last_name' => 'x_last_name',
       'first_name' => 'x_first_name',
-      'type' => 'x_transaction_type',
+      'tran_type' => 'x_transaction_type',
       'transaction_id' => 'x_invoice_id',
       'amount' => 'x_amount',
       'authorization' => 'x_ach_payment_type',
@@ -144,13 +144,13 @@ class GotoTransaction < ActiveRecord::Base
       'client_id' => lambda {|x| x},
       'last_name' => lambda {|x| x},
       'first_name' => lambda {|x| x},
-      'type' => lambda {|x| {'ACH' => 'DH', 'Credit Card' => 'ES'}[x]},
+      'tran_type' => lambda {|x| {'ACH' => 'DH', 'Credit Card' => 'ES'}[x]},
       'transaction_id' => lambda {|x| x},
       'amount' => lambda {|x| x},
       'authorization' => lambda {|x| {'Written' => 'PPD', 'Tel' => 'TEL', 'Web' => 'WEB'}[x]},
       'bank_routing_number' => lambda {|x| x},
       'bank_account_number' => lambda {|x| x},
-      'account_type' => lambda {|x| self.type == 'ACH' ? {'C' => 'PC', 'S' => 'PS'}[x] : nil},
+      'account_type' => lambda {|x| self.tran_type == 'ACH' ? {'C' => 'PC', 'S' => 'PS'}[x] : nil},
       'name_on_card' => lambda {|x| x},
       'credit_card_number' => lambda {|x| x},
       'expiration' => lambda {|x| x},
@@ -192,7 +192,7 @@ class GotoTransaction < ActiveRecord::Base
     ["ClientId", "Location", "FirstName", "LastName", "BankRoutingNumber", "BankAccountNumber", "NameOnCard", "CreditCardNumber", "Expiration", "Amount", "Type", "AccountType", "Authorization", "TransactionId", "Recorded", "OrderNumber", "SentDate", "TranDate", "TranTime", "Status", "Description", "TermCode", "AuthCode"]
   end
   def to_csv_row
-# client_id, location, merchant_id, first_name, last_name, bank_routing_number, bank_account_number, name_on_card, credit_card_number, expiration, amount, type, account_type, authorization, transaction_id, recorded, order_number, sent_date, tran_date, tran_time, status, description, term_code, auth_code
+# client_id, location, merchant_id, first_name, last_name, bank_routing_number, bank_account_number, name_on_card, credit_card_number, expiration, amount, tran_type, account_type, authorization, transaction_id, recorded, order_number, sent_date, tran_date, tran_time, status, description, term_code, auth_code
     [
       client_id,
       location,
@@ -204,7 +204,7 @@ class GotoTransaction < ActiveRecord::Base
       credit_card_number,
       expiration,
       amount,
-      type,
+      tran_type,
       account_type,
       authorization,
       transaction_id,
