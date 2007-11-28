@@ -18,7 +18,7 @@ class EftController < ApplicationController
       amount = params[:amount]
       redirect_to :action => 'admin_eft' if amount.blank?
       # Do the work here
-      GotoTransaction.search('', :filters => {'has_eft' => 1, 'goto_valid' => '--- []', 'amount' => amount}).each do |unjust|
+      GotoTransaction.search('', :filters => {'amount' => amount}).each do |unjust|
         if unjust.client && unjust.client.eft && unjust.client.eft.update_attributes(:Monthly_Fee => ZONE[:StandardMembershipPrice], :Last_Mdt => Time.now)
           unjust.update_attributes(:amount => ZONE[:StandardMembershipPrice])
         end

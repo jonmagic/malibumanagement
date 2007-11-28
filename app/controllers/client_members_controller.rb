@@ -15,6 +15,8 @@ class ClientMembersController < ApplicationController
           {'no_eft' => 1}
         when 'Valid'
           {'has_eft' => 1, 'goto_valid' => '--- []'}
+        else
+          {}
         end
         filters = filters.merge('batch_id' => bid)
         filters = filters.merge('amount' => params[:amount]) if params[:amount]
@@ -31,7 +33,7 @@ class ClientMembersController < ApplicationController
           format.js   # Render the rjs file
           format.csv {
             domain_name = params[:domain].blank? ? 'malibu' : LOCATIONS[LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]][:name].underscore
-            stream_csv(domain_name + '-' + params[:filter_by].to_s.underscore + '.csv') do |csv|
+            send_csv(domain_name + '-' + params[:filter_by].to_s.underscore + '.csv') do |csv|
               csv << (params[:gotoready] ? GotoTransaction.csv_headers : GotoTransaction.managers_csv_headers)
               @clients.each do |client|
                 csv << (params[:gotoready] ? client.to_csv_row : client.to_managers_csv_row)
@@ -130,17 +132,39 @@ class ClientMembersController < ApplicationController
   end
 
   private
-    def stream_csv(filename)
+    def send_csv(filename)
       require 'fastercsv'
       if request.env['HTTP_USER_AGENT'] =~ /msie/i
-logger.info("CONTENT TYPE: text/plain")
         headers['Pragma'] = 'public'
         headers["Content-type"] = "text/plain"
         headers['Cache-Control'] = 'no-cache, must-revalidate, post-check=0, pre-check=0'
         headers['Content-Disposition'] = "attachment; filename=\"#{filename}\""
         headers['Expires'] = "0"
       else
-logger.info("CONTENT TYPE: text/csv")
+        headers["Content-Type"] ||= 'text/csv'
+        headers["Content-Disposition"] = "attachment; filename=\"#{filename}\""
+      end
+      output_csv = [] #Let the method run all before we start rendering
+      yield output_csv
+      csv_push = Proc.new {|fcsv|
+        logger.info "Should be a FasterCSV: #{fcsv.inspect}"
+        output_csv.each do |oo|
+          fcsv << oo
+        end
+        fcsv
+      } #set up the call that just pushes the whole thing at once
+      render :text => Proc.new { |response, output| csv_push.call(FasterCSV.new(output, :row_sep => "\r\n"))}
+    end
+
+    def stream_csv(filename)
+      require 'fastercsv'
+      if request.env['HTTP_USER_AGENT'] =~ /msie/i
+        headers['Pragma'] = 'public'
+        headers["Content-type"] = "text/plain"
+        headers['Cache-Control'] = 'no-cache, must-revalidate, post-check=0, pre-check=0'
+        headers['Content-Disposition'] = "attachment; filename=\"#{filename}\""
+        headers['Expires'] = "0"
+      else
         headers["Content-Type"] ||= 'text/csv'
         headers["Content-Disposition"] = "attachment; filename=\"#{filename}\""
       end
