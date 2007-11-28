@@ -46,8 +46,8 @@
 		<div class="eft_right_column">
 			<h3>EFT by $ amounts</h3>
 			<ul>
-				<% @batch.amounts_counts.each do |key,value| -%>
-					<li>$<%= key %>: <%= link_to value, formatted_search_client_members_path(:format => 'csv', :filter_by => 'Valid', :amount => key, :query => ''), :onclick => "this.href = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return true;" %></li>
+				<% @batch.amounts_counts.each do |amount,count| -%>
+					<li>$<%= (amount == ZONE[:StandardMembershipPrice] ? amount : link_to(amount, eft_path(:action => 'justify_amounts' :amount => amount))) %>: <%= link_to count, formatted_search_client_members_path(:format => 'csv', :filter_by => 'Valid', :amount => amount, :query => ''), :onclick => "this.href = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').count; return true;" %></li>
 				<% end -%>
 			</ul>
 			<br />
