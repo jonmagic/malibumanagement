@@ -9,6 +9,7 @@
 			<% gens = EftBatch.find(:all, :conditions => ['regenerate_now = ?', 'all']).collect {|x| Time.parse(x.for_month).month_name} -%>
 			&nbsp;<%= (gens.to_sentence + (gens.length > 1 ? ' are' : ' is') + ' currently regenerating') if !gens.blank? %>
 			</span>
+		</p>
 	</div>
 	<div id="eft_downloads">
 		<div id="eft_downloads_header" class="eft_header">
@@ -49,8 +50,22 @@
 					<li>$<%= key %>: <%= value %></li>
 				<% end -%>
 			</ul>
+			<br />
+			<hr />
+			<br />
+			<h3>Time to Bill</h3>
+			<a href="javascript:void(0)" onclick="Control.Modal.open($('gotobilling_links').innerHTML)">Reveal Download CSVs</a>
 		</div>
 	</div>
+</div>
+<div id="gotobilling_links" style="display:none">
+<div id="gotobilling_links_content" style="margin:2em">
+	<ul>
+	<% LOCATIONS.values.sort {|a,b| a[:name] <=> b[:name]}.each do |location| -%>
+	<li><%= link_to location[:name], formatted_search_client_members_path(:format => 'csv', :gotoready => 'YES', :domain => location[:domain], :filter_by => 'Valid', :query => ''), :onclick => "this.href = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return true;" %></li>
+	<% end -%>
+	</ul>
+</div>
 </div>
 <br />
 <br />

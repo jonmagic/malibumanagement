@@ -188,14 +188,13 @@ class GotoTransaction < ActiveRecord::Base
   end
 
   def self.csv_headers
-    ["ClientId", "Location", "MerchantId", "FirstName", "LastName", "BankRoutingNumber", "BankAccountNumber", "NameOnCard", "CreditCardNumber", "Expiration", "Amount", "Type", "AccountType", "Authorization", "TransactionId", "Recorded", "OrderNumber", "SentDate", "TranDate", "TranTime", "Status", "Description", "TermCode", "AuthCode"]
+    ["ClientId", "Location", "FirstName", "LastName", "BankRoutingNumber", "BankAccountNumber", "NameOnCard", "CreditCardNumber", "Expiration", "Amount", "Type", "AccountType", "Authorization", "TransactionId", "Recorded", "OrderNumber", "SentDate", "TranDate", "TranTime", "Status", "Description", "TermCode", "AuthCode"]
   end
   def to_csv_row
 # client_id, location, merchant_id, first_name, last_name, bank_routing_number, bank_account_number, name_on_card, credit_card_number, expiration, amount, type, account_type, authorization, transaction_id, recorded, order_number, sent_date, tran_date, tran_time, status, description, term_code, auth_code
     [
       client_id,
       location,
-      merchant_id,
       first_name,
       last_name,
       bank_routing_number,
