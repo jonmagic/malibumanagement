@@ -12,7 +12,7 @@ class AddGotoTransactions < ActiveRecord::Migration
       t.column :credit_card_number,   :string
       t.column :expiration,           :string
       t.column :amount,               :string
-      t.column :type,                 :string
+      t.column :tran_type,            :string
       t.column :account_type,         :string
       t.column :authorization,        :string
       # Recorded bits
