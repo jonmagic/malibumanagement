@@ -195,17 +195,17 @@ class GotoTransaction < ActiveRecord::Base
 # client_id, location, merchant_id, first_name, last_name, bank_routing_number, bank_account_number, name_on_card, credit_card_number, expiration, amount, tran_type, account_type, authorization, transaction_id, recorded, order_number, sent_date, tran_date, tran_time, status, description, term_code, auth_code
     [
       client_id,
-      first_name,
-      last_name,
-      bank_routing_number,
-      bank_account_number,
-      name_on_card,
-      credit_card_number,
-      expiration,
+      "'"+first_name+"'",
+      "'"+last_name+"'",
+      "'"+bank_routing_number+"'",
+      "'"+bank_account_number+"'",
+      "'"+name_on_card+"'",
+      "'"+credit_card_number+"'",
+      "'"+expiration+"'",
       amount,
       tran_type,
       ach? ? authorization : nil,
-      ach? ? 'Debit' : 'Sale',
+      nil,
       nil,
       nil
     ]
