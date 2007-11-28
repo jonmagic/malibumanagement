@@ -31,14 +31,14 @@
 		<div class="eft_left_column">
 			<h3>By store and Total</h3>
 			<table>
-				<tr class="bold"><td>Total:</td><td><%= @batch.payments.count %> (<%= (@batch.locations_counts['all'][:valid].to_f / @batch.locations_counts['all'][:all].to_f * 100).to_i %>% billable)</td></tr>
+				<tr class="bold"><td>Total:</td><td><%= @batch.payments.count %> (<%= (@batch.locations_counts['all'][:valid].to_f / (@batch.locations_counts['all'][:all].to_f == 0 ? 1 : @batch.locations_counts['all'][:all].to_f) * 100).to_i %>% billable)</td></tr>
 				<% @batch.locations_counts.each do |location_code,counts| -%>
 				<% next if location_code == 'all' -%>
 					<tr><td><%= LOCATIONS[location_code][:name] %>:</td>
 						<td><%= link_to "#{counts[:valid]} valid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Valid', :query => ''), :onclick => "this.href = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return true;" %>,
 							<%= link_to "#{counts[:invalid]} invalid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Invalid', :query => ''), :onclick => "this.href = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return true;" %>,
 							<%= link_to "#{counts[:no_eft]} no eft", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Missing EFT', :query => ''), :onclick => "this.href = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return true;" %>
-							(<%= (counts[:valid].to_f / counts[:all].to_f * 100.to_f).to_i %>% billable)
+							(<%= (counts[:valid].to_f / (counts[:all] == 0 ? 1 : counts[:all]).to_f * 100.to_f).to_i %>% billable)
 						</td></tr>
 				<% end -%>
 			</table>
