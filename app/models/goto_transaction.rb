@@ -27,7 +27,8 @@ class GotoTransaction < ActiveRecord::Base
       'goto_invalid' => '(goto_transactions.goto_invalid IS NOT NULL AND NOT(goto_transactions.goto_invalid LIKE ?))',
       'goto_valid' => '(goto_transactions.goto_invalid IS NULL OR goto_transactions.goto_invalid LIKE ?)',
       'batch_id' => 'goto_transactions.batch_id = ?',
-      'location' => 'goto_transactions.location = ?'
+      'location' => 'goto_transactions.location = ?',
+      'amount' => 'goto_transactions.amount = ?'
     }
 
   #Give me:

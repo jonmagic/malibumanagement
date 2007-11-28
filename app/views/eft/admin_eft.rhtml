@@ -47,7 +47,7 @@
 			<h3>EFT by $ amounts</h3>
 			<ul>
 				<% @batch.amounts_counts.each do |key,value| -%>
-					<li>$<%= key %>: <%= value %></li>
+					<li>$<%= key %>: <%= link_to value, formatted_search_client_members_path(:format => 'csv', :filter_by => 'Valid', :amount => value :query => ''), :onclick => "this.href = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return true;" %></li>
 				<% end -%>
 			</ul>
 			<br />

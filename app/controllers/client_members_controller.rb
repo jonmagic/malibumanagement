@@ -17,6 +17,7 @@ class ClientMembersController < ApplicationController
           {'has_eft' => 1, 'goto_valid' => '--- []'}
         end
         filters = filters.merge('batch_id' => bid)
+        filters = filters.merge('amount' => params[:amount]) if params[:amount]
         filters = filters.merge('location' => LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0]) unless params[:domain].blank?
         if params[:format] == 'csv'
           @clients = GotoTransaction.search(@query, :filters => filters)
