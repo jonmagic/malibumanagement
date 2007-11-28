@@ -31,4 +31,26 @@ class Fixnum
     end
     return self+addend
   end
+
+  def to_csv
+    self.to_s
+  end
+end
+
+class Float
+  def to_csv
+    self.to_s
+  end
+end
+
+class String
+  def to_csv
+    "'"+self+"'"
+  end
+end
+
+class NilClass
+  def to_csv
+    nil
+  end
 end

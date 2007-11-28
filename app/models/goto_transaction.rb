@@ -195,20 +195,20 @@ class GotoTransaction < ActiveRecord::Base
 # client_id, location, merchant_id, first_name, last_name, bank_routing_number, bank_account_number, name_on_card, credit_card_number, expiration, amount, tran_type, account_type, authorization, transaction_id, recorded, order_number, sent_date, tran_date, tran_time, status, description, term_code, auth_code
     [
       client_id,
-      "'"+first_name.to_s+"'",
-      "'"+last_name.to_s+"'",
-      "'"+bank_routing_number.to_s+"'",
-      "'"+bank_account_number.to_s+"'",
-      "'"+name_on_card.to_s+"'",
-      "'"+credit_card_number.to_s+"'",
-      "'"+expiration.to_s+"'",
+      first_name,
+      last_name,
+      bank_routing_number,
+      bank_account_number,
+      name_on_card,
+      credit_card_number,
+      expiration,
       amount,
       tran_type,
       ach? ? authorization : nil,
       nil,
       nil,
       nil
-    ]
+    ].map {|c| c.to_csv}
   end
 
   def self.managers_csv_headers
@@ -223,7 +223,7 @@ class GotoTransaction < ActiveRecord::Base
       transaction_id,
       {'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[status],
       goto_invalid.to_sentence
-    ]
+    ].map {|c| c.to_csv}
   end
 
   private
