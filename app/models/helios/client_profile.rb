@@ -50,11 +50,37 @@ class Helios::ClientProfile < ActiveRecord::Base
     (!self.HPhone.blank? && !self.HPhoneAc.blank? && (self.HPhoneAc.to_s + self.HPhone.to_s).length > 1) ? '(' + self.HPhoneAc.to_s + ') ' + self.HPhone[0,3] + '-' + self.HPhone[3,4] : '(phone)'
   end
 
+  # Slave functions: find, update, destroy, touch
   def self.find_on_master(id)
     self.find_on_slave(self.master.keys[0], id)
   end
   def self.find_on_slave(slave_name, id)
     self.slaves[slave_name].find(id)
+  end
+  def find_on_master
+    self.class.find_on_master(self.id)
+  end
+  def find_on_slave(slave_name)
+    self.class.find_on_slave(slave_name, self.id)
+  end
+
+  def self.update_on_master(id, attrs)
+    self.update_on_slave(self.master.keys[0], id, attrs)
+  end
+  def self.update_on_slave(slave_name, id, attrs)
+    self.slaves[slave_name].primary_key = self.primary_key
+    rec = self.slaves[slave_name].new
+    attrs.stringify_keys!
+    {'Last_Mdt' => Time.now - 5.hours}.merge(attrs).each do |k,v|
+      rec.send(k+'=', v)
+    end
+    rec.save
+  end
+  def update_on_master(attrs)
+    self.class.update_on_master(self.id, attrs)
+  end
+  def update_on_slave(slave_name, attrs)
+    self.class.update_on_slave(slave_name, self.id, attrs)
   end
 
   def self.destroy_on_master(id)
@@ -62,6 +88,12 @@ class Helios::ClientProfile < ActiveRecord::Base
   end
   def self.destroy_on_slave(slave_name, id)
     self.find_on_slave(slave_name, id).destroy
+  end
+  def destroy_on_master
+    self.class.destroy_on_master(self.id)
+  end
+  def destroy_on_slave(slave_name)
+    self.class.destroy_on_slave(slave_name, self.id)
   end
 
   def self.touch_on_master(id)
@@ -72,6 +104,12 @@ class Helios::ClientProfile < ActiveRecord::Base
     rec.id = id
     rec.Last_Mdt = Time.now - 5.hours
     rec.save
+  end
+  def touch_on_master
+    self.class.touch_on_master(self.id)
+  end
+  def touch_on_slave(slave_name)
+    self.class.touch_on_slave(slave_name, self.id)
   end
 
   def public_attributes
@@ -147,15 +185,24 @@ class Helios::ClientProfile < ActiveRecord::Base
     puts " * * * * * *" * 5
     puts "FAILED TO DESTROY:"
     puts really_failed.inspect
+    self.update_satellites = false
   end
 
-  def remove_vip!
-    if(self.Member1 == 'VIP')
-      self.update_attributes(:Member1 => '', :Member1_Beg => '', :Member1_Exp => '', :Member1_FreezeStart => '', :Member1_FreezeEnd => '')
-    elsif(self.Member2 == 'VIP')
-      self.update_attributes(:Member2 => '', :Member2_Beg => '', :Member2_Exp => '', :Member2_FreezeStart => '', :Member2_FreezeEnd => '')
-    end
+  def remove_vip!(store_name=nil)
+    # Delete eft from all locations
+    # Delete eft from server
     Helios::Eft.delete_these(self.eft.id) if self.eft
+    # Update the cp fields like Member1 on current store
+    store_name ||= Helios::Eft.master.keys[0]
+    if(self.Member1 == 'VIP')
+      # self.update_attributes(:Member1 => '', :Member1_Beg => '', :Member1_Exp => '', :Member1_FreezeStart => '', :Member1_FreezeEnd => '')
+      self.update_on_slave(store_name, :Member1 => '', :Member1_Beg => '', :Member1_Exp => '', :Member1_FreezeStart => '', :Member1_FreezeEnd => '')
+    elsif(self.Member2 == 'VIP')
+      # self.update_attributes(:Member2 => '', :Member2_Beg => '', :Member2_Exp => '', :Member2_FreezeStart => '', :Member2_FreezeEnd => '')
+      self.update_on_slave(store_name, :Member2 => '', :Member2_Beg => '', :Member2_Exp => '', :Member2_FreezeStart => '', :Member2_FreezeEnd => '')
+    end
+    # Touch cp on current store
+    self.touch_on_slave(store_name)
     return true
   end
 

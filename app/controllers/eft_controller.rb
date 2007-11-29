@@ -19,7 +19,17 @@ class EftController < ApplicationController
       redirect_to :action => 'admin_eft' if amount.blank?
       # Do the work here
       GotoTransaction.search('', :filters => {'amount' => amount}).each do |unjust|
-        if unjust.client && unjust.client.eft && unjust.client.eft.update_attributes(:Monthly_Fee => ZONE[:StandardMembershipPrice], :Last_Mdt => Time.now)
+        # Change master to 18.88
+        store_name = LOCATIONS[LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]][:name]
+        if unjust.client && unjust.client.eft && unjust.client.eft.update_on_slave(store_name, :Monthly_Fee => ZONE[:StandardMembershipPrice], :Last_Mdt => Time.now)
+          if self.client
+            # Touch ClientProfile on current store
+            self.client.touch_on_slave(store_name)
+            if self.client.eft
+              # Touch EFT on current store
+              self.client.eft.touch_on_slave(store_name)
+            end
+          end
           unjust.update_attributes(:amount => ZONE[:StandardMembershipPrice])
         end
       end

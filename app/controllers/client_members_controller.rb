@@ -53,7 +53,7 @@ class ClientMembersController < ApplicationController
   def remove_vip
     restrict('allow only store admins') or begin
       gt = GotoTransaction.find(params[:id])
-      if gt.remove_vip!
+      if gt.remove_vip!(LOCATIONS[LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]][:name])
         respond_to do |format|
           format.html {
             flash[:notice] = "Removed VIP from client ##{gt.client_id}."
@@ -94,7 +94,7 @@ class ClientMembersController < ApplicationController
   def reload_eft
     restrict('allow only store admins') or begin
       gt = GotoTransaction.find(params[:id])
-      if gt.reload_eft!
+      if gt.reload_eft!(LOCATIONS[LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]][:name])
         respond_to do |format|
           format.html {
             flash[:notice] = "Reloaded VIP for client ##{gt.client_id} from #{LOCATIONS[gt.location][:name]}."

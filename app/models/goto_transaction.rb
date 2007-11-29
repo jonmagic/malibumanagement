@@ -177,15 +177,24 @@ class GotoTransaction < ActiveRecord::Base
     LOCATIONS.has_key?(location) ? LOCATIONS[location][:merchant_pin] : nil
   end
 
-  def remove_vip!
-    #take out the vip from the client profile and destroy the eft
-    self.client.remove_vip! if self.client
+  def remove_vip!(store_name)
+# Test on Jon
+    self.client.remove_vip!(store_name) if self.client
     self.destroy
   end
 
-  def reload_eft!
-    self.client.eft.destroy if self.client && self.client.eft
-    self.client.eft.update_attributes(Helios::Eft.master[Helios::Eft.master.keys[0]].find(self.client_id).attributes) if self.client
+  def reload_eft!(store_name)
+    # Just make it batch!
+    if self.client
+      # Touch ClientProfile on current store
+      self.client.touch_on_slave(store_name)
+      if self.client.eft
+        # Touch EFT on current store
+        self.client.eft.touch_on_slave(store_name)
+        self.client.eft.destroy
+      end
+    end
+# Test on 21001643
   end
 
   def self.csv_headers
