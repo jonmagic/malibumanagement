@@ -126,8 +126,10 @@ class Helios::Eft < ActiveRecord::Base
   def batch_these!(*ids)
     ids = ids.shift if ids[0].is_a?(Array)
     ids.each do |id|
-      self.find(id).batch!
-    rescue ActiveRecord::RecordNotFound
+      begin
+        self.find(id).batch!
+      rescue ActiveRecord::RecordNotFound
+      end
     end
   end
 
