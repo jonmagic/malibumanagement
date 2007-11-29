@@ -63,7 +63,8 @@ class Helios::Eft < ActiveRecord::Base
     end
   end
 
-  def self.delete_these(ids)
+  def self.delete_these(*ids)
+    ids = ids.shift if ids[0].is_a?(Array)
     self.update_satellites = true
     failed_list = []
     ids.each do |id|
@@ -100,6 +101,28 @@ class Helios::Eft < ActiveRecord::Base
     puts " * * * * * *" * 5
     puts "FAILED TO DESTROY:"
     puts really_failed.inspect
+  end
+
+  def find_on_master
+    self.class.find_on_master(self.id)
+  end
+  def self.find_on_master(id)
+    self.master[self.master.keys[0]].find(id)
+  end
+
+  def batch!
+    prev = self.find_on_master
+    return false if prev.nil?
+
+    rec = self.master[self.master.keys[0]].new
+    rec.id = id
+    rec.Last_Mdt = Time.now - 5.hours
+    return rec.save
+  end
+
+  def batch_these!(*ids)
+    ids = ids.shift if ids[0].is_a?(Array)
+    
   end
 
   def credit_card?
