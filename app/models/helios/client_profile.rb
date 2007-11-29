@@ -51,15 +51,24 @@ class Helios::ClientProfile < ActiveRecord::Base
   end
 
   def self.find_on_master(id)
-    self.master[self.master.keys[0]].find(id)
+    self.find_on_slave(self.master.keys[0], id)
+  end
+  def self.find_on_slave(slave_name, id)
+    self.slaves[slave_name].find(id)
   end
 
   def self.destroy_on_master(id)
     self.find_on_master(id).destroy
   end
+  def self.destroy_on_slave(slave_name, id)
+    self.find_on_slave(slave_name, id).destroy
+  end
 
   def self.touch_on_master(id)
-    rec = self.master[self.master.keys[0]].new
+    self.touch_on_slave(self.master.keys[0], id)
+  end
+  def self.touch_on_slave(slave_name, id)
+    rec = self.slaves[slave_name].new
     rec.id = id
     rec.Last_Mdt = Time.now - 5.hours
     rec.save
