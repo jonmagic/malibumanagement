@@ -117,6 +117,9 @@ class Helios::Eft < ActiveRecord::Base
     rec = self.master[self.master.keys[0]].new
     rec.id = id
     rec.Last_Mdt = Time.now - 5.hours - 5.minutes
+
+    self.update_attributes(:Last_Mdt => Time.now)
+
     return rec.save
   end
 
