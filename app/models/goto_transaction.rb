@@ -205,8 +205,8 @@ class GotoTransaction < ActiveRecord::Base
       amount,
       tran_type,
       ach? ? authorization : nil,
-      nil,
-      nil,
+      ach? ? 'Debit' : 'Sale',
+      'Single',
       nil
     ].map {|c| c.to_csv}
   end

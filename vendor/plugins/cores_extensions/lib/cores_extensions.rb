@@ -45,7 +45,8 @@ end
 
 class String
   def to_csv
-    "'"+self+"'"
+    # "'"+self+"'"
+    self
   end
 end
 

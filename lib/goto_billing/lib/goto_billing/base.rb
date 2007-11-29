@@ -1,8 +1,3 @@
-def with(*objects)
-  yield(*objects)
-  return *objects
-end
-
 require 'goto_billing/connection'
 module GotoBilling
   class GotoBillingError < StandardError #:nodoc:
