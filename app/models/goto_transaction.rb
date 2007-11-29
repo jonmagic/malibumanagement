@@ -185,7 +185,7 @@ class GotoTransaction < ActiveRecord::Base
 
   def reload_eft!
     self.client.eft.destroy if self.client && self.client.eft
-    self.client.eft = Helios::Eft.new(Helios::Eft.master[Helios::Eft.master.keys[0]].find(self.client_id).attributes) if self.client
+    self.client.eft.update_attributes(Helios::Eft.master[Helios::Eft.master.keys[0]].find(self.client_id).attributes) if self.client
   end
 
   def self.csv_headers

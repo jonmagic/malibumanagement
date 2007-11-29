@@ -33,20 +33,26 @@ class Fixnum
   end
 
   def to_csv
-    self.to_s
+    self.to_s.to_csv
+  end
+end
+
+class Array
+  def to_csv
+    map {|v| v.to_csv}.join(',')
   end
 end
 
 class Float
   def to_csv
-    self.to_s
+    self.to_s.to_csv
   end
 end
 
 class String
   def to_csv
     # "'"+self+"'"
-    self
+    self.gsub(/,/, '')
   end
 end
 

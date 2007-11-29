@@ -53,7 +53,7 @@ class Helios::Transact < ActiveRecord::Base
     self.master[self.master.keys[0]].primary_key = 'OTNum'
     t = self.master[self.master.keys[0]].new
     attrs.stringify_keys!
-    attrs.merge('Last_Mdt' => Time.now - 5.hours).each do |k,v|
+    {'Last_Mdt' => Time.now - 5.hours}.merge(attrs).each do |k,v|
       t.send(k+'=', v)
     end
     t.save && attrs.has_key?('client_no') && Helios::ClientProfile.touch_on_master(attrs['client_no'])

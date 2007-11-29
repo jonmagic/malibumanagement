@@ -1,3 +1,5 @@
+# This caches searches, but doesn't provide a way to force re-search. Need to make that...
+
 module IsSearchable
   def self.included(base)
     base.extend(IncludeClassMethods)
