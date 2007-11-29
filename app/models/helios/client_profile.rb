@@ -191,18 +191,21 @@ class Helios::ClientProfile < ActiveRecord::Base
   def remove_vip!(store_name=nil)
     # Delete eft from all locations
     # Delete eft from server
-    Helios::Eft.delete_these(self.eft.id) if self.eft
+puts "Deleting from stores..."
+    puts Helios::Eft.delete_these(self.eft.id) if self.eft
     # Update the cp fields like Member1 on current store
     store_name ||= Helios::Eft.master.keys[0]
+puts "Updating at #{store_name}..."
     if(self.Member1 == 'VIP')
       # self.update_attributes(:Member1 => '', :Member1_Beg => '', :Member1_Exp => '', :Member1_FreezeStart => '', :Member1_FreezeEnd => '')
-      self.update_on_slave(store_name, :Member1 => '', :Member1_Beg => '', :Member1_Exp => '', :Member1_FreezeStart => '', :Member1_FreezeEnd => '')
+puts      self.update_on_slave(store_name, :Member1 => '', :Member1_Beg => '', :Member1_Exp => '', :Member1_FreezeStart => '', :Member1_FreezeEnd => '')
     elsif(self.Member2 == 'VIP')
       # self.update_attributes(:Member2 => '', :Member2_Beg => '', :Member2_Exp => '', :Member2_FreezeStart => '', :Member2_FreezeEnd => '')
-      self.update_on_slave(store_name, :Member2 => '', :Member2_Beg => '', :Member2_Exp => '', :Member2_FreezeStart => '', :Member2_FreezeEnd => '')
+puts      self.update_on_slave(store_name, :Member2 => '', :Member2_Beg => '', :Member2_Exp => '', :Member2_FreezeStart => '', :Member2_FreezeEnd => '')
     end
+puts "Touching at #{store_name}..."
     # Touch cp on current store
-    self.touch_on_slave(store_name)
+puts    self.touch_on_slave(store_name)
     return true
   end
 
