@@ -103,11 +103,28 @@ class Helios::Eft < ActiveRecord::Base
     puts really_failed.inspect
   end
 
-  def find_on_master
-    self.class.find_on_master(self.id)
-  end
   def self.find_on_master(id)
-    self.master[self.master.keys[0]].find(id)
+    self.find_on_slave(self.master.keys[0], id)
+  end
+  def self.find_on_slave(slave_name, id)
+    self.slaves[slave_name].find(id)
+  end
+
+  def self.destroy_on_master(id)
+    self.find_on_master(id).destroy
+  end
+  def self.destroy_on_slave(slave_name, id)
+    self.find_on_slave(slave_name, id).destroy
+  end
+
+  def self.touch_on_master(id)
+    self.touch_on_slave(self.master.keys[0], id)
+  end
+  def self.touch_on_slave(slave_name, id)
+    rec = self.slaves[slave_name].new
+    rec.id = id
+    rec.Last_Mdt = Time.now - 5.hours
+    rec.save
   end
 
   def batch!
@@ -119,6 +136,7 @@ class Helios::Eft < ActiveRecord::Base
     rec.Last_Mdt = Time.now - 5.hours - 5.minutes
 
     self.update_attributes(:Last_Mdt => Time.now)
+    self.client_profile.touch_on_master
 
     return rec.save
   end
