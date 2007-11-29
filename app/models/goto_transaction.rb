@@ -185,15 +185,11 @@ class GotoTransaction < ActiveRecord::Base
 
   def reload_eft!(store_name)
     # Just make it batch!
-    if self.client
-      # Touch ClientProfile on current store
-      self.client.touch_on_slave(store_name)
-      if self.client.eft
-        # Touch EFT on current store
-        self.client.eft.touch_on_slave(store_name)
-        self.client.eft.destroy
-      end
-    end
+    # Touch EFT on current store
+    Helios::Eft.touch_on_slave(store_name, self.client_id)
+    # Touch ClientProfile on current store
+    Helios::ClientProfile.touch_on_slave(store_name, self.client_id)
+    self.client.eft.destroy if self.client.eft
 # Test on 21001643
   end
 

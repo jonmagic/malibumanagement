@@ -20,14 +20,13 @@ class EftController < ApplicationController
       # Do the work here
       GotoTransaction.search('', :filters => {'amount' => amount}).each do |unjust|
         # Change master to 18.88
-        store_name = LOCATIONS[LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]][:name]
-        if unjust.client && unjust.client.eft && unjust.client.eft.update_on_slave(store_name, :Monthly_Fee => ZONE[:StandardMembershipPrice], :Last_Mdt => Time.now)
+        if unjust.client && unjust.client.eft && unjust.client.eft.update_on_master(:Monthly_Fee => ZONE[:StandardMembershipPrice], :Last_Mdt => Time.now)
           if self.client
-            # Touch ClientProfile on current store
-            self.client.touch_on_slave(store_name)
+            # Touch ClientProfile on master
+            self.client.touch_on_master
             if self.client.eft
-              # Touch EFT on current store
-              self.client.eft.touch_on_slave(store_name)
+              # Touch EFT on master
+              self.client.eft.touch_on_master
             end
           end
           unjust.update_attributes(:amount => ZONE[:StandardMembershipPrice])
