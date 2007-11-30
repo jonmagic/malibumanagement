@@ -37,6 +37,8 @@ class GotoTransaction < ActiveRecord::Base
   #or just {attributes}
   def initialize(*attrs)
     attrs = {} if attrs.blank?
+
+puts attrs.inspect
     # If we're looking at a cp, change the attrs to look at it's eft, or simple attributes if no eft.
     if(attrs[1].is_a?(Helios::ClientProfile))
       batch_id = attrs[0]
@@ -56,6 +58,7 @@ class GotoTransaction < ActiveRecord::Base
       end
     end
 
+puts attrs.inspect
     # At this point, attrs is either [batch_id, eft] or {attributes}
     # Handle [batch_id, eft]: turn them into {attributes}
     if(attrs[1].is_a?(Helios::Eft))
@@ -86,6 +89,7 @@ class GotoTransaction < ActiveRecord::Base
       attrs[:no_eft] = true
     end
 
+puts attrs.inspect
     # With only {attributes} at this point, make sure we're not duplicating records.
     if exis = self.class.find_by_batch_id_and_client_id(attrs[:batch_id], attrs[:client_id])
       super(exis.attributes.merge(attrs))
@@ -137,7 +141,6 @@ class GotoTransaction < ActiveRecord::Base
   end
 
   def remove_vip!(store_name)
-# Test on Jon
     self.client.remove_vip!(store_name) if self.client
     self.destroy
   end
