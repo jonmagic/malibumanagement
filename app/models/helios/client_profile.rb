@@ -75,7 +75,6 @@ class Helios::ClientProfile < ActiveRecord::Base
     {'Last_Mdt' => Time.now - 5.hours}.merge(attrs).each do |k,v|
       rec.send(k+'=', v)
     end
-# PROBLEMS HERE!!!
     rec.save
   end
   def update_on_master(attrs={})
@@ -190,6 +189,7 @@ class Helios::ClientProfile < ActiveRecord::Base
 puts "Deleting from stores..."
     puts Helios::Eft.delete_these(self.eft.id) if self.eft
     # Update the cp fields like Member1 on current store
+    # Also touches cp on current store
     store_name ||= Helios::Eft.master.keys[0]
 puts "Updating at #{store_name}..."
     if(self.Member1 == 'VIP')
@@ -199,9 +199,6 @@ puts      self.update_on_slave(store_name, :Member1 => '', :Member1_Beg => '', :
       # self.update_attributes(:Member2 => '', :Member2_Beg => '', :Member2_Exp => '', :Member2_FreezeStart => '', :Member2_FreezeEnd => '')
 puts      self.update_on_slave(store_name, :Member2 => '', :Member2_Beg => '', :Member2_Exp => '', :Member2_FreezeStart => '', :Member2_FreezeEnd => '')
     end
-puts "Touching at #{store_name}..."
-    # Touch cp on current store
-puts    self.touch_on_slave(store_name)
     return true
   end
 
