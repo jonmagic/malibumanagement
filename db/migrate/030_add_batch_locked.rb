@@ -1,4 +1,4 @@
-class AddGotoTransactions < ActiveRecord::Migration
+class AddBatchLocked < ActiveRecord::Migration
   def self.up
     add_column :eft_batch, :locked, :boolean, :default => false
   end
