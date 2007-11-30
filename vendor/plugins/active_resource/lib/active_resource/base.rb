@@ -520,7 +520,6 @@ module ActiveResource
 
     # Get the +id+ attribute of the resource.
     def id
-ActionController::Base.logger.info "Primary Key: #{self.class.primary_key}"
       attributes[self.class.primary_key]
     end
 
