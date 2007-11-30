@@ -34,7 +34,7 @@ class EftController < ApplicationController
 
   private
     def get_batch
-      @for_month = params[:for_month] ? Time.parse(params[:for_month]).strftime('%Y/%m') : (Time.now.strftime("%Y").to_i + Time.now.strftime("%m").to_i/12).to_i.to_s + '/' + Time.now.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
+      @for_month = params[:for_month] ? Time.parse(params[:for_month]).strftime('%Y/%m') : (Time.yesterday.strftime("%Y").to_i + Time.yesterday.strftime("%m").to_i/12).to_i.to_s + '/' + Time.yesterday.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
       @batch = EftBatch.find_or_create_by_for_month(@for_month) # Get last-created EftBatch
     end
 end
