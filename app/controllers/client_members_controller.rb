@@ -97,24 +97,24 @@ class ClientMembersController < ApplicationController
       if gt.reload_eft!(LOCATIONS[LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]][:name])
         respond_to do |format|
           format.html {
-            flash[:notice] = "Reloaded VIP for client ##{gt.client_id} from #{LOCATIONS[gt.location][:name]}."
+            flash[:notice] = "Reloaded EFT for client ##{gt.client_id} from #{LOCATIONS[gt.location][:name]}."
             redirect_to store_eft_path()
           }
           format.js {
             render :update do |page|
-              page.flash("Reloaded VIP for client ##{gt.client_id} from #{LOCATIONS[gt.location][:name]}.")
+              page.flash("Reloaded EFT for client ##{gt.client_id} from #{LOCATIONS[gt.location][:name]}.")
             end
           }
         end
       else
         respond_to do |format|
           format.html {
-            flash[:notice] = "Could not reload VIP from #{LOCATIONS[gt.location][:name]}."
+            flash[:notice] = "Could not reload EFT from #{LOCATIONS[gt.location][:name]}."
             redirect_to store_eft_path()
           }
           format.js {
             render :update do |page|
-              page.flash("Could not reload VIP from #{LOCATIONS[gt.location][:name]}.")
+              page.flash("Could not reload EFT from #{LOCATIONS[gt.location][:name]}.")
             end
           }
         end

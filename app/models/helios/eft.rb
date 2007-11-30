@@ -49,6 +49,66 @@ class Helios::Eft < ActiveRecord::Base
     mems
   end
 
+  # Slave functions: find, update, destroy, touch
+  def self.find_on_master(id)
+    self.find_on_slave(self.master.keys[0], id)
+  end
+  def self.find_on_slave(slave_name, id)
+    self.slaves[slave_name].find(id)
+  end
+  def find_on_master
+    self.class.find_on_master(self.id)
+  end
+  def find_on_slave(slave_name)
+    self.class.find_on_slave(slave_name, self.id)
+  end
+
+  def self.update_on_master(id, attrs={})
+    self.update_on_slave(self.master.keys[0], id, attrs)
+  end
+  def self.update_on_slave(slave_name, id, attrs={})
+    self.slaves[slave_name].primary_key = self.primary_key
+    rec = self.slaves[slave_name].new
+    rec.id = id
+    attrs.stringify_keys!
+    {'Last_Mdt' => Time.now - 5.hours}.merge(attrs).each do |k,v|
+      rec.send(k+'=', v)
+    end
+    rec.save
+  end
+  def update_on_master(attrs={})
+    self.class.update_on_master(self.id, attrs)
+  end
+  def update_on_slave(slave_name, attrs={})
+    self.class.update_on_slave(slave_name, self.id, attrs)
+  end
+
+  def self.destroy_on_master(id)
+    self.find_on_master(id).destroy
+  end
+  def self.destroy_on_slave(slave_name, id)
+    self.find_on_slave(slave_name, id).destroy
+  end
+  def destroy_on_master
+    self.class.destroy_on_master(self.id)
+  end
+  def destroy_on_slave(slave_name)
+    self.class.destroy_on_slave(slave_name, self.id)
+  end
+
+  def self.touch_on_master(id)
+    self.update_on_master(id)
+  end
+  def self.touch_on_slave(slave_name, id)
+    self.update_on_master(slave_name, id)
+  end
+  def touch_on_master
+    self.update_on_master
+  end
+  def touch_on_slave(slave_name)
+    self.update_on_slave(slave_name)
+  end
+
   def self.delete_these(*ids)
     ids = ids.shift if ids[0].is_a?(Array)
     self.update_satellites = true
@@ -88,68 +148,6 @@ class Helios::Eft < ActiveRecord::Base
     puts "FAILED TO DESTROY:"
     puts really_failed.inspect
     self.update_satellites = false
-  end
-
-  # Slave functions: find, update, destroy, touch
-  def self.find_on_master(id)
-    self.find_on_slave(self.master.keys[0], id)
-  end
-  def self.find_on_slave(slave_name, id)
-    self.slaves[slave_name].find(id)
-  end
-  def find_on_master
-    self.class.find_on_master(self.id)
-  end
-  def find_on_slave(slave_name)
-    self.class.find_on_slave(slave_name, self.id)
-  end
-
-  def self.update_on_master(id, attrs)
-    self.update_on_slave(self.master.keys[0], id, attrs)
-  end
-  def self.update_on_slave(slave_name, id, attrs)
-    self.slaves[slave_name].primary_key = self.primary_key
-    rec = self.slaves[slave_name].new
-    attrs.stringify_keys!
-    {'Last_Mdt' => Time.now - 5.hours}.merge(attrs).each do |k,v|
-      rec.send(k+'=', v)
-    end
-    rec.save
-  end
-  def update_on_master(attrs)
-    self.class.update_on_master(self.id, attrs)
-  end
-  def update_on_slave(slave_name, attrs)
-    self.class.update_on_slave(slave_name, self.id, attrs)
-  end
-
-  def self.destroy_on_master(id)
-    self.find_on_master(id).destroy
-  end
-  def self.destroy_on_slave(slave_name, id)
-    self.find_on_slave(slave_name, id).destroy
-  end
-  def destroy_on_master
-    self.class.destroy_on_master(self.id)
-  end
-  def destroy_on_slave(slave_name)
-    self.class.destroy_on_slave(slave_name, self.id)
-  end
-
-  def self.touch_on_master(id)
-    self.touch_on_slave(self.master.keys[0], id)
-  end
-  def self.touch_on_slave(slave_name, id)
-    rec = self.slaves[slave_name].new
-    rec.id = id
-    rec.Last_Mdt = Time.now - 5.hours
-    rec.save
-  end
-  def touch_on_master
-    self.class.touch_on_master(self.id)
-  end
-  def touch_on_slave(slave_name)
-    self.class.touch_on_slave(slave_name, self.id)
   end
 
   def batch!

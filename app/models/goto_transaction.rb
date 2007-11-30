@@ -119,48 +119,6 @@ class GotoTransaction < ActiveRecord::Base
     !goto_is_valid?
   end
 
-  def self.http_attribute_mapping
-    {
-      'client_id' => 'x_customer_id',
-      'merchant_id' => 'merchant_id',
-      'merchant_pin' => 'merchant_pin',
-      'last_name' => 'x_last_name',
-      'first_name' => 'x_first_name',
-      'tran_type' => 'x_transaction_type',
-      'transaction_id' => 'x_invoice_id',
-      'amount' => 'x_amount',
-      'authorization' => 'x_ach_payment_type',
-      'bank_routing_number' => 'x_ach_route',
-      'bank_account_number' => 'x_ach_account',
-      'account_type' => 'x_ach_account_type',
-      'name_on_card' => 'x_cc_name',
-      'credit_card_number' => 'x_cc_number',
-      'expiration' => 'x_cc_exp'
-    }
-  end
-
-  def http_attribute_convert(attr_name)
-    {
-      'client_id' => lambda {|x| x},
-      'last_name' => lambda {|x| x},
-      'first_name' => lambda {|x| x},
-      'tran_type' => lambda {|x| {'ACH' => 'DH', 'Credit Card' => 'ES'}[x]},
-      'transaction_id' => lambda {|x| x},
-      'amount' => lambda {|x| x},
-      'authorization' => lambda {|x| {'Written' => 'PPD', 'Tel' => 'TEL', 'Web' => 'WEB'}[x]},
-      'bank_routing_number' => lambda {|x| x},
-      'bank_account_number' => lambda {|x| x},
-      'account_type' => lambda {|x| self.tran_type == 'ACH' ? {'C' => 'PC', 'S' => 'PS'}[x] : nil},
-      'name_on_card' => lambda {|x| x},
-      'credit_card_number' => lambda {|x| x},
-      'expiration' => lambda {|x| x},
-      'merchant_id' => lambda {|x| x},
-      'merchant_pin' => lambda {|x| x},
-      'location' => lambda {nil},
-      'transaction_id' => lambda {|x| x}
-    }[attr_name.to_s].call(@attributes[attr_name.to_s])
-  end
-
   def full_name
     self.first_name.to_s + ' ' + self.last_name.to_s
   end
@@ -184,19 +142,18 @@ class GotoTransaction < ActiveRecord::Base
   end
 
   def reload_eft!(store_name)
-    # Just make it batch!
+    # Just make it batch:
     # Touch EFT on current store
     Helios::Eft.touch_on_slave(store_name, self.client_id) &&
     # Touch ClientProfile on current store
     Helios::ClientProfile.touch_on_slave(store_name, self.client_id)
-# Test on 21001643
+    # CHECK IF THE LAST PERSON IN MISSING EFT AT LINWAY, ZONE1 IS NOT THERE ANYMORE
   end
 
   def self.csv_headers
     ["Account ID", "First Name", "Last Name", "Bank Routing #", "Bank Account #", "Name on Card", "Credit Card Number", "Expiration", "Amount", "Type", "Authorization", "Record", "Occurrence"]
   end
   def to_csv_row
-# client_id, location, merchant_id, first_name, last_name, bank_routing_number, bank_account_number, name_on_card, credit_card_number, expiration, amount, tran_type, account_type, authorization, transaction_id, recorded, order_number, sent_date, tran_date, tran_time, status, description, term_code, auth_code
     [
       client_id,
       first_name,
@@ -233,7 +190,6 @@ class GotoTransaction < ActiveRecord::Base
     def validate
       errors.add_to_base("Invalid Location Code!") if !LOCATIONS.has_key?(location)
     end
-
     def validABA?(aba)
       # 1) Check for all-numbers.
       # 2) Check length == 9
@@ -255,4 +211,46 @@ class GotoTransaction < ActiveRecord::Base
   # 3) Card Length Check -X- We don't store the credit card type, so we can't perform this check.
       true
     end
+
+  # def self.http_attribute_mapping
+  #   {
+  #     'client_id' => 'x_customer_id',
+  #     'merchant_id' => 'merchant_id',
+  #     'merchant_pin' => 'merchant_pin',
+  #     'last_name' => 'x_last_name',
+  #     'first_name' => 'x_first_name',
+  #     'tran_type' => 'x_transaction_type',
+  #     'transaction_id' => 'x_invoice_id',
+  #     'amount' => 'x_amount',
+  #     'authorization' => 'x_ach_payment_type',
+  #     'bank_routing_number' => 'x_ach_route',
+  #     'bank_account_number' => 'x_ach_account',
+  #     'account_type' => 'x_ach_account_type',
+  #     'name_on_card' => 'x_cc_name',
+  #     'credit_card_number' => 'x_cc_number',
+  #     'expiration' => 'x_cc_exp'
+  #   }
+  # end
+  # 
+  # def http_attribute_convert(attr_name)
+  #   {
+  #     'client_id' => lambda {|x| x},
+  #     'last_name' => lambda {|x| x},
+  #     'first_name' => lambda {|x| x},
+  #     'tran_type' => lambda {|x| {'ACH' => 'DH', 'Credit Card' => 'ES'}[x]},
+  #     'transaction_id' => lambda {|x| x},
+  #     'amount' => lambda {|x| x},
+  #     'authorization' => lambda {|x| {'Written' => 'PPD', 'Tel' => 'TEL', 'Web' => 'WEB'}[x]},
+  #     'bank_routing_number' => lambda {|x| x},
+  #     'bank_account_number' => lambda {|x| x},
+  #     'account_type' => lambda {|x| self.tran_type == 'ACH' ? {'C' => 'PC', 'S' => 'PS'}[x] : nil},
+  #     'name_on_card' => lambda {|x| x},
+  #     'credit_card_number' => lambda {|x| x},
+  #     'expiration' => lambda {|x| x},
+  #     'merchant_id' => lambda {|x| x},
+  #     'merchant_pin' => lambda {|x| x},
+  #     'location' => lambda {nil},
+  #     'transaction_id' => lambda {|x| x}
+  #   }[attr_name.to_s].call(@attributes[attr_name.to_s])
+  # end
 end

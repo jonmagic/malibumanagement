@@ -64,22 +64,24 @@ class Helios::ClientProfile < ActiveRecord::Base
     self.class.find_on_slave(slave_name, self.id)
   end
 
-  def self.update_on_master(id, attrs)
+  def self.update_on_master(id, attrs={})
     self.update_on_slave(self.master.keys[0], id, attrs)
   end
-  def self.update_on_slave(slave_name, id, attrs)
+  def self.update_on_slave(slave_name, id, attrs={})
     self.slaves[slave_name].primary_key = self.primary_key
     rec = self.slaves[slave_name].new
+    rec.id = id
     attrs.stringify_keys!
     {'Last_Mdt' => Time.now - 5.hours}.merge(attrs).each do |k,v|
       rec.send(k+'=', v)
     end
+# PROBLEMS HERE!!!
     rec.save
   end
-  def update_on_master(attrs)
+  def update_on_master(attrs={})
     self.class.update_on_master(self.id, attrs)
   end
-  def update_on_slave(slave_name, attrs)
+  def update_on_slave(slave_name, attrs={})
     self.class.update_on_slave(slave_name, self.id, attrs)
   end
 
@@ -97,19 +99,16 @@ class Helios::ClientProfile < ActiveRecord::Base
   end
 
   def self.touch_on_master(id)
-    self.touch_on_slave(self.master.keys[0], id)
+    self.update_on_master(id)
   end
   def self.touch_on_slave(slave_name, id)
-    rec = self.slaves[slave_name].new
-    rec.id = id
-    rec.Last_Mdt = Time.now - 5.hours
-    rec.save
+    self.update_on_slave(slave_name, id)
   end
   def touch_on_master
-    self.class.touch_on_master(self.id)
+    self.update_on_master
   end
   def touch_on_slave(slave_name)
-    self.class.touch_on_slave(slave_name, self.id)
+    self.update_on_slave(slave_name)
   end
 
   def public_attributes
@@ -119,7 +118,6 @@ class Helios::ClientProfile < ActiveRecord::Base
   def self.has_prepaid_membership?(id)
     self.find(id).has_prepaid_membership?
   end
-
   def has_prepaid_membership?
     sql = case ::RAILS_ENV
     when 'development'
@@ -134,9 +132,7 @@ class Helios::ClientProfile < ActiveRecord::Base
       'V1M' => Time.now-2592000,  # 30 days
       'V1W' => Time.now-604800    # 7 days
     }
-    mem_trans.each do |t|
-      return true if t.Last_Mdt > lasting[t.Code]
-    end
+    mem_trans.each { |t| return true if t.Last_Mdt > lasting[t.Code] }
     return false
   end
 
