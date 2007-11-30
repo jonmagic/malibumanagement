@@ -18,6 +18,7 @@ class GotoTransaction < ActiveRecord::Base
 
   belongs_to :batch, :class_name => 'EftBatch', :foreign_key => 'batch_id'
   belongs_to :client, :class_name => 'Helios::ClientProfile', :foreign_key => 'client_id'
+  belongs_to :eft, :class_name => 'Helios::Eft', :foreign_key => 'client_id'
   serialize :goto_invalid, Array
 
   is_searchable :by_query => 'goto_transactions.first_name LIKE :like_query OR goto_transactions.last_name LIKE :like_query OR goto_transactions.credit_card_number LIKE :like_query OR goto_transactions.bank_account_number LIKE :like_query OR goto_transactions.client_id = :query',
@@ -100,7 +101,7 @@ class GotoTransaction < ActiveRecord::Base
   end
 
   def no_eft
-    write_attribute(:no_eft, Helios::Eft.find_by_Client_No(attrs[:client_id]).nil?)
+    write_attribute(:no_eft, Helios::Eft.find_by_Client_No(self.client_id).nil?)
   end
 
   def goto_is_valid?
