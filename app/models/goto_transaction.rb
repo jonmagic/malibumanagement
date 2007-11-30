@@ -38,7 +38,6 @@ class GotoTransaction < ActiveRecord::Base
   def initialize(*attrs)
     attrs = {} if attrs.blank?
 
-puts attrs.inspect
     # If we're looking at a cp, change the attrs to look at it's eft, or simple attributes if no eft.
     if(attrs[1].is_a?(Helios::ClientProfile))
       batch_id = attrs[0]
@@ -58,7 +57,6 @@ puts attrs.inspect
       end
     end
 
-puts attrs.inspect
     # At this point, attrs is either [batch_id, eft] or {attributes}
     # Handle [batch_id, eft]: turn them into {attributes}
     if(attrs[1].is_a?(Helios::Eft))
@@ -81,15 +79,14 @@ puts attrs.inspect
         :amount => amount_int,
         :tran_type => eft.credit_card? ? 'Credit Card' : 'ACH',
         :account_type => eft.Acct_Type,
-        :authorization => 'Written',
-        :no_eft => false
+        :authorization => 'Written'
       }
     elsif attrs.is_a?(Array)
       attrs = *attrs
-      attrs[:no_eft] = true
     end
 
-puts attrs.inspect
+    attrs[:no_eft] = (Helios::Eft.find_by_Client_No(attrs[:client_id]).nil? ? true : false) if attrs[:client_id]
+
     # With only {attributes} at this point, make sure we're not duplicating records.
     if exis = self.class.find_by_batch_id_and_client_id(attrs[:batch_id], attrs[:client_id])
       super(exis.attributes.merge(attrs))
@@ -100,6 +97,10 @@ puts attrs.inspect
     end
     # Refresh the invalid status field
     self.goto_is_valid?
+  end
+
+  def no_eft
+    write_attribute(:no_eft, Helios::Eft.find_by_Client_No(attrs[:client_id]).nil?)
   end
 
   def goto_is_valid?
