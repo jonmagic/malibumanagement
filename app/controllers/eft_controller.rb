@@ -14,16 +14,14 @@ class EftController < ApplicationController
   end
   
   def justify_amounts
-# THIS MAY OR MAY NOT WORK: I THINK WE NEED TO FIX SOME OPENHELIOS ERRORS FOR UPDATING EFT'S AND CLIENTPROFILES.
     restrict('allow only admins') or begin
       amount = params[:amount]
       redirect_to :action => 'admin_eft' if amount.blank?
       # Do the work here
       GotoTransaction.search('', :filters => {'amount' => amount}).each do |unjust|
         # Change master to 18.88
-        if Helios::Eft.update_on_master(unjust.client_id, :Monthly_Fee => ZONE[:StandardMembershipPrice], :Last_Mdt => Time.now)
-          # Touch EFT on master
-          Helios::Eft.touch_on_master(unjust.client_id)
+        # Also Touches EFT on master
+        if Helios::Eft.update_on_master(unjust.client_id, :Monthly_Fee => ZONE[:StandardMembershipPrice])
           # Touch ClientProfile on master
           Helios::ClientProfile.touch_on_master(unjust.client_id)
           unjust.update_attributes(:amount => ZONE[:StandardMembershipPrice])
