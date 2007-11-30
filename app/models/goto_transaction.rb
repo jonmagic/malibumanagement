@@ -49,8 +49,7 @@ class GotoTransaction < ActiveRecord::Base
           :client_id => cp.id.to_i,
           :location => location_code,
           :first_name => cp.First_Name,
-          :last_name => cp.Last_Name,
-          :no_eft => true
+          :last_name => cp.Last_Name
         }
       else # If there is an eft, turn attrs into [batch_id, eft]
         attrs[1] = cp.eft
@@ -79,10 +78,12 @@ class GotoTransaction < ActiveRecord::Base
         :amount => amount_int,
         :tran_type => eft.credit_card? ? 'Credit Card' : 'ACH',
         :account_type => eft.Acct_Type,
-        :authorization => 'Written'
+        :authorization => 'Written',
+        :no_eft => false
       }
     elsif attrs.is_a?(Array)
       attrs = *attrs
+      attrs[:no_eft] = true
     end
 
     # With only {attributes} at this point, make sure we're not duplicating records.
