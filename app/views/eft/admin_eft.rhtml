@@ -54,17 +54,29 @@
 			<hr />
 			<br />
 			<h3>Time to Bill</h3>
-			<a href="javascript:void(0)" onclick="Control.Modal.open($('gotobilling_links').innerHTML)">Reveal Download CSVs</a>
+			<div>
+				<% if @batch.locked -%>
+					<p style="display:block;float:left"><img src="locked.png" alt="locked" width="64px" height="64px" /></p>
+					<span style="display:block;float:left">
+						This payment batch is now Locked. Data cannot be regenerated. Click to <a href="javascript:void(0)" onclick="Control.Modal.open($('gotobilling_links').innerHTML)">Download Payment CSVs</a>.
+						<div id="gotobilling_links" style="display:none">
+							<div id="gotobilling_links_content" style="margin:2em">
+								<ul>
+								<% LOCATIONS.values.sort {|a,b| a[:name] <=> b[:name]}.each do |location| -%>
+								<li><%= link_to location[:name], formatted_search_client_members_path(:format => 'csv', :gotoready => 'YES', :domain => location[:domain], :filter_by => 'Valid', :query => ''), :onclick => "window.location = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return false;" %></li>
+								<% end -%>
+								</ul>
+							</div>
+						</div>
+					</span>
+				<% else -%>
+					<a style="display:block;float:left" href="<%= eft_path(:action => 'lock_batch') %>"><img src="unlocked.png" alt="unlocked" width="64px" height="64px" /></a>
+					<span style="display:block;float:left">
+						This payment batch is Unlocked. Data may regenerated at any time. Click the lock icon to lock this month when you're ready to submit payment files to Goto-Billing.
+					</span>
+				<% end -%>
+			</div>
 		</div>
-	</div>
-</div>
-<div id="gotobilling_links" style="display:none">
-	<div id="gotobilling_links_content" style="margin:2em">
-		<ul>
-		<% LOCATIONS.values.sort {|a,b| a[:name] <=> b[:name]}.each do |location| -%>
-		<li><%= link_to location[:name], formatted_search_client_members_path(:format => 'csv', :gotoready => 'YES', :domain => location[:domain], :filter_by => 'Valid', :query => ''), :onclick => "window.location = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return false;" %></li>
-		<% end -%>
-		</ul>
 	</div>
 </div>
 <div class="clear"><br /></div>

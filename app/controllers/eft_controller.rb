@@ -8,6 +8,11 @@ class EftController < ApplicationController
       redirect_to eft_path(:for_month => @for_month)
     end
   end
+
+  def lock_batch
+    @batch.update_attributes(:locked => true)
+    redirect_to eft_path(:for_month => @for_month)
+  end
   
   def admin_eft
     restrict('allow only admins')
