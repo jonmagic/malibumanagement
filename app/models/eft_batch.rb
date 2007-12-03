@@ -70,6 +70,7 @@ class EftBatch < ActiveRecord::Base
     if new_record?
       return(false) unless save
     end
+    return false if self.locked
 puts "Generating for #{Time.parse(for_month).month_name}#{" at location "+for_location if for_location}..."
 timestart = Time.now
     if for_location.nil?
