@@ -11,6 +11,7 @@
   background-color:white;
   padding: 3px;
   border: 1px solid silver;
+  z-index:1000;
 }
 
 .date_picker table {
