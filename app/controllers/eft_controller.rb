@@ -1,6 +1,6 @@
 class EftController < ApplicationController
   layout 'admin'
-  before_filter :pre_log_in
+  before_filter :admin_pre_log_in
   before_filter :get_batch
 
   def regenerate_batch

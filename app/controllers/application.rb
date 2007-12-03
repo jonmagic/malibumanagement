@@ -18,7 +18,15 @@ class ApplicationController < ActionController::Base
     Thread.current['satellite_status'] = Helios::SatelliteStatus.find_or_create_by_session_key(session.session_id)
   end
 
-  def pre_log_in
+  def admin_pre_log_in
+    if current_user.is_a?(Nobody)
+      flash[:notice] = "Login Required."
+      store_location
+      redirect_to(admin_login_path)
+    end
+  end
+
+  def store_pre_log_in
     if current_user.is_a?(Nobody)
       flash[:notice] = "Login Required."
       store_location
