@@ -154,4 +154,3 @@ class Time
     1.day.from_now
   end
 end
-

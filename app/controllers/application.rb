@@ -18,6 +18,14 @@ class ApplicationController < ActionController::Base
     Thread.current['satellite_status'] = Helios::SatelliteStatus.find_or_create_by_session_key(session.session_id)
   end
 
+  def pre_log_in
+    if current_user.is_a?(Nobody)
+      flash[:notice] = "Login Required."
+      store_location
+      redirect_to store_login_path(accessed_domain)
+    end
+  end
+
   def add_default_restrictions
     add_restriction('allow only store admins', current_user.is_store_admin? && current_user.store == accessed_store) {flash[:notice] = "Only Store Admins can access this. Please login with Store Admin credentials."; store_location; redirect_to store_login_path(accessed_domain)}
     add_restriction('allow only admins or store admins', current_user.is_store_admin_or_admin?) {flash[:notice] = "Only Store Admins can access this. Please login with Store Admin credentials."; store_location; redirect_to store_login_path(accessed_domain)}

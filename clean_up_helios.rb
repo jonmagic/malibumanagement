@@ -188,4 +188,3 @@ step "Scrubbing accounts" do
     end
   end
 end
-

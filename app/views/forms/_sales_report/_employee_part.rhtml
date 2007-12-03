@@ -1,6 +1,6 @@
 <% i ||= nil -%>
 <% j = i.nil? ? 0 : i %>
-<tr id='employee_part_<%= i.nil? ? nil : i %>'">
+<tr id='employee_part_<%= i.nil? ? nil : i %>'>
 	<td><%= !view ? text_field_tag('SalesReport[employee_names][]', i.nil? ? nil : @data.employee_names[i], :size => 25, :id => "employee_name_" + (i.nil? ? '' : i.to_s)) : @data.employee_names[j] %></td>
 	<td><%= !view ? text_field_tag('SalesReport[employee_sales][]', i.nil? ? nil : @data.employee_sales[i], :size => 6, :id => "employee_sale_" + (i.nil? ? '' : i.to_s)) : @data.employee_sales[j] %></td>
 	<td><%= !view ? number_field_tag('SalesReport[employee_ppa][]', i.nil? ? nil : @data.employee_ppa[i], :size => 8, :id => "employee_ppa_" + (i.nil? ? '' : i.to_s)) : @data.employee_ppa[j] %></td>

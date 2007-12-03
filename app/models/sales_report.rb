@@ -12,5 +12,4 @@ class SalesReport < ActiveRecord::Base
   def actual_vs_goal_diff_for_day
     self.total_revenue.to_f - self.goal_for_day.to_f
   end
-
 end
