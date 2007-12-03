@@ -5,7 +5,7 @@ class EftController < ApplicationController
 
   def regenerate_batch
     restrict('allow only admins') or begin
-      @batch.update_attributes(:regenerate_now => 'all')
+      @batch.update_attributes(:regenerate_now => 'all') unless @batch.locked
       redirect_to eft_path(:for_month => @for_month)
     end
   end

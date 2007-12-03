@@ -4,7 +4,7 @@ class StoreEftController < ApplicationController
 
   def regenerate_batch
     restrict('allow only store admins') or begin
-      @batch.update_attributes(:regenerate_now => LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0])
+      @batch.update_attributes(:regenerate_now => LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0]) unless @batch.locked
       redirect_to store_eft_path(:for_month => @for_month)
     end
   end

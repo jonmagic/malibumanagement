@@ -109,6 +109,22 @@ class Helios::Eft < ActiveRecord::Base
     self.update_on_slave(slave_name)
   end
 
+  def copy_to_master # UNTESTED, THOUGH ALMOST PROVEN TO WORK!!
+    self.copy_to_slave(self.master.keys[0])
+  end
+  def copy_to_slave(slave_name) # UNTESTED, THOUGH ALMOST PROVEN TO WORK!!
+    pk = self.slaves[slave_name].primary_key
+    self.slaves[slave_name].primary_key = 'temporarily_bogus'
+    
+    rec = self.slaves[slave_name].new
+    rec.attributes = self.public_attributes
+    rec.Client_No = self.Client_No
+    success = rec.save
+    
+    self.slaves[slave_name].primary_key = pk
+    success
+  end
+
   def self.delete_these(*ids)
     ids = ids.shift if ids[0].is_a?(Array)
     self.update_satellites = true
