@@ -77,7 +77,7 @@
 						</div>
 					</div>
 				<% else -%>
-					<a style="display:block;float:left" href="<%= eft_path(:action => 'lock_batch') %>" onclick="window.location = this.href + '&amp;for_month=' + $('for_month').value; return false;"><img src="/images/eft/unlocked.png" alt="unlocked" width="32px" height="32px" /></a>This payment batch is Unlocked. Data may regenerated at any time. Click the lock icon to lock this month when you're ready to submit payment files to Goto-Billing.
+					<a style="display:block;float:left" href="<%= eft_path(:action => 'lock_batch') %>" onclick="window.location = this.href + '?for_month=' + $('for_month').value; return false;"><img src="/images/eft/unlocked.png" alt="unlocked" width="32px" height="32px" /></a>This payment batch is Unlocked. Data may regenerated at any time. Click the lock icon to lock this month when you're ready to submit payment files to Goto-Billing.
 				<% end -%>
 			</div>
 		</div>
