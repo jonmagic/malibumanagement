@@ -66,11 +66,11 @@ class EftBatch < ActiveRecord::Base
   end
 
   # EftBatch.create(:for_month => '2007/12').generate -- will gather information from Helios::ClientProfile and Helios::Eft.
-  def generate(for_location=nil)
+  def generate(for_location=nil,force=false)
     if new_record?
       return(false) unless save
     end
-    return false if self.locked
+    return false if self.locked unless force
 puts "Generating for #{Time.parse(for_month).month_name}#{" at location "+for_location if for_location}..."
 timestart = Time.now
     if for_location.nil?
