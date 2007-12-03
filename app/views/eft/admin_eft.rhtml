@@ -3,25 +3,33 @@
 		<div id="eft_actions_header" class="eft_header">
 			<h2>&nbsp;<br />Viewing <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
-		<p>Showing for the month of: <span style="border-top:2px solid #848484; border-left:2px solid #848484; border-bottom:2px solid #FAFAFA; border-right:2px solid #FAFAFA; padding:1px 3px 3px 2px"><%= date_picker_field(Time, :next_month, :value => Time.parse(@for_month).strftime('%B %Y'), :display_as => "function(date){return(getMonthName(date.getMonth()) + ' ' + date.getFullYear())}") %></span>
+		<form id='month_picker_form'>
+		<p>Showing for the month of: <span style="border-top:2px solid #848484; border-left:2px solid #848484; border-bottom:2px solid #FAFAFA; border-right:2px solid #FAFAFA; padding:1px 3px 3px 2px"><%= date_picker_tag('for_month', Time.parse(@for_month).strftime('%B %Y'), :display_as => "function(date){return(getMonthName(date.getMonth()) + ' ' + date.getFullYear())}") %></span>
 			<span style="margin-left:20pt;">
-			<%= link_to 'Regenerate for this month', eft_path(:action => 'regenerate_batch'), :onclick => "window.location = this.href + '?for_month=' + $('Time_next_month').value; return false;" %>
+			<%= link_to 'Regenerate for this month', eft_path(:action => 'regenerate_batch'), :onclick => "window.location = this.href + '?for_month=' + $('for_month').value; return false;" %>
 			<% gens = EftBatch.find(:all, :conditions => ['regenerate_now = ?', 'all']).collect {|x| Time.parse(x.for_month).month_name} -%>
 			&nbsp;<%= (gens.to_sentence + (gens.length > 1 ? ' are' : ' is') + ' currently regenerating') if !gens.blank? %>
 			</span>
 		</p>
+		</form>
 	</div>
+	<%= observe_form('month_picker_form',
+									:frequency => 0.5,
+									:start_nil => false,
+	               	:function => 'window.location = "'+eft_path(:action => 'admin_eft')+'?for_month=" + $("for_month").value',
+									:method => :get)
+	%>
 	<div id="eft_downloads">
 		<div id="eft_downloads_header" class="eft_header">
 			<h2>&nbsp;<br />Downloadable Excel files for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
 		<div class="eft_left_column"><ul>
-			<li><%= link_to 'Current Batch', formatted_search_client_members_path(:format => 'csv', :filter_by => 'All', :query => ''), :onclick => "window.location = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return false;", :class => 'row1' %></li>
+			<li><%= link_to 'Current Batch', formatted_search_client_members_path(:format => 'csv', :filter_by => 'All', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;", :class => 'row1' %></li>
 			<li><a href="" class="row2">Still clearing</a></li>
 		</ul></div>
 		<div class="eft_right_column"><ul>
-			<li><%= link_to "Missing EFTs (#{@batch.no_eft_count})", formatted_search_client_members_path(:format => 'csv', :filter_by => 'Missing EFT', :query => ''), :onclick => "window.location = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return false;", :class => 'row1' %></li>
-			<li><%= link_to "Invalid EFTs (#{@batch.invalid_count})", formatted_search_client_members_path(:format => 'csv', :filter_by => 'Invalid', :query => ''), :onclick => "window.location = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return false;", :class => 'row2' %></li>
+			<li><%= link_to "Missing EFTs (#{@batch.no_eft_count})", formatted_search_client_members_path(:format => 'csv', :filter_by => 'Missing EFT', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;", :class => 'row1' %></li>
+			<li><%= link_to "Invalid EFTs (#{@batch.invalid_count})", formatted_search_client_members_path(:format => 'csv', :filter_by => 'Invalid', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;", :class => 'row2' %></li>
 		</ul></div>
 	</div>
 	<div id="eft_stats">
@@ -35,9 +43,9 @@
 				<% @batch.locations_counts.each do |location_code,counts| -%>
 				<% next if location_code == 'all' -%>
 					<tr><td><%= LOCATIONS[location_code][:name] %>:</td>
-						<td><%= link_to "#{counts[:valid]} valid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Valid', :query => ''), :onclick => "window.location = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return false;" %>,
-							<%= link_to "#{counts[:invalid]} invalid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Invalid', :query => ''), :onclick => "window.location = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return false;" %>,
-							<%= link_to "#{counts[:no_eft]} no eft", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Missing EFT', :query => ''), :onclick => "window.location = this.href + '&Time%5Bnext_month%5D=' + $('Time_next_month').value; return false;" %>
+						<td><%= link_to "#{counts[:valid]} valid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Valid', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %>,
+							<%= link_to "#{counts[:invalid]} invalid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Invalid', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %>,
+							<%= link_to "#{counts[:no_eft]} no eft", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Missing EFT', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %>
 							(<%= (counts[:valid].to_f / (counts[:all] == 0 ? 1 : counts[:all]).to_f * 100.to_f).to_i %>% billable)
 						</td></tr>
 				<% end -%>
@@ -47,7 +55,7 @@
 			<h3>EFT by $ amounts</h3>
 			<ul>
 				<% @batch.amounts_counts.each do |amount,count| -%>
-					<li>$<%= (amount.to_s == ZONE[:StandardMembershipPrice].to_s ? amount : link_to(amount, eft_path(:action => 'justify_amounts', :amount => amount), :confirm => 'Are you sure you want to reset these '+count.to_s+' memberships to $'+ZONE[:StandardMembershipPrice].to_s+'?')) %>: <%= link_to count, formatted_search_client_members_path(:format => 'csv', :filter_by => 'All', :amount => amount, :query => ''), :onclick => "window.location = this.href + '&amp;Time%5Bnext_month%5D=' + $('Time_next_month').value; return false;" %></li>
+					<li>$<%= (amount.to_s == ZONE[:StandardMembershipPrice].to_s ? amount : link_to(amount, eft_path(:action => 'justify_amounts', :amount => amount), :confirm => 'Are you sure you want to reset these '+count.to_s+' memberships to $'+ZONE[:StandardMembershipPrice].to_s+'?')) %>: <%= link_to count, formatted_search_client_members_path(:format => 'csv', :filter_by => 'All', :amount => amount, :query => ''), :onclick => "window.location = this.href + '&amp;for_month=' + $('for_month').value; return false;" %></li>
 				<% end -%>
 			</ul>
 			<br />

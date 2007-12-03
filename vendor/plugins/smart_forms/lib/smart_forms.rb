@@ -73,15 +73,20 @@ module ActionView
         end
 
         callback = options[:function] || remote_function(options)
-        javascript = options[:assigns] + " = " if options[:assigns]
-        javascript = '(' unless options[:assigns]
+        javascript = ''
+        javascript << options[:assigns] + " = " if options[:assigns]
+        javascript << '(' if options[:start_nil] && !options[:assigns]
         javascript << "new #{klass}('#{name}', "
         javascript << "#{options[:frequency]}, " if options[:frequency]
         javascript << "function(element, value) {"
         javascript << "#{callback}}"
         javascript << ", '#{options[:on]}'" if options[:on]
-        javascript << "); " + options[:assigns] + ".lastValue = ''" if options[:assigns]
-        javascript << ")).lastValue = '';" unless options[:assigns]
+        if options[:start_nil]
+          javascript << "); " + options[:assigns] + ".lastValue = ''" if options[:assigns]
+          javascript << ")).lastValue = '';" unless options[:assigns]
+        else
+          javascript << ");"
+        end
         javascript_tag(javascript)
       end
     end
