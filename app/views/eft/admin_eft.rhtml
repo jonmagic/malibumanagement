@@ -5,11 +5,13 @@
 		</div>
 		<form id='month_picker_form'>
 		<p>Showing for the month of: <span style="border-top:2px solid #848484; border-left:2px solid #848484; border-bottom:2px solid #FAFAFA; border-right:2px solid #FAFAFA; padding:1px 3px 3px 2px"><%= date_picker_tag('for_month', Time.parse(@for_month).strftime('%B %Y'), :display_as => "function(date){return(getMonthName(date.getMonth()) + ' ' + date.getFullYear())}") %></span>
+			<% unless @batch.locked -%>
 			<span style="margin-left:20pt;">
 			<%= link_to 'Regenerate for this month', eft_path(:action => 'regenerate_batch'), :onclick => "window.location = this.href + '?for_month=' + $('for_month').value; return false;" %>
 			<% gens = EftBatch.find(:all, :conditions => ['regenerate_now = ?', 'all']).collect {|x| Time.parse(x.for_month).month_name} -%>
 			&nbsp;<%= (gens.to_sentence + (gens.length > 1 ? ' are' : ' is') + ' currently regenerating') if !gens.blank? %>
 			</span>
+			<% end -%>
 		</p>
 		</form>
 	</div>

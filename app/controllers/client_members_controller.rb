@@ -5,7 +5,7 @@ class ClientMembersController < ApplicationController
       @query = params[:query]
       if @query
         per_page = 30
-        bid = EftBatch.find_or_create_by_for_month(Time.parse(params[:Time][:next_month]).strftime("%Y/%m")).id
+        bid = EftBatch.find_or_create_by_for_month(Time.parse(params[:for_month]).strftime("%Y/%m")).id
         filters = case params[:filter_by]
         when 'All'
           {}
