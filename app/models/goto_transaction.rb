@@ -100,10 +100,6 @@ class GotoTransaction < ActiveRecord::Base
     self.goto_is_valid?
   end
 
-  def no_eft
-    write_attribute(:no_eft, Helios::Eft.find_by_Client_No(self.client_id).nil?)
-  end
-
   def goto_is_valid?
     # Validates the record for sending to gotobilling.
     inv = []
