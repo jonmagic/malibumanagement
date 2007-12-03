@@ -56,7 +56,7 @@
 			<h3>Time to Bill</h3>
 			<div>
 				<% if @batch.locked -%>
-					<p style="display:block;float:left"><img src="locked.png" alt="locked" width="64px" height="64px" /></p>
+					<p style="display:block;float:left"><img src="/images/eft/locked.png" alt="locked" width="32px" height="32px" /></p>
 					<span style="display:block;float:left">
 						This payment batch is now Locked. Data cannot be regenerated. Click to <a href="javascript:void(0)" onclick="Control.Modal.open($('gotobilling_links').innerHTML)">Download Payment CSVs</a>.
 						<div id="gotobilling_links" style="display:none">
@@ -70,7 +70,7 @@
 						</div>
 					</span>
 				<% else -%>
-					<a style="display:block;float:left" href="<%= eft_path(:action => 'lock_batch') %>"><img src="unlocked.png" alt="unlocked" width="64px" height="64px" /></a>
+					<a style="display:block;float:left" href="<%= eft_path(:action => 'lock_batch') %>"><img src="/images/eft/unlocked.png" alt="unlocked" width="32px" height="32px" /></a>
 					<span style="display:block;float:left">
 						This payment batch is Unlocked. Data may regenerated at any time. Click the lock icon to lock this month when you're ready to submit payment files to Goto-Billing.
 					</span>
