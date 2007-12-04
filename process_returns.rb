@@ -4,8 +4,8 @@ require 'net/sftp'
 
 def report(txt)
   begin
-    puts(("  "*CoresExtensions::StepLevel[0]) + " > " + txt)
-    ActionController::Base.logger.info("  "*CoresExtensions::StepLevel[0] + " > " + txt)
+    puts(("  "*CoresExtensions::StepLevel[0]) + ">" + txt)
+    ActionController::Base.logger.info("  "*CoresExtensions::StepLevel[0] + ">" + txt)
   rescue => e
     puts e
   end
@@ -31,11 +31,13 @@ step("Recording Invalids to Helios") do
 
   step("Processing Invalids one by one") do
     invds.each do |invd|
-      step("Processing #{invd}") do
+      step("Processing #{invd.id}") do
         invd.record_to_helios!
       end
     end
+    true
   end
+  true
 end
 
 
