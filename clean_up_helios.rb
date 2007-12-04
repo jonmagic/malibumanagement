@@ -63,7 +63,7 @@ end
 def clients_from_payment_csv
   payments = []
   headers = true
-  CSV::Reader.parse(File.open('EFT/' + @for_month + '/payment.csv', 'rb')) do |row|
+  CSV::Reader.parse(File.open('EFT/' + @for_month + '/payment_returned.csv', 'rb')) do |row|
     if headers
       headers = false
       next
@@ -144,6 +144,27 @@ step "Scrubbing accounts" do
       @logger.log(goto)
     end
 
+    cp = Helios::ClientProfile.find(goto.client_id.to_i)
+    step "Backing up Balance for #{goto.client_id}" do
+      puts "BALANCE:     $#{cp.Balance.to_s}"
+      @balances.log([cp.id, cp.Balance])
+    end
+
+    step "Recording Balance in ClientProfile" do
+      a = goto.amount.to_s.split(/\./).join('')
+      amnt = a.chop.chop+'.'+a[-2,2]
+      n = Time.now - 5.hours
+      cpARes = Helios::ClientProfile.master[Helios::ClientProfile.master.keys[0]]
+      cpARes.primary_key = 'Client_no'
+      rec = cpARes.new
+      rec.Client_no = cp.id
+      rec.Payment_Amount = cp.Payment_Amount.to_f + amnt.to_f + (goto.submitted? ? 5 : 0)
+      rec.Balance = cp.Balance.to_f + amnt.to_f + (goto.submitted? ? 5 : 0)
+      rec.Date_Due = Time.gm(n.year, n.month, 1, 0, 0, 0)
+      rec.Last_Mdt = n
+      rec.save
+    end if goto.declined? || goto.invalid?
+
     step "Scrubbing Notes for #{goto.client_id}" do
       # notes = find_vip_notes_for_client(goto.client_id)
       # note = notes.pop
@@ -180,11 +201,6 @@ step "Scrubbing accounts" do
         # end
       end
     end
-
-    step "Gathering and reporting Balances for #{goto.client_id}" do
-      cp = Helios::ClientProfile.find(goto.client_id)
-      puts "BALANCE:     $#{cp.Balance.to_s}"
-      @balances.log([cp.id, cp.Balance])
-    end
   end
 end
+
