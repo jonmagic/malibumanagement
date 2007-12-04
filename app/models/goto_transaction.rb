@@ -204,9 +204,6 @@ class GotoTransaction < ActiveRecord::Base
     # 3) ClientProfile
     #   +) Record previous balance in GotoTransaction
     #   +) Change balance accordingly, if applicable
-    unless transaction = goto.client.vip_transaction(Time.parse(self.batch.for_month))
-      transaction = 
-    end
   end
 
   private
