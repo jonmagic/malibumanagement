@@ -1,11 +1,13 @@
 class ClientMembersController < ApplicationController
+  before_filter :get_batch
+
   def search(live=false) # Searching for Clients - by first name, last name, or customer id.
     restrict('allow only admins or store admins') or begin
       self.class.layout nil
       @query = params[:query]
       if @query
         per_page = 30
-        bid = EftBatch.find_or_create_by_for_month(Time.parse(params[:for_month]).strftime("%Y/%m")).id
+        bid = @batch.id
         filters = case params[:filter_by]
         when 'All'
           {}
@@ -169,5 +171,10 @@ class ClientMembersController < ApplicationController
         headers["Content-Disposition"] = "attachment; filename=\"#{filename}\""
       end
       render :text => Proc.new { |response, output| yield FasterCSV.new(output, :row_sep => "\r\n") }
+    end
+
+    def get_batch
+      @for_month = params[:for_month] ? Time.parse(params[:for_month]).strftime('%Y/%m') : (Time.yesterday.strftime("%Y").to_i + Time.yesterday.strftime("%m").to_i/12).to_i.to_s + '/' + Time.yesterday.strftime("%m").to_i.cyclical_add(1, 1..12).to_s
+      @batch = EftBatch.find_or_create_by_for_month(@for_month) # Get last-created EftBatch
     end
 end

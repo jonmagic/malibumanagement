@@ -10,12 +10,12 @@ step "Scrubbing Transactions for #{goto.client_id}" do
   amnt = a.chop.chop+'.'+a[-2,2]
   trans_attrs = {
     :Descriptions => case # Needs to include certain information for different cases
-      when goto.invalid?
-        "#{'VIP: Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.errors.full_messages.to_sentence}"
+      when !goto.goto_invalid.to_a.blank?
+        "#{'VIP: Invalid EFT: ' unless goto.bank_routing_number.to_s == '123'}#{goto.goto_invalid.to_sentence}"
       when goto.declined?
-        "VIP: Declined: ##{goto.response['term_code']}"
+        "VIP: Declined: ##{goto.term_code}"
       else
-        "VIP: Accepted: ##{goto.response['auth_code']}"
+        "VIP: Accepted: ##{goto.auth_code}"
       end,
     :client_no => goto.client_id,
     :Last_Name => goto.last_name,

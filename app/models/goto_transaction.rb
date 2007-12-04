@@ -206,6 +206,10 @@ class GotoTransaction < ActiveRecord::Base
     #   +) Change balance accordingly, if applicable
   end
 
+  def declined?
+    self.status == 'D'
+  end
+
   private
     def validate
       errors.add_to_base("Invalid Location Code!") if !LOCATIONS.has_key?(location)
