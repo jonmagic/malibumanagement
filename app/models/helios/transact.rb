@@ -64,7 +64,7 @@ class Helios::Transact < ActiveRecord::Base
   def self.create_on_slave(slave_name, attrs={})
     rec = self.slaves[slave_name].create({:ticket_no => self.next_ticket_no, :Last_Mdt => Time.now - 5.hours}.merge(attrs))
     Helios::ClientProfile.touch_on_master(attrs[:client_no])
-    rec.id
+    return rec
   end
 
   # Refer to these by OTNum as id
