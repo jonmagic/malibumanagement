@@ -201,6 +201,12 @@ step "Scrubbing accounts" do
         # end
       end
     end
+
+    step "Gathering and reporting Balances for #{goto.client_id}" do
+      cp = Helios::ClientProfile.find(goto.client_id)
+      puts "BALANCE:     $#{cp.Balance.to_s}"
+      @balances.log([cp.id, cp.Balance])
+    end
   end
 end
 
