@@ -4,7 +4,7 @@ module CoresExtensions
     CoresExtensions::StepLevel[0] = CoresExtensions::StepLevel[0]+1
     logit = lambda {|txt|
       begin
-        puts ("  "*(CoresExtensions::StepLevel[0]-1)).to_s + txt.to_s
+        puts(("  "*(CoresExtensions::StepLevel[0]-1)).to_s + txt.to_s)
         ActionController::Base.logger.info(("  "*(CoresExtensions::StepLevel[0]-1)).to_s + txt.to_s)
       rescue => f
         puts f
