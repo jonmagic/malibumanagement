@@ -26,11 +26,11 @@ step "Scrubbing Transactions for #{goto.client_id}" do
     :Department => ZONE[:Department], # 7 for zone1
     :Location => '001',
     :Price => amnt,
-    :Check => goto.paid_now? && goto.ach? ? amnt : 0,
-    :Charge => goto.paid_now? && goto.credit_card? ? amnt : 0,
-    :Credit => goto.declined? || goto.invalid? ? amnt : 0,
+    :Check => goto.paid? && goto.ach? ? amnt : 0,
+    :Charge => goto.paid? && goto.credit_card? ? amnt : 0,
+    :Credit => goto.declined? || !goto.goto_invalid.to_a.blank? ? amnt : 0,
     :Wait_For => case
-      when goto.declined? || goto.invalid?
+      when goto.declined? || !goto.goto_invalid.to_a.blank?
         'I'
       when goto.ach?
         'K'
