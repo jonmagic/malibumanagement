@@ -216,7 +216,7 @@ class GotoTransaction < ActiveRecord::Base
     amnt = a.chop.chop+'.'+a[-2,2]
     trans_attrs = {
       :Descriptions => case # Needs to include certain information for different cases
-        when !self.self_invalid.to_a.blank?
+        when !self.goto_invalid.to_a.blank?
           "#{'VIP: Invalid EFT: ' unless self.bank_routing_number.to_s == '123'}#{self.self_invalid.to_sentence}"
         when self.declined?
           "VIP: Declined: ##{self.term_code}"
@@ -234,9 +234,9 @@ class GotoTransaction < ActiveRecord::Base
       :Price => amnt,
       :Check => self.paid? && self.ach? ? amnt : 0,
       :Charge => self.paid? && self.credit_card? ? amnt : 0,
-      :Credit => self.declined? || !self.self_invalid.to_a.blank? ? amnt : 0,
+      :Credit => self.declined? || !self.goto_invalid.to_a.blank? ? amnt : 0,
       :Wait_For => case
-        when self.declined? || !self.self_invalid.to_a.blank?
+        when self.declined? || !self.goto_invalid.to_a.blank?
           'I'
         when self.ach?
           'K'
