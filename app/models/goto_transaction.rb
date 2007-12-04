@@ -45,7 +45,7 @@ class GotoTransaction < ActiveRecord::Base
       cp = attrs[1]
       # If there is no eft, turn straight into {attributes}
       if(cp.eft.nil?)
-        location_code = '0'*(3-ZONE_LOCATION_BITS)+cp.id.to_s[0,ZONE_LOCATION_BITS]
+        location_code = '0'*(3-ZONE[:Location_Bits])+cp.id.to_s[0,ZONE[:Location_Bits]]
         attrs = {
           :batch_id => batch_id,
           :client_id => cp.id.to_i,
@@ -63,7 +63,7 @@ class GotoTransaction < ActiveRecord::Base
     if(attrs[1].is_a?(Helios::Eft))
       batch_id = attrs[0]
       eft = attrs[1]
-      location_code = eft.Location || '0'*(3-ZONE_LOCATION_BITS)+eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
+      location_code = eft.Location || '0'*(3-ZONE[:Location_Bits])+eft.Client_No.to_s[0,ZONE[:Location_Bits]]
       amount_int = eft.Monthly_Fee.to_f.to_s
 
       attrs = {
@@ -189,6 +189,22 @@ class GotoTransaction < ActiveRecord::Base
       {'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[status],
       goto_invalid.to_sentence
     ].map {|c| c.to_csv}
+  end
+
+  def record_to_helios!
+    # 1) Transaction
+    #   +) If transaction exists
+    #     -) EDIT transaction
+    #   +) If transaction doesn't exist
+    #     -) CREATE transaction
+    #   +) Record transaction number to csv (log it)
+    # 2) Note
+    #   +) If exist and shouldn't, remove
+    #   +) If don't exist and should, create
+    # 3) ClientProfile
+    #   +) Record previous balance in GotoTransaction
+    #   +) Change balance accordingly, if applicable
+    
   end
 
   private

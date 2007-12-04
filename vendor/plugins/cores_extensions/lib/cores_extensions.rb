@@ -1,26 +1,33 @@
-def step(description)
-  logit = lambda {|txt|
+module CoresExtensions
+  StepLevel = [0]
+  def step(description)
+    CoresExtensions::StepLevel[0] = CoresExtensions::StepLevel[0]+1
+    logit = lambda {|txt|
+      begin
+        puts ("  "*(CoresExtensions::StepLevel[0]-1)) + txt
+        ActionController::Base.logger.info(("  "*(CoresExtensions::StepLevel[0]-1)) + txt)
+      rescue
+      end
+    }
+    logit.call(description+'...')
     begin
-      puts txt
-      ActionController::Base.logger.info(txt)
-    rescue
+      v = yield if block_given?
+      logit.call(description+" -> Done.")
+      CoresExtensions::StepLevel[0] = CoresExtensions::StepLevel[0]-1
+      return v
+    rescue => e
+      logit.call("["+description+"] Caused Errors: {#{e}}")
+      CoresExtensions::StepLevel[0] = CoresExtensions::StepLevel[0]-1
+      return false
     end
-  }
-  logit.call(description+'...')
-  begin
-    v = yield if block_given?
-    logit.call(description+" -> Done.")
-    return v
-  rescue => e
-    logit.call("["+description+"] Caused Errors: {#{e}}")
-    return false
+  end
+
+  def with(*objects)
+    yield  *objects
+    return *objects
   end
 end
-
-def with(*objects)
-  yield  *objects
-  return *objects
-end
+self.extend CoresExtensions
 
 class Fixnum
   # Adds one number to another, but rolls over to the beginning of the range whenever it hits the top of the range.

@@ -11,8 +11,19 @@ APP_CONFIG = {
   ]
 }
 
-# The number of digits from the front of the client_number that are taken to denote the location
-ZONE_LOCATION_BITS = 1
+ZONE = {
+  :Division => 2,
+  :Department => 7,
+  :Location_Bits => 2, # The number of digits from the front of the client_number that are taken to denote the location
+  :IP => '70.238.94.50', # The IP address for GotoBilling http payment submission
+  :StandardMembershipPrice => 18.88,
+  :SFTP => { # To download GotoBilling return files
+    :host => 'host.whatever.com',
+    :username => 'username',
+    :password => 'password',
+    :path => "/home/username/gotobilling" # Or wherever gotobilling puts their files.
+  }
+}
 
 LOCATIONS = {
   '001' => {

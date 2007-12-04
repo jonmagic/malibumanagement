@@ -24,6 +24,12 @@ class Helios::ClientProfile < ActiveRecord::Base
 
   has_many :transactions, :class_name => 'Helios::Transact', :foreign_key => 'client_no', :order => 'Last_Mdt DESC'
   has_one :eft, :class_name => 'Helios::Eft', :foreign_key => 'Client_no'
+  def vip_transactions(after=20.days.ago)
+    Helios::Transact.find(:all, :conditions => ["[client_no]=? AND [Last_Mdt] > ? AND [Code] LIKE ?", self.id, after, '%EFT%'], :order => '[Last_Mdt]')
+  end
+  def vip_notes(after=20.days.ago)
+    Helios::Note.find(:all, :conditions => ["[Client_no]=? AND [Last_Mdt] > ? AND [Comments] LIKE ?", self.id, after, '%EFT%'], :order => '[Last_Mdt]')
+  end
 
   include HeliosPeripheral
 

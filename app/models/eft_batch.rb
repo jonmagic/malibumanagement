@@ -88,7 +88,7 @@ timestart = Time.now
         end
       else
         if !cp.eft.nil?
-          the_location = cp.eft.Location || '0'*(3-ZONE_LOCATION_BITS)+cp.eft.Client_No.to_s[0,ZONE_LOCATION_BITS]
+          the_location = cp.eft.Location || '0'*(3-ZONE[:Location_Bits])+cp.eft.Client_No.to_s[0,ZONE[:Location_Bits]]
           if for_location == the_location && !cp.has_prepaid_membership?
             t = GotoTransaction.new(self.id, cp.eft)
             t.save

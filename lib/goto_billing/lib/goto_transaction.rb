@@ -7,7 +7,7 @@ class GotoTransaction < GotoBilling::Base
 
   def initialize(attrs={})
     if(attrs.is_a?(Helios::Eft))
-      location_code = attrs.Location || '0'*(3-ZONE_LOCATION_BITS)+attrs.Client_No.to_s[0,ZONE_LOCATION_BITS]
+      location_code = attrs.Location || '0'*(3-ZONE[:Location_Bits])+attrs.Client_No.to_s[0,ZONE[:Location_Bits]]
       amount_int = attrs.Monthly_Fee.to_f.to_s
     
       super(
