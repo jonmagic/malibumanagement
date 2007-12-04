@@ -59,4 +59,89 @@ step("Downloading files from SFTP") do
     end
   end
   files.length
-end if false
+end
+
+last_sftp_check = Time.now-3600 # Pretend last check was two hours ago
+returns_last_updated = Time.now-30
+begin # Wait thirty seconds between checks.
+  @for_month = Time.now.strftime("%Y") + '/' + (Time.now.strftime("%m").to_i).to_s
+  @payment = {}
+  @new_payments = {}
+  @responses = {}
+  @batch = EftBatch.find_or_create_by_for_month(@for_month)
+
+  @return_files = Dir.open('EFT/'+@for_month).collect.reject {|a| a !~ /returns_.*\.csv$/}.sort.collect {|f| 'EFT/'+@for_month+'/'+f}
+
+  # if !@return_files.blank?
+  #   returns_new_updated = returns_last_updated
+  #   @return_files.each do |f|
+  #     mm = File.mtime(f)
+  #     returns_new_updated = mm if mm > returns_last_updated
+  #   end
+  #   if returns_new_updated > returns_last_updated
+  #     returns_last_updated = returns_new_updated
+  #   else
+      step "Loading Payments" do
+        headers = true
+        CSV::Reader.parse(File.open('EFT/'+@for_month+'/payment.csv', 'rb')) do |row|
+          if headers
+            headers = false
+            next
+          end
+          goto = GotoTransaction.new_from_csv_row(row)
+          @payment[goto.client_id.to_i] = goto
+        end
+      end
+
+      step "Weaving in GotoBilling responses" do
+        @return_files.each do |file| #Should be sorting by date
+          step "Backing up Payments file" do
+            CSV.open('EFT/'+@for_month+'/'+"payment_unmerged_#{Time.now.strftime("%d%H%M")}.csv", 'w') do |writer|
+              writer << GotoTransaction.headers
+              @payment.each_value do |goto|
+                writer << goto.to_a
+              end
+            end
+          end if false
+
+          step "Weaving in #{file}" do
+            File.rename(file, file+'.recorded')
+            headers = true
+            CSV::Reader.parse(File.open(file+'.recorded', 'rb')) do |row|
+              if headers
+                headers = false
+                next
+              end
+              resp = Goto::Response.new(row)
+              @responses[resp.client_id.to_i] = resp
+              if @payment[resp.client_id.to_i]
+                @payment[resp.client_id.to_i].response = @responses[resp.client_id.to_i]
+                unless @payment[resp.client_id.to_i].recorded?
+                  step "Recording Transaction #{resp.client_id} to Helios" do
+                    GotoCsv::Extras.push_to_helios(@payment[resp.client_id.to_i])
+                  end if false
+                end
+                @new_payments[resp.client_id.to_i] = @payment[resp.client_id.to_i]
+              end
+            end
+          end
+
+          step "Saving updated Payments file" do
+            CSV.open('EFT/'+@for_month+'/payment_processed.csv', 'w') do |writer|
+              writer << GotoTransaction.headers
+              @new_payments.each_value do |goto|
+                writer << goto.to_a
+              end
+            end
+          end
+        end
+      end
+  #   end
+  # end
+
+  step "Downloading files from GotoBilling" do
+    download_sftp_files
+    last_sftp_check = Time.now
+  end if false && last_sftp_check < Time.now-1800 # More than an hour ago
+
+end while sleep(150)
