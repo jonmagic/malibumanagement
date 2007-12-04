@@ -253,6 +253,7 @@ class GotoTransaction < ActiveRecord::Base
     rec.OTNum = ht.OTNum
     rec.save
     self.update_attributes(:transaction_id => ht.OTNum)
+    self.client.touch_on_master
   end
 
  # Status checking methods
