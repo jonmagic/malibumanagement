@@ -244,7 +244,15 @@ class GotoTransaction < ActiveRecord::Base
           'N'
         end
     }
-    # Helios::Transact.create(trans_attrs)
+    ot = Helios::Transact.create_on_master(trans_attrs)
+    ht = Helios::Transact.new(trans_attrs)
+    ht.id = ot.id
+    ht.save
+    rec = Helios::Transact.master[Helios::Transact.master.keys[0]].new
+    rec.id = ht.id
+    rec.OTNum = ht.OTNum
+    rec.save
+    self.update_attributes(:transaction_id => ht.OTNum)
   end
 
  # Status checking methods
