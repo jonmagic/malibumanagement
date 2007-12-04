@@ -217,7 +217,7 @@ class GotoTransaction < ActiveRecord::Base
     trans_attrs = {
       :Descriptions => case # Needs to include certain information for different cases
         when !self.goto_invalid.to_a.blank?
-          "#{'VIP: Invalid EFT: ' unless self.bank_routing_number.to_s == '123'}#{self.self_invalid.to_sentence}"
+          "#{'VIP: Invalid EFT: ' unless self.bank_routing_number.to_s == '123'}#{self.goto_invalid.to_sentence}"
         when self.declined?
           "VIP: Declined: ##{self.term_code}"
         else
