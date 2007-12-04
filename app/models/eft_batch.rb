@@ -30,8 +30,8 @@ class EftBatch < ActiveRecord::Base
   def amounts_counts
     @amounts_counts ||= begin
       it = {}
-      self.payments.connection.select_values(['SELECT amount FROM goto_transactions WHERE batch_id=? GROUP BY amount', self.id]).compact.each do |amount|
-        it[amount] = self.payments.connection.select_value(['SELECT COUNT(*) FROM goto_transactions WHERE batch_id=? AND amount=?', self.id, amount.to_s]).to_i
+      self.payments.connection.select_values("SELECT amount FROM goto_transactions WHERE batch_id=#{self.id.to_s} GROUP BY amount").compact.each do |amount|
+        it[amount] = self.payments.connection.select_value("SELECT COUNT(*) FROM goto_transactions WHERE batch_id=#{self.id.to_s} AND amount=#{amount.to_s}").to_i
       end
       it
     end
