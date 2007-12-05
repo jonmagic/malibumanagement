@@ -211,19 +211,19 @@ class GotoTransaction < ActiveRecord::Base
 
   def record_client_profile_to_helios!
     if self.declined? || !self.goto_invalid.to_a.blank?
-      if self.previous_balance.blank? && self.previous_payment_amount.blank?
+      # if self.previous_balance.blank? && self.previous_payment_amount.blank?
         a = self.amount.to_s.split(/\./).join('')
         amnt = a.chop.chop+'.'+a[-2,2]
 
-        self.update_attributes(:previous_balance => self.client.Balance.to_f, :previous_payment_amount => self.client.Payment_Amount.to_f)
+        # self.update_attributes(:previous_balance => self.client.Balance.to_f, :previous_payment_amount => self.client.Payment_Amount.to_f)
 
         self.client.update_attributes(
-          :Payment_Amount => (self.previous_payment_amount.to_f + amnt.to_f + (self.submitted? ? 5 : 0)),
-          :Balance => self.previous_balance.to_f + amnt.to_f + (self.submitted? ? 5 : 0),
+          # :Payment_Amount => (self.previous_payment_amount.to_f + amnt.to_f + (self.submitted? ? 5 : 0)),
+          # :Balance => self.previous_balance.to_f + amnt.to_f + (self.submitted? ? 5 : 0),
           :Date_Due => Time.gm(Time.now.year, Time.now.month, 1, 0, 0, 0),
           :UpdateAll => Time.now
         )
-      end
+      # end
     else
       # Nothing to edit in ClientProfile if not invalid or declined.
     end
