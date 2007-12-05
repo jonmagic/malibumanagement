@@ -204,23 +204,25 @@ class GotoTransaction < ActiveRecord::Base
     # 3) ClientProfile
     #   +) Record previous balance in GotoTransaction
     #   +) Change balance accordingly, if applicable
-    # self.record_transaction_to_helios!
-    # self.record_note_to_helios!
-    # self.record_client_profile_to_helios!
+    self.record_transaction_to_helios!
+    self.record_note_to_helios!
+    self.record_client_profile_to_helios!
   end
 
   def record_client_profile_to_helios!
     if self.declined? || !self.goto_invalid.to_a.blank?
-      a = self.amount.to_s.split(/\./).join('')
-      amnt = a.chop.chop+'.'+a[-2,2]
+      if self.previous_balance.blank? && self.previous_payment_amount.blank?
+        a = self.amount.to_s.split(/\./).join('')
+        amnt = a.chop.chop+'.'+a[-2,2]
 
-      self.update_attributes(:previous_balance => self.client.Balance.to_f, :previous_payment_amount => self.client.Payment_Amount.to_f)
+        self.update_attributes(:previous_balance => self.client.Balance.to_f, :previous_payment_amount => self.client.Payment_Amount.to_f)
 
-      self.client.update_on_master(
-        :Payment_Amount => (self.previous_payment_amount.to_f + amnt.to_f + (self.submitted? ? 5 : 0)),
-        :Balance => self.previous_balance.to_f + amnt.to_f + (self.submitted? ? 5 : 0),
-        :Date_Due => Time.gm(Time.now.year, Time.now.month, 1, 0, 0, 0)
-      )
+        self.client.update_on_master(
+          :Payment_Amount => (self.previous_payment_amount.to_f + amnt.to_f + (self.submitted? ? 5 : 0)),
+          :Balance => self.previous_balance.to_f + amnt.to_f + (self.submitted? ? 5 : 0),
+          :Date_Due => Time.gm(Time.now.year, Time.now.month, 1, 0, 0, 0)
+        )
+      end
     else
       # Nothing to edit in ClientProfile if not invalid or declined.
     end
@@ -260,11 +262,11 @@ class GotoTransaction < ActiveRecord::Base
       trans_attrs = {
         :Descriptions => case # Needs to include certain information for different cases
           when !self.goto_invalid.to_a.blank?
-            "#{'VIP: Invalid EFT: ' unless self.bank_routing_number.to_s == '123'}#{self.goto_invalid.to_sentence}"
+            "#{'VIP: ' unless self.bank_routing_number.to_s == '123'}#{self.goto_invalid.to_sentence}"
           when self.declined?
-            "VIP: Declined: ##{self.term_code}"
+            "VIP Declined: ##{self.description}"
           else
-            "VIP: Accepted: ##{self.auth_code}"
+            "VIP Accepted: ##{self.auth_code}"
           end[0..24],
         :client_no => self.client_id,
         :Last_Name => self.last_name,
