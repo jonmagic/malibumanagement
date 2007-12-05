@@ -240,6 +240,7 @@ class GotoTransaction < ActiveRecord::Base
           :Interrupt => true,
           :Deleted => false
         )
+        self.update_attributes(:note_id => note.id)
       else
         # CURRENTLY DOES NOTHING IF THE NOTE ID IS ALREADY SET!!
         # Update the current note?
