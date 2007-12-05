@@ -205,13 +205,12 @@ class GotoTransaction < ActiveRecord::Base
     #   +) Record previous balance in GotoTransaction
     #   +) Change balance accordingly, if applicable
 
-    # self.record_transaction_to_helios!
-    # self.record_note_to_helios! if self.declined? || !self.goto_invalid.to_a.blank?
-    # self.record_client_profile_to_helios! if self.declined? || !self.goto_invalid.to_a.blank?
-
-    puts "Recording transaction"
-    puts "Recording note" if self.declined? || !self.goto_invalid.to_a.blank?
-    puts "Recording balance" if self.declined? || !self.goto_invalid.to_a.blank?
+    # puts "Recording transaction"
+    self.record_transaction_to_helios!
+    # puts "Recording note" if self.declined? || !self.goto_invalid.to_a.blank?
+    self.record_note_to_helios! if self.declined? || !self.goto_invalid.to_a.blank?
+    # puts "Recording balance" if self.declined? || !self.goto_invalid.to_a.blank?
+    self.record_client_profile_to_helios! if self.declined? || !self.goto_invalid.to_a.blank?
   end
   def record_client_profile_to_helios!
     if self.declined? || !self.goto_invalid.to_a.blank?
