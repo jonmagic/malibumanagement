@@ -84,6 +84,7 @@ class Helios::ClientProfile < ActiveRecord::Base
     self.update_on_slave(self.master.keys[0], id, attrs)
   end
   def self.update_on_slave(slave_name, id, attrs={})
+    return nil if id.nil?
     self.slaves[slave_name].primary_key = self.primary_key
     rec = self.slaves[slave_name].new
     rec.id = id
