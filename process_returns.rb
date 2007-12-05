@@ -21,41 +21,6 @@ end
 @path = "EFT/#{@batch.for_month}/"
 FileUtils.mkpath(@path)
 
-step("Recording Invalids to Helios") do
-  invds = []
-  step("Finding Invalids") do
-    invds = GotoTransaction.find(:all, :conditions => ['batch_id=? AND (goto_invalid IS NOT NULL AND !(goto_invalid LIKE ?))', @batch.id, '%'+[].to_yaml+'%'], :order => 'id ASC')
-  # FOR TESTING PURPOSES!
-    # invds = invds[0..4]
-  # * * * *
-    report "There are #{invds.length} invalid payment requests."
-  end
-
-  step("Processing Invalids one by one") do
-    invds.each do |invd|
-      if invd.transaction_id && invd.note_id && invd.previous_balance
-        report "#{invd.id} is already up to date in Helios."
-      else
-        step("Processing #{invd.id}") do
-          step("Recording transaction") do
-            invd.record_transaction_to_helios!
-            invd.transaction_id
-          end unless invd.transaction_id
-          step("Recording note") do
-            invd.record_note_to_helios!
-            invd.note_id
-          end unless invd.note_id
-          step("Recording client profile") do
-            invd.record_client_profile_to_helios!
-          end unless invd.previous_balance
-        end
-      end
-    end
-    true
-  end
-  true
-end
-
 step("Checking for files on SFTP") do
   files = []
   step("Connecting SFTP Session") do
@@ -102,3 +67,55 @@ step("Reading return files into MySQL") do
     end
   end
 end
+
+step("Recording all completed transactions to Helios") do
+  # Find only those that have a status or are invalid
+  trans = GotoTransaction.find(:all, :conditions => ['batch_id=? AND ((goto_invalid IS NOT NULL AND !(goto_invalid LIKE ?)) OR (status IS NOT NULL AND status != ?))', @batch.id, '%'+[].to_yaml+'%', ''], :order => 'id ASC')
+  report "There are #{trans.length} completed transactions."
+  # Filter to those that don't have a transaction_id
+  to_record = trans.reject {|t| !t.transaction_id.blank?}
+  report "Of these, #{to_record.length} have yet to be recorded to Helios."
+  to_record.each do |tran|
+    step("Client ##{tran.client_id}") do
+      # The payment could be accepted, declined, or invalid.
+      tran.record_to_helios!
+    end
+  end
+end
+
+
+
+# step("Recording Invalids to Helios") do
+#   invds = []
+#   step("Finding Invalids") do
+#     invds = GotoTransaction.find(:all, :conditions => ['batch_id=? AND (goto_invalid IS NOT NULL AND !(goto_invalid LIKE ?))', @batch.id, '%'+[].to_yaml+'%'], :order => 'id ASC')
+#   # FOR TESTING PURPOSES!
+#     # invds = invds[0..4]
+#   # * * * *
+#     report "There are #{invds.length} invalid payment requests."
+#   end
+# 
+#   step("Processing Invalids one by one") do
+#     invds.each do |invd|
+#       if invd.transaction_id && invd.note_id && invd.previous_balance
+#         report "#{invd.id} is already up to date in Helios."
+#       else
+#         step("Processing #{invd.id}") do
+#           step("Recording transaction") do
+#             invd.record_transaction_to_helios!
+#             invd.transaction_id
+#           end unless invd.transaction_id
+#           step("Recording note") do
+#             invd.record_note_to_helios!
+#             invd.note_id
+#           end unless invd.note_id
+#           step("Recording client profile") do
+#             invd.record_client_profile_to_helios!
+#           end unless invd.previous_balance
+#         end
+#       end
+#     end
+#     true
+#   end
+#   true
+# end

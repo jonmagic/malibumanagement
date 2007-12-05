@@ -204,9 +204,14 @@ class GotoTransaction < ActiveRecord::Base
     # 3) ClientProfile
     #   +) Record previous balance in GotoTransaction
     #   +) Change balance accordingly, if applicable
-    self.record_transaction_to_helios!
-    self.record_note_to_helios!
-    self.record_client_profile_to_helios!
+
+    # self.record_transaction_to_helios!
+    # self.record_note_to_helios! if self.declined? || !self.goto_invalid.to_a.blank?
+    # self.record_client_profile_to_helios! if self.declined? || !self.goto_invalid.to_a.blank?
+
+    puts "Recording transaction"
+    puts "Recording note" if self.declined? || !self.goto_invalid.to_a.blank?
+    puts "Recording balance" if self.declined? || !self.goto_invalid.to_a.blank?
   end
   def record_client_profile_to_helios!
     if self.declined? || !self.goto_invalid.to_a.blank?
@@ -261,9 +266,9 @@ class GotoTransaction < ActiveRecord::Base
           when !self.goto_invalid.to_a.blank?
             "#{'VIP: ' unless self.bank_routing_number.to_s == '123'}#{self.goto_invalid.to_sentence}"
           when self.declined?
-            "VIP Declined: ##{self.description}"
+            "Declined: ##{self.description}"
           else
-            "VIP Accepted: ##{self.auth_code}"
+            "Accepted"
           end[0..24],
         :client_no => self.client_id,
         :Last_Name => self.last_name,
@@ -276,7 +281,7 @@ class GotoTransaction < ActiveRecord::Base
         :Price => amnt,
         :Check => self.paid? && self.ach? ? amnt : 0,
         :Charge => self.paid? && self.credit_card? ? amnt : 0,
-        :Credit => self.declined? || !self.goto_invalid.to_a.blank? ? amnt : 0,
+        :Credit => self.declined? || !self.goto_invalid.to_a.blank? ? amnt : 0, #Tie with CP#Balance
         :Wait_For => case
           when self.declined? || !self.goto_invalid.to_a.blank?
             'I'
