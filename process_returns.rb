@@ -82,9 +82,21 @@ step("Reading return files into MySQL") do
       clients = {}
       CSV::Reader.parse(File.open(@path+file, 'rb').map {|l| l.gsub(/[\n\r]+/, "\n")}.join) do |row|
         # Invalid lines, write to a new file, 'zone1_20071204_invalid_rows.csv'
-        response = GotoResponse.new(row)
-        puts response
-        puts response.valid?
+        res = GotoResponse.new(row)
+        invalid = res.invalid?
+        if !clients.has_key?(res.client_id)
+          if res.client
+            
+          else
+            # invalid: client doesn't exist
+            invalid = "Client doesn't exist"
+          end
+        else
+          # invalid: duplicate row
+          invalid = "Duplicate GotoBilling response"
+        end
+        puts res.attributes.inspect
+        puts res.valid?
       end
     end
   end

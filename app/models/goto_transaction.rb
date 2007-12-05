@@ -114,9 +114,8 @@ class GotoTransaction < ActiveRecord::Base
         inv << "Invalid Routing Number"
       end
     end
-    if (first_name.to_s + last_name.to_s).blank?
-      inv << "First and/or Last name is Blank"
-    end
+    inv << "First/Last Name is blank" if (first_name.to_s + last_name.to_s).blank?
+    inv << "Name cannot contain numbers" if first_name.to_s =~ /\d/ || last_name.to_s =~ /\d/
     if !description.blank?
       inv << description
     end

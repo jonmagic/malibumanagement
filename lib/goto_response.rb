@@ -36,11 +36,11 @@ class GotoResponse
         :last_name    => nattrs[2],
         :order_number => nattrs[7],
         :term_code    => nil,
-        :tran_amount  => nattrs[4],
+        :amount       => nattrs[4],
         :sent_date    => nattrs[5],
         :tran_date    => nattrs[6],
         :tran_time    => nattrs[6],
-        :invoice_id   => nil,
+        :invoice_id   => nattrs[7],
         :auth_code    => nil,
         :description  => nattrs[9]
       }
@@ -54,7 +54,15 @@ class GotoResponse
   alias :transaction_id :invoice_id
   alias :transaction_id= :invoice_id=
 
-  def valid?
-    return true
+  def client
+    GotoTransaction.find_by_client_id(self.client_id)
+  end
+
+  def invalid?
+    return 'Description present on accepted transaction' if self.status == 'G' && !self.description.blank?
+    return 'Description blank on declined transaction' if self.status == 'D' && self.description.blank?
+    return 'SentDate is not a number' if self.sent_date =~ /\D/
+    return 'SettleDate is not a number' if self.tran_date =~ /\D/
+    return false
   end
 end
