@@ -74,6 +74,9 @@ step("Recording all completed transactions to Helios") do
   report "There are #{trans.length} completed transactions."
   # Filter to those that don't have a transaction_id
   to_record = trans.reject {|t| !t.transaction_id.blank?}
+  #   # FOR TESTING PURPOSES!
+    to_record = to_record[0..19]
+  #   # * * * *
   report "Of these, #{to_record.length} have yet to be recorded to Helios."
   counts = {:accepted => 0, :declined => 0, :invalid => 0}
   to_record.each do |tran|
