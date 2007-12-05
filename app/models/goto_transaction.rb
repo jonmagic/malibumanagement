@@ -217,10 +217,11 @@ class GotoTransaction < ActiveRecord::Base
 
         self.update_attributes(:previous_balance => self.client.Balance.to_f, :previous_payment_amount => self.client.Payment_Amount.to_f)
 
-        self.client.update_on_master(
+        self.client.update_attributes(
           :Payment_Amount => (self.previous_payment_amount.to_f + amnt.to_f + (self.submitted? ? 5 : 0)),
           :Balance => self.previous_balance.to_f + amnt.to_f + (self.submitted? ? 5 : 0),
-          :Date_Due => Time.gm(Time.now.year, Time.now.month, 1, 0, 0, 0)
+          :Date_Due => Time.gm(Time.now.year, Time.now.month, 1, 0, 0, 0),
+          :UpdateAll => Time.now
         )
       end
     else
