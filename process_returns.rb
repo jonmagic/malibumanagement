@@ -74,9 +74,9 @@ step("Recording all completed transactions to Helios") do
   report "There are #{trans.length} completed transactions."
   # Filter to those that don't have a transaction_id
   to_record = trans.reject {|t| !t.transaction_id.blank?}
-  #   # FOR TESTING PURPOSES!
-    to_record = to_record[0..19]
-  #   # * * * *
+  # FOR TESTING PURPOSES! (also tested on 20000002)
+  # to_record = to_record[0..19]
+  # * * * *
   report "Of these, #{to_record.length} have yet to be recorded to Helios."
   counts = {:accepted => 0, :declined => 0, :invalid => 0}
   to_record.each do |tran|
@@ -89,39 +89,3 @@ step("Recording all completed transactions to Helios") do
   report "#{counts[:accepted]} Accepted, #{counts[:declined]} Declined, #{counts[:invalid]} Invalid"
 end
 
-
-
-# step("Recording Invalids to Helios") do
-#   invds = []
-#   step("Finding Invalids") do
-#     invds = GotoTransaction.find(:all, :conditions => ['batch_id=? AND (goto_invalid IS NOT NULL AND !(goto_invalid LIKE ?))', @batch.id, '%'+[].to_yaml+'%'], :order => 'id ASC')
-#   # FOR TESTING PURPOSES!
-#     # invds = invds[0..4]
-#   # * * * *
-#     report "There are #{invds.length} invalid payment requests."
-#   end
-# 
-#   step("Processing Invalids one by one") do
-#     invds.each do |invd|
-#       if invd.transaction_id && invd.note_id && invd.previous_balance
-#         report "#{invd.id} is already up to date in Helios."
-#       else
-#         step("Processing #{invd.id}") do
-#           step("Recording transaction") do
-#             invd.record_transaction_to_helios!
-#             invd.transaction_id
-#           end unless invd.transaction_id
-#           step("Recording note") do
-#             invd.record_note_to_helios!
-#             invd.note_id
-#           end unless invd.note_id
-#           step("Recording client profile") do
-#             invd.record_client_profile_to_helios!
-#           end unless invd.previous_balance
-#         end
-#       end
-#     end
-#     true
-#   end
-#   true
-# end
