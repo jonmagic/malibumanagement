@@ -24,7 +24,7 @@ class GotoResponse
     nattrs = attrs.dup
     if nattrs.is_a?(Hash) # Is xml-hash
       nattrs.stringify_keys!
-      # status, order_number, term_code, tran_amount, tran_date, tran_time, invoice_id, auth_code, description
+      # status, order_number, transacted_at, transaction_id, description
       new_attrs = nattrs
     elsif nattrs.respond_to?('[]') # Is csv row
       # MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,Status,Description
@@ -51,7 +51,7 @@ class GotoResponse
     return 'Description present on accepted transaction' if self.status == 'G' && !self.description.blank?
     return 'Description blank on declined transaction' if self.status == 'D' && self.description.blank?
     return 'SentDate is not a number' if self.sent_date =~ /\D/
-    return 'SettleDate is not a number' if self.tran_date =~ /\D/
+    return 'SettleDate is not a number' if self.transacted_at =~ /\D/
     return false
   end
 
@@ -60,7 +60,7 @@ class GotoResponse
     self.client.description = self.description
     self.client.status = self.status
     self.client.sent_date = self.sent_date
-    self.client.transacted_at = self.tran_time
+    self.client.transacted_at = self.transacted_at
     self.client.save
   end
 end
