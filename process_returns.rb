@@ -89,7 +89,7 @@ step("Reading return files into MySQL") do
             
           else
             # invalid: client doesn't exist
-            invalid = "Client doesn't exist"
+            invalid = "Client #{res.client_id} doesn't exist"
           end
         else
           # invalid: duplicate row
