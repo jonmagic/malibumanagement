@@ -32,15 +32,15 @@ step("Recording Invalids to Helios") do
       step("Processing #{invd.id}") do
         step("Recording transaction") do
           invd.record_transaction_to_helios!
-          inv.transaction_id
-        end
+          invd.transaction_id
+        end unless invd.transaction_id
         step("Recording note") do
           invd.record_note_to_helios!
           invd.note_id
-        end
+        end unless invd.note_id
         step("Recording client profile") do
           invd.record_client_profile_to_helios!
-        end
+        end unless invd.previous_balance
       end
     end
     true
