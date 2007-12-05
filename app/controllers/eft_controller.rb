@@ -29,7 +29,7 @@ class EftController < ApplicationController
         Helios::Eft.update_attributes(
           :Monthly_Fee => ZONE[:StandardMembershipPrice],
           :UpdateAll => Time.now
-        )
+        ) # Might need to also touch the server's ClientProfile#UpdateAll?
         unjust.update_attributes(:amount => ZONE[:StandardMembershipPrice])
       end
       # * * * *
