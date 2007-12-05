@@ -28,7 +28,7 @@ module CoresExtensions
     return *objects
   end
 end
-self.extend CoresExtensions
+Kernel.send(:include, CoresExtensions)
 
 class Fixnum
   # Adds one number to another, but rolls over to the beginning of the range whenever it hits the top of the range.
