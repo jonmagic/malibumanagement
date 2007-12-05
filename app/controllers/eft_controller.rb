@@ -25,13 +25,12 @@ class EftController < ApplicationController
       redirect_to :action => 'admin_eft' if amount.blank?
       # Do the work here
       GotoTransaction.search('', :filters => {'amount' => amount}).each do |unjust|
-        # Change master to 18.88
-        # Also Touches EFT on master
-        if Helios::Eft.update_on_master(unjust.client_id, :Monthly_Fee => ZONE[:StandardMembershipPrice])
-          # Touch ClientProfile on master
-          Helios::ClientProfile.touch_on_master(unjust.client_id)
-          unjust.update_attributes(:amount => ZONE[:StandardMembershipPrice])
-        end
+        # Change to 18.88
+        Helios::Eft.update_attributes(
+          :Monthly_Fee => ZONE[:StandardMembershipPrice],
+          :Update_All => Time.now
+        )
+        unjust.update_attributes(:amount => ZONE[:StandardMembershipPrice])
       end
       # * * * *
       redirect_to :action => 'admin_eft'
