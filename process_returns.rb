@@ -25,7 +25,7 @@ step("Recording Invalids to Helios") do
     invds = invds[0..4]
   # * * * *
     report "There are #{invds.length} invalid payment requests."
-    invds_not_recd = GotoTransaction.find(:all, :conditions => ['id < ? AND batch_id=? AND (goto_invalid IS NOT NULL AND !(goto_invalid LIKE ?)) AND order_number IS NULL', invds.last.id+1, @batch.id, '%'+[].to_yaml+'%'], :order => 'id ASC')
+    invds_not_recd = GotoTransaction.find(:all, :conditions => ['id < ? AND batch_id=? AND (goto_invalid IS NOT NULL AND !(goto_invalid LIKE ?)) AND transaction_id IS NULL', invds.last.id+1, @batch.id, '%'+[].to_yaml+'%'], :order => 'id ASC')
     report "Of these, there are #{invds_not_recd.length} not yet recorded into Helios."
   end
 

@@ -58,7 +58,7 @@ class Helios::ClientProfile < ActiveRecord::Base
     (!self.HPhone.blank? && !self.HPhoneAc.blank? && (self.HPhoneAc.to_s + self.HPhone.to_s).length > 1) ? '(' + self.HPhoneAc.to_s + ') ' + self.HPhone[0,3] + '-' + self.HPhone[3,4] : '(phone)'
   end
 
-  # Slave functions: find, update, destroy, touch
+  # Slave functions: find, create, update, destroy, touch
   def self.find_on_master(id)
     self.find_on_slave(self.master.keys[0], id)
   end
@@ -71,6 +71,14 @@ class Helios::ClientProfile < ActiveRecord::Base
   def find_on_slave(slave_name)
     self.class.find_on_slave(slave_name, self.id)
   end
+
+# Commented because we shouldn't need these...
+  # def self.create_on_master(attrs={})
+  #   self.create_on_slave(self.master.keys[0], attrs)
+  # end
+  # def self.create_on_slave(slave_name, attrs={})
+  #   return self.slaves[slave_name].create({:Last_Mdt => Time.now - 5.hours}.merge(attrs))
+  # end
 
   def self.update_on_master(id, attrs={})
     self.update_on_slave(self.master.keys[0], id, attrs)

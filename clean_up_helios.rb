@@ -16,7 +16,7 @@ step "Scrubbing Transactions for #{goto.client_id}" do
         "VIP: Declined: ##{goto.term_code}"
       else
         "VIP: Accepted: ##{goto.auth_code}"
-      end,
+      end[0..24],
     :client_no => goto.client_id,
     :Last_Name => goto.last_name,
     :First_Name => goto.first_name,
