@@ -19,7 +19,6 @@ class GotoTransaction < ActiveRecord::Base
   belongs_to :batch, :class_name => 'EftBatch', :foreign_key => 'batch_id'
   belongs_to :client, :class_name => 'Helios::ClientProfile', :foreign_key => 'client_id'
   belongs_to :eft, :class_name => 'Helios::Eft', :foreign_key => 'client_id'
-  belongs_to :transaction, :class_name => 'Helios::Transact', :foreign_key => 'transaction_id'
   serialize :goto_invalid, Array
 
   is_searchable :by_query => 'goto_transactions.first_name LIKE :like_query OR goto_transactions.last_name LIKE :like_query OR goto_transactions.credit_card_number LIKE :like_query OR goto_transactions.bank_account_number LIKE :like_query OR goto_transactions.client_id = :query',
@@ -198,59 +197,88 @@ class GotoTransaction < ActiveRecord::Base
     #     -) EDIT transaction
     #   +) If transaction doesn't exist
     #     -) CREATE transaction
-    #   +) Record transaction number to csv (log it)
     # 2) Note
     #   +) If exist and shouldn't, remove
     #   +) If don't exist and should, create
     # 3) ClientProfile
     #   +) Record previous balance in GotoTransaction
     #   +) Change balance accordingly, if applicable
+    # self.record_transaction_to_helios!
+    # self.record_note_to_helios!
+    # self.record_client_profile_to_helios!
+  end
+
+  def record_client_profile_to_helios!
     
   end
+
+  def record_note_to_helios!
+    # Create a transaction on the master, touch the client profile, and set transaction_id = master_record.transact_no
+    if !self.goto_invalid.to_a.blank?
+      if self.note_id.nil?
+        note = Helios::Note.create_on_master(
+          :Client_no => self.client_id,
+          :Location => LOCATIONS.reject {|k,v| !v[:master]}.keys[0],
+          :Last_Name => self.last_name,
+          :First_Name => self.first_name,
+          :Comments => !self.goto_invalid.to_a.blank? ? "#{'Invalid EFT: ' unless self.bank_routing_number.to_s == '123'}#{self.goto_invalid.to_sentence}" : "EFT Declined: #{self.description}",
+          :EmpCode => 'EC',
+          :Interrupt => true,
+          :Deleted => false
+        )
+      else
+        # CURRENTLY DOES NOTHING IF THE NOTE ID IS ALREADY SET!!
+        # Update the current note?
+      end
+    end
+  end
+
 # TESTED ON: [1000086, 1000414, 1000968]
 # 1000086 : manual => batched from server, different than on location. See if location edit batched to the correct record
 # 1000414 : manual => possibly not batched, didn't touch client profile
 # 1000968 : fully automatic => 
   def record_transaction_to_helios!
-    # First, create a transaction on the server -- in a way, a dummy placeholder transaction.
-    # Second, create a transaction on the master, setting the OTNum from the server's placeholder transaction.
-    # Third, touch the client profile on the master.
-    a = self.amount.to_s.split(/\./).join('')
-    amnt = a.chop.chop+'.'+a[-2,2]
-    trans_attrs = {
-      :Descriptions => case # Needs to include certain information for different cases
-        when !self.goto_invalid.to_a.blank?
-          "#{'VIP: Invalid EFT: ' unless self.bank_routing_number.to_s == '123'}#{self.goto_invalid.to_sentence}"
-        when self.declined?
-          "VIP: Declined: ##{self.term_code}"
-        else
-          "VIP: Accepted: ##{self.auth_code}"
-        end[0..24],
-      :client_no => self.client_id,
-      :Last_Name => self.last_name,
-      :First_Name => self.first_name,
-      :CType => 'S',
-      :Code => 'EFT Active',
-      :Division => ZONE[:Division], # 2 for zone1
-      :Department => ZONE[:Department], # 7 for zone1
-      :Location => '001',
-      :Price => amnt,
-      :Check => self.paid? && self.ach? ? amnt : 0,
-      :Charge => self.paid? && self.credit_card? ? amnt : 0,
-      :Credit => self.declined? || !self.goto_invalid.to_a.blank? ? amnt : 0,
-      :Wait_For => case
-        when self.declined? || !self.goto_invalid.to_a.blank?
-          'I'
-        when self.ach?
-          'K'
-        when self.credit_card?
-          'N'
-        end
-    }
-    ot = Helios::Transact.create_on_master(trans_attrs)
-    Helios::ClientProfile.touch_on_master(self.client_id)
+    # Create a transaction on the master, touch the client profile, and set transaction_id = master_record.transact_no
+    if self.transaction_id.nil?
+      a = self.amount.to_s.split(/\./).join('')
+      amnt = a.chop.chop+'.'+a[-2,2]
+      trans_attrs = {
+        :Descriptions => case # Needs to include certain information for different cases
+          when !self.goto_invalid.to_a.blank?
+            "#{'VIP: Invalid EFT: ' unless self.bank_routing_number.to_s == '123'}#{self.goto_invalid.to_sentence}"
+          when self.declined?
+            "VIP: Declined: ##{self.term_code}"
+          else
+            "VIP: Accepted: ##{self.auth_code}"
+          end[0..24],
+        :client_no => self.client_id,
+        :Last_Name => self.last_name,
+        :First_Name => self.first_name,
+        :CType => 'S',
+        :Code => 'EFT Active',
+        :Division => ZONE[:Division], # 2 for zone1
+        :Department => ZONE[:Department], # 7 for zone1
+        :Location => LOCATIONS.reject {|k,v| !v[:master]}.keys[0],
+        :Price => amnt,
+        :Check => self.paid? && self.ach? ? amnt : 0,
+        :Charge => self.paid? && self.credit_card? ? amnt : 0,
+        :Credit => self.declined? || !self.goto_invalid.to_a.blank? ? amnt : 0,
+        :Wait_For => case
+          when self.declined? || !self.goto_invalid.to_a.blank?
+            'I'
+          when self.ach?
+            'K'
+          when self.credit_card?
+            'N'
+          end
+      }
+      ot = Helios::Transact.create_on_master(trans_attrs) # Auto-touches client profile
 
-    self.update_attributes(:transaction_id => ot.id)
+      self.update_attributes(:transaction_id => ot.id)
+    else
+      # CURRENTLY DOES NOTHING IF THE TRANSACTION ID IS ALREADY SET!!
+      # Update the current transaction?
+    end
   end
 
  # Status checking methods
