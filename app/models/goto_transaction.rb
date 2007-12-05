@@ -217,7 +217,6 @@ class GotoTransaction < ActiveRecord::Base
     # Third, touch the client profile on the master.
     a = self.amount.to_s.split(/\./).join('')
     amnt = a.chop.chop+'.'+a[-2,2]
-    otnum = Helios::Transact.next_OTNum
     trans_attrs = {
       :Descriptions => case # Needs to include certain information for different cases
         when !self.goto_invalid.to_a.blank?
@@ -248,22 +247,10 @@ class GotoTransaction < ActiveRecord::Base
           'N'
         end
     }
-    ot = Helios::Transact.create_on_master(trans_attrs.merge(:OTNum => otnum))
-    new_otnum = Helios::Transact.next_OTNum
-    ht = Helios::Transact.new(trans_attrs.merge(:OTNum => new_otnum))
-    ht.id = ot.id
-    ht.save
+    ot = Helios::Transact.create_on_master(trans_attrs)
+    Helios::ClientProfile.touch_on_master(self.client_id)
 
-    if new_otnum != otnum
-      rec = Helios::Transact.master[Helios::Transact.master.keys[0]].new
-      rec.id = ht.id
-      rec.OTNum = ht.OTNum
-      rec.save
-    end
-
-    self.client.touch_on_master
-
-    self.update_attributes(:transaction_id => ht.OTNum)
+    self.update_attributes(:transaction_id => ot.id)
   end
 
  # Status checking methods
