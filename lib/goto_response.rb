@@ -1,5 +1,7 @@
 class GotoResponse
+  include CoresExtensions
   attr_accessor :merchant_id, :first_name, :last_name, :status, :client_id, :order_number, :term_code, :amount, :sent_date, :tran_date, :tran_time, :invoice_id, :auth_code, :description
+
   def attributes=(new_attributes)
     return if new_attributes.nil?
     with(new_attributes.dup) do |a|
