@@ -62,7 +62,7 @@ step("Checking for files on SFTP") do
     Net::SFTP.start(ZONE[:SFTP][:host], ZONE[:SFTP][:username], ZONE[:SFTP][:password]) do |sftp|
       handle = sftp.opendir(ZONE[:SFTP][:path])
       items = sftp.readdir(handle)
-      files = items.collect {|i| i.filename}.reject {|a| a !~ Regexp.new("^zone._#{Time.now.strftime("%Y%m%d")}.*\.csv$")}
+      files = items.collect {|i| i.filename}.reject {|a| a !~ Regexp.new("^zone._#{Time.now.strftime("%Y%m")}.*\.csv$")}
       sftp.close_handle(handle)
       files.each do |file|
         step("Downloading file #{file}") do
@@ -75,7 +75,7 @@ step("Checking for files on SFTP") do
 end
 
 step("Reading return files into MySQL") do
-  files = Dir.open(@path).collect.reject {|a| a !~ /^zone._#{Time.now.strftime("%Y%m%d")}.*\.csv$/}.sort
+  files = Dir.open(@path).collect.reject {|a| a !~ /^zone._#{Time.now.strftime("%Y%m")}.*\.csv$/}.sort
   
   files.each do |file|
     step("Reading #{file} into MySQL") do
