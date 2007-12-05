@@ -187,7 +187,7 @@ class GotoTransaction < ActiveRecord::Base
       last_name,
       amount,
       transaction_id,
-      {'G' => 'Paid Instantly', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[status],
+      {'G' => 'Paid', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[status],
       goto_invalid.to_sentence
     ].map {|c| c.to_csv}
   end
@@ -236,7 +236,7 @@ class GotoTransaction < ActiveRecord::Base
   end
   def record_note_to_helios!
     # Create a transaction on the master, touch the client profile, and set transaction_id = master_record.transact_no
-    if !self.goto_invalid.to_a.blank?
+    if self.declined? || !self.goto_invalid.to_a.blank?
       if self.note_id.nil?
         note = Helios::Note.create_on_master(
           :Client_no => self.client_id,
