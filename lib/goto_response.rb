@@ -1,7 +1,6 @@
 class GotoResponse
   include CoresExtensions
-  attr_accessor :merchant_id, :first_name, :last_name, :status, :client_id, :order_number, :term_code, :amount, :sent_date, :tran_date, :tran_time, :invoice_id, :auth_code, :description
-
+  attr_accessor :merchant_id, :first_name, :last_name, :status, :client_id, :order_number, :amount, :sent_date, :transacted_at, :transaction_id, :auth_code, :description
   def attributes
     at = {}
     self.instance_variables.each do |iv|
@@ -10,7 +9,6 @@ class GotoResponse
     end
     at
   end
-
   def attributes=(new_attributes)
     return if new_attributes.nil?
     with(new_attributes.dup) do |a|
@@ -18,7 +16,9 @@ class GotoResponse
       a.each {|k,v| send(k + "=", a.delete(k)) if self.respond_to?("#{k}=")}
     end
   end
-
+  def client
+    @client ||= GotoTransaction.find_by_client_id(self.client_id)
+  end
   def initialize(attrs={}) # From csv row, or from xml-hash
     new_attrs = {}
     nattrs = attrs.dup
@@ -38,9 +38,8 @@ class GotoResponse
         :term_code    => nil,
         :amount       => nattrs[4],
         :sent_date    => nattrs[5],
-        :tran_date    => nattrs[6],
-        :tran_time    => nattrs[6],
-        :invoice_id   => nattrs[7],
+        :transacted_at => nattrs[6],
+        :transaction_id => nattrs[7],
         :auth_code    => nil,
         :description  => nattrs[9]
       }
@@ -48,21 +47,20 @@ class GotoResponse
     self.attributes = new_attrs
     self
   end
-
-  alias :tran_amount :amount
-  alias :tran_amount= :amount=
-  alias :transaction_id :invoice_id
-  alias :transaction_id= :invoice_id=
-
-  def client
-    GotoTransaction.find_by_client_id(self.client_id)
-  end
-
   def invalid?
     return 'Description present on accepted transaction' if self.status == 'G' && !self.description.blank?
     return 'Description blank on declined transaction' if self.status == 'D' && self.description.blank?
     return 'SentDate is not a number' if self.sent_date =~ /\D/
     return 'SettleDate is not a number' if self.tran_date =~ /\D/
     return false
+  end
+
+  def record_to_client!
+    # self.client.transaction_id = self.transaction_id
+    self.client.description = self.description
+    self.client.status = self.status
+    self.client.sent_date = self.sent_date
+    self.client.transacted_at = self.tran_time
+    self.client.save
   end
 end
