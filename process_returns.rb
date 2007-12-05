@@ -95,8 +95,7 @@ step("Reading return files into MySQL") do
           # invalid: duplicate row
           invalid = "Duplicate GotoBilling response"
         end
-        puts res.attributes.inspect
-        puts res.valid?
+        puts invalid if invalid
       end
     end
   end
