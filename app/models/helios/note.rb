@@ -30,9 +30,11 @@ class Helios::Note < ActiveRecord::Base
 
   # Slave functions: find, create, update, destroy, touch
   def self.find_on_master(id)
+    return nil if id.nil?
     self.find_on_slave(self.master.keys[0], id)
   end
   def self.find_on_slave(slave_name, id)
+    return nil if id.nil?
     self.slaves[slave_name].find(id)
   end
   def find_on_master
@@ -46,13 +48,15 @@ class Helios::Note < ActiveRecord::Base
     self.create_on_slave(self.master.keys[0], attrs)
   end
   def self.create_on_slave(slave_name, attrs={})
-    rec = self.slaves[slave_name].create({:Last_Mdt => Time.now - 5.hours}.merge(attrs))
-    Helios::ClientProfile.touch_on_master(attrs[:client_no])
+    attrs.stringify_keys!
+    rec = self.slaves[slave_name].create({'Last_Mdt' => Time.now - 5.hours}.merge(attrs))
+    Helios::ClientProfile.touch_on_master(attrs['Client_no']) if attrs.has_key?('Client_no')
     return rec
   end
 
   # Refer to these by OTNum as id
   def self.update_on_master(id, attrs={})
+    return nil if id.nil?
     self.update_on_slave(self.master.keys[0], id, attrs)
   end
   def self.update_on_slave(slave_name, id, attrs={})
