@@ -28,7 +28,7 @@ class EftController < ApplicationController
         # Change to 18.88
         Helios::Eft.update_attributes(
           :Monthly_Fee => ZONE[:StandardMembershipPrice],
-          :Update_All => Time.now
+          :UpdateAll => Time.now
         )
         unjust.update_attributes(:amount => ZONE[:StandardMembershipPrice])
       end
