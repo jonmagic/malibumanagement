@@ -83,6 +83,7 @@ step("Reading return files into MySQL") do
       CSV::Reader.parse(File.open(@path+file, 'rb').map {|l| l.gsub(/[\n\r]+/, "\n")}.join) do |row|
         # Invalid lines, write to a new file, 'zone1_20071204_invalid_rows.csv'
         res = GotoResponse.new(row)
+        next if res.merchant_id == 'MerchantID'
         invalid = res.invalid?
         if !clients.has_key?(res.client_id)
           if res.client
