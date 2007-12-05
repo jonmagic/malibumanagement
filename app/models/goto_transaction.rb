@@ -19,6 +19,7 @@ class GotoTransaction < ActiveRecord::Base
   belongs_to :batch, :class_name => 'EftBatch', :foreign_key => 'batch_id'
   belongs_to :client, :class_name => 'Helios::ClientProfile', :foreign_key => 'client_id'
   belongs_to :eft, :class_name => 'Helios::Eft', :foreign_key => 'client_id'
+
   serialize :goto_invalid, Array
 
   is_searchable :by_query => 'goto_transactions.first_name LIKE :like_query OR goto_transactions.last_name LIKE :like_query OR goto_transactions.credit_card_number LIKE :like_query OR goto_transactions.bank_account_number LIKE :like_query OR goto_transactions.client_id = :query',
@@ -209,7 +210,20 @@ class GotoTransaction < ActiveRecord::Base
   end
 
   def record_client_profile_to_helios!
-    
+    if self.declined? || self.invalid?
+      a = self.amount.to_s.split(/\./).join('')
+      amnt = a.chop.chop+'.'+a[-2,2]
+
+      self.update_attributes(:previous_balance => self.client.Balance.to_f, :previous_payment_amount => self.client.Payment_Amount.to_f)
+
+      self.client.update_on_master(
+        :Payment_Amount => (self.previous_payment_amount.to_f + amnt.to_f + (self.submitted? ? 5 : 0)),
+        :Balance => self.previous_balance.to_f + amnt.to_f + (self.submitted? ? 5 : 0),
+        :Date_Due => Time.gm(Time.now.year, Time.now.month, 1, 0, 0, 0)
+      )
+    else
+      # Nothing to edit in ClientProfile if not invalid or declined.
+    end
   end
 
   def record_note_to_helios!
@@ -234,9 +248,9 @@ class GotoTransaction < ActiveRecord::Base
   end
 
 # TESTED ON: [1000086, 1000414, 1000968]
-# 1000086 : manual => batched from server, different than on location. See if location edit batched to the correct record
-# 1000414 : manual => possibly not batched, didn't touch client profile
-# 1000968 : fully automatic => 
+# 1000086 :1684408: manual => batched from server, different than on location. See if location edit batched to the correct record
+# 1000414 :1684618: manual => possibly not batched, didn't touch client profile
+# 1000968 :1684625: fully automatic => 
   def record_transaction_to_helios!
     # Create a transaction on the master, touch the client profile, and set transaction_id = master_record.transact_no
     if self.transaction_id.nil?
@@ -282,6 +296,10 @@ class GotoTransaction < ActiveRecord::Base
   end
 
  # Status checking methods
+  def submitted?
+    !self.status.blank?
+  end
+
   def declined?
     self.status == 'D'
   end
