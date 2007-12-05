@@ -2,6 +2,15 @@ class GotoResponse
   include CoresExtensions
   attr_accessor :merchant_id, :first_name, :last_name, :status, :client_id, :order_number, :term_code, :amount, :sent_date, :tran_date, :tran_time, :invoice_id, :auth_code, :description
 
+  def attributes
+    at = {}
+    self.instance_variables.each do |iv|
+      iv.gsub!('@', '')
+      at[iv] = self.instance_variable_get("@#{iv}")
+    end
+    at
+  end
+
   def attributes=(new_attributes)
     return if new_attributes.nil?
     with(new_attributes.dup) do |a|
@@ -10,7 +19,7 @@ class GotoResponse
     end
   end
 
-  def initialize(attrs) # From csv row, or from xml-hash
+  def initialize(attrs={}) # From csv row, or from xml-hash
     new_attrs = {}
     nattrs = attrs.dup
     if nattrs.is_a?(Hash) # Is xml-hash
