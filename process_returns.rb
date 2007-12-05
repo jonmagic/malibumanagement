@@ -87,17 +87,17 @@ step("Reading return files into MySQL") do
         invalid = res.invalid?
         if !clients.has_key?(res.client_id)
           if res.client
-            # res.record_to_client!
+            res.record_to_client!
           else
             # invalid: client doesn't exist
-            invalid = "Client #{res.client_id} doesn't exist"
+            invalid = "Client doesn't exist"
           end
         else
           # invalid: duplicate row
           invalid = "Duplicate GotoBilling response"
         end
         clients[res.client_id] = res
-        puts invalid if invalid
+        puts "Client ##{res.client_id}: #{invalid}" if invalid
       end
     end
   end
