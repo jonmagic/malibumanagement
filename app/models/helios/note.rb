@@ -50,8 +50,7 @@ class Helios::Note < ActiveRecord::Base
   def self.create_on_slave(slave_name, attrs={})
     attrs.stringify_keys!
     rec = self.slaves[slave_name].create({'Last_Mdt' => Time.now - 5.hours}.merge(attrs))
-puts "Touching Client ##{attrs['Client_no']}"
-    Helios::ClientProfile.touch_on_master(attrs['Client_no']) if attrs.has_key?('Client_no')
+    Helios::ClientProfile.touch_on_master(attrs['Client_no'].to_s) if attrs.has_key?('Client_no')
     return rec
   end
 
