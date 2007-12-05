@@ -29,7 +29,7 @@ step("Recording Invalids to Helios") do
 
   step("Processing Invalids one by one") do
     invds.each do |invd|
-      if invd.transaction_id && invd.note_id # && invd.previous_balance
+      if invd.transaction_id && invd.note_id && false # && invd.previous_balance
         report "#{invd.id} is already up to date in Helios."
       else
         step("Processing #{invd.id}") do
