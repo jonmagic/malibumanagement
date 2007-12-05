@@ -210,7 +210,7 @@ class GotoTransaction < ActiveRecord::Base
   end
 
   def record_client_profile_to_helios!
-    if self.declined? || self.invalid?
+    if self.declined? || !self.goto_invalid.to_a.blank?
       a = self.amount.to_s.split(/\./).join('')
       amnt = a.chop.chop+'.'+a[-2,2]
 
