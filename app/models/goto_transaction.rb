@@ -33,11 +33,11 @@ class GotoTransaction < ActiveRecord::Base
       'amount' => 'goto_transactions.amount = ?'
     }
 
-  #Give me:
-  #batch_id, cp
-  #batch_id, eft
-  #or just {attributes}
   def initialize(*attrs)
+    #Give me:
+    #batch_id, cp
+    #batch_id, eft
+    #or just {attributes}
     attrs = {} if attrs.blank?
 
     # If we're looking at a cp, change the attrs to look at it's eft, or simple attributes if no eft.
@@ -106,6 +106,7 @@ class GotoTransaction < ActiveRecord::Base
     inv = []
     inv << "Expired Card" if credit_card? && expiration && Time.parse(expiration[0,2] + '/01/' + expiration[2,2]) < Time.parse(self.batch.for_month)
     inv << "Invalid Credit Card Number" if credit_card? && !validCreditCardNumber?(credit_card_number)
+    inv << "Invalid Account Number" if ach? && !validAccountNumber?(bank_account_number.to_s)
     if !credit_card? && !validABA?(bank_routing_number.to_s)
       if bank_routing_number.to_s == '123'
         inv << "Cash VIP"
@@ -208,7 +209,6 @@ class GotoTransaction < ActiveRecord::Base
     self.record_note_to_helios!
     self.record_client_profile_to_helios!
   end
-
   def record_client_profile_to_helios!
     if self.declined? || !self.goto_invalid.to_a.blank?
       if self.previous_balance.blank? && self.previous_payment_amount.blank?
@@ -231,7 +231,6 @@ class GotoTransaction < ActiveRecord::Base
       # Nothing to edit in ClientProfile if not invalid or declined.
     end
   end
-
   def record_note_to_helios!
     # Create a transaction on the master, touch the client profile, and set transaction_id = master_record.transact_no
     if !self.goto_invalid.to_a.blank?
@@ -253,11 +252,6 @@ class GotoTransaction < ActiveRecord::Base
       end
     end
   end
-
-# TESTED ON: [1000086, 1000414, 1000968]
-# 1000086 :1684408: manual => batched from server, different than on location. See if location edit batched to the correct record
-# 1000414 :1684618: manual => possibly not batched, didn't touch client profile
-# 1000968 :1684625: fully automatic => 
   def record_transaction_to_helios!
     # Create a transaction on the master, touch the client profile, and set transaction_id = master_record.transact_no
     if self.transaction_id.nil?
@@ -306,11 +300,9 @@ class GotoTransaction < ActiveRecord::Base
   def submitted?
     !self.status.blank?
   end
-
   def declined?
     self.status == 'D'
   end
-
   def paid?
     self.status == 'G'
   end
@@ -339,6 +331,9 @@ class GotoTransaction < ActiveRecord::Base
 
   # 3) Card Length Check -X- We don't store the credit card type, so we can't perform this check.
       true
+    end
+    def validAccountNumber?(act)
+      act.length < 18
     end
 
   # def self.http_attribute_mapping
