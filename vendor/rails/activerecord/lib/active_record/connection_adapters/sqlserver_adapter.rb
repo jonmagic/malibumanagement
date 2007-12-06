@@ -301,6 +301,7 @@ ActionController::Base.logger.info "Driver URL: #{driver_url}, U: #{username}, P
       end
 
       def update(sql, name = nil)
+ActionController::Base.logger.info "Adapter: UPDATE SQL: '#{sql}'"
         execute(sql, name) do |handle|
           handle.rows
         end || select_one("SELECT @@ROWCOUNT AS AffectedRows")["AffectedRows"]        
@@ -506,7 +507,7 @@ ActionController::Base.logger.info "Driver URL: #{driver_url}, U: #{username}, P
         def select(sql, name = nil)
           repair_special_columns(sql)
 
-          ActionController::Base.logger.info "SQL: #{sql}"
+          # ActionController::Base.logger.info "SQL: #{sql}"
           result = []          
           execute(sql) do |handle|
             handle.each do |row|
