@@ -77,7 +77,7 @@ step("Recording all completed transactions to Helios") do
   # FOR TESTING PURPOSES! (also tested on 20000002)
   # to_record = to_record[0..19]
   # * * * *
-  report "Of these, #{to_record.length} have yet to be recorded to Helios."
+  # report "Of these, #{trans.length} have yet to be recorded to Helios."
   counts = {:accepted => 0, :declined => 0, :invalid => 0}
   trans.each do |tran|
     step("Client ##{tran.client_id}") do
