@@ -149,7 +149,6 @@ class ClientMembersController < ApplicationController
       output_csv = [] #Let the method run all before we start rendering
       yield output_csv
       csv_push = Proc.new {|fcsv|
-        logger.info "Should be a FasterCSV: #{fcsv.inspect}"
         output_csv.each do |oo|
           fcsv << oo
         end

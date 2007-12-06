@@ -47,7 +47,6 @@ module IsSearchable
         self.count_by_sql("SELECT COUNT(*) FROM (SELECT #{self.table_name}.* FROM #{self.table_name} #{render_condition_for_query_and_filters(query, filters)} GROUP BY #{self.table_name}.id) as tmpA")
       end
       def _bulk_search(query, options={})
-        @search_caches ||= {}
         limit = options[:limit] || 0
         offset = options[:offset] || 0
         filters = (options[:filters] || {}).stringify_keys!
@@ -55,10 +54,9 @@ module IsSearchable
         sql = sql+" LIMIT #{limit}" if limit > 0
         sql = sql+" OFFSET #{offset}" if offset > 0
 ActionController::Base.logger.info("Search SQL: #{sql}")
-        @search_caches[query+'_'+filters.values.join('-')] ||= self.find_by_sql(sql)
+        self.find_by_sql(sql)
       end
       def _method_search(query, options={})
-        @search_caches ||= {}
         limit = options[:limit] || 0
         offset = options[:offset] || 0
         filters = (options[:filters] || {}).stringify_keys!
@@ -71,7 +69,7 @@ ActionController::Base.logger.info("Search SQL: #{sql}")
           results << next_rec if true # Do the method search methods and add the record to results if the methods all return true.
         end until next_rec.nil? || (limit > 0 && results.length == limit+offset)
 
-        @search_caches[query+'_'+options[:filters].each_value.join('-')] ||= results[offset-1..results.length]
+        results[offset-1..results.length]
       end
       def render_condition_for_query_and_filters(query, filters) #search in: first_name, last_name, identifier
         condition = [

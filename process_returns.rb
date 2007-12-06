@@ -73,7 +73,7 @@ step("Recording all completed transactions to Helios") do
   trans = GotoTransaction.find(:all, :conditions => ['batch_id=? AND ((goto_invalid IS NOT NULL AND !(goto_invalid LIKE ?)) OR (status IS NOT NULL AND status != ?))', @batch.id, '%'+[].to_yaml+'%', ''], :order => 'id ASC')
   report "There are #{trans.length} completed transactions."
   # Filter to those that don't have a transaction_id
-  to_record = trans.reject {|t| !t.transaction_id.blank?}
+  # to_record = trans.reject {|t| !t.transaction_id.blank?}
   # FOR TESTING PURPOSES! (also tested on 20000002)
   # to_record = to_record[0..19]
   # * * * *
