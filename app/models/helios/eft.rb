@@ -58,6 +58,15 @@ class Helios::Eft < ActiveRecord::Base
       "[Client_No] = ? AND ([Member1] = 'VIP' AND '"+Time.parse(month).strftime("%Y%m%d")+"' >= [Member1_Beg] AND [Member1_Exp] >= '"+Time.parse(month).strftime("%Y%m%d")+"') OR ([Member2] = 'VIP' AND '"+Time.parse(month).strftime("%Y%m%d")+"' >= [Member2_Beg] AND [Member2_Exp] >= '"+Time.parse(month).strftime("%Y%m%d")+"')"
     end
     report << (!Helios::ClientProfile.find(:all, :conditions => [sql]).blank? ? "ClientProfile reports a current membership" : "ClientProfile reports no membership")
+    if cp.eft.nil?
+      report << ", Client has no EFT"
+    else
+      if(!((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= Time.parse(month).to_date : false) && (!cp.eft.Freeze_End.nil? ? Time.parse(month).to_date < cp.eft.Freeze_End.to_date : false)) && ((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= Time.parse(month).to_date : true) && (!cp.eft.End_Date.nil? ? Time.parse(month).to_date < cp.eft.End_Date.to_date : true)))
+        report << ", current time in EFT is valid to bill!"
+      else
+        report << ", current time in EFT is FROZEN!"
+      end
+    end
     report
   end
 
