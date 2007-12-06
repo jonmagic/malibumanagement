@@ -265,7 +265,7 @@ class GotoTransaction < ActiveRecord::Base
     # Create a transaction on the master, touch the client profile, and set transaction_id = master_record.transact_no
     if self.transaction_id.nil?
       a = self.amount.to_s.split(/\./).join('')
-      amnt = a.chop.chop+'.'+a[-2,2]
+      amnt = ((a.chop.chop+'.'+a[-2,2]).to_f + (self.submitted? ? 5 : 0)).to_s
       trans_attrs = {
         :Descriptions => case # Needs to include certain information for different cases
           when !self.goto_invalid.to_a.blank?
