@@ -54,9 +54,9 @@ class Helios::Eft < ActiveRecord::Base
     report = ''
     sql = case ::RAILS_ENV
     when 'development'
-      "Client_No = #{self.id} AND (Member1 = 'VIP' AND '"+date.strftime("%Y-%m-%d")+"' >= Member1_Beg AND Member1_Exp >= '"+date.strftime("%Y-%m-%d")+"') OR (Member2 = 'VIP' AND '"+date.strftime("%Y-%m-%d")+"' >= Member2_Beg AND Member2_Exp >= '"+date.strftime("%Y-%m-%d")+"')"
+      "Client_No = #{self.id} AND ((Member1 = 'VIP' AND '"+date.strftime("%Y-%m-%d")+"' >= Member1_Beg AND Member1_Exp >= '"+date.strftime("%Y-%m-%d")+"') OR (Member2 = 'VIP' AND '"+date.strftime("%Y-%m-%d")+"' >= Member2_Beg AND Member2_Exp >= '"+date.strftime("%Y-%m-%d")+"'))"
     when 'production'
-      "[Client_No] = #{self.id} AND ([Member1] = 'VIP' AND '"+date.strftime("%Y%m%d")+"' >= [Member1_Beg] AND [Member1_Exp] >= '"+date.strftime("%Y%m%d")+"') OR ([Member2] = 'VIP' AND '"+date.strftime("%Y%m%d")+"' >= [Member2_Beg] AND [Member2_Exp] >= '"+date.strftime("%Y%m%d")+"')"
+      "[Client_No] = #{self.id} AND (([Member1] = 'VIP' AND '"+date.strftime("%Y%m%d")+"' >= [Member1_Beg] AND [Member1_Exp] >= '"+date.strftime("%Y%m%d")+"') OR ([Member2] = 'VIP' AND '"+date.strftime("%Y%m%d")+"' >= [Member2_Beg] AND [Member2_Exp] >= '"+date.strftime("%Y%m%d")+"'))"
     end
     cp = Helios::ClientProfile.find(:first, :conditions => [sql])
     report << (cp ? "ClientProfile reports a current membership" : "ClientProfile reports no membership")
