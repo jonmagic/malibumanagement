@@ -226,11 +226,15 @@ class GotoTransaction < ActiveRecord::Base
           :UpdateAll => Time.now
         )
       end
-      if self.client.Date_Due != Time.gm(Time.now.year, Time.now.month, 1, 0, 0, 0)
-        self.client.update_attributes( # For some reason we have to do it a second time for Date_Due to register.
-          :Date_Due => Time.gm(Time.now.year, Time.now.month, 1, 0, 0, 0),
-          :UpdateAll => Time.now
-        )
+      if !self.recd_date_due
+        if self.client.Date_Due != Time.gm(Time.now.year, Time.now.month, 1, 0, 0, 0)
+          self.client.update_attributes( # For some reason we have to do it a second time for Date_Due to register.
+            :Date_Due => Time.gm(Time.now.year, Time.now.month, 1, 0, 0, 0),
+            :UpdateAll => Time.now
+          )
+        else
+          self.update_attributes(:recd_date_due => true)
+        end
       end
     else
       # Nothing to edit in ClientProfile if not invalid or declined.
