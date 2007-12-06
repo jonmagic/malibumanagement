@@ -65,7 +65,11 @@ class Helios::Eft < ActiveRecord::Base
         report << ", Client has no EFT"
       else
         if(!((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= date.to_date : false) && (!cp.eft.Freeze_End.nil? ? date.to_date < cp.eft.Freeze_End.to_date : false)) && ((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= date.to_date : true) && (!cp.eft.End_Date.nil? ? date.to_date < cp.eft.End_Date.to_date : true)))
-          report << ", current time in EFT is valid to bill!"
+          if cp.has_prepaid_membership?
+            report << ", but this is a one-time purchase membership!"
+          else
+            report << ", current time in EFT is valid to bill!"
+          end
         else
           report << ", current time in EFT is FROZEN!"
         end
