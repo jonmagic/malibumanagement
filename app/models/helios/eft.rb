@@ -49,19 +49,20 @@ class Helios::Eft < ActiveRecord::Base
     mems
   end
 
-  def report_membership! # This is to be called primarily by the commandline.
+  def report_membership!(date=nil) # This is to be called primarily by the commandline.
+    date ||= Time.now
     report = ''
     sql = case ::RAILS_ENV
     when 'development'
-      "Client_No = ? AND (Member1 = 'VIP' AND '"+Time.parse(month).strftime("%Y-%m-%d")+"' >= Member1_Beg AND Member1_Exp >= '"+Time.parse(month).strftime("%Y-%m-%d")+"') OR (Member2 = 'VIP' AND '"+Time.parse(month).strftime("%Y-%m-%d")+"' >= Member2_Beg AND Member2_Exp >= '"+Time.parse(month).strftime("%Y-%m-%d")+"')"
+      "Client_No = ? AND (Member1 = 'VIP' AND '"+Time.parse(date).strftime("%Y-%m-%d")+"' >= Member1_Beg AND Member1_Exp >= '"+Time.parse(date).strftime("%Y-%m-%d")+"') OR (Member2 = 'VIP' AND '"+Time.parse(date).strftime("%Y-%m-%d")+"' >= Member2_Beg AND Member2_Exp >= '"+Time.parse(date).strftime("%Y-%m-%d")+"')"
     when 'production'
-      "[Client_No] = ? AND ([Member1] = 'VIP' AND '"+Time.parse(month).strftime("%Y%m%d")+"' >= [Member1_Beg] AND [Member1_Exp] >= '"+Time.parse(month).strftime("%Y%m%d")+"') OR ([Member2] = 'VIP' AND '"+Time.parse(month).strftime("%Y%m%d")+"' >= [Member2_Beg] AND [Member2_Exp] >= '"+Time.parse(month).strftime("%Y%m%d")+"')"
+      "[Client_No] = ? AND ([Member1] = 'VIP' AND '"+Time.parse(date).strftime("%Y%m%d")+"' >= [Member1_Beg] AND [Member1_Exp] >= '"+Time.parse(date).strftime("%Y%m%d")+"') OR ([Member2] = 'VIP' AND '"+Time.parse(date).strftime("%Y%m%d")+"' >= [Member2_Beg] AND [Member2_Exp] >= '"+Time.parse(date).strftime("%Y%m%d")+"')"
     end
     report << (!Helios::ClientProfile.find(:all, :conditions => [sql]).blank? ? "ClientProfile reports a current membership" : "ClientProfile reports no membership")
     if cp.eft.nil?
       report << ", Client has no EFT"
     else
-      if(!((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= Time.parse(month).to_date : false) && (!cp.eft.Freeze_End.nil? ? Time.parse(month).to_date < cp.eft.Freeze_End.to_date : false)) && ((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= Time.parse(month).to_date : true) && (!cp.eft.End_Date.nil? ? Time.parse(month).to_date < cp.eft.End_Date.to_date : true)))
+      if(!((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= Time.parse(date).to_date : false) && (!cp.eft.Freeze_End.nil? ? Time.parse(date).to_date < cp.eft.Freeze_End.to_date : false)) && ((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= Time.parse(date).to_date : true) && (!cp.eft.End_Date.nil? ? Time.parse(date).to_date < cp.eft.End_Date.to_date : true)))
         report << ", current time in EFT is valid to bill!"
       else
         report << ", current time in EFT is FROZEN!"
