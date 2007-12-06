@@ -225,6 +225,8 @@ class GotoTransaction < ActiveRecord::Base
           :Balance => self.previous_balance.to_f + amnt.to_f + (self.submitted? ? 5 : 0),
           :UpdateAll => Time.now
         )
+      end
+      if self.client.Date_Due != Time.gm(Time.now.year, Time.now.month, 1, 0, 0, 0)
         self.client.update_attributes( # For some reason we have to do it a second time for Date_Due to register.
           :Date_Due => Time.gm(Time.now.year, Time.now.month, 1, 0, 0, 0),
           :UpdateAll => Time.now

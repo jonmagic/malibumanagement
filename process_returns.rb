@@ -79,7 +79,7 @@ step("Recording all completed transactions to Helios") do
   # * * * *
   report "Of these, #{to_record.length} have yet to be recorded to Helios."
   counts = {:accepted => 0, :declined => 0, :invalid => 0}
-  to_record.each do |tran|
+  trans.each do |tran|
     step("Client ##{tran.client_id}") do
       counts[!tran.goto_invalid.to_a.blank? ? :invalid : (tran.status == 'G' ? :accepted : :declined)] += 1
       # The payment could be accepted, declined, or invalid.
