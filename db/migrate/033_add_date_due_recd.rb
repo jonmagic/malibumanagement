@@ -1,4 +1,4 @@
-class AddPreviousBalance < ActiveRecord::Migration
+class AddDateDueRecd < ActiveRecord::Migration
   def self.up
     add_column :goto_transactions, :recd_date_due, :boolean, :default => false
   end
