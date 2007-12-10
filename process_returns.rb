@@ -21,7 +21,7 @@ end
 @path = "EFT/#{@batch.for_month}/"
 FileUtils.mkpath(@path)
 
-step("Checking for files on SFTP") do
+ARGV[0] != 'limited' && step("Checking for files on SFTP") do
   files = []
   step("Connecting SFTP Session") do
     Net::SFTP.start(ZONE[:SFTP][:host], ZONE[:SFTP][:username], ZONE[:SFTP][:password]) do |sftp|
@@ -39,7 +39,7 @@ step("Checking for files on SFTP") do
   files.length
 end
 
-step("Reading return files into MySQL") do
+ARGV[0] != 'limited' && step("Reading return files into MySQL") do
   files = Dir.open(@path).collect.reject {|a| a !~ /^zone._#{Time.now.strftime("%Y%m")}.*\.csv$/}.sort
   
   files.each do |file|
