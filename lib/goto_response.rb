@@ -57,6 +57,12 @@ class GotoResponse
 
   def record_to_client!
     # self.client.transaction_id = self.transaction_id
+    if self.client.status == 'G' && self.status == 'D' && self.client.transaction_id
+      # Was accepted, now declined.
+      # Delete the transaction if it was previously created.
+      Helios::Transact.destroy_on_master(self.client.transaction_id)
+      self.client.transaction_id = nil
+    end
     self.client.description = self.description
     self.client.status = self.status
     self.client.sent_date = self.sent_date
