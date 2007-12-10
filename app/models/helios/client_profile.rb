@@ -137,9 +137,9 @@ class Helios::ClientProfile < ActiveRecord::Base
   def has_prepaid_membership?
     sql = case ::RAILS_ENV
     when 'development'
-      "(Code = 'VY' OR Code = 'VY+' OR Code = 'V1M' OR Code = 'V1W') AND client_no = ? AND Last_Mdt > ?"
+      "(Code = 'VY' OR Code = 'VY+' OR Code = 'V1M' OR Code = 'V1W') AND CType != 1 AND client_no = ? AND Last_Mdt > ?"
     when 'production'
-      "([Code] = 'VY' OR [Code] = 'VY+' OR [Code] = 'V1M' OR [Code] = 'V1W') AND [client_no] = ? AND [Last_Mdt] > ?"
+      "([Code] = 'VY' OR [Code] = 'VY+' OR [Code] = 'V1M' OR [Code] = 'V1W') AND CType != 1 AND [client_no] = ? AND [Last_Mdt] > ?"
     end
     mem_trans = Helios::Transact.find(:all, :conditions => [sql, self.id, Time.now-47088000])
     lasting = {
