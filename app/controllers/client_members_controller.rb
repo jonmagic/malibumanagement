@@ -55,7 +55,7 @@ class ClientMembersController < ApplicationController
   def remove_vip
     restrict('allow only store admins') or begin
       gt = GotoTransaction.find(params[:id])
-      if gt.remove_vip!(LOCATIONS[LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]][:name])
+      if gt.remove_vip!
         respond_to do |format|
           format.html {
             flash[:notice] = "Removed VIP from client ##{gt.client_id}."

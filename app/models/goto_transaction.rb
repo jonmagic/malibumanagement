@@ -142,8 +142,8 @@ class GotoTransaction < ActiveRecord::Base
     LOCATIONS.has_key?(location) ? LOCATIONS[location][:merchant_pin] : nil
   end
 
-  def remove_vip!(store_name)
-    self.client.remove_vip!(store_name) if self.client
+  def remove_vip!
+    self.client.remove_vip! if self.client
     self.destroy
   end
 

@@ -88,4 +88,3 @@ step("Recording all completed transactions to Helios") do
   end
   report "#{counts[:accepted]} Accepted, #{counts[:declined]} Declined, #{counts[:invalid]} Invalid"
 end
-
