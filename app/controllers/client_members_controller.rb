@@ -63,7 +63,7 @@ class ClientMembersController < ApplicationController
           }
           format.js {
             render :update do |page|
-              page.flash("Removed VIP from client ##{gt.client_id}.", 'Ok')
+              page.flash("Removed VIP from client ##{gt.client_id}.", false, true, false)
               page["client_listing_#{params[:id]}"].remove
             end
           }
@@ -76,7 +76,7 @@ class ClientMembersController < ApplicationController
           }
           format.js {
             render :update do |page|
-              page.flash("Could not remove VIP from client ##{gt.client_id}. Please try again.", 'Ok')
+              page.flash("Could not remove VIP from client ##{gt.client_id}. Please try again.", true, false, true)
             end
           }
         end
@@ -86,7 +86,7 @@ class ClientMembersController < ApplicationController
         format.html {raise}
         format.js {
           render :update do |page|
-            page.flash("Client was not found.")
+            page.flash("Client was not found.", true, false, true)
           end
         }
       end
@@ -116,7 +116,7 @@ class ClientMembersController < ApplicationController
           }
           format.js {
             render :update do |page|
-              page.flash("Could not reload EFT from #{LOCATIONS[gt.location][:name]}.")
+              page.flash("Could not reload EFT from #{LOCATIONS[gt.location][:name]}.", true, false, true)
             end
           }
         end
@@ -126,7 +126,7 @@ class ClientMembersController < ApplicationController
         format.html {raise}
         format.js {
           render :update do |page|
-            page.flash("Client was not found.")
+            page.flash("Client was not found.", true, false, true)
           end
         }
       end
