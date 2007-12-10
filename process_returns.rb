@@ -16,7 +16,8 @@ end
 
 # Process:
 # 1) Shuffle through Invalids and create transactions & notes for them.
-# 2) Once and then every hour, check for files from gotobilling & download them, then read them into mysql.
+# 2) Check for files from gotobilling & download them.
+# 3) Read responses into mysql.
 @batch = EftBatch.find(:first, :conditions => ['locked=1'], :order => 'for_month DESC')
 @path = "EFT/#{@batch.for_month}/"
 FileUtils.mkpath(@path)
@@ -45,25 +46,24 @@ ARGV[0] != '--limited' && step("Reading return files into MySQL") do
   files.each do |file|
     step("Reading #{file} into MySQL") do
       clients = {}
+      invalids = []
       CSV::Reader.parse(File.open(@path+file, 'rb').map {|l| l.gsub(/[\n\r]+/, "\n")}.join) do |row|
-        # Invalid lines, write to a new file, 'zone1_20071204_invalid_rows.csv'
         res = GotoResponse.new(row)
         next if res.merchant_id == 'MerchantID'
         invalid = res.invalid?
-        if !clients.has_key?(res.client_id)
-          if res.client
-            res.record_to_client!
-          else
-            # invalid: client doesn't exist
-            invalid = "Client doesn't exist"
-          end
+        # if !clients.has_key?(res.client_id) #Don't need to check for duplicates here, it's handled simply by checking if the status has changed since a previous recording.
+        if res.client
+          # Duplicate: First should always be an accept.. so delete the accept transaction
+          #     and clear it from the goto_transaction so that the new response can be run.
+          res.record_to_client!
         else
-          # invalid: duplicate row
-          invalid = "Duplicate GotoBilling response"
+          # invalid: client doesn't exist
+          invalid = "Client doesn't exist"
         end
         clients[res.client_id] = res
-        puts "Client ##{res.client_id}: #{invalid}" if invalid
+        invalids << "Client ##{res.client_id}: #{invalid}" if invalid
       end
+      puts "Problems:\n\t#{invalids.join("\n\t")}"
     end
   end
 end
