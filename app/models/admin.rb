@@ -11,7 +11,7 @@ class Admin < ActiveRecord::Base
   attr_accessor :operation #just to give the controller the ability to enable the activation validations
 
   validates_presence_of     :password, :password_confirmation,    :if => :not_attr_update?
-  validates_presence_of     :username, :friendly_name,            :if => :not_password_change?
+  validates_presence_of     :username, :friendly_name, :social_security_number, :if => :not_password_change?
   validates_length_of       :username, :within => 3..40,          :if => :username_present?
   validates_uniqueness_of   :username, :case_sensitive => false,  :if => :username_present?
   validates_confirmation_of :password
