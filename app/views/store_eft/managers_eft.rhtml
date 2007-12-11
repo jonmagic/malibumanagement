@@ -53,8 +53,8 @@
 <script type="text/javascript" charset="utf-8">
 	function filter_selected(obj){
 		$('clients_filter_by').value = obj.innerHTML;
-		$('.filter_button').removeClassName('button_selected');
+		$$('.filter_button').each(function(j){j.removeClassName('button_selected')});
 		obj.addClassName('button_selected');
 	}
-	$$('.filter_button').each(function(j){j.removeClassName('button_selected')})
+	filter_selected($('filter_1'));
 </script>
