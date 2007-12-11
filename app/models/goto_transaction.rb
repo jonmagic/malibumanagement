@@ -137,6 +137,10 @@ class GotoTransaction < ActiveRecord::Base
   def ach?
     !credit_card?
   end
+  def bank_account_type
+    return nil unless ach?
+    return account_type == 'C' ? 'PC' : 'PS'
+  end
   def merchant_id
     LOCATIONS.has_key?(location) ? LOCATIONS[location][:merchant_id] : nil
   end
@@ -159,7 +163,7 @@ class GotoTransaction < ActiveRecord::Base
   end
 
   def self.csv_headers
-    ["Account ID", "First Name", "Last Name", "Bank Routing #", "Bank Account #", "Name on Card", "Credit Card Number", "Expiration", "Amount", "Type", "Authorization", "Record", "Occurrence"]
+    ["Account ID", "First Name", "Last Name", "Bank Routing #", "Bank Account #", "Bank Account Type", "Name on Card", "Credit Card Number", "Expiration", "Amount", "Type", "Authorization", "Record", "Occurrence"]
   end
   def to_csv_row
     [
@@ -168,6 +172,7 @@ class GotoTransaction < ActiveRecord::Base
       last_name,
       bank_routing_number,
       bank_account_number,
+      bank_account_type,
       name_on_card,
       credit_card_number,
       expiration,
