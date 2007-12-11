@@ -29,6 +29,7 @@
 			<br />
 			<b>Client Search:</b> <input id="<%= model_name %>_searchtext" name="query" type="text" />
 			<input id="clients_filter_by" type="hidden" name="filter_by" value="All" />
+			<input type="hidden" name="for_month" value="<%= @for_month %>" />
 			<span id='client_members_search_loading' style="display:none"><img alt="loading..." src="/images/ajax/barloader.gif" /></span>
 		</form>
 	</div>
@@ -40,7 +41,7 @@
 								:start_nil => true,
                	:loading => "Element.show('client_members_search_loading')",
                	:complete => "Element.hide('client_members_search_loading')",
-               	:url => formatted_search_client_members_path(:format => 'html', :for_month => @for_month),
+               	:url => formatted_search_client_members_path(:format => 'html'),
 								:method => :get)
 %>
 <%= observe_form('client_members_for_month',
