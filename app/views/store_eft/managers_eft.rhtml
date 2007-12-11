@@ -46,7 +46,7 @@
 <%= observe_form('client_members_for_month',
 								:frequency => 0.5,
 								:start_nil => false,
-               	:function => 'window.location = "'+formatted_search_client_members_path(:format => 'html')+'?for_month=" + $("for_month").value',
+               	:function => 'window.location = "'+managers_eft_path()+'?for_month=" + $("for_month").value',
 								:method => :get)
 %>
 
