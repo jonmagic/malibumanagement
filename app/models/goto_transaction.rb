@@ -23,14 +23,16 @@ class GotoTransaction < ActiveRecord::Base
   serialize :goto_invalid, Array
 
   is_searchable :by_query => 'goto_transactions.first_name LIKE :like_query OR goto_transactions.last_name LIKE :like_query OR goto_transactions.credit_card_number LIKE :like_query OR goto_transactions.bank_account_number LIKE :like_query OR goto_transactions.client_id = :query',
-    :and_filters => {
-      'has_eft' => '(goto_transactions.no_eft != ? OR goto_transactions.no_eft IS NULL)', # Should be a 1
-      'no_eft' => 'goto_transactions.no_eft = ?', # Should be a 1
-      'goto_invalid' => '(goto_transactions.goto_invalid IS NOT NULL AND NOT(goto_transactions.goto_invalid LIKE ?))',
-      'goto_valid' => '(goto_transactions.goto_invalid IS NULL OR goto_transactions.goto_invalid LIKE ?)',
-      'batch_id' => 'goto_transactions.batch_id = ?',
-      'location' => 'goto_transactions.location = ?',
-      'amount' => 'goto_transactions.amount = ?'
+    :and_filters    => {
+      'has_eft'     => '(goto_transactions.no_eft != ? OR goto_transactions.no_eft IS NULL)', # Should be a 1
+      'no_eft'      => 'goto_transactions.no_eft = ?', # Should be a 1
+      'goto_invalid'=> '(goto_transactions.goto_invalid IS NOT NULL AND NOT(goto_transactions.goto_invalid LIKE ?))',
+      'goto_valid'  => '(goto_transactions.goto_invalid IS NULL OR goto_transactions.goto_invalid LIKE ?)',
+      'batch_id'    => 'goto_transactions.batch_id = ?',
+      'location'    => 'goto_transactions.location = ?',
+      'amount'      => 'goto_transactions.amount = ?',
+      'completed'   => '(? OR 1) AND goto_transactions.transaction_id IS NOT NULL',
+      'in_progress' => 'goto_transactions.transaction_id IS NULL OR gototransactions.transaction_id = ?'
     }
 
   def initialize(*attrs)

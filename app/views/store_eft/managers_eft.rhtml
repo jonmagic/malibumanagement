@@ -13,10 +13,16 @@
 				<% end -%>
 			</p>
 			<div id="filter_buttons">
+				<% if @batch.locked -%>
+				<span id="filter_1" class="filter_button button_selected" onclick="filter_selected(this)">All</span>
+				<span id="filter_2" class="filter_button" onclick="filter_selected(this)">Completed</span>
+				<span id="filter_3" class="filter_button" onclick="filter_selected(this)">In Progress</span>
+				<% else -%>
 				<span id="filter_1" class="filter_button button_selected" onclick="filter_selected(this)">All</span>
 				<span id="filter_2" class="filter_button" onclick="filter_selected(this)">Invalid</span>
 				<span id="filter_3" class="filter_button" onclick="filter_selected(this)">Missing EFT</span>
 				<span id="filter_4" class="filter_button" onclick="filter_selected(this)">Valid</span>
+				<% end -%>
 			</div>
 			<br />
 			<b>Client Search:</b> <input id="<%= model_name %>_searchtext" name="query" type="text" />
@@ -39,10 +45,7 @@
 <script type="text/javascript" charset="utf-8">
 	function filter_selected(obj){
 		$('clients_filter_by').value = obj.innerHTML;
-		$('filter_1').removeClassName('button_selected');
-		$('filter_2').removeClassName('button_selected');
-		$('filter_3').removeClassName('button_selected');
-		$('filter_4').removeClassName('button_selected');
+		$('filter_button').removeClassName('button_selected');
 		obj.addClassName('button_selected');
 	}
 </script>
