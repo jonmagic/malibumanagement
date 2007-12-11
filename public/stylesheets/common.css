@@ -1,3 +1,6 @@
+#filter_buttons a {
+	font-size:10pt;
+}
 .filter_button {
 	cursor:pointer;
 	float:left;
