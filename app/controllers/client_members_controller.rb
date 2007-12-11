@@ -23,6 +23,10 @@ class ClientMembersController < ApplicationController
           {'has_eft' => 1, 'goto_valid' => '--- []', 'completed' => ''}
         when 'In Progress'
           {'has_eft' => 1, 'goto_valid' => '--- []', 'in_progress' => ''}
+        when 'Accepted'
+          {'has_eft' => 1, 'goto_valid' => '--- []', 'completed' => '', 'status' => 'G'}
+        when 'Declined'
+          {'has_eft' => 1, 'goto_valid' => '--- []', 'completed' => '', 'status' => 'D'}
         else
           {}
         end

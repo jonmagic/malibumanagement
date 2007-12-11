@@ -32,7 +32,8 @@ class GotoTransaction < ActiveRecord::Base
       'location'    => 'goto_transactions.location = ?',
       'amount'      => 'goto_transactions.amount = ?',
       'completed'   => '(goto_transactions.transaction_id IS NOT NULL AND goto_transactions.transaction_id != ?)',
-      'in_progress' => '(goto_transactions.transaction_id IS NULL OR goto_transactions.transaction_id = ?)'
+      'in_progress' => '(goto_transactions.transaction_id IS NULL OR goto_transactions.transaction_id = ?)',
+      'status'      => 'goto_transactions.status = ?'
     }
 
   def initialize(*attrs)
