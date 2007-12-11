@@ -56,5 +56,5 @@
 		$('.filter_button').removeClassName('button_selected');
 		obj.addClassName('button_selected');
 	}
-	filter_selected($('filter_1'));
+	$$('.filter_button').each(function(j){j.removeClassName('button_selected')})
 </script>
