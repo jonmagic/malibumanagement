@@ -224,13 +224,13 @@ class GotoTransaction < ActiveRecord::Base
     if self.declined? || !self.goto_invalid.to_a.blank?
       if self.previous_balance.blank? && self.previous_payment_amount.blank?
         a = self.amount.to_s.split(/\./).join('')
-        amnt = a.chop.chop+'.'+a[-2,2]
+        amnt = ((a.chop.chop+'.'+a[-2,2]).to_f + ((self.submitted? && !self.paid?) ? 5 : 0)).to_s
 
         self.update_attributes(:previous_balance => self.client.Balance.to_f, :previous_payment_amount => self.client.Payment_Amount.to_f)
 
         self.client.update_attributes(
-          :Payment_Amount => (self.previous_payment_amount.to_f + amnt.to_f + (self.submitted? ? 5 : 0)),
-          :Balance => self.previous_balance.to_f + amnt.to_f + (self.submitted? ? 5 : 0),
+          :Payment_Amount => (self.previous_payment_amount.to_f + amnt.to_f),
+          :Balance => self.previous_balance.to_f + amnt.to_f,
           :UpdateAll => Time.now
         )
       end
@@ -273,7 +273,7 @@ class GotoTransaction < ActiveRecord::Base
     # Create a transaction on the master, touch the client profile, and set transaction_id = master_record.transact_no
     if self.transaction_id.nil?
       a = self.amount.to_s.split(/\./).join('')
-      amnt = ((a.chop.chop+'.'+a[-2,2]).to_f + (self.submitted? ? 5 : 0)).to_s
+      amnt = ((a.chop.chop+'.'+a[-2,2]).to_f + ((self.submitted? && !self.paid?) ? 5 : 0)).to_s
       trans_attrs = {
         :Descriptions => case # Needs to include certain information for different cases
           when !self.goto_invalid.to_a.blank?
