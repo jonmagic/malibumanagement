@@ -21,10 +21,9 @@ class EftController < ApplicationController
   
   def justify_amounts
     restrict('allow only admins') or begin
-      amount = params[:amount]
-      redirect_to :action => 'admin_eft' if amount.blank?
+      redirect_to :action => 'admin_eft' if params[:amount].blank?
       # Do the work here
-      Helios::Eft.find_all_by_amount(amount).each do |unjust|
+      Helios::Eft.find_all_by_Monthly_Fee(params[:amount].to_f).each do |unjust|
         # Change to the standard amount
         unjust.update_attributes(
           :Monthly_Fee => ZONE[:StandardMembershipPrice],
