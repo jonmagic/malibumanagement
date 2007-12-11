@@ -24,13 +24,16 @@ class EftController < ApplicationController
       amount = params[:amount]
       redirect_to :action => 'admin_eft' if amount.blank?
       # Do the work here
-      GotoTransaction.search('', :filters => {'amount' => amount}).each do |unjust|
-        # Change to 18.88
-        Helios::Eft.update_attributes(
+      Helios::Eft.find_all_by_amount(amount).each do |unjust|
+        # Change to the standard amount
+        unjust.update_attributes(
           :Monthly_Fee => ZONE[:StandardMembershipPrice],
           :UpdateAll => Time.now
-        ) # Might need to also touch the server's ClientProfile#UpdateAll?
-        unjust.update_attributes(:amount => ZONE[:StandardMembershipPrice])
+        )
+        # Update the corresponding GotoTransaction if exists
+        if gt = GotoTransaction.find_by_client_id(unjust.id)
+          gt.update_attributes(:amount => ZONE[:StandardMembershipPrice])
+        end
       end
       # * * * *
       redirect_to :action => 'admin_eft'
