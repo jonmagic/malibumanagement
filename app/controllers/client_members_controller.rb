@@ -17,6 +17,8 @@ class ClientMembersController < ApplicationController
           {'no_eft' => 1}
         when 'Valid'
           {'has_eft' => 1, 'goto_valid' => '--- []'}
+        when 'All Billed'
+          {'has_eft' => 1, 'goto_valid' => '--- []'}
         when 'Completed'
           {'has_eft' => 1, 'goto_valid' => '--- []', 'completed' => ''}
         when 'In Progress'
