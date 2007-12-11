@@ -1,7 +1,7 @@
 <% model_name = 'client_members' -%>
 <div class="livesearch_container">
 	<div class="livesearch_form">
-		<form id="<%= model_name %>_livesearch_form" onsubmit="Element.show('<%= model_name %>_search_loading'); new Ajax.Request('<%= self.send('formatted_search_'+model_name+'_path', :format => 'js') %>', {asynchronous:true, evalScripts:true, parameters:Form.serialize(this), onComplete: function(){Element.hide('<%= model_name %>_search_loading')}}); return false;" method="post" action="<%= self.send('formatted_search_'+model_name+'_path', :format => 'js') %>">
+		<form id="client_members_for_month">
 			<p style="margin-bottom:12pt">
 				Showing for the month of: <span style="border-top:2px solid #848484; border-left:2px solid #848484; border-bottom:2px solid #FAFAFA; border-right:2px solid #FAFAFA; padding:1px 3px 3px 2px"><%= date_picker_tag('for_month', Time.parse(@for_month).strftime('%B %Y'), :display_as => "function(date){return(getMonthName(date.getMonth()) + ' ' + date.getFullYear())}") %></span>
 				<% unless @batch.locked -%>
@@ -12,6 +12,8 @@
 				</span>
 				<% end -%>
 			</p>
+		</form>
+		<form id="client_members_livesearch_form" onsubmit="Element.show('client_members_search_loading'); new Ajax.Request('<%= formatted_search_client_members_path(:format => 'js', :for_month => @for_month) %>', {asynchronous:true, evalScripts:true, parameters:Form.serialize(this), onComplete: function(){Element.hide('client_members_search_loading')}}); return false;" method="post" action="<%= self.send('formatted_search_'+model_name+'_path', :format => 'js', :for_month => @for_month) %>">
 			<div id="filter_buttons">
 				<% if @batch.locked -%>
 				<span id="filter_1" class="filter_button button_selected" onclick="filter_selected(this)">All</span>
@@ -27,18 +29,24 @@
 			<br />
 			<b>Client Search:</b> <input id="<%= model_name %>_searchtext" name="query" type="text" />
 			<input id="clients_filter_by" type="hidden" name="filter_by" value="All" />
-			<span id='<%= model_name %>_search_loading' style="display:none"><img alt="loading..." src="/images/ajax/barloader.gif" /></span>
+			<span id='client_members_search_loading' style="display:none"><img alt="loading..." src="/images/ajax/barloader.gif" /></span>
 		</form>
 	</div>
-	<div id="<%= model_name %>_livesearch_results" class="livesearch_results"><p style="color:orange;font-weight:bold">Loading Clients...</p></div>
+	<div id="client_members_livesearch_results" class="livesearch_results"><p style="color:orange;font-weight:bold">Loading Clients...</p></div>
 </div>
 <%= observe_form(model_name + '_livesearch_form',
 								:frequency => 0.5,
                	:update => model_name + '_livesearch_results',
 								:start_nil => true,
-               	:loading => "Element.show('" + model_name + "_search_loading')",
-               	:complete => "Element.hide('" + model_name + "_search_loading')",
-               	:url => self.send('formatted_search_'+model_name+'_path', :format => 'html'),
+               	:loading => "Element.show('client_members_search_loading')",
+               	:complete => "Element.hide('client_members_search_loading')",
+               	:url => formatted_search_client_members_path(:format => 'html', :for_month => @for_month),
+								:method => :get)
+%>
+<%= observe_form('client_members_for_month',
+								:frequency => 0.5,
+								:start_nil => false,
+               	:function => 'window.location = "'+formatted_search_client_members_path(:format => 'html')+'?for_month=" + $("for_month").value',
 								:method => :get)
 %>
 
