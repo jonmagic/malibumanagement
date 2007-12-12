@@ -204,7 +204,7 @@ class GotoTransaction < ActiveRecord::Base
       first_name,
       last_name,
       amount,
-      account_type == 'C' ? 'Checking' : (account_type == 'S' ? 'Savings' : 'Charge')
+      account_type == 'C' ? 'Checking' : (account_type == 'S' ? 'Savings' : 'Charge'),
       transaction_id,
       {'G' => 'Paid', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[status],
       (goto_invalid.to_a + [description]).to_sentence
