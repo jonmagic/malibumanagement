@@ -196,7 +196,7 @@ class GotoTransaction < ActiveRecord::Base
   end
 
   def self.managers_csv_headers
-    ['ClientId', 'FirstName', 'LastName', 'Amount', 'TransactionId', 'Status', 'Messages']
+    ['ClientId', 'FirstName', 'LastName', 'Amount', 'AccountType','TransactionId', 'Status', 'Messages']
   end
   def to_managers_csv_row
     [
@@ -204,9 +204,10 @@ class GotoTransaction < ActiveRecord::Base
       first_name,
       last_name,
       amount,
+      account_type == 'C' ? 'Checking' : (account_type == 'S' ? 'Savings' : 'Charge')
       transaction_id,
       {'G' => 'Paid', 'A' => 'Accepted', 'T' => 'Timeout: Retrying Later', 'D' => 'Declined!', 'C' => 'Cancelled (?)', 'R' => 'Received for later processing'}[status],
-      goto_invalid.to_sentence
+      (goto_invalid.to_a + [description]).to_sentence
     ].map {|c| c.to_csv}
   end
 
