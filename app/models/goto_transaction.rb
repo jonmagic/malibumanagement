@@ -13,6 +13,13 @@
 # t.column :description,  :string
 # t.column :term_code,    :string
 # t.column :auth_code,    :string
+
+# def pay(id)
+#   gt = GotoTransaction.find_by_client_id(id)
+#   return nil if gt.nil?
+#   gt.update_attributes(:goto_invalid => ['Error, check EFT'])
+# end
+
 class GotoTransaction < ActiveRecord::Base
   @nologging = true
 
@@ -91,6 +98,9 @@ class GotoTransaction < ActiveRecord::Base
     end
 
     attrs[:no_eft] = (Helios::Eft.find_by_Client_No(attrs[:client_id]).nil? ? true : false) if attrs[:client_id]
+    attrs[:first_name].to_s.gsub!(/[^A-Za-z0-9 ]/, '')
+    attrs[:last_name].to_s.gsub!(/[^A-Za-z0-9 ]/, '')
+    attrs[:name_on_card].to_s.gsub!(/[^A-Za-z0-9 ]/, '')
 
     # With only {attributes} at this point, make sure we're not duplicating records.
     if exis = self.class.find_by_batch_id_and_client_id(attrs[:batch_id], attrs[:client_id])
