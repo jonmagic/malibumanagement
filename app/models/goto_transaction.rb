@@ -282,7 +282,7 @@ class GotoTransaction < ActiveRecord::Base
   end
   def record_transaction_to_helios!
     # Create a transaction on the master, touch the client profile, and set transaction_id = master_record.transact_no
-    if self.transaction_id.nil?
+    if self.transaction_id.nil? || self.transaction_id == 0
       a = self.amount.to_s.split(/\./).join('')
       amnt = ((a.chop.chop+'.'+a[-2,2]).to_f + ((self.submitted? && !self.paid?) ? 5 : 0)).to_s
       trans_attrs = {
