@@ -62,7 +62,7 @@ class Helios::Transact < ActiveRecord::Base
     self.create_on_slave(self.master.keys[0], attrs)
   end
   def self.create_on_slave(slave_name, attrs={})
-    rec = self.slaves[slave_name].create({:ticket_no => self.next_ticket_no, :Last_Mdt => Time.now - 5.hours}.merge(attrs))
+    rec = self.slaves[slave_name].create({:ticket_no => self.next_ticket_no, :Last_Mdt => Time.now}.merge(attrs))
     Helios::ClientProfile.touch_on_master(attrs[:client_no])
     return rec
   end
@@ -78,7 +78,7 @@ class Helios::Transact < ActiveRecord::Base
     rec = self.slaves[slave_name].new
     rec.id = id
     attrs.stringify_keys!
-    {'Last_Mdt' => Time.now - 5.hours}.merge(attrs).each { |k,v| rec.send(k+'=', v) }
+    {'Last_Mdt' => Time.now}.merge(attrs).each { |k,v| rec.send(k+'=', v) }
     success = rec.save && (attrs.has_key?('client_no') ? Helios::ClientProfile.touch_on_master(attrs['client_no']) : true)
 
     self.slaves[slave_name].primary_key = pk

@@ -100,7 +100,7 @@ class Helios::Eft < ActiveRecord::Base
     rec = self.slaves[slave_name].new
     rec.id = id
     attrs.stringify_keys!
-    {'Last_Mdt' => Time.now - 5.hours}.merge(attrs).each do |k,v|
+    {'Last_Mdt' => Time.now}.merge(attrs).each do |k,v|
       rec.send(k+'=', v)
     end
     rec.save
@@ -201,7 +201,7 @@ class Helios::Eft < ActiveRecord::Base
 
     rec = self.master[self.master.keys[0]].new
     rec.id = id
-    rec.Last_Mdt = Time.now - 5.hours - 5.minutes
+    rec.Last_Mdt = Time.now - 5.minutes
 
     self.update_attributes(:Last_Mdt => Time.now)
     self.client_profile.touch_on_master

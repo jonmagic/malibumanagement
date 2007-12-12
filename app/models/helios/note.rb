@@ -49,7 +49,7 @@ class Helios::Note < ActiveRecord::Base
   end
   def self.create_on_slave(slave_name, attrs={})
     attrs.stringify_keys!
-    rec = self.slaves[slave_name].create({'Last_Mdt' => Time.now - 5.hours}.merge(attrs))
+    rec = self.slaves[slave_name].create({'Last_Mdt' => Time.now}.merge(attrs))
     Helios::ClientProfile.touch_on_master(attrs['Client_no'].to_s) if attrs.has_key?('Client_no')
     return rec
   end
@@ -66,7 +66,7 @@ class Helios::Note < ActiveRecord::Base
     rec = self.slaves[slave_name].new
     rec.id = id
     attrs.stringify_keys!
-    {'Last_Mdt' => Time.now - 5.hours}.merge(attrs).each { |k,v| rec.send(k+'=', v) }
+    {'Last_Mdt' => Time.now}.merge(attrs).each { |k,v| rec.send(k+'=', v) }
     success = rec.save && (attrs.has_key?('Client_no') ? Helios::ClientProfile.touch_on_master(attrs['Client_no']) : true)
 
     self.slaves[slave_name].primary_key = pk

@@ -89,7 +89,7 @@ class Helios::ClientProfile < ActiveRecord::Base
     rec = self.slaves[slave_name].new
     rec.id = id
     attrs.stringify_keys!
-    {'Last_Mdt' => Time.now - 5.hours}.merge(attrs).each do |k,v|
+    {'Last_Mdt' => Time.now}.merge(attrs).each do |k,v|
       rec.send(k+'=', v)
     end
     rec.save
