@@ -141,7 +141,7 @@ class Helios::ClientProfile < ActiveRecord::Base
     when 'production'
       "([Code] = 'VY' OR [Code] = 'VY+' OR [Code] = 'V1M' OR [Code] = 'V1W') AND CType != ? AND [client_no] = ? AND [Last_Mdt] > ?"
     end
-    mem_trans = Helios::Transact.find(:all, :conditions => [sql, 1, self.id, Time.now-47088000])
+    mem_trans = Helios::Transact.find(:all, :conditions => [sql, '1', self.id, Time.now-47088000])
     lasting = {
       'VY'  => Time.now-36720000, # 425 days
       'VY+' => Time.now-47088000, # 545 days
