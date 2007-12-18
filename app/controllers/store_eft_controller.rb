@@ -1,5 +1,6 @@
 class StoreEftController < ApplicationController
   layout 'store'
+  before_filter :store_pre_log_in
   before_filter :get_batch
 
   def regenerate_batch
