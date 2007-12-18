@@ -1,7 +1,6 @@
 require 'fileutils'
 
 class EftBatch < ActiveRecord::Base
-  @nologging = true
   has_many :payments, :class_name => 'GotoTransaction', :foreign_key => 'batch_id'
 
   def initialize(attrs={})
