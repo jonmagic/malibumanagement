@@ -55,6 +55,7 @@ ARGV[0] != '--limited' && step("Reading return files into MySQL") do
         if res.client
           # Duplicate: First should always be an accept.. so delete the accept transaction
           #     and clear it from the goto_transaction so that the new response can be run.
+          report "Copying client #{res.inspect} to MySQL..." if rand(20) == 15
           res.record_to_client!
         else
           # invalid: client doesn't exist
