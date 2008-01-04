@@ -113,15 +113,17 @@ ARGV.include?('--revert-helios') && step("Reverting everything recorded to Helio
   counts = {:accepted => 0, :declined => 0, :invalid => 0}
   trans.each do |tran|
     step("Client ##{tran.client_id}") do
-      counts[!tran.goto_invalid.to_a.blank? ? :invalid : (tran.status == 'G' ? :accepted : :declined)] += 1
-      # The payment could be accepted, declined, or invalid.
-      to_be_reverted = []
-      to_be_reverted << 'Transaction' if !tran.transaction_id.nil?
-      to_be_reverted << 'Note' if !tran.note_id.nil?
-      to_be_reverted << 'Client Profile' if !tran.previous_balance.blank? || !tran.previous_payment_amount.blank?
-      report "To be reverted: #{to_be_reverted.join(', ')}"
-      # tran.revert_helios_transaction!
-      # tran.revert_helios!
+      if tran.goto_invalid.to_a.blank?
+        counts[!tran.goto_invalid.to_a.blank? ? :invalid : (tran.status == 'G' ? :accepted : :declined)] += 1
+        # The payment could be accepted, declined, or invalid.
+        to_be_reverted = []
+        to_be_reverted << 'Transaction' if !tran.transaction_id.nil?
+        to_be_reverted << 'Note' if !tran.note_id.nil?
+        to_be_reverted << 'Client Profile' if !tran.previous_balance.blank? || !tran.previous_payment_amount.blank?
+        report "To be reverted: #{to_be_reverted.join(', ')}" if to_be_reverted.length > 1
+        # tran.revert_helios_transaction!
+        # tran.revert_helios!
+      end
     end
   end
   report "#{counts[:accepted]} Accepted, #{counts[:declined]} Declined, #{counts[:invalid]} Invalid"
