@@ -63,7 +63,7 @@ ARGV[0] != '--limited' && step("Reading return files into MySQL") do
         clients[res.client_id] = res
         invalids << "Client ##{res.client_id}: #{invalid}" if invalid
       end
-      puts "Problems:\n\t#{invalids.join("\n\t")}"
+      report "Problems:\n\t#{invalids.join("\n\t")}"
     end
   end
 end
