@@ -335,10 +335,12 @@ class GotoTransaction < ActiveRecord::Base
   def revert_helios_note!
     # Just delete the note
     Helios::Note.destroy_on_master(self.note_id) unless self.note_id.nil?
+    self.update_attributes(:note_id => nil)
   end
   def revert_helios_transaction!
     # Just delete the transaction
     Helios::Transact.destroy_on_master(self.transaction_id) unless self.transaction_id.nil?
+    self.update_attributes(:transaction_id => nil)
   end
 
  # Status checking methods
