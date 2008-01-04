@@ -121,7 +121,7 @@ ARGV.include?('--revert-helios') && step("Reverting everything recorded to Helio
         to_be_reverted << 'Note' if !tran.note_id.blank? && tran.note_id != 0
         to_be_reverted << 'Client Profile' if !tran.previous_balance.blank? || !tran.previous_payment_amount.blank?
         report "To be reverted: #{to_be_reverted.join(', ')}" if to_be_reverted.length > 1
-        # tran.revert_helios_transaction!
+        tran.revert_helios_transaction!
         # tran.revert_helios!
       end
     end
