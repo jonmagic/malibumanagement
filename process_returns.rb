@@ -47,6 +47,7 @@ ARGV[0] != '--limited' && step("Reading return files into MySQL") do
     step("Reading #{file} into MySQL") do
       clients = {}
       invalids = []
+      header = nil
       CSV::Reader.parse(File.open(@path+file, 'rb').map {|l| l.gsub(/[\n\r]+/, "\n")}.join) do |row|
         res = GotoResponse.new(row)
         unless header
