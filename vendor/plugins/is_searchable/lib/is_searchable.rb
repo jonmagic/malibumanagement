@@ -80,7 +80,7 @@ ActionController::Base.logger.info("Search SQL: #{sql}")
         condition == '' ? '' : 'WHERE '+condition
       end
       def render_query_condition(query)
-        @query_condition.to_s == '' ? nil : self.replace_named_bind_variables(@query_condition.to_s, {:query => query.to_s, :like_query => '%' + query.to_s + '%'})
+        (@query_condition.to_s == '' || query == '') ? nil : self.replace_named_bind_variables(@query_condition.to_s, {:query => query.to_s, :like_query => '%' + query.to_s + '%'})
       end
       def render_filter_condition(filters)
         condition = [filters.stringify_keys!.reject {|f,v| @filter_comparisons[f].nil? }.collect do |key,val|
