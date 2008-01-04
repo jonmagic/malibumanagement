@@ -49,7 +49,7 @@ end
       # invalids = []
       # header = nil
       # CSV::Reader.parse(File.open(@path+file, 'rb').map {|l| l.gsub(/[\n\r]+/, "\n")}.join) do |row|
-      #   res = GotoResponse.new(row)
+      #   res = GotoResponse.new(@batch.id, row)
       #   unless header
       #     header = row
       #     next

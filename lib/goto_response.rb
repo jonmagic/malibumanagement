@@ -1,6 +1,6 @@
 class GotoResponse
   include CoresExtensions
-  attr_accessor :merchant_id, :first_name, :last_name, :status, :client_id, :order_number, :amount, :sent_date, :transacted_at, :transaction_id, :transaction_type, :auth_code, :description
+  attr_accessor :batch_id, :merchant_id, :first_name, :last_name, :status, :client_id, :order_number, :amount, :sent_date, :transacted_at, :transaction_id, :transaction_type, :auth_code, :description
   def attributes
     at = {}
     self.instance_variables.each do |iv|
@@ -17,9 +17,9 @@ class GotoResponse
     end
   end
   def client
-    @client ||= GotoTransaction.find_by_client_id(self.client_id)
+    @client ||= GotoTransaction.find_by_batch_id_and_client_id(self.batch_id, self.client_id)
   end
-  def initialize(attrs={}) # From csv row, or from xml-hash
+  def initialize(batch_id,attrs={}) # From csv row, or from xml-hash
     new_attrs = {}
     nattrs = attrs.dup
     if nattrs.is_a?(Hash) # Is xml-hash
@@ -46,6 +46,7 @@ class GotoResponse
       }
     end
     self.attributes = new_attrs
+    self.batch_id = batch_id
     self
   end
   def invalid?
@@ -62,8 +63,8 @@ class GotoResponse
     if self.client.status == 'G' && self.status == 'D' && self.client.transaction_id
       # Was accepted, now declined.
       # Delete the transaction if it was previously created.
-      Helios::Transact.destroy_on_master(self.client.transaction_id)
-      self.client.transaction_id = nil
+      Helios::Transact.update_on_master(self.client.transaction_id, :CType => 1, :client_no => self.client_id)
+      self.client.transaction_id = 0
     end
     self.client.description = self.description
     self.client.status = self.status
