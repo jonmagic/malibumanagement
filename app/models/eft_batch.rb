@@ -3,8 +3,8 @@ require 'fileutils'
 class Array
   def sum
     total = 0
-    self.each {|e| total += e}
-    total
+    self.each {|e| total += e.to_f}
+    (total * 100).round.to_f / 100
   end
 end
 
