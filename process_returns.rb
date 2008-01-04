@@ -49,20 +49,27 @@ ARGV[0] != '--limited' && step("Reading return files into MySQL") do
       invalids = []
       CSV::Reader.parse(File.open(@path+file, 'rb').map {|l| l.gsub(/[\n\r]+/, "\n")}.join) do |row|
         res = GotoResponse.new(row)
-        next if res.merchant_id == 'MerchantID'
-        invalid = res.invalid?
-        # if !clients.has_key?(res.client_id) #Don't need to check for duplicates here, it's handled simply by checking if the status has changed since a previous recording.
-        if res.client
-          # Duplicate: First should always be an accept.. so delete the accept transaction
-          #     and clear it from the goto_transaction so that the new response can be run.
-          report "Copying client #{res.inspect} to MySQL..." if rand(20) == 15
-          res.record_to_client!
-        else
-          # invalid: client doesn't exist
-          invalid = "Client doesn't exist"
+        unless header
+          header = row
+          next
         end
-        clients[res.client_id] = res
-        invalids << "Client ##{res.client_id}: #{invalid}" if invalid
+        if header.join(',') == 'MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,Status,Description'
+          invalid = res.invalid?
+          # if !clients.has_key?(res.client_id) #Don't need to check for duplicates here, it's handled simply by checking if the status has changed since a previous recording.
+          if res.client
+            # Duplicate: First should always be an accept.. so delete the accept transaction
+            #     and clear it from the goto_transaction so that the new response can be run.
+            report "Copying client #{res.inspect} to MySQL..." if rand(20) == 15
+            res.record_to_client!
+          else
+            # invalid: client doesn't exist
+            invalid = "Client doesn't exist"
+          end
+          clients[res.client_id] = res
+          invalids << "Client ##{res.client_id}: #{invalid}" if invalid
+        else
+          invalids << ""
+        end
       end
       report "Problems:\n\t#{invalids.join("\n\t")}"
     end
