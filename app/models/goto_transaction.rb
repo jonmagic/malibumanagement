@@ -38,8 +38,8 @@ class GotoTransaction < ActiveRecord::Base
       'batch_id'    => 'goto_transactions.batch_id = ?',
       'location'    => 'goto_transactions.location = ?',
       'amount'      => 'goto_transactions.amount = ?',
-      'completed'   => '(goto_transactions.transaction_id IS NOT NULL AND goto_transactions.transaction_id != ?)',
-      'in_progress' => '(goto_transactions.transaction_id IS NULL OR goto_transactions.transaction_id = ?)',
+      'completed'   => '(goto_transactions.transaction_id IS NOT NULL AND goto_transactions.transaction_id != ?)', # Should test for a 0
+      'in_progress' => '(goto_transactions.transaction_id IS NULL OR goto_transactions.transaction_id = ?)', # Should test for a 0
       'status'      => 'goto_transactions.status = ?'
     }
 
@@ -262,7 +262,7 @@ class GotoTransaction < ActiveRecord::Base
   def record_note_to_helios!
     # Create a transaction on the master, touch the client profile, and set transaction_id = master_record.transact_no
     if self.declined? || !self.goto_invalid.to_a.blank?
-      if self.note_id.nil?
+      if self.note_id.blank? || self.note_id == 0
         note = Helios::Note.create_on_master(
           :Client_no => self.client_id,
           :Location => LOCATIONS.reject {|k,v| !v[:master]}.keys[0],
@@ -282,7 +282,7 @@ class GotoTransaction < ActiveRecord::Base
   end
   def record_transaction_to_helios!
     # Create a transaction on the master, touch the client profile, and set transaction_id = master_record.transact_no
-    if self.transaction_id.nil? || self.transaction_id == 0
+    if self.transaction_id.blank? || self.transaction_id == 0
       a = self.amount.to_s.split(/\./).join('')
       amnt = ((a.chop.chop+'.'+a[-2,2]).to_f + ((self.submitted? && !self.paid?) ? 5 : 0)).to_s
       trans_attrs = {
@@ -334,13 +334,13 @@ class GotoTransaction < ActiveRecord::Base
   end
   def revert_helios_note!
     # Just delete the note
-    Helios::Note.destroy_on_master(self.note_id) unless self.note_id.nil?
-    self.update_attributes(:note_id => nil)
+    Helios::Note.destroy_on_master(self.note_id) unless self.note_id.blank? || self.note_id == 0
+    self.update_attributes(:note_id => 0)
   end
   def revert_helios_transaction!
     # Just delete the transaction
-    Helios::Transact.destroy_on_master(self.transaction_id) unless self.transaction_id.nil?
-    self.update_attributes(:transaction_id => nil)
+    Helios::Transact.destroy_on_master(self.transaction_id) unless self.transaction_id.blank? || self.transaction_id == 0
+    self.update_attributes(:transaction_id => 0)
   end
 
  # Status checking methods
