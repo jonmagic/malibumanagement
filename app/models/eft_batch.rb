@@ -1,5 +1,13 @@
 require 'fileutils'
 
+class Array
+  def sum
+    total = 0
+    self.each {|e| total += e}
+    total
+  end
+end
+
 class EftBatch < ActiveRecord::Base
   has_many :payments, :class_name => 'GotoTransaction', :foreign_key => 'batch_id'
 
@@ -63,6 +71,23 @@ class EftBatch < ActiveRecord::Base
       end
       it
     end
+  end
+
+  def cc_count_accepted
+    @cc_accepted ||= GotoTransaction.search('', :batch_id => self.id, :status => 'status', :tran_type => 'Credit Card')
+    @cc_accepted.length
+  end
+  def ach_count_accepted
+    @ach_accepted ||= GotoTransaction.search('', :batch_id => self.id, :status => 'status', :tran_type => 'ACH')
+    @ach_accepted.length
+  end
+  def cc_amount_accepted
+    @cc_accepted ||= GotoTransaction.search('', :batch_id => self.id, :status => 'status', :tran_type => 'Credit Card')
+    @cc_accepted.collect {|c| c.amount}.sum
+  end
+  def ach_amount_accepted
+    @ach_accepted ||= GotoTransaction.search('', :batch_id => self.id, :status => 'status', :tran_type => 'ACH')
+    @ach_accepted.collect {|c| c.amount}.sum
   end
 
   # EftBatch.create(:for_month => '2007/12').generate -- will gather information from Helios::ClientProfile and Helios::Eft.
