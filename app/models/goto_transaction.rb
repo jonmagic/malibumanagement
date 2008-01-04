@@ -324,6 +324,23 @@ class GotoTransaction < ActiveRecord::Base
     end
   end
 
+  def revert_helios!
+    self.revert_helios_client_profile!
+    self.revert_helios_note!
+    self.revert_helios_transaction!
+  end
+  def revert_helios_client_profile!
+    # Not implemented yet -- Once the need is there, time will be available for testing and confirming the process of this.
+  end
+  def revert_helios_note!
+    # Just delete the note
+    Helios::Note.destroy_on_master(self.note_id) unless self.note_id.nil?
+  end
+  def revert_helios_transaction!
+    # Just delete the transaction
+    Helios::Transact.destroy_on_master(self.transaction_id) unless self.transaction_id.nil?
+  end
+
  # Status checking methods
   def submitted?
     !self.status.blank?
