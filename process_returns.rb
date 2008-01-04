@@ -22,7 +22,7 @@ end
 @path = "EFT/#{@batch.for_month}/"
 FileUtils.mkpath(@path)
 
-ARGV[0] != '--limited' && step("Checking for files on SFTP") do
+ARGV[0] != '--limited' && ARGV[0] != '--revert-helios' && step("Checking for files on SFTP") do
   files = []
   step("Connecting SFTP Session") do
     Net::SFTP.start(ZONE[:SFTP][:host], ZONE[:SFTP][:username], ZONE[:SFTP][:password]) do |sftp|
@@ -40,7 +40,7 @@ ARGV[0] != '--limited' && step("Checking for files on SFTP") do
   files.length
 end
 
-ARGV[0] != '--limited' && step("Reading return files into MySQL") do
+ARGV[0] != '--limited' && ARGV[0] != '--revert-helios' && step("Reading return files into MySQL") do
   files = Dir.open(@path).collect.reject {|a| a !~ /^zone._#{Time.now.strftime("%Y%m")}.*\.csv$/}.sort
   
   files.each do |file|
@@ -77,10 +77,33 @@ ARGV[0] != '--limited' && step("Reading return files into MySQL") do
   end
 end
 
-step("Recording all completed transactions to Helios") do
+ARGV[0] != '--revert-helios' && step("Recording all completed transactions to Helios") do
   # Find only those that have a status or are invalid
   trans = GotoTransaction.find(:all, :conditions => ['batch_id=? AND ((goto_invalid IS NOT NULL AND !(goto_invalid LIKE ?)) OR (status IS NOT NULL AND status != ?))', @batch.id, '%'+[].to_yaml+'%', ''], :order => 'id ASC')
-  report "There are #{trans.length} completed transactions."
+  report "There are #{trans.length} completed transactions to record to Helios."
+  # Filter to those that don't have a transaction_id
+  # to_record = trans.reject {|t| !t.transaction_id.blank?}
+  # FOR TESTING PURPOSES! (also tested on 20000002)
+  # to_record = to_record[0..19]
+  # * * * *
+  # report "Of these, #{trans.length} have yet to be recorded to Helios."
+
+# Commented just for safety in testing..
+  # counts = {:accepted => 0, :declined => 0, :invalid => 0}
+  # trans.each do |tran|
+  #   step("Client ##{tran.client_id}") do
+  #     counts[!tran.goto_invalid.to_a.blank? ? :invalid : (tran.status == 'G' ? :accepted : :declined)] += 1
+  #     # The payment could be accepted, declined, or invalid.
+  #     tran.record_to_helios!
+  #   end
+  # end
+  # report "#{counts[:accepted]} Accepted, #{counts[:declined]} Declined, #{counts[:invalid]} Invalid"
+end
+
+ARGV[0] == '--revert-helios' && step("Reverting everything recorded to Helios") do
+  # Find only those that have a status or are invalid
+  trans = GotoTransaction.find(:all, :conditions => ['batch_id=? AND ((goto_invalid IS NOT NULL AND !(goto_invalid LIKE ?)) OR (status IS NOT NULL AND status != ?))', @batch.id, '%'+[].to_yaml+'%', ''], :order => 'id ASC')
+  report "There are #{trans.length} completed transactions to revert in Helios."
   # Filter to those that don't have a transaction_id
   # to_record = trans.reject {|t| !t.transaction_id.blank?}
   # FOR TESTING PURPOSES! (also tested on 20000002)
@@ -92,7 +115,13 @@ step("Recording all completed transactions to Helios") do
     step("Client ##{tran.client_id}") do
       counts[!tran.goto_invalid.to_a.blank? ? :invalid : (tran.status == 'G' ? :accepted : :declined)] += 1
       # The payment could be accepted, declined, or invalid.
-      tran.record_to_helios!
+      to_be_reverted = []
+      to_be_reverted << 'Transaction' if !tran.transaction_id.nil?
+      to_be_reverted << 'Note' if !tran.note_id.nil?
+      to_be_reverted << 'Client Profile' if !tran.previous_balance.blank? || !tran.previous_payment_amount.blank?
+      report "To be reverted: #{to_be_reverted.join(', ')}"
+      # tran.revert_helios_transaction!
+      # tran.revert_helios!
     end
   end
   report "#{counts[:accepted]} Accepted, #{counts[:declined]} Declined, #{counts[:invalid]} Invalid"
