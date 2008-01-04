@@ -100,6 +100,8 @@ ARGV[0] != '--revert-helios' && step("Recording all completed transactions to He
   # report "#{counts[:accepted]} Accepted, #{counts[:declined]} Declined, #{counts[:invalid]} Invalid"
 end
 
+report "ARGS: #{ARGV.join("\n\n")}"
+
 ARGV[0] == '--revert-helios' && step("Reverting everything recorded to Helios") do
   # Find only those that have a status or are invalid
   trans = GotoTransaction.find(:all, :conditions => ['batch_id=? AND ((goto_invalid IS NOT NULL AND !(goto_invalid LIKE ?)) OR (status IS NOT NULL AND status != ?))', @batch.id, '%'+[].to_yaml+'%', ''], :order => 'id ASC')
