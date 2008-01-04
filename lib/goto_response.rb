@@ -40,7 +40,7 @@ class GotoResponse
         :sent_date    => nattrs[5],
         :transacted_at => nattrs[6],
         :transaction_id => nattrs[7],
-        :transaction_type => nattrs[8]
+        :transaction_type => nattrs[8],
         :auth_code    => nil,
         :description  => nattrs[10]
       }
