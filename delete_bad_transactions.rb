@@ -25,7 +25,7 @@ data.each do |a|
   step("Destroying all transactions") do
     Helios::Transact.slaves.each_key do |slave_name|
       step("Destroying #{transaction_id} for client #{client_id}") do
-        Helios::Transact.update_on_slave(slave_name, transaction_id, :CType => 1, :client_no => client_id)
+        report Helios::Transact.update_on_slave(slave_name, transaction_id, :CType => 1, :client_no => client_id)
       end
     end
   end
