@@ -54,7 +54,7 @@ ARGV[0] != '--limited' && step("Reading return files into MySQL") do
           header = row
           next
         end
-        if header.join(',') == 'MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,Status,Description'
+        if header.join(',') == 'MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,TransactionType,Status,Description'
           invalid = res.invalid?
           # if !clients.has_key?(res.client_id) #Don't need to check for duplicates here, it's handled simply by checking if the status has changed since a previous recording.
           if res.client
