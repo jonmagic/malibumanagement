@@ -1,6 +1,6 @@
 class GotoResponse
   include CoresExtensions
-  attr_accessor :merchant_id, :first_name, :last_name, :status, :client_id, :order_number, :amount, :sent_date, :transacted_at, :transaction_id, :auth_code, :description
+  attr_accessor :merchant_id, :first_name, :last_name, :status, :client_id, :order_number, :amount, :sent_date, :transacted_at, :transaction_id, :transaction_type, :auth_code, :description
   def attributes
     at = {}
     self.instance_variables.each do |iv|
@@ -27,9 +27,9 @@ class GotoResponse
       # status, order_number, transacted_at, transaction_id, description
       new_attrs = nattrs
     elsif nattrs.respond_to?('[]') # Is csv row
-      # MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,Status,Description
+      # MerchantID,FirstName,LastName,CustomerID,Amount,SentDate,SettleDate,TransactionID,TransactionType,Status,Description
       new_attrs = {
-        :status       => nattrs[8],
+        :status       => nattrs[9],
         :client_id    => nattrs[3],
         :merchant_id  => nattrs[0],
         :first_name   => nattrs[1],
@@ -40,14 +40,16 @@ class GotoResponse
         :sent_date    => nattrs[5],
         :transacted_at => nattrs[6],
         :transaction_id => nattrs[7],
+        :transaction_type => nattrs[8]
         :auth_code    => nil,
-        :description  => nattrs[9]
+        :description  => nattrs[10]
       }
     end
     self.attributes = new_attrs
     self
   end
   def invalid?
+    return 'Status is not a single character' if self.status.length != 1
     return 'Description present on accepted transaction' if self.status == 'G' && !self.description.blank?
     return 'Description blank on declined transaction' if self.status == 'D' && self.description.blank?
     return 'SentDate is not a number' if self.sent_date =~ /\D/
