@@ -22,7 +22,7 @@ end
 @path = "EFT/#{@batch.for_month}/"
 FileUtils.mkpath(@path)
 
-ARGV[0] != '--limited' && ARGV[0] != '--revert-helios' && step("Checking for files on SFTP") do
+!ARGV.include?('--limited') && !ARGV.include?('--revert-helios') && step("Checking for files on SFTP") do
   files = []
   step("Connecting SFTP Session") do
     Net::SFTP.start(ZONE[:SFTP][:host], ZONE[:SFTP][:username], ZONE[:SFTP][:password]) do |sftp|
@@ -40,7 +40,7 @@ ARGV[0] != '--limited' && ARGV[0] != '--revert-helios' && step("Checking for fil
   files.length
 end
 
-ARGV[0] != '--limited' && ARGV[0] != '--revert-helios' && step("Reading return files into MySQL") do
+!ARGV.include?('--limited') && !ARGV.include?('--revert-helios') && step("Reading return files into MySQL") do
   files = Dir.open(@path).collect.reject {|a| a !~ /^zone._#{Time.now.strftime("%Y%m")}.*\.csv$/}.sort
   
   files.each do |file|
@@ -77,7 +77,7 @@ ARGV[0] != '--limited' && ARGV[0] != '--revert-helios' && step("Reading return f
   end
 end
 
-ARGV[0] != '--revert-helios' && step("Recording all completed transactions to Helios") do
+!ARGV.include?('--revert-helios') && step("Recording all completed transactions to Helios") do
   # Find only those that have a status or are invalid
   trans = GotoTransaction.find(:all, :conditions => ['batch_id=? AND ((goto_invalid IS NOT NULL AND !(goto_invalid LIKE ?)) OR (status IS NOT NULL AND status != ?))', @batch.id, '%'+[].to_yaml+'%', ''], :order => 'id ASC')
   report "There are #{trans.length} completed transactions to record to Helios."
@@ -100,9 +100,7 @@ ARGV[0] != '--revert-helios' && step("Recording all completed transactions to He
   # report "#{counts[:accepted]} Accepted, #{counts[:declined]} Declined, #{counts[:invalid]} Invalid"
 end
 
-report "ARGS: #{ARGV.join("\n\n")}"
-
-ARGV[0] == '--revert-helios' && step("Reverting everything recorded to Helios") do
+ARGV.include?('--revert-helios') && step("Reverting everything recorded to Helios") do
   # Find only those that have a status or are invalid
   trans = GotoTransaction.find(:all, :conditions => ['batch_id=? AND ((goto_invalid IS NOT NULL AND !(goto_invalid LIKE ?)) OR (status IS NOT NULL AND status != ?))', @batch.id, '%'+[].to_yaml+'%', ''], :order => 'id ASC')
   report "There are #{trans.length} completed transactions to revert in Helios."
