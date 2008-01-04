@@ -74,19 +74,19 @@ class EftBatch < ActiveRecord::Base
   end
 
   def cc_count_accepted
-    @cc_accepted ||= GotoTransaction.search('', :batch_id => self.id, :status => 'status', :tran_type => 'Credit Card')
+    @cc_accepted ||= GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'Credit Card'})
     @cc_accepted.length
   end
   def ach_count_accepted
-    @ach_accepted ||= GotoTransaction.search('', :batch_id => self.id, :status => 'status', :tran_type => 'ACH')
+    @ach_accepted ||= GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'ACH'})
     @ach_accepted.length
   end
   def cc_amount_accepted
-    @cc_accepted ||= GotoTransaction.search('', :batch_id => self.id, :status => 'status', :tran_type => 'Credit Card')
+    @cc_accepted ||= GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'Credit Card'})
     @cc_accepted.collect {|c| c.amount}.sum
   end
   def ach_amount_accepted
-    @ach_accepted ||= GotoTransaction.search('', :batch_id => self.id, :status => 'status', :tran_type => 'ACH')
+    @ach_accepted ||= GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'ACH'})
     @ach_accepted.collect {|c| c.amount}.sum
   end
 
