@@ -73,20 +73,20 @@ class EftBatch < ActiveRecord::Base
     end
   end
 
-  def cc_count_accepted
-    @cc_accepted ||= GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'Credit Card'})
+  def cc_count_accepted(location=nil)
+    @cc_accepted ||= location ? GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'Credit Card', :location => location}) : GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'Credit Card'})
     @cc_accepted.length
   end
-  def ach_count_accepted
-    @ach_accepted ||= GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'ACH'})
+  def ach_count_accepted(location=nil)
+    @ach_accepted ||= location ? GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'ACH', :location => location}) : GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'ACH'})
     @ach_accepted.length
   end
-  def cc_amount_accepted
-    @cc_accepted ||= GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'Credit Card'})
+  def cc_amount_accepted(location=nil)
+    @cc_accepted ||= location ? GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'Credit Card', :location => location}) : GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'Credit Card'})
     @cc_accepted.collect {|c| c.amount}.sum
   end
-  def ach_amount_accepted
-    @ach_accepted ||= GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'ACH'})
+  def ach_amount_accepted(location=nil)
+    @ach_accepted ||= location ? GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'ACH', :location => location}) : GotoTransaction.search('', :filters => {:batch_id => self.id, :status => 'G', :tran_type => 'ACH'})
     @ach_accepted.collect {|c| c.amount}.sum
   end
 
