@@ -76,7 +76,7 @@ class Helios::Transact < ActiveRecord::Base
 
     self.slaves[slave_name].primary_key = 'OTNum'
     rec = self.slaves[slave_name].new
-    rec.id = id
+    rec.id = "o#{id}"
     attrs.stringify_keys!
     {'Last_Mdt' => Time.now}.merge(attrs).each { |k,v| rec.send(k+'=', v) }
     success = rec.save && (attrs.has_key?('client_no') ? Helios::ClientProfile.touch_on_master(attrs['client_no']) : true)
