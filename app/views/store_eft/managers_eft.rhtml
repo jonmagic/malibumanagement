@@ -14,7 +14,7 @@
 			</p>
 		</form>
 		<% if @batch.locked -%>
-		<p>Credit Cards Accepted: <%= '25' %> ($<%= '25.00' %>), Bank Accounts Accepted: <%= '25' %> ($<%= '25.00' %>)<br />&nbsp;</p>
+		<p>Credit Cards Accepted: <%= @batch.cc_count_accepted.to_s %> ($<%= @batch.cc_amount_accepted.to_s %>), Bank Accounts Accepted: <%= @batch.ach_count_accepted.to_s %> ($<%= @batch.ach_amount_accepted.to_s %>)<br />&nbsp;</p>
 		<% end -%>
 		<form id="client_members_livesearch_form" onsubmit="Element.show('client_members_search_loading'); new Ajax.Request('<%= formatted_search_client_members_path(:format => 'js', :for_month => @for_month) %>', {asynchronous:true, evalScripts:true, parameters:Form.serialize(this), onComplete: function(){Element.hide('client_members_search_loading')}}); return false;" method="post" action="<%= self.send('formatted_search_'+model_name+'_path', :format => 'js', :for_month => @for_month) %>">
 			<div id="filter_buttons">
