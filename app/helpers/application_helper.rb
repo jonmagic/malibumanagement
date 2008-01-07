@@ -141,6 +141,9 @@ class Fixnum < Integer
   def as_status
     Status.new(self)
   end
+  def to_dollar
+    (self * 100).to_i.to_f / 100
+  end
 end
 
 class Float
