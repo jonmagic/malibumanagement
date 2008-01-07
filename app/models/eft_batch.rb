@@ -58,7 +58,7 @@ class EftBatch < ActiveRecord::Base
       it['all'][:amex_app] ||= [0, 0]
       it['all'][:discover_app] ||= [0, 0]
       it['all'][:check_save_app] ||= [0, 0]
-      self.payments.exclude {|pm| pm.no_eft || pm.goto_invalid.to_s != ''}.each do |pm|
+      self.payments.reject {|pm| pm.no_eft || pm.goto_invalid.to_s != ''}.each do |pm|
         it[pm.location] ||= {}
         it[pm.location][:all] ||= [0, 0]
         it[pm.location][:completed] ||= [0, 0]
