@@ -71,64 +71,64 @@ class EftBatch < ActiveRecord::Base
         it[pm.location][:check_save_app] ||= [0, 0]
 
         it[pm.location][:all][0] += 1
-        it[pm.location][:all][1] += pm.amount
+        it[pm.location][:all][1] += pm.amount.to_f
         it['all'][:all][0] += 1
-        it['all'][:all][1] += pm.amount
+        it['all'][:all][1] += pm.amount.to_f
 
         if pm.submitted?
           it[pm.location][:completed] += 1
-          it[pm.location][:completed] += pm.amount
+          it[pm.location][:completed] += pm.amount.to_f
           it['all'][:completed] += 1
-          it['all'][:completed] += pm.amount
+          it['all'][:completed] += pm.amount.to_f
         end
 
         unless pm.submitted?
           it[pm.location][:in_progress] += 1
-          it[pm.location][:in_progress] += pm.amount
+          it[pm.location][:in_progress] += pm.amount.to_f
           it['all'][:in_progress] += 1
-          it['all'][:in_progress] += pm.amount
+          it['all'][:in_progress] += pm.amount.to_f
         end
 
         if pm.paid?
           it[pm.location][:accepted] += 1
-          it[pm.location][:accepted] += pm.amount
+          it[pm.location][:accepted] += pm.amount.to_f
           it['all'][:accepted] += 1
-          it['all'][:accepted] += pm.amount
+          it['all'][:accepted] += pm.amount.to_f
         end
 
         if pm.declined?
           it[pm.location][:declined] += 1
-          it[pm.location][:declined] += pm.amount
+          it[pm.location][:declined] += pm.amount.to_f
           it['all'][:declined] += 1
-          it['all'][:declined] += pm.amount
+          it['all'][:declined] += pm.amount.to_f
         end
 
         if pm.account_type == 'M'
           it[pm.location][:mcvs_app] += 1
-          it[pm.location][:mcvs_app] += pm.amount
+          it[pm.location][:mcvs_app] += pm.amount.to_f
           it['all'][:mcvs_app] += 1
-          it['all'][:mcvs_app] += pm.amount
+          it['all'][:mcvs_app] += pm.amount.to_f
         end
 
         if pm.account_type == 'A'
           it[pm.location][:amex_app] += 1
-          it[pm.location][:amex_app] += pm.amount
+          it[pm.location][:amex_app] += pm.amount.to_f
           it['all'][:amex_app] += 1
-          it['all'][:amex_app] += pm.amount
+          it['all'][:amex_app] += pm.amount.to_f
         end
 
         if pm.account_type == 'D'
           it[pm.location][:discover_app] += 1
-          it[pm.location][:discover_app] += pm.amount
+          it[pm.location][:discover_app] += pm.amount.to_f
           it['all'][:discover_app] += 1
-          it['all'][:discover_app] += pm.amount
+          it['all'][:discover_app] += pm.amount.to_f
         end
 
         if pm.account_type == 'C' || pm.account_type == 'S'
           it[pm.location][:check_save_app] += 1
-          it[pm.location][:check_save_app] += pm.amount
+          it[pm.location][:check_save_app] += pm.amount.to_f
           it['all'][:check_save_app] += 1
-          it['all'][:check_save_app] += pm.amount
+          it['all'][:check_save_app] += pm.amount.to_f
         end
       end
       it
