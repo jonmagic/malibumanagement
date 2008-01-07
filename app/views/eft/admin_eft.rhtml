@@ -54,9 +54,11 @@
             <th>Discover App</th>
             <th>Check/Save App</th>
           </thead>
+          <% oddeven = 0 -%>
           <% @batch.locations_status_counts.each do |location_code,status_counts| -%>
   				<% next if location_code == 'all' -%>
-  				  <tr>
+  				<% oddeven += 1 -%>
+  				  <tr class="<%= oddeven.even? ? 'even_row' : 'odd_row' %>">
   				    <td><%= LOCATIONS[location_code][:name] %>:</td>
   				    <td><%= status_counts[:all][0] %> ($<%= status_counts[:all][1].to_dollar %>)</td>
   				    <td><%= status_counts[:completed][0] %> ($<%= status_counts[:completed][1].to_dollar %>)</td>
@@ -83,6 +85,7 @@
 				<% end -%>
 			</table>
 		</div>
+    <% if !@batch.locked -%>
 		<div class="eft_right_column">
 			<h3>EFT by $ amounts</h3>
 			<ul>
@@ -111,6 +114,7 @@
 				<% end -%>
 			</div>
 		</div>
+    <% end -%>
 	</div>
 </div>
 <div class="clear"><br /></div>
