@@ -143,6 +143,12 @@ class Fixnum < Integer
   end
 end
 
+class Float
+  def to_dollar
+    (self * 100).to_i.to_f / 100
+  end
+end
+
 class Array < Object
   def count
     self.length
