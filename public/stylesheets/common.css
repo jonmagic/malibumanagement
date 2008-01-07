@@ -88,7 +88,15 @@ p {
 }
 
 .smalltext {
-  font-size:small;
+  font-size:.6em;
+}
+
+table.smalltext th {
+  width:10%;
+}
+
+table.smalltext td {
+  padding:2px 4px;
 }
 
 thead {
