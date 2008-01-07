@@ -38,10 +38,10 @@
 		<div id="eft_stats_header" class="eft_header">
 			<h2>&nbsp;<br />Statistics for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
-		<div class="eft_left_column">
-			<h3>By Store and Total</h3>
-			<table class="eft_stats_table">
-        <% if @batch.locked -%>
+    <% if @batch.locked -%>
+      <div class="">
+  			<h3>By Store and Total</h3>
+  			<table class="eft_stats_table smalltext">
           <thead>
             <th>Store</th>
             <th>Count</th>
@@ -71,7 +71,10 @@
   				    <td><%= status_counts[:check_save_app][0] %> ($<%= status_counts[:check_save_app][1].to_dollar %>)</td>
   				  </tr>
           <% end -%>
-        <% else -%>
+    <% else -%>
+      <div class="eft_left_column">
+  			<h3>By Store and Total</h3>
+  			<table class="eft_stats_table">
 				  <tr class="bold"><td>Total:</td><td><%= @batch.payments.count %> (<%= (@batch.locations_counts['all'][:valid].to_f / (@batch.locations_counts['all'][:all].to_f == 0 ? 1 : @batch.locations_counts['all'][:all].to_f) * 100).to_i %>% billable)</td></tr>
   				<% @batch.locations_counts.each do |location_code,counts| -%>
   				<% next if location_code == 'all' -%>
@@ -82,9 +85,9 @@
   							(<%= (counts[:valid].to_f / (counts[:all] == 0 ? 1 : counts[:all]).to_f * 100.to_f).to_i %>% billable)
   					</td></tr>
   				<% end -%>
-				<% end -%>
 			</table>
 		</div>
+		<% end -%>
     <% if !@batch.locked -%>
 		<div class="eft_right_column">
 			<h3>EFT by $ amounts</h3>

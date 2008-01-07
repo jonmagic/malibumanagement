@@ -87,6 +87,10 @@ p {
 	margin:0;
 }
 
+.smalltext {
+  font-size:small;
+}
+
 thead {
 	font-weight:bold;
 }
