@@ -324,6 +324,14 @@ th.calendar_day {
 	background-color: #ffeeff;
 }
 
+.eft_stats_table {
+  font-size:10pt;
+}
+
+.eft_stats_table .even_row {
+  background-color:#ffeeff;
+}
+
 .post {
 	padding:1em;
 	background-color:#80A2FF;
