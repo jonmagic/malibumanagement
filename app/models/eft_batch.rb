@@ -45,6 +45,96 @@ class EftBatch < ActiveRecord::Base
     end
   end
 
+  def locations_status_counts
+    @locations_status_counts ||= begin
+      it = {}
+      it['all'] ||= {}
+      it['all'][:all] ||= [0, 0] # Valid
+      it['all'][:completed] ||= [0, 0]
+      it['all'][:in_progress] ||= [0, 0]
+      it['all'][:accepted] ||= [0, 0]
+      it['all'][:declined] ||= [0, 0]
+      it['all'][:mcvs_app] ||= [0, 0]
+      it['all'][:amex_app] ||= [0, 0]
+      it['all'][:discover_app] ||= [0, 0]
+      it['all'][:check_save_app] ||= [0, 0]
+      self.payments.exclude {|pm| pm.no_eft || pm.goto_invalid.to_s != ''}.each do |pm|
+        it[pm.location] ||= {}
+        it[pm.location][:all] ||= [0, 0]
+        it[pm.location][:completed] ||= [0, 0]
+        it[pm.location][:in_progress] ||= [0, 0]
+        it[pm.location][:accepted] ||= [0, 0]
+        it[pm.location][:declined] ||= [0, 0]
+        it[pm.location][:mcvs_app] ||= [0, 0]
+        it[pm.location][:amex_app] ||= [0, 0]
+        it[pm.location][:discover_app] ||= [0, 0]
+        it[pm.location][:check_save_app] ||= [0, 0]
+
+        it[pm.location][:all][0] += 1
+        it[pm.location][:all][1] += pm.amount
+        it['all'][:all][0] += 1
+        it['all'][:all][1] += pm.amount
+
+        if pm.submitted?
+          it[pm.location][:completed] += 1
+          it[pm.location][:completed] += pm.amount
+          it['all'][:completed] += 1
+          it['all'][:completed] += pm.amount
+        end
+
+        unless pm.submitted?
+          it[pm.location][:in_progress] += 1
+          it[pm.location][:in_progress] += pm.amount
+          it['all'][:in_progress] += 1
+          it['all'][:in_progress] += pm.amount
+        end
+
+        if pm.paid?
+          it[pm.location][:accepted] += 1
+          it[pm.location][:accepted] += pm.amount
+          it['all'][:accepted] += 1
+          it['all'][:accepted] += pm.amount
+        end
+
+        if pm.declined?
+          it[pm.location][:declined] += 1
+          it[pm.location][:declined] += pm.amount
+          it['all'][:declined] += 1
+          it['all'][:declined] += pm.amount
+        end
+
+        if pm.account_type == 'M'
+          it[pm.location][:mcvs_app] += 1
+          it[pm.location][:mcvs_app] += pm.amount
+          it['all'][:mcvs_app] += 1
+          it['all'][:mcvs_app] += pm.amount
+        end
+
+        if pm.account_type == 'A'
+          it[pm.location][:amex_app] += 1
+          it[pm.location][:amex_app] += pm.amount
+          it['all'][:amex_app] += 1
+          it['all'][:amex_app] += pm.amount
+        end
+
+        if pm.account_type == 'D'
+          it[pm.location][:discover_app] += 1
+          it[pm.location][:discover_app] += pm.amount
+          it['all'][:discover_app] += 1
+          it['all'][:discover_app] += pm.amount
+        end
+
+        if pm.account_type == 'C' || pm.account_type == 'S'
+          it[pm.location][:check_save_app] += 1
+          it[pm.location][:check_save_app] += pm.amount
+          it['all'][:check_save_app] += 1
+          it['all'][:check_save_app] += pm.amount
+        end
+      end
+      it
+    end
+  end
+
   def locations_counts
     @locations_counts ||= begin
       it = {}
@@ -61,12 +151,15 @@ class EftBatch < ActiveRecord::Base
         it[pm.location][:invalid] ||= 0
 
         it[pm.location][:all] += 1
-        it[pm.location][:valid] += 1 if !pm.no_eft && pm.goto_invalid.to_s == ''
-        it[pm.location][:no_eft] += 1 if pm.no_eft
-        it[pm.location][:invalid] += 1 if pm.goto_invalid.to_s != ''
         it['all'][:all] += 1
+
+        it[pm.location][:valid] += 1 if !pm.no_eft && pm.goto_invalid.to_s == ''
         it['all'][:valid] += 1 if !pm.no_eft && pm.goto_invalid.to_s == ''
+
+        it[pm.location][:no_eft] += 1 if pm.no_eft
         it['all'][:no_eft] += 1 if pm.no_eft
+
+        it[pm.location][:invalid] += 1 if pm.goto_invalid.to_s != ''
         it['all'][:invalid] += 1 if pm.goto_invalid.to_s != ''
       end
       it

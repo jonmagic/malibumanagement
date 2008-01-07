@@ -39,17 +39,47 @@
 			<h2>&nbsp;<br />Statistics for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
 		<div class="eft_left_column">
-			<h3>By store and Total</h3>
-			<table>
-				<tr class="bold"><td>Total:</td><td><%= @batch.payments.count %> (<%= (@batch.locations_counts['all'][:valid].to_f / (@batch.locations_counts['all'][:all].to_f == 0 ? 1 : @batch.locations_counts['all'][:all].to_f) * 100).to_i %>% billable)</td></tr>
-				<% @batch.locations_counts.each do |location_code,counts| -%>
-				<% next if location_code == 'all' -%>
-					<tr><td><%= LOCATIONS[location_code][:name] %>:</td>
-						<td><%= link_to "#{counts[:valid]} valid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Valid', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %>,
-							<%= link_to "#{counts[:invalid]} invalid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Invalid', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %>,
-							<%= link_to "#{counts[:no_eft]} no eft", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Missing EFT', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %>
-							(<%= (counts[:valid].to_f / (counts[:all] == 0 ? 1 : counts[:all]).to_f * 100.to_f).to_i %>% billable)
-						</td></tr>
+			<h3>By Store and Total</h3>
+			<table class="eft_stats_table">
+        <% if @batch.locked -%>
+          <thead>
+            <th>Store</th>
+            <th>Count</th>
+            <th>Completed</th>
+            <th>In Progress</th>
+            <th>Accepted</th>
+            <th>Declined</th>
+            <th>MC/VS App</th>
+            <th>Amex App</th>
+            <th>Discover App</th>
+            <th>Check/Save App</th>
+          </thead>
+          <% @batch.locations_status_counts.each do |location_code,status_counts| -%>
+  				<% next if location_code == 'all' -%>
+  				  <tr>
+  				    <td><%= LOCATIONS[location_code][:name] %>:</td>
+  				    <td><%= status_counts[:all][0] %> ($<%= status_counts[:all][1] %>)</td>
+  				    <td><%= status_counts[:completed][0] %> ($<%= status_counts[:completed][1] %>)</td>
+  				    <td><%= status_counts[:in_progress][0] %> ($<%= status_counts[:in_progress][1] %>)</td>
+  				    <td><%= status_counts[:accepted][0] %> ($<%= status_counts[:accepted][1] %>)</td>
+  				    <td><%= status_counts[:declined][0] %> ($<%= status_counts[:declined][1] %>)</td>
+  				    <td><%= status_counts[:mcvs_app][0] %> ($<%= status_counts[:mcvs_app][1] %>)</td>
+  				    <td><%= status_counts[:amex_app][0] %> ($<%= status_counts[:amex_app][1] %>)</td>
+  				    <td><%= status_counts[:discover_app][0] %> ($<%= status_counts[:discover_app][1] %>)</td>
+  				    <td><%= status_counts[:check_save_app][0] %> ($<%= status_counts[:check_save_app][1] %>)</td>
+  				  </tr>
+          <% end -%>
+        <% else -%>
+				  <tr class="bold"><td>Total:</td><td><%= @batch.payments.count %> (<%= (@batch.locations_counts['all'][:valid].to_f / (@batch.locations_counts['all'][:all].to_f == 0 ? 1 : @batch.locations_counts['all'][:all].to_f) * 100).to_i %>% billable)</td></tr>
+  				<% @batch.locations_counts.each do |location_code,counts| -%>
+  				<% next if location_code == 'all' -%>
+  					<tr><td><%= LOCATIONS[location_code][:name] %>:</td>
+  						<td><%= link_to "#{counts[:valid]} valid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Valid', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %>,
+  							<%= link_to "#{counts[:invalid]} invalid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Invalid', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %>,
+  							<%= link_to "#{counts[:no_eft]} no eft", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Missing EFT', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %>
+  							(<%= (counts[:valid].to_f / (counts[:all] == 0 ? 1 : counts[:all]).to_f * 100.to_f).to_i %>% billable)
+  					</td></tr>
+  				<% end -%>
 				<% end -%>
 			</table>
 		</div>
