@@ -58,15 +58,15 @@
   				<% next if location_code == 'all' -%>
   				  <tr>
   				    <td><%= LOCATIONS[location_code][:name] %>:</td>
-  				    <td><%= status_counts[:all][0] %> ($<%= status_counts[:all][1] %>)</td>
-  				    <td><%= status_counts[:completed][0] %> ($<%= status_counts[:completed][1] %>)</td>
-  				    <td><%= status_counts[:in_progress][0] %> ($<%= status_counts[:in_progress][1] %>)</td>
-  				    <td><%= status_counts[:accepted][0] %> ($<%= status_counts[:accepted][1] %>)</td>
-  				    <td><%= status_counts[:declined][0] %> ($<%= status_counts[:declined][1] %>)</td>
-  				    <td><%= status_counts[:mcvs_app][0] %> ($<%= status_counts[:mcvs_app][1] %>)</td>
-  				    <td><%= status_counts[:amex_app][0] %> ($<%= status_counts[:amex_app][1] %>)</td>
-  				    <td><%= status_counts[:discover_app][0] %> ($<%= status_counts[:discover_app][1] %>)</td>
-  				    <td><%= status_counts[:check_save_app][0] %> ($<%= status_counts[:check_save_app][1] %>)</td>
+  				    <td><%= status_counts[:all][0] %> ($<%= status_counts[:all][1].to_dollar %>)</td>
+  				    <td><%= status_counts[:completed][0] %> ($<%= status_counts[:completed][1].to_dollar %>)</td>
+  				    <td><%= status_counts[:in_progress][0] %> ($<%= status_counts[:in_progress][1].to_dollar %>)</td>
+  				    <td><%= status_counts[:accepted][0] %> ($<%= status_counts[:accepted][1].to_dollar %>)</td>
+  				    <td><%= status_counts[:declined][0] %> ($<%= status_counts[:declined][1].to_dollar %>)</td>
+  				    <td><%= status_counts[:mcvs_app][0] %> ($<%= status_counts[:mcvs_app][1].to_dollar %>)</td>
+  				    <td><%= status_counts[:amex_app][0] %> ($<%= status_counts[:amex_app][1].to_dollar %>)</td>
+  				    <td><%= status_counts[:discover_app][0] %> ($<%= status_counts[:discover_app][1].to_dollar %>)</td>
+  				    <td><%= status_counts[:check_save_app][0] %> ($<%= status_counts[:check_save_app][1].to_dollar %>)</td>
   				  </tr>
           <% end -%>
         <% else -%>
