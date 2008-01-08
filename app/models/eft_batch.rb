@@ -104,28 +104,28 @@ class EftBatch < ActiveRecord::Base
         end
 
         if pm.paid?
-          if pm.account_type == 'M'
+          if pm.mc_vs?
             it[pm.location][:mcvs_app][0] += 1
             it[pm.location][:mcvs_app][1] += pm.amount.to_f
             it['all'][:mcvs_app][0] += 1
             it['all'][:mcvs_app][1] += pm.amount.to_f
           end
 
-          if pm.account_type == 'A'
+          if pm.amex?
             it[pm.location][:amex_app][0] += 1
             it[pm.location][:amex_app][1] += pm.amount.to_f
             it['all'][:amex_app][0] += 1
             it['all'][:amex_app][1] += pm.amount.to_f
           end
 
-          if pm.account_type == 'D'
+          if pm.discover?
             it[pm.location][:discover_app][0] += 1
             it[pm.location][:discover_app][1] += pm.amount.to_f
             it['all'][:discover_app][0] += 1
             it['all'][:discover_app][1] += pm.amount.to_f
           end
 
-          if pm.account_type == 'C' || pm.account_type == 'S'
+          if pm.ach?
             it[pm.location][:check_save_app][0] += 1
             it[pm.location][:check_save_app][1] += pm.amount.to_f
             it['all'][:check_save_app][0] += 1
