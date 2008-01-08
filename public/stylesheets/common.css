@@ -87,8 +87,8 @@ p {
 	margin:0;
 }
 
-.smalltext {
-  font-size:.4em;
+table.smalltext {
+  font-size:10px;
 }
 
 table.smalltext th {
