@@ -103,32 +103,34 @@ class EftBatch < ActiveRecord::Base
           it['all'][:declined][1] += pm.amount.to_f
         end
 
-        if pm.account_type == 'M'
-          it[pm.location][:mcvs_app][0] += 1
-          it[pm.location][:mcvs_app][1] += pm.amount.to_f
-          it['all'][:mcvs_app][0] += 1
-          it['all'][:mcvs_app][1] += pm.amount.to_f
-        end
+        if pm.paid?
+          if pm.account_type == 'M'
+            it[pm.location][:mcvs_app][0] += 1
+            it[pm.location][:mcvs_app][1] += pm.amount.to_f
+            it['all'][:mcvs_app][0] += 1
+            it['all'][:mcvs_app][1] += pm.amount.to_f
+          end
 
-        if pm.account_type == 'A'
-          it[pm.location][:amex_app][0] += 1
-          it[pm.location][:amex_app][1] += pm.amount.to_f
-          it['all'][:amex_app][0] += 1
-          it['all'][:amex_app][1] += pm.amount.to_f
-        end
+          if pm.account_type == 'A'
+            it[pm.location][:amex_app][0] += 1
+            it[pm.location][:amex_app][1] += pm.amount.to_f
+            it['all'][:amex_app][0] += 1
+            it['all'][:amex_app][1] += pm.amount.to_f
+          end
 
-        if pm.account_type == 'D'
-          it[pm.location][:discover_app][0] += 1
-          it[pm.location][:discover_app][1] += pm.amount.to_f
-          it['all'][:discover_app][0] += 1
-          it['all'][:discover_app][1] += pm.amount.to_f
-        end
+          if pm.account_type == 'D'
+            it[pm.location][:discover_app][0] += 1
+            it[pm.location][:discover_app][1] += pm.amount.to_f
+            it['all'][:discover_app][0] += 1
+            it['all'][:discover_app][1] += pm.amount.to_f
+          end
 
-        if pm.account_type == 'C' || pm.account_type == 'S'
-          it[pm.location][:check_save_app][0] += 1
-          it[pm.location][:check_save_app][1] += pm.amount.to_f
-          it['all'][:check_save_app][0] += 1
-          it['all'][:check_save_app][1] += pm.amount.to_f
+          if pm.account_type == 'C' || pm.account_type == 'S'
+            it[pm.location][:check_save_app][0] += 1
+            it[pm.location][:check_save_app][1] += pm.amount.to_f
+            it['all'][:check_save_app][0] += 1
+            it['all'][:check_save_app][1] += pm.amount.to_f
+          end
         end
       end
       it
