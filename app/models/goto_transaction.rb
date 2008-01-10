@@ -147,13 +147,13 @@ class GotoTransaction < ActiveRecord::Base
     !['C','S'].include?(self.account_type)
   end
   def mc_vs?
-    self.credit_card_number[0,1] == '4' || self.credit_card_number[0,1] == '5'
+    self.credit_card_number.to_s[0,1] == '4' || self.credit_card_number.to_s[0,1] == '5'
   end
   def amex?
-    self.credit_card_number[0,1] == '3'
+    self.credit_card_number.to_s[0,1] == '3'
   end
   def discover?
-    self.credit_card_number[0,1] == '6'
+    self.credit_card_number.to_s[0,1] == '6'
   end
 
   def ach?
