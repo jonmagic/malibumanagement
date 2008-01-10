@@ -39,8 +39,8 @@ class GotoTransaction < ActiveRecord::Base
       'goto_valid'  => '(goto_transactions.goto_invalid IS NULL OR goto_transactions.goto_invalid LIKE ?)',
       'location'    => 'goto_transactions.location = ?',
       'amount'      => 'goto_transactions.amount = ?',
-      'completed'   => '(goto_transactions.transaction_id IS NOT NULL AND goto_transactions.transaction_id != ?)', # Should test for a 0
-      'in_progress' => '(goto_transactions.transaction_id IS NULL OR goto_transactions.transaction_id = ?)', # Should test for a 0
+      'completed'   => '(goto_transactions.status IS NOT NULL AND goto_transactions.status != ?)', # Should test for a ''
+      'in_progress' => '(goto_transactions.status IS NULL OR goto_transactions.status = ?)', # Should test for a ''
       'status'      => 'goto_transactions.status = ?'
     }
 
