@@ -35,13 +35,43 @@
 		</ul></div>
 	</div>
 	<div id="eft_stats">
+	  <% if @batch.locked -%>
 		<div id="eft_stats_header" class="eft_header">
 			<h2>&nbsp;<br />Statistics for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
-    <% if @batch.locked -%>
-      <div class="">
-  			<h3>By Store and Total</h3>
-  			<table class="eft_stats_table smalltext">
+		<div class="eft_right_column">
+			<h3>EFT by $ amounts</h3>
+			<ul>
+				<% @batch.amounts_counts.each do |amount,count| -%>
+					<li>$<%= (amount.to_s == ZONE[:StandardMembershipPrice].to_s ? amount : link_to(amount, eft_path(:action => 'justify_amounts', :amount => amount), :confirm => 'Are you sure you want to reset these '+count.to_s+' memberships to $'+ZONE[:StandardMembershipPrice].to_s+'?')) %>: <%= link_to count, formatted_search_client_members_path(:format => 'csv', :filter_by => 'All', :amount => amount, :query => ''), :onclick => "window.location = this.href + '&amp;for_month=' + $('for_month').value; return false;" %></li>
+				<% end -%>
+			</ul>
+			<br />
+			<hr />
+			<br />
+			<h3>Time to Bill</h3>
+			<div>
+				<% if @batch.locked -%>
+					<span style="display:block;float:left"><img src="/images/eft/locked.png" alt="locked" width="32px" height="32px" /></span>This payment batch is now Locked. Data cannot be regenerated. Click to <a href="javascript:void(0)" onclick="Control.Modal.open($('gotobilling_links').innerHTML)">Download Payment CSVs</a>.
+					<div id="gotobilling_links" style="display:none">
+						<div id="gotobilling_links_content" style="margin:2em">
+							<ul>
+							<% LOCATIONS.values.sort {|a,b| a[:name] <=> b[:name]}.each do |location| -%>
+							<li><%= link_to location[:name], formatted_search_client_members_path(:format => 'csv', :gotoready => 'YES', :domain => location[:domain], :filter_by => 'Valid', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %></li>
+							<% end -%>
+							</ul>
+						</div>
+					</div>
+				<% else -%>
+					<a style="display:block;float:left" href="<%= eft_path(:action => 'lock_batch') %>" onclick="window.location = this.href + '?for_month=' + $('for_month').value; return false;"><img src="/images/eft/unlocked.png" alt="unlocked" width="32px" height="32px" /></a>This payment batch is Unlocked. Data may regenerated at any time. Click the lock icon to lock this month when you're ready to submit payment files to Goto-Billing.
+				<% end -%>
+			</div>
+		</div>
+    <div style="clear:both">
+		<div class="eft_left_column">
+			<h3>By Store and Total</h3>
+			<table class="eft_stats_table">
+        <% if @batch.locked -%>
           <thead>
             <th>Store</th>
             <th>Count</th>
@@ -71,10 +101,7 @@
   				    <td><%= status_counts[:check_save_app][0] %> ($<%= status_counts[:check_save_app][1].to_dollar %>)</td>
   				  </tr>
           <% end -%>
-    <% else -%>
-      <div class="eft_left_column">
-  			<h3>By Store and Total</h3>
-  			<table class="eft_stats_table">
+        <% else -%>
 				  <tr class="bold"><td>Total:</td><td><%= @batch.payments.count %> (<%= (@batch.locations_counts['all'][:valid].to_f / (@batch.locations_counts['all'][:all].to_f == 0 ? 1 : @batch.locations_counts['all'][:all].to_f) * 100).to_i %>% billable)</td></tr>
   				<% @batch.locations_counts.each do |location_code,counts| -%>
   				<% next if location_code == 'all' -%>
@@ -85,37 +112,8 @@
   							(<%= (counts[:valid].to_f / (counts[:all] == 0 ? 1 : counts[:all]).to_f * 100.to_f).to_i %>% billable)
   					</td></tr>
   				<% end -%>
+				<% end -%>
 			</table>
-		</div>
-		<% end -%>
-    <% if !@batch.locked -%>
-		<div class="eft_right_column">
-			<h3>EFT by $ amounts</h3>
-			<ul>
-				<% @batch.amounts_counts.each do |amount,count| -%>
-					<li>$<%= (amount.to_s == ZONE[:StandardMembershipPrice].to_s ? amount : link_to(amount, eft_path(:action => 'justify_amounts', :amount => amount), :confirm => 'Are you sure you want to reset these '+count.to_s+' memberships to $'+ZONE[:StandardMembershipPrice].to_s+'?')) %>: <%= link_to count, formatted_search_client_members_path(:format => 'csv', :filter_by => 'All', :amount => amount, :query => ''), :onclick => "window.location = this.href + '&amp;for_month=' + $('for_month').value; return false;" %></li>
-				<% end -%>
-			</ul>
-			<br />
-			<hr />
-			<br />
-			<h3>Time to Bill</h3>
-			<div>
-				<% if @batch.locked -%>
-					<span style="display:block;float:left"><img src="/images/eft/locked.png" alt="locked" width="32px" height="32px" /></span>This payment batch is now Locked. Data cannot be regenerated. Click to <a href="javascript:void(0)" onclick="Control.Modal.open($('gotobilling_links').innerHTML)">Download Payment CSVs</a>.
-					<div id="gotobilling_links" style="display:none">
-						<div id="gotobilling_links_content" style="margin:2em">
-							<ul>
-							<% LOCATIONS.values.sort {|a,b| a[:name] <=> b[:name]}.each do |location| -%>
-							<li><%= link_to location[:name], formatted_search_client_members_path(:format => 'csv', :gotoready => 'YES', :domain => location[:domain], :filter_by => 'Valid', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %></li>
-							<% end -%>
-							</ul>
-						</div>
-					</div>
-				<% else -%>
-					<a style="display:block;float:left" href="<%= eft_path(:action => 'lock_batch') %>" onclick="window.location = this.href + '?for_month=' + $('for_month').value; return false;"><img src="/images/eft/unlocked.png" alt="unlocked" width="32px" height="32px" /></a>This payment batch is Unlocked. Data may regenerated at any time. Click the lock icon to lock this month when you're ready to submit payment files to Goto-Billing.
-				<% end -%>
-			</div>
 		</div>
     <% end -%>
 	</div>
