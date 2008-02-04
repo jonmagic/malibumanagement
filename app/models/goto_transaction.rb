@@ -341,7 +341,10 @@ class GotoTransaction < ActiveRecord::Base
     self.revert_helios_transaction!
   end
   def revert_helios_client_profile!
-    # Not implemented yet -- Once the need is there, time will be available for testing and confirming the process of this.
+    # Client balance and payment_due must be reverted to their original values. Originals saved in this record.
+    self.client.update_attributes(:Balance => self.previous_balance) if self.previous_balance
+    self.client.update_attributes(:Payment_Amount => self.previous_payment_amount) if self.previous_payment_amount
+    self.client.update_attributes(:UpdateAll => Time.now) if self.previous_balance || self.previous_payment_amount
   end
   def revert_helios_note!
     # Just delete the note
