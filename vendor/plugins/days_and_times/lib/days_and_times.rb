@@ -42,7 +42,8 @@ class Duration
     end
   end
   def length
-    @length.to_f / self.unit
+    length  = @length.to_f / self.unit
+    length.to_i == length ? length.to_i : length
   end
   def abs_length=(value)
     if value.respond_to?(:to_i)
@@ -60,8 +61,18 @@ class Duration
   def to_f
     self.abs_length.to_f
   end
+  def to_s
+    "#{self.length} #{self.class.name}"
+  end
   def coerce(*args)
     to_f.coerce(*args)
+  end
+
+  def ===(other)
+    self.to_f == other.to_f
+  end
+  def inspect
+    "#<#{self.class.name}:#{self.object_id} (length=#{self.length.inspect}) #{self.instance_variables.reject {|d| d=='@length' || self.instance_variable_get(d).nil?}.collect {|iv| "#{iv}=#{self.instance_variable_get(iv).inspect}"}.join(' ')}>"
   end
   # * * * * * * * * * * * * * * * *
 
@@ -179,10 +190,10 @@ class Duration
     time - @length
   end
   def from_now
-    self.from(Now)
+    self.from(Time.now)
   end
   def ago
-    self.before(Now)
+    self.before(Time.now)
   end
   def starting(time)
     self.start_time = time
@@ -246,19 +257,32 @@ class Duration
 
   private
     def auto_class(obj=self)
-      case obj.unit
+      new_obj = case obj.unit
       when 1
-        obj.class == 'Seconds'  ? obj : (obj.length == 1 ? Second.new(obj.start_time) : Seconds.new(obj.length,obj.start_time))
+        obj.class.name == 'Seconds'  ? obj : (obj.length == 1 ? Second.new(obj.start_time) : Seconds.new(obj.length,obj.start_time))
       when 60
-        obj.class == 'Minutes'  ? obj : (obj.length == 1 ? Minute.new(obj.start_time) : Minutes.new(obj.length,obj.start_time))
+        obj.class.name == 'Minutes'  ? obj : (obj.length == 1 ? Minute.new(obj.start_time) : Minutes.new(obj.length,obj.start_time))
       when 3600
-        obj.class == 'Hours'    ? obj : (obj.length == 1 ? Hour.new(obj.start_time) : Hours.new(obj.length,obj.start_time))
+        obj.class.name == 'Hours'    ? obj : (obj.length == 1 ? Hour.new(obj.start_time) : Hours.new(obj.length,obj.start_time))
       when 86400
-        obj.class == 'Days'     ? obj : (obj.length == 1 ? Day.new(obj.start_time) : Days.new(obj.length,obj.start_time))
+        obj.class.name == 'Days'     ? obj : (obj.length == 1 ? Day.new(obj.start_time) : Days.new(obj.length,obj.start_time))
       when 604800
-        obj.class == 'Weeks'    ? obj : (obj.length == 1 ? Week.new(obj.start_time) : Weeks.new(obj.length,obj.start_time))
+        obj.class.name == 'Weeks'    ? obj : (obj.length == 1 ? Week.new(obj.start_time) : Weeks.new(obj.length,obj.start_time))
       else
-        obj.class == 'Duration' ? obj : Duration.new(obj.length,obj.unit,obj.start_time,{:auto_class => false})
+        obj.class.name == 'Duration' ? obj : Duration.new(obj.length,obj.unit,obj.start_time,{:auto_class => false})
+      end
+      # Now, auto-transform class if possible:
+      case
+      when !['Weeks', 'Week'].include?(new_obj.class.name) && new_obj.to_i.remainder(Week.length) == 0
+        new_obj.to_i == Week.length ? Week.new(new_obj.start_time) : Weeks.new(new_obj.to_f / Week.length,new_obj.start_time)
+      when !['Weeks', 'Week', 'Days', 'Day'].include?(new_obj.class.name) && new_obj.to_i.remainder(Day.length) == 0
+        new_obj.to_i == Day.length ? Day.new(new_obj.start_time) : Days.new(new_obj.to_f / Day.length,new_obj.start_time)
+      when !['Weeks', 'Week', 'Days', 'Day', 'Hours', 'Hour'].include?(new_obj.class.name) && new_obj.to_i.remainder(Hour.length) == 0
+        new_obj.to_i == Hour.length ? Hour.new(new_obj.start_time) : Hours.new(new_obj.to_f / Hour.length,new_obj.start_time)
+      when !['Weeks', 'Week', 'Days', 'Day', 'Hours', 'Hour', 'Minutes', 'Minute'].include?(new_obj.class.name) && new_obj.to_f.remainder(Minute.length) == 0
+        new_obj.to_i == Minute.length ? Minute.new(new_obj.start_time) : Minutes.new(new_obj.to_f / Minute.length,new_obj.start_time)
+      else
+        new_obj
       end
     end
 end
@@ -388,6 +412,10 @@ end
 String.send :include, YannoStringExt
 
 class Time
+  def to_time
+    self
+  end
+
   # Returns a new Time where one or more of the elements have been changed according to the +options+ parameter. The time options
   # (hour, minute, sec, usec) reset cascadingly, so if only the hour is passed, then minute, sec, and usec is set to 0. If the hour and
   # minute is passed, then sec and usec is set to 0.
@@ -440,10 +468,6 @@ class Time
   end
 
   # wraps class method time_with_datetime_fallback with utc_or_local == :local
-  def self.local_time(*args)
-    time_with_datetime_fallback(:local, *args)
-  end
-
   def self.local_time(*args)
     time_with_datetime_fallback(:local, *args)
   end
@@ -531,8 +555,3 @@ class Object
     self
   end
 end
-
-Tomorrow = Time.tomorrow
-Yesterday = Time.yesterday
-Today = Time.today
-Now = Time.now
