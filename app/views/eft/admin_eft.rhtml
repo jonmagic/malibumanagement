@@ -35,7 +35,6 @@
 		</ul></div>
 	</div>
 	<div id="eft_stats">
-	  <% if @batch.locked -%>
 		<div id="eft_stats_header" class="eft_header">
 			<h2>&nbsp;<br />Statistics for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
 		</div>
@@ -115,7 +114,6 @@
 				<% end -%>
 			</table>
 		</div>
-    <% end -%>
 	</div>
 </div>
 <div class="clear"><br /></div>
