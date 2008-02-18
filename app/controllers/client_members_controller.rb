@@ -46,9 +46,9 @@ class ClientMembersController < ApplicationController
           format.csv {
             domain_name = params[:domain].blank? ? 'malibu' : LOCATIONS[LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]][:name].underscore
             send_csv(domain_name + '-' + params[:filter_by].to_s.underscore + '.csv') do |csv|
-              csv << (params[:gotoready] ? GotoTransaction.csv_headers : GotoTransaction.managers_csv_headers)
+              csv << (params[:gotoready] ? (params[:dcas] ? GotoTransaction.dcas_header_row(bid, LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]) : GotoTransaction.csv_headers) : GotoTransaction.managers_csv_headers)
               @clients.each do |client|
-                csv << (params[:gotoready] ? client.to_csv_row : client.to_managers_csv_row)
+                csv << (params[:gotoready] ? (params[:dcas] ? client.to_dcas_csv_row : client.to_csv_row) : client.to_managers_csv_row)
               end
             end
           }

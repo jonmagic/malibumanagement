@@ -111,6 +111,9 @@ class GotoTransaction < ActiveRecord::Base
     else
       super(attrs)
     end
+
+    # Generate a check_number (unique transaction number per-customer)
+    generate_check_number!
     # Refresh the invalid status field
     self.goto_is_valid?
   end
@@ -146,14 +149,23 @@ class GotoTransaction < ActiveRecord::Base
   def credit_card?
     !['C','S'].include?(self.account_type)
   end
+  def mc?
+    self.credit_card_number.to_s[0,1] == '5'
+  end
+  def vs?
+    self.credit_card_number.to_s[0,1] == '4'
+  end
   def mc_vs?
-    self.credit_card_number.to_s[0,1] == '4' || self.credit_card_number.to_s[0,1] == '5'
+    mc? || vs?
   end
   def amex?
     self.credit_card_number.to_s[0,1] == '3'
   end
   def discover?
     self.credit_card_number.to_s[0,1] == '6'
+  end
+  def dcas_card_type
+    amex? ? 'AMEX' : (discover? ? 'DSVR' : (mc? ? 'MCRD' : (vs? ? 'VISA' : ''))) # We probably don't accept DinersClub cards, but that's the only one left?
   end
 
   def ach?
@@ -162,6 +174,13 @@ class GotoTransaction < ActiveRecord::Base
   def bank_account_type
     return nil unless ach?
     return account_type == 'C' ? 'PC' : 'PS'
+  end
+  def dcas_bank_account_type
+    return nil unless ach?
+    return account_type == 'C' ? 'Checking' : 'Savings'
+  end
+  def self.merchant_id(location)
+    LOCATIONS.has_key?(location) ? LOCATIONS[location][:merchant_id] : nil
   end
   def merchant_id
     LOCATIONS.has_key?(location) ? LOCATIONS[location][:merchant_id] : nil
@@ -187,6 +206,58 @@ class GotoTransaction < ActiveRecord::Base
   def self.csv_headers
     ["Account ID", "First Name", "Last Name", "Bank Routing #", "Bank Account #", "Bank Account Type", "Name on Card", "Credit Card Number", "Expiration", "Amount", "Type", "Authorization", "Record", "Occurrence"]
   end
+  def self.dcas_header_row(batch_id, location)
+    [
+      'HD',
+      'Malibu Tanning',
+      'hudson_vt',
+      'xxxxxxxx',
+      'Check', # Invoice/Customer/Check/Image
+      batch_id,
+      self.merchant_id(location) #, nil # redirect folder
+    ]
+  end
+  def to_dcas_csv_row
+    # DCAS Example:
+        # HD,CompanyName,UserName,Password,CHECK 
+        # CA,111000753,1031103,42676345,50.99,,Darwin Rogers,1409 N AVE,,,75090,,,,,2919,,,,,Checking,,,,,,200
+        # CC,VISA,4118000000981234,04/2009,19.99,N,,162078,JACLYN ,545 Sheridan Ave,,,07203,,,,9872,,,2,3,1
+    ach? ? [ # This is for bank account transactions
+      'CA',
+      bank_routing_number,
+      bank_account_number,
+      check_number, # check number field can be used to prevent duplicates
+      amount,
+      nil, # invoice number
+      name_on_card,
+      'address',
+      nil, # city
+      nil, # state
+      nil, # zip
+      nil, # phone number
+      nil, # driver license number
+      nil, # driver license state
+      nil, # third party check? 1=yes, 0=no
+      nil, # CustTraceCode
+      nil, # image name
+      nil, # back image name
+      nil, # Credit/Debit (default Debit)
+      "#{batch_id}-#{id}-#{client_id}", # Internal Account Number
+      dcas_bank_account_type #, nil, # ECC - Default Entry Class Code (??)
+      # nil, nil, nil, nil, # Deposit info
+      # nil, # CPA Code
+      # nil, nil, # scanned MICR info
+      # nil, nil # endorsement and image
+    ] : [ # This is for credit card transactions
+      'CC',
+      dcas_card_type, # Card Type
+      credit_card_number, # Account Number
+      expiration, # Expiration date (MM/YYYY)
+      amount, # Amount (00.00)
+      'N'# Card Present
+    ]
+  end
+
   def to_csv_row
     [
       client_id,
@@ -345,6 +416,7 @@ class GotoTransaction < ActiveRecord::Base
     self.client.update_attributes(:Balance => self.previous_balance) if self.previous_balance
     self.client.update_attributes(:Payment_Amount => self.previous_payment_amount) if self.previous_payment_amount
     self.client.update_attributes(:UpdateAll => Time.now) if self.previous_balance || self.previous_payment_amount
+    self.update_attributes(:recd_date_due => false)
   end
   def revert_helios_note!
     # Just delete the note
@@ -395,6 +467,17 @@ class GotoTransaction < ActiveRecord::Base
     end
     def validAccountNumber?(act)
       act.length < 18
+    end
+
+    def generate_check_number!
+      return check_number unless check_number.nil?
+      # "#{batch_month_YYMM}#{number_of_transactions_this_month_for_client}"
+      # Sample: 08031 (March 2008, 1st transaction)
+      batch_month_YYMM = self.batch.for_month.gsub(/\D/,'')
+      self.check_number = "#{batch_month_YYMM}#{number_of_transactions_this_month_for_client}"
+    end
+    def number_of_transactions_this_month_for_client
+      self.class.count(:batch_id => batch_id, :client_id => client_id)
     end
 
   # def self.http_attribute_mapping
