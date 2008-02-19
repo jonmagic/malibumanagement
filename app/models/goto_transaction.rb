@@ -1,25 +1,3 @@
-# # Recorded bits
-# t.column :no_eft,               :boolean
-# t.column :goto_invalid,         :string
-# t.column :transaction_id,       :integer # OTNum field
-# t.column :note_id,              :integer # OTNum field
-# t.column :recorded,             :boolean
-# # Response attributes, :string
-# t.column :order_number, :string
-# t.column :sent_date,    :string
-# t.column :tran_date,    :string
-# t.column :tran_time,    :string
-# t.column :status,       :string
-# t.column :description,  :string
-# t.column :term_code,    :string
-# t.column :auth_code,    :string
-
-# def pay(id)
-#   gt = GotoTransaction.find_by_client_id(id)
-#   return nil if gt.nil?
-#   gt.update_attributes(:goto_invalid => ['Error, check EFT'])
-# end
-
 class GotoTransaction < ActiveRecord::Base
   @nologging = true
 
@@ -63,7 +41,8 @@ class GotoTransaction < ActiveRecord::Base
           :client_id => cp.id.to_i,
           :location => location_code,
           :first_name => cp.First_Name,
-          :last_name => cp.Last_Name
+          :last_name => cp.Last_Name #,
+          # :address => "#{cp.Address}, #{cp.City}, #{cp.State} #{cp.Zip}"
         }
       else # If there is an eft, turn attrs into [batch_id, eft]
         attrs[1] = cp.eft
@@ -113,7 +92,7 @@ class GotoTransaction < ActiveRecord::Base
     end
 
     # Generate a check_number (unique transaction number per-customer)
-    generate_check_number!
+    get_check_number
     # Refresh the invalid status field
     self.goto_is_valid?
   end
@@ -210,10 +189,10 @@ class GotoTransaction < ActiveRecord::Base
     [
       'HD',
       'Malibu Tanning',
-      'hudson_vt',
+      'hudsonvt',
       'xxxxxxxx',
       'Check', # Invoice/Customer/Check/Image
-      batch_id,
+      nil, # batch_id, # He says don't put this in.?!
       self.merchant_id(location) #, nil # redirect folder
     ]
   end
@@ -226,11 +205,11 @@ class GotoTransaction < ActiveRecord::Base
       'CA',
       bank_routing_number,
       bank_account_number,
-      check_number, # check number field can be used to prevent duplicates
+      get_check_number, # check number field can be used to prevent duplicates
       amount,
       nil, # invoice number
       name_on_card,
-      'address',
+      nil, # address - API says required, but it's really not.
       nil, # city
       nil, # state
       nil, # zip
@@ -440,6 +419,14 @@ class GotoTransaction < ActiveRecord::Base
     self.status == 'G'
   end
 
+  def get_check_number
+    return check_number unless check_number.nil?
+    # "#{batch_month_YYMM}#{number_of_transactions_this_month_for_client}"
+    # Sample: 08031 (March 2008, 1st transaction)
+    batch_month_YYMM = self.batch.for_month.gsub(/\D/,'')
+    self.check_number = "#{batch_month_YYMM}#{number_of_transactions_this_month_for_client}"
+  end
+
   private
     def validate
       errors.add_to_base("Invalid Location Code!") if !LOCATIONS.has_key?(location)
@@ -469,13 +456,6 @@ class GotoTransaction < ActiveRecord::Base
       act.length < 18
     end
 
-    def generate_check_number!
-      return check_number unless check_number.nil?
-      # "#{batch_month_YYMM}#{number_of_transactions_this_month_for_client}"
-      # Sample: 08031 (March 2008, 1st transaction)
-      batch_month_YYMM = self.batch.for_month.gsub(/\D/,'')
-      self.check_number = "#{batch_month_YYMM}#{number_of_transactions_this_month_for_client}"
-    end
     def number_of_transactions_this_month_for_client
       self.class.count(:batch_id => batch_id, :client_id => client_id)
     end
