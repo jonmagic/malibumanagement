@@ -423,8 +423,8 @@ class GotoTransaction < ActiveRecord::Base
     return check_number unless check_number.nil?
     # "#{batch_month_YYMM}#{number_of_transactions_this_month_for_client}"
     # Sample: 08031 (March 2008, 1st transaction)
-    batch_month_YYMM = self.batch.for_month.gsub(/\D/,'')
-    self.check_number = "#{batch_month_YYMM}#{number_of_transactions_this_month_for_client}"
+    batch_month_YYYYMM = self.batch.for_month.gsub(/\D/,'')
+    self.check_number = "#{batch_month_YYYYMM}#{number_of_transactions_this_month_for_client}"
   end
 
   private
@@ -456,7 +456,9 @@ class GotoTransaction < ActiveRecord::Base
       act.length < 18
     end
 
+# http://192.168.10.10:5000/malibu/helios/client_members.csv;search?gotoready=YES&filter_by=Valid&domain=hillsdale&query=&dcas=1&for_month=2008-2-1
     def number_of_transactions_this_month_for_client
+puts "SELECT COUNT(*) FROM goto_transactions WHERE batch_id = #{batch_id} AND client_id = #{client_id}"
       self.class.count("SELECT COUNT(*) FROM goto_transactions WHERE batch_id = #{batch_id} AND client_id = #{client_id}")
     end
 
