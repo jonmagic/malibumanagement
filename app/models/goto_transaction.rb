@@ -456,10 +456,8 @@ class GotoTransaction < ActiveRecord::Base
       act.length < 18
     end
 
-# http://192.168.10.10:5000/malibu/helios/client_members.csv;search?gotoready=YES&filter_by=Valid&domain=hillsdale&query=&dcas=1&for_month=2008-2-1
     def number_of_transactions_this_month_for_client
-puts "SELECT COUNT(*) FROM goto_transactions WHERE batch_id = #{batch_id} AND client_id = #{client_id}"
-      self.class.count("SELECT COUNT(*) FROM goto_transactions WHERE batch_id = #{batch_id} AND client_id = #{client_id}")
+      self.class.count_by_sql("SELECT COUNT(*) FROM goto_transactions WHERE batch_id = #{batch_id} AND client_id = #{client_id}")
     end
 
   # def self.http_attribute_mapping
