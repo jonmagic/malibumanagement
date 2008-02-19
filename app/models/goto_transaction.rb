@@ -457,7 +457,7 @@ class GotoTransaction < ActiveRecord::Base
     end
 
     def number_of_transactions_this_month_for_client
-      self.class.count(:batch_id => batch_id, :client_id => client_id)
+      self.class.count("SELECT COUNT(*) FROM goto_transactions WHERE batch_id = #{batch_id} AND client_id = #{client_id}")
     end
 
   # def self.http_attribute_mapping
