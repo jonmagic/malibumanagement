@@ -5,7 +5,7 @@ class Duration
   # Unit is a length of time (in seconds) to use in collection methods
   # StartTime is an optional attribute that can 'anchor' a duration
   #   to a specific real time.
-  attr_accessor :length, :unit, :start_time
+  attr_accessor :length, :unit, :start_time, :persist_unit
   def initialize(count=0,unit=1,start_time=nil,auto_klass={})
     if unit.is_a?(Time) || unit.is_a?(DateTime)
       start_time = unit
@@ -121,22 +121,27 @@ class Duration
   end
   def in_weeks
     self.unit = Week.length
+    self.persist_unit = true
     auto_class(self)
   end
   def in_days
     self.unit = Day.length
+    self.persist_unit = true
     auto_class(self)
   end
   def in_hours
     self.unit = Hour.length
+    self.persist_unit = true
     auto_class(self)
   end
   def in_minutes
     self.unit = Minute.length
+    self.persist_unit = true
     auto_class(self)
   end
   def in_seconds
     self.unit = Second.length
+    self.persist_unit = true
     auto_class(self)
   end
   def weeks
@@ -271,8 +276,10 @@ class Duration
       else
         obj.class.name == 'Duration' ? obj : Duration.new(obj.length,obj.unit,obj.start_time,{:auto_class => false})
       end
+      new_obj.persist_unit = obj.persist_unit
       # Now, auto-transform class if possible:
-      case
+      # Auto.. be auto unless the persist flag is set
+      nn = new_obj.persist_unit ? new_obj : case
       when !['Weeks', 'Week'].include?(new_obj.class.name) && new_obj.to_i.remainder(Week.length) == 0
         new_obj.to_i == Week.length ? Week.new(new_obj.start_time) : Weeks.new(new_obj.to_f / Week.length,new_obj.start_time)
       when !['Weeks', 'Week', 'Days', 'Day'].include?(new_obj.class.name) && new_obj.to_i.remainder(Day.length) == 0
@@ -284,6 +291,8 @@ class Duration
       else
         new_obj
       end
+      nn.persist_unit = new_obj.persist_unit
+      nn
     end
 end
 class Weeks < Duration
