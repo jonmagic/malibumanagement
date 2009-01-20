@@ -1,0 +1,5 @@
+<h2>Create New Store</h2>
+
+<%= render :partial => "form", :locals => { :submit => "Create", :submit_url => stores_path } %>
+
+<%= link_to 'Back', stores_path %>

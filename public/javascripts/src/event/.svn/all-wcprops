@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/event
+END
+__package__.js
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/event/__package__.js
+END
+common.js
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/event/common.js
+END
+topic.js
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/event/topic.js
+END
+browser.js
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/event/browser.js
+END

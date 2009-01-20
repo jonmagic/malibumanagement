@@ -1,0 +1,7 @@
+<% i ||= nil -%>
+<tr id='employee_part_<%= i.nil? ? nil : i %>'">
+	<td><%= @data.employee_names[i || 0] %></td>
+	<td><%= @data.employee_sales[i || 0] %></td>
+	<td><%= @data.employee_ppa[i || 0] %></td>
+	<td><%= @data.employee_tans[i || 0] %></td>
+</tr>

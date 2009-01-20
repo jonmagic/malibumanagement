@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/helpers
+END
+pages_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/helpers/pages_helper.rb
+END
+stores_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/helpers/stores_helper.rb
+END
+users_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/helpers/users_helper.rb
+END
+application_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/helpers/application_helper.rb
+END
+logs_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/helpers/logs_helper.rb
+END
+forms_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/helpers/forms_helper.rb
+END
+sessions_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/helpers/sessions_helper.rb
+END
+notes_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/helpers/notes_helper.rb
+END
+posts_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/helpers/posts_helper.rb
+END
+pagination_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/helpers/pagination_helper.rb
+END
+admins_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/helpers/admins_helper.rb
+END

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/test/autoloading_fixtures/module_folder
+END
+inline_class.rb
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/test/autoloading_fixtures/module_folder/inline_class.rb
+END
+nested_class.rb
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/test/autoloading_fixtures/module_folder/nested_class.rb
+END
+nested_sibling.rb
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/test/autoloading_fixtures/module_folder/nested_sibling.rb
+END

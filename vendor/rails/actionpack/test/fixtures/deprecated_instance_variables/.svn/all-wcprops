@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables
+END
+_headers_method.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_headers_method.rhtml
+END
+_cookies_method.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_cookies_method.rhtml
+END
+_headers_ivar.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_headers_ivar.rhtml
+END
+_cookies_ivar.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_cookies_ivar.rhtml
+END
+_flash_method.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_flash_method.rhtml
+END
+_flash_ivar.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_flash_ivar.rhtml
+END
+_response_method.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_response_method.rhtml
+END
+_response_ivar.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_response_ivar.rhtml
+END
+_params_method.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_params_method.rhtml
+END
+_session_method.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_session_method.rhtml
+END
+_params_ivar.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_params_ivar.rhtml
+END
+_session_ivar.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_session_ivar.rhtml
+END
+_request_method.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_request_method.rhtml
+END
+_request_ivar.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/deprecated_instance_variables/_request_ivar.rhtml
+END

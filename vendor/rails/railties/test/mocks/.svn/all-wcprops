@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/test/mocks
+END
+routes.rb
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/test/mocks/routes.rb
+END
+dispatcher.rb
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/test/mocks/dispatcher.rb
+END
+stubbed_breakpoint.rb
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/test/mocks/stubbed_breakpoint.rb
+END
+fcgi.rb
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/test/mocks/fcgi.rb
+END
+stubbed_kernel.rb
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/test/mocks/stubbed_kernel.rb
+END

@@ -1,0 +1,3 @@
+page["post_section_#{params[:id]}"].replace(:partial => 'posts/show_post', :locals => { :post => @post })
+page["edit_link_#{params[:id]}"].replace(link_to_remote('Edit', {:url => the_js_edit_post_path(:format => 'js', :id => @post.id), :method => :get}, {:id => "edit_link_#{@post.id}"}))
+page['new_post_text_area'].value = ''

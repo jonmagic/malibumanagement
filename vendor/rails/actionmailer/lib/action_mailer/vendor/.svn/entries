@@ -1,0 +1,47 @@
+8
+
+dir
+278
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk/vendor/rails/actionmailer/lib/action_mailer/vendor
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+text
+dir
+
+tmail
+dir
+
+tmail.rb
+file
+
+
+
+
+2008-03-28T14:45:00.244625Z
+35c81708d8a2f7647c6f00988f4a5410
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+has-props
+

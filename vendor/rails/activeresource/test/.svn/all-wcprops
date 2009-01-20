@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activeresource/test
+END
+connection_test.rb
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activeresource/test/connection_test.rb
+END
+authorization_test.rb
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activeresource/test/authorization_test.rb
+END
+abstract_unit.rb
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activeresource/test/abstract_unit.rb
+END
+base_errors_test.rb
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activeresource/test/base_errors_test.rb
+END
+base_test.rb
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activeresource/test/base_test.rb
+END
+setter_trap.rb
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activeresource/test/setter_trap.rb
+END

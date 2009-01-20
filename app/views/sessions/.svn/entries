@@ -1,0 +1,52 @@
+8
+
+dir
+278
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk/app/views/sessions
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+new_admin.rhtml
+file
+
+
+
+
+2008-03-28T14:44:48.510250Z
+b082102c570a313f5b8b038c1d57b6f0
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+new_user.rhtml
+file
+
+
+
+
+2008-03-28T14:44:48.525875Z
+42f5af90e5f3780db4fa6370d86ae883
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+

@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/animation
+END
+__package__.js
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/animation/__package__.js
+END
+AnimationSequence.js
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/animation/AnimationSequence.js
+END
+Animation.js
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/animation/Animation.js
+END
+Timer.js
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/animation/Timer.js
+END
+AnimationEvent.js
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/animation/AnimationEvent.js
+END

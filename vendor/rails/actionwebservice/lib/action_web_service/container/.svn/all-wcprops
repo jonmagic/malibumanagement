@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionwebservice/lib/action_web_service/container
+END
+delegated_container.rb
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionwebservice/lib/action_web_service/container/delegated_container.rb
+END
+action_controller_container.rb
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionwebservice/lib/action_web_service/container/action_controller_container.rb
+END
+direct_container.rb
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionwebservice/lib/action_web_service/container/direct_container.rb
+END

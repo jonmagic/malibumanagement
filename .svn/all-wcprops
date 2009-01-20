@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/jonmagic/!svn/ver/278/malibu_management/trunk
+END
+Rakefile
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/jonmagic/!svn/ver/43/malibu_management/trunk/Rakefile
+END
+restart.bat.example
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/jonmagic/!svn/ver/109/malibu_management/trunk/restart.bat.example
+END
+update.bat
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/jonmagic/!svn/ver/43/malibu_management/trunk/update.bat
+END
+runner.bat
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/jonmagic/!svn/ver/111/malibu_management/trunk/runner.bat
+END

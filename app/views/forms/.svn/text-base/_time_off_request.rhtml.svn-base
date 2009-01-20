@@ -1,0 +1,41 @@
+<% view = view.nil? ? true : view -%>
+<% f = nil if view -%>
+<table>
+	<tr>
+	<td class="leftcolumn"><label for="employee_name">Employee Name</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:employee_name, :value => @data.employee_name) : @data.employee_name %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="date">Date</label></td>
+	<td class="rightcolumn"><%= !view ? f.date_picker_field(:date, :value => @data.date) : @data.date %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="dates_requested">Dates Requested</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_area(:dates_requested, :value => @data.dates_requested, :rows => 6, :cols => 20) : @data.dates_requested %></td>
+	</tr>
+<% if view -%>
+	<tr>
+	<td class="leftcolumn"><label for="time_off_kind">Time Off Type</label></td>
+	<td class="rightcolumn"><%= @data.time_off_kind %></td>
+	</tr>
+<% else -%>
+	<tr>
+	<td class="leftcolumn"><label for="time_off_kind">Vacation</label></td>
+	<td class="rightcolumn"><%= f.radio_button(:time_off_kind, 'Vacation') %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="time_off_kind">Personal/Sick</label></td>
+	<td class="rightcolumn"><%= f.radio_button(:time_off_kind, 'Personal/Sick') %></td>
+	</tr>
+<% end -%>
+<% if current_user.is_admin? -%>
+	<tr>
+	<td class="leftcolumn"><label for="time_left_before_days">Time Left Before Vacation/Personal Days</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:time_left_before_days, :value => @data.time_left_before_days) : @data.time_left_before_days %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="time_left_after_days">Time Left After Vacation/Personal Days</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:time_left_after_days, :value => @data.time_left_after_days) : @data.time_left_after_days %></td>
+	</tr>
+<% end -%>
+</table>

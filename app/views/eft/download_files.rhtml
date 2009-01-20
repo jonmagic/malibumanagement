@@ -1,0 +1,54 @@
+<form action="/malibu/helios/client_members.csv;search">
+  <input type="hidden" name='gotoready' value='YES' />
+  <input type="hidden" name='query' value='' />
+  <p>Select a month: <span style="border-top:2px solid #848484; border-left:2px solid #848484; border-bottom:2px solid #FAFAFA; border-right:2px solid #FAFAFA; padding:1px 3px 3px 2px"><%= date_picker_tag('for_month', Time.parse(@for_month).strftime('%B %Y'), :display_as => "function(date){return(getMonthName(date.getMonth()) + ' ' + date.getFullYear())}") %></span></p>
+  <p>Last month locked: <%= Time.parse(EftBatch.find(:first, :conditions => ['locked=1'], :order => 'for_month DESC').for_month).month_name %></p>
+  <p>Last month submitted: <%= Time.parse(EftBatch.find(:first, :conditions => ['locked=1 AND submitted != ?', [].to_yaml], :order => 'for_month DESC').for_month).month_name %></p>
+
+  <p>&nbsp;</p>
+
+  <p>Select a store:<br />
+  <% Store.find(:all).each do |store| -%>
+    <input type='radio' name='domain' value='<%= store.alias %>' /><label><%= store.friendly_name %></label><br />
+  <% end -%>
+  </p>
+
+  <p>&nbsp;</p>
+
+  <p>Include:<br />
+    <input type='radio' name='tran_type' value='' checked /><label>BOTH</label><br />
+    <input type='radio' name='tran_type' value='ACH' /><label>Just ACH</label><br />
+    <input type='radio' name='tran_type' value='Credit Card' /><label>Just Credit Cards</label><br />
+  </p>
+  <p>Credit Card Types: &nbsp; &nbsp; (check none for all types)<br />
+    <input type='checkbox' name='cc_types[]' value='MCRD' /><label>Mastercard</label><br />
+    <input type='checkbox' name='cc_types[]' value='VISA' /><label>Visa</label><br />
+    <input type='checkbox' name='cc_types[]' value='AMEX' /><label>American Express</label><br />
+    <input type='checkbox' name='cc_types[]' value='DSVR' /><label>Discover</label><br />
+  </p>
+
+  <p>&nbsp;</p>
+
+  <p>Payment / Refund:<br />
+    <input type='radio' name='refund' value='' checked /><label>Payment</label><br />
+    <input type='radio' name='refund' value='true' /><label>Refund</label><br />
+  </p>
+
+  <p>&nbsp;</p>
+
+  <p>Mode:<br />
+    <input type='radio' name='dcas' value='true' checked /><label>DCAS</label><br />
+    <input type='radio' name='dcas' value='' /><label>GotoBilling</label><br />
+  </p>
+
+  <p>&nbsp;</p>
+
+  <p>More Filters:<br />
+    <input type='radio' name='filter_by' value='Valid' checked /><label>All</label><br />
+    <input type='radio' name='filter_by' value='In Progress' /><label>In Progress (no response yet)</label><br />
+    <input type='radio' name='filter_by' value='Accepted' /><label>Accepted</label><br />
+    <input type='radio' name='filter_by' value='Declined' /><label>Declined</label><br />
+    <input type='radio' name='filter_by' value='Processing Errors' /><label>Processing Errors</label><br />
+  </p>
+  <input type='submit' value='Download!'>
+</form>

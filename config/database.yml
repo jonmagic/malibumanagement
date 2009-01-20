@@ -1,0 +1,16 @@
+development:
+  adapter: mysql
+  database: malibu_management
+  username: root
+  password: gn1nnat
+  host: localhost
+
+test:
+  adapter: mysql
+  database: malibu_test
+  username: malibu
+  password: 
+  host: localhost
+
+production:
+  development

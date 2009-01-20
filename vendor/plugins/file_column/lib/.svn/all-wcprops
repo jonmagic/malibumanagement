@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/file_column/lib
+END
+validations.rb
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/file_column/lib/validations.rb
+END
+file_compat.rb
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/file_column/lib/file_compat.rb
+END
+rails_file_column.rb
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/file_column/lib/rails_file_column.rb
+END
+magick_file_column.rb
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/file_column/lib/magick_file_column.rb
+END
+test_case.rb
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/file_column/lib/test_case.rb
+END
+file_column_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/file_column/lib/file_column_helper.rb
+END
+file_column.rb
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/file_column/lib/file_column.rb
+END

@@ -1,0 +1,190 @@
+8
+
+dir
+278
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk/vendor/rails/actionwebservice/lib/action_web_service
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+client.rb
+file
+
+
+
+
+2008-03-28T14:45:56.916500Z
+05db22cc5a8a813ae5173912710aa559
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+scaffolding.rb
+file
+
+
+
+
+2008-03-28T14:45:56.932125Z
+05c871e97ae62cf21d6ff59eecac1b53
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+container
+dir
+
+container.rb
+file
+
+
+
+
+2008-03-28T14:45:56.932125Z
+b22c29a2bd5789af14f1c5de9f5333bc
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+struct.rb
+file
+
+
+
+
+2008-03-28T14:45:56.932125Z
+fd0cf6fddc8fd349edfe8fd738b54485
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+dispatcher
+dir
+
+version.rb
+file
+
+
+
+
+2008-03-28T14:45:56.947750Z
+b4c283863f1a165c4eb546de82192ccd
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+dispatcher.rb
+file
+
+
+
+
+2008-03-28T14:45:56.947750Z
+455203d06bd858a20146f60cd8d02664
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+casting.rb
+file
+
+
+
+
+2008-03-28T14:45:56.963375Z
+11b6bc20e67f935bccb9ac327ad2c901
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+test_invoke.rb
+file
+
+
+
+
+2008-03-28T14:45:56.963375Z
+e0659306d96d0a0857fdf78f4260fd96
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+templates
+dir
+
+protocol
+dir
+
+protocol.rb
+file
+
+
+
+
+2008-03-28T14:45:56.963375Z
+7d1660d78f669b65e883ff9ca085cc41
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+invocation.rb
+file
+
+
+
+
+2008-03-28T14:45:56.979000Z
+e034c4058eb76b9e5288a176b030a388
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+api.rb
+file
+
+
+
+
+2008-03-28T14:45:56.979000Z
+66bd8866822fb7a389c411ac783d6cea
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+support
+dir
+
+base.rb
+file
+
+
+
+
+2008-03-28T14:45:56.979000Z
+2a96347c1f092aaeac8777db9e7851f7
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+client
+dir
+

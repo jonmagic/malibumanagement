@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/multipart
+END
+mona_lisa.jpg
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/multipart/mona_lisa.jpg
+END
+single_parameter
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/multipart/single_parameter
+END
+binary_file
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/multipart/binary_file
+END
+text_file
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/multipart/text_file
+END
+mixed_files
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/multipart/mixed_files
+END
+large_text_file
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/fixtures/multipart/large_text_file
+END

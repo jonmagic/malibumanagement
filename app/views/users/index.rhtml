@@ -1,0 +1,23 @@
+<h1><%= Store.find_by_alias(params[:domain]).friendly_name %>'s users</h1>
+
+<table>
+	<thead>
+		<td>Name</td>
+		<td>Username</td>
+		<td></td>
+		<td span="2">Actions</td>
+	</thead>
+  
+<% for user in @users %>
+  <tr<%= " class='store_admin'" if user.is_store_admin? %>>
+    <td<%= " class='store_admin_name'" if user.is_store_admin? %>><%= user.friendly_name %><%= " (manager)" if user.is_store_admin? %></td>
+    <td><%= user.username %></td>
+    <td><%= link_to 'Show', user_path(:action=> 'show', :id => user.id) %></td>
+    <td><%= link_to 'Destroy', user_path(:id => user.id), :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New user', user_path(params[:domain], 'new') %>

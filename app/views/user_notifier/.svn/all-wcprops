@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/views/user_notifier
+END
+signup_notification.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/views/user_notifier/signup_notification.rhtml
+END
+activation.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/views/user_notifier/activation.rhtml
+END

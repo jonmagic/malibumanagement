@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator
+END
+commands.rb
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator/commands.rb
+END
+generated_attribute.rb
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator/generated_attribute.rb
+END
+manifest.rb
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator/manifest.rb
+END
+scripts.rb
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator/scripts.rb
+END
+simple_logger.rb
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator/simple_logger.rb
+END
+lookup.rb
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator/lookup.rb
+END
+base.rb
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator/base.rb
+END
+spec.rb
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator/spec.rb
+END
+options.rb
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator/options.rb
+END

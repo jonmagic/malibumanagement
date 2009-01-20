@@ -1,0 +1,40 @@
+8
+
+dir
+278
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/multibyte/generators
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+generate_tables.rb
+file
+
+
+
+
+2008-03-28T14:45:12.775875Z
+4b323b79afc4f1d6e0f805f90d63c02e
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+

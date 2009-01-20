@@ -1,0 +1,14 @@
+<% view = view.nil? ? true : view -%>
+<% f = nil if view -%>
+<table class="spacetable">
+<% @data.items.each do |item| -%>
+	<tr>
+	<td class="leftcolumn"><label for="<%= item.name %>"><%= item.label %></label></td>
+	<td class="centercolumn"><%= !view ? f.text_field(item.name, :value => item.actual, :size => 8) : color_amount(item.actual || 0) %></td>
+	</tr>
+<% end -%>
+<% if @data.items.length < 1 -%>
+<p>Error Connecting to Helios!</p>
+<!-- <%= @data.class.odbc_error %> -->
+<% end -%>
+</table>

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test
+END
+abstract_unit.rb
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/abstract_unit.rb
+END
+active_record_unit.rb
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/active_record_unit.rb
+END
+testing_sandbox.rb
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionpack/test/testing_sandbox.rb
+END

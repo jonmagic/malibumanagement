@@ -1,0 +1,53 @@
+<% @submit_text = 'Submit to Malibu' -%>
+<script type="text/javascript">
+//<![CDATA[
+var saving = false
+//]]>
+</script>
+<h2 class="visual_identifier"><%= @form.visual_identifier %></h2>
+
+<%= error_messages_for :basic_form %>
+<% if @form.form_type.draftable -%>
+	<% remote_form_for(@form.data_type, :html => {:id => 'form_'+@form.data_type.fromCamelCase}, :url => formatted_store_forms_path(:form_type => @form.data_type, :action => 'update', :form_id => @form.id, :format => 'js')) do |f| %>
+
+<% if current_user.is_store_admin? -%>
+<label for="form_instance_assigned_to">Assign this form to be completed by: </label><%= select(:form_instance, :assigned_to, current_store.users.collect {|u| [ u.friendly_name, u.id ] }, { :include_blank => true, :selected => @form.assigned_to }, {:onchange => "this.form.action = '#{store_forms_path(:form_type => @form.data_type, :action => 'update', :form_id => @form.id, :leave_page => 'true')}'; this.form.submit()"}) %>
+<hr />
+<% end -%>
+
+		<input name="Nothing[important]" type="hidden" value="because theres a bug in the form serializer" />
+		<%= render :partial => @form.data_type.fromCamelCase, :locals => {:f => f, :view => false} %>
+		<br />
+		<%= hidden_field "form_instance", "status", :value => @form.status %>
+		<input id="submit_draft_bttn" name="commit" type="button" value="Submit to Malibu" onclick="saving = true; $('form_instance_status').value = 'submitted'; this.form.onsubmit=''; this.form.action='<%= store_forms_path(:form_type => @form.data_type, :action => 'update', :form_id => @form.id) %>'; this.form.submit();" />
+	<%= submit_tag 'Save Draft', :id => 'save_draft_bttn' %><span id="draft_save_status"></span>
+	<% end -%>
+
+	<%= observe_form 'form_'+@form.data_type.fromCamelCase,
+	                :function => "$('save_draft_bttn').value = 'Save Draft'; $('save_draft_bttn').disabled = false" %>
+<script type="text/javascript">
+//<![CDATA[
+draft_observe = new Form.Observer('<%= 'form_'+@form.data_type.fromCamelCase %>', 5, function(element, value) {if(!saving) {new Ajax.Request('<%= formatted_store_forms_path(:form_type => @form.data_type, :action => 'update', :form_id => @form.id, :format => 'js') %>', {asynchronous:true, evalScripts:true, parameters:'Form.serialize("<%= 'form_'+@form.data_type.fromCamelCase %>")=' + value})}})
+//]]>
+</script>
+<% else -%>
+	<% form_for(@form.data_type, :html => {:id => 'form_'+@form.data_type.fromCamelCase}, :url => store_forms_path(:form_type => @form.data_type, :action => 'update', :form_id => @form.id)) do |f| %>
+	<% if current_user.is_store_admin? -%>
+	<label for="form_instance_assigned_to">Assign this form to be completed by: </label><%= select(:form_instance, :assigned_to, current_store.users.collect {|u| [ u.friendly_name, u.id ] }, { :include_blank => true, :selected => @form.assigned_to }, {:onchange => "this.form['form_instance[status]'].value = this.form['form_instance[status]'].value-1; this.form.action = this.form.action + '?leave_page=true'; this.form.submit()"}) %>
+	<% end -%>
+
+
+		<%= render :partial => @form.data_type.fromCamelCase, :locals => {:f => f, :view => false} %>
+		<br />
+		<%= hidden_field "form_instance", "status", :value => @form.status.as_status.next.text %>
+	<%= submit_tag(@submit_text, :id => 'save_draft_bttn') if @form.form_type.reeditable or !@form.has_been_submitted %><span id="draft_save_status"></span>
+	<% end -%>
+<% end -%>
+
+<%= render :partial => 'notes/form_notes', :locals => {:form => @form} %>
+
+<% if params[:return_soon] -%>
+<script type="text/javascript" charset="utf-8">
+	setTimeout("window.location='<%= store_dashboard_url() %>'", <%= params[:return_soon] %>000)
+</script>
+<% end -%>

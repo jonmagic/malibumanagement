@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/active_resource/test/fixtures
+END
+beast.rb
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/active_resource/test/fixtures/beast.rb
+END
+person.rb
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/active_resource/test/fixtures/person.rb
+END
+street_address.rb
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/active_resource/test/fixtures/street_address.rb
+END

@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/tasks
+END
+tmp.rake
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/tasks/tmp.rake
+END
+log.rake
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/tasks/log.rake
+END
+pre_namespace_aliases.rake
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/tasks/pre_namespace_aliases.rake
+END
+databases.rake
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/tasks/databases.rake
+END
+documentation.rake
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/tasks/documentation.rake
+END
+statistics.rake
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/tasks/statistics.rake
+END
+misc.rake
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/tasks/misc.rake
+END
+rails.rb
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/tasks/rails.rb
+END
+framework.rake
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/tasks/framework.rake
+END
+testing.rake
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/tasks/testing.rake
+END

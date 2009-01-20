@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/hash
+END
+indifferent_access.rb
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/hash/indifferent_access.rb
+END
+slice.rb
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/hash/slice.rb
+END
+conversions.rb
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/hash/conversions.rb
+END
+diff.rb
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/hash/diff.rb
+END
+reverse_merge.rb
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/hash/reverse_merge.rb
+END
+keys.rb
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/hash/keys.rb
+END
