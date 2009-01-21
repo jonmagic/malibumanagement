@@ -1,4 +1,0 @@
-<%= error_messages_for :admin %>
-<form>
-<p><input type="submit" value="Register" /></p>
-</form>

@@ -1,4 +1,0 @@
-New Customer:<br />
-<% current_user.store.form_types.each do |ft| -%>
-	&nbsp;&nbsp;&nbsp;<%= link_to '+'+ft.friendly_name, "/#{params[:domain]}/forms/#{ft.name}/new" %><br />
-<% end -%>

@@ -1,6 +1,0 @@
-<% form_for(:note, :url => formatted_store_notes_path(:form_type => params[:form_type], :form_id => params[:form_id], :format => 'js'), :html => {:id => 'new_note_form', :multipart => true, :target => 'background-uploader'}) do |f| -%>
-  <p><%= f.text_area :text, :rows => 4, :cols => 35, :id => 'new_note_text_area' %></p>
-	<p>Or attach a file:<br /><%= file_column_field 'note', 'attachment' %></p>
-  <p><%= submit_tag "New Note" %></p>
-<% end -%>
-<iframe frameBorder="0" width="1" height="1" name="background-uploader" src="about:blank"></iframe>
