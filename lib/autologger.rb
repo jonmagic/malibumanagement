@@ -26,21 +26,33 @@ class Hash < Object
 end
 
 module Autologger
+  def self.off!
+    @off = true
+  end
+  def self.on!
+    @off = false
+  end
+  def self.on?
+    !@off
+  end
+  def self.off?
+    !!@off
+  end
   def self.append_features(base)
     base.after_create do |model|
-      unless model.class.to_s.humanize == 'Log' or model.class.instance_variable_get('@nologging') or @migrating == true
+      unless model.class.to_s.humanize == 'Log' or model.class.instance_variable_get('@nologging') or Autologger.off?
         old_obj = model.class.find_by_id(model.id)
         Log.create(:log_type => "create:#{model.class.to_s.humanize}", :data => {:new_attributes => model.attributes.changed_values(old_obj.attributes)}, :object => old_obj, :agent_id => Thread.current['user'].is_a?(Nobody) ? nil : Thread.current['user'].id)
       end
     end
     base.before_update do |model|
-      unless model.class.to_s.humanize == 'Log' or model.class.instance_variable_get('@nologging') or @migrating == true
+      unless model.class.to_s.humanize == 'Log' or model.class.instance_variable_get('@nologging') or Autologger.off?
         old_obj = model.class.find_by_id(model.id)
         Log.create(:log_type => "update:#{model.class.to_s.humanize}", :data => {:old_attributes => old_obj.attributes.changed_values(model.attributes), :new_attributes => model.attributes.changed_values(old_obj.attributes)}, :object => old_obj, :agent_id => Thread.current['user'].is_a?(Nobody) ? nil : Thread.current['user'].id) unless model.attributes.changed_values(old_obj.attributes).empty?
       end
     end
     base.before_destroy do |model|
-      unless model.class.to_s.humanize == 'Log' or model.class.instance_variable_get('@nologging') or @migrating == true
+      unless model.class.to_s.humanize == 'Log' or model.class.instance_variable_get('@nologging') or Autologger.off?
         old_obj = model.class.find_by_id(model.id)
         Log.create(:log_type => "destroy:#{model.class.to_s.humanize}", :data => {:old_attributes => old_obj.attributes.changed_values(model.attributes)}, :object => old_obj, :agent_id => Thread.current['user'].is_a?(Nobody) ? nil : Thread.current['user'].id)
       end

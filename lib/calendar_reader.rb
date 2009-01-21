@@ -5,6 +5,8 @@ require 'time'
 class Time
   def self.gcalschema(tzid) #We may not be handling Time Zones in the best way...
      if tzid =~ /(\d\d\d\d)(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)Z/ # yyyymmddThhmmss
+       # Strange, sometimes it's 4 hours ahead, sometimes 4 hours behind. Need to figure out the timezone piece of ical.
+       # Time.xmlschema("#{$1}-#{$2}-#{$3}T#{$4}:#{$5}:#{$6}") - 4*60*60
        Time.xmlschema("#{$1}-#{$2}-#{$3}T#{$4}:#{$5}:#{$6}")
      else
        return nil
@@ -62,9 +64,11 @@ module CalendarReader
       self.scale    = self.ical.hash['VCALENDAR']['CALSCALE']
       self.method   = self.ical.hash['VCALENDAR']['METHOD']
       self.product_id = self.ical.hash['VCALENDAR']['PRODID']
-      self.time_zone_name = self.ical.hash['VCALENDAR']['VTIMEZONE']['TZID']
+# These aren't needed for the calendar parsing for Malibu.
+# self.time_zone_name = self.ical.hash['VCALENDAR']['VTIMEZONE']['TZID']
 # puts "Time Zone: #{self.time_zone_name}"
-      self.time_zone_offset = self.ical.hash['VCALENDAR']['VTIMEZONE']['STANDARD']['TZOFFSETTO']
+# self.time_zone_offset = self.ical.hash['VCALENDAR']['VTIMEZONE']['STANDARD']['TZOFFSETTO']
+# puts "Time Zone offset: #{self.time_zone_offset}"
       self.ical.hash['VCALENDAR']['VEVENT'] = [self.ical.hash['VCALENDAR']['VEVENT']] unless self.ical.hash['VCALENDAR']['VEVENT'].kind_of?(Array)
       self.ical.hash['VCALENDAR']['VEVENT'].each do |e|
         # DTSTART;VALUE=DATE # format of yyyymmdd
@@ -88,12 +92,13 @@ module CalendarReader
         # COMMENT;X-COMMENTER=MAILTO # someone's email address, perhaps if they commented on the event.
         # RRULE # Recurrance Rule - string like 'FREQ=WEEKLY'
         if !e.nil?
-          st = e["DTSTART;TZID=#{self.time_zone_name}"] || "#{e['DTSTART;VALUE=DATE']}T000000"
-          et = e["DTEND;TZID=#{self.time_zone_name}"] || "#{e['DTEND;VALUE=DATE']}T000000"
+          tzadjust = Time.gcalschema("#{e["DTSTART;TZID=#{self.time_zone_name}"] || "#{e['DTSTART;VALUE=DATE']}T000000"}Z").nil? ? -4*3600 : 0
+          st = (Time.gcalschema("#{e["DTSTART;TZID=#{self.time_zone_name}"] || "#{e['DTSTART;VALUE=DATE']}T000000"}Z") || Time.gcalschema(e['DTSTART'])) + tzadjust
+          et = (Time.gcalschema("#{e["DTEND;TZID=#{self.time_zone_name}"] || "#{e['DTEND;VALUE=DATE']}T000000"}Z") || Time.gcalschema(e['DTEND'])) + tzadjust
           # DTSTART;TZID=America/New_York:20070508T070000
           self.add_event(Event.new(
-            :start_time => Time.gcalschema("#{st}Z"),
-            :end_time => Time.gcalschema("#{et}Z"),
+            :start_time => st,
+            :end_time => et,
             :location => e['LOCATION'],
             :created_at => Time.gcalschema(e['CREATED']),
             :updated_at => Time.gcalschema(e['LAST-MODIFIED']),
@@ -101,6 +106,7 @@ module CalendarReader
             :description => e['DESCRIPTION'],
             :recurrance_rule => e['RRULE']
           ), false) # (disable sorting until done)
+          @events.reject! {|e| e.start_time.nil?}
           @events.sort! {|a,b| a.start_time <=> b.start_time }
         end
       end

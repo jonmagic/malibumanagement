@@ -14,13 +14,13 @@ class InventoryReport < ActiveRecord::Base
       self.inventory_line_items.each {|li| li.destroy} if reload
       theitems = self.inventory_from_open_helios
   return [] unless theitems.is_a?(Array)
-      theitems.each do |line_item|
+      theitems.each_with_index do |line_item,i|
         next if line_item['Descriptions'].nil?
-        self.inventory_line_items.build(:name => line_item['Descriptions'].columnize, :label => line_item['Descriptions'], :should_be => line_item['qty_onhand']) unless self.inventory_line_item(line_item['Descriptions'])
+        self.inventory_line_items.build(:name => "li_#{i.to_s}", :label => line_item['Descriptions'], :should_be => line_item['qty_onhand']) unless inventory_line_item("li_#{i.to_s}")
       end
       self.save
     end
-    @the_inventory_items = self.inventory_line_items(true) || []
+    @the_inventory_items = inventory_line_items(true) || []
   end
 
   def update_attributes(new_attributes)
@@ -28,24 +28,26 @@ class InventoryReport < ActiveRecord::Base
     attributes = new_attributes.dup
     attributes.stringify_keys!
     attributes.each do |key, value|
-logger.error "Setting #{key} to #{value}:"
-      self.set_inventory_line_item(key, value) if self.is_inventory_item_name?(key)
+      set_inventory_line_item(key, value) if is_inventory_item_name?(key)
     end
   end
 
   def is_inventory_item_name?(name)
-    ['signer_id', 'signer_hash', 'signer_date'].include?(name) ? false : true
+    !['signer_id', 'signer_hash', 'signer_date'].include?(name)
   end
   def inventory_line_item(liname)
-    self.inventory_line_items.find_by_name(liname.columnize)
+    inventory_line_items.find_by_name(liname.columnize)
   end
   def set_inventory_line_item(liname,value)
-    li = self.inventory_line_items.find_by_name(liname.columnize)
-    logger.error "Trying to set #{liname} to #{value}.."
+    li = inventory_line_item(liname)
+    logger.error "Trying to set #{liname} (#{liname}) to #{value}.."
     return false if li.nil?
     li.actual = value
-    logger.error "Set #{liname} to #{value}..!"
-    li.save
+    if li.save
+      logger.error "Set #{liname} to #{value}..!"
+    else
+      logger.error "ERROR Setting #{liname} to #{value}..!"
+    end
   end
 
   protected

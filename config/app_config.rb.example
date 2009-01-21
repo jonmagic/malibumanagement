@@ -19,18 +19,22 @@ ZONE = {
   :StandardMembershipPrice => 18.88,
   :SFTP => { # To download GotoBilling return files
     :host => 'host.whatever.com',
-    :username => 'username',
-    :password => 'password',
-    :path => "/home/username/gotobilling" # Or wherever gotobilling puts their files.
+    :path => '~'
   }
 }
 
 LOCATIONS = {
   '001' => {
     :name => 'Location Name',
+    :domain => 'store-alias',
     :open_helios => 'IP:Port',
-    :merchant_id => 'merchant_id(integers)',
-    :merchant_pin => 'pin(password)'
+    :dcas => {
+      :company_alias => 'Location Name',
+      :host => ZONE[:SFTP][:host],
+      :username => 'MalibuVT',
+      :password => 'password',
+      :path => ZONE[:SFTP][:path]
+    }
   },
 	# 'etc'...
 }

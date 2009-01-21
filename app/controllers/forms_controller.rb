@@ -167,7 +167,7 @@ logger.info "Search Results: #{@results.length} -- #{@results}"
       end
 
       if !params[:form_instance].nil?
-        if @form.assigned_to.to_s != params[:form_instance][:assigned_to].to_s
+        if (params[:form_instance].has_key?(:assigned_to) || params[:form_instance].has_key?('assigned_to')) && @form.assigned_to.to_s != params[:form_instance][:assigned_to].to_s
 logger.info "Updating Assigned-to Only: #{@form.assigned_to.to_s} != #{params[:form_instance][:assigned_to].to_s}"
           assigned_to_changed = true
           @form.assigned = User.find_by_id(params[:form_instance][:assigned_to])

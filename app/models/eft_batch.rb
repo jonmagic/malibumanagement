@@ -25,14 +25,40 @@ class EftBatch < ActiveRecord::Base
     self.invalid_count ||= 0
   end
 
+  def self.current(for_month=nil)
+    EftBatch.find_or_create_by_for_month(for_month ? Time.parse(for_month).strftime('%Y/%m') : (3.days.ago.strftime("%Y").to_i + 3.days.ago.strftime("%m").to_i/12).to_i.to_s + '/' + 3.days.ago.strftime("%m").to_i.cyclical_add(1, 1..12).to_s)
+  end
+
   def self.create(*args)
     b = new(*args)
     b.save
     b
   end
 
+  def submitted
+    submitted = YAML.load(read_attribute(:submitted))
+    submitted.instance_variable_set(:@record, self)
+    def submitted.[](k)
+      YAML.load(@record.send(:read_attribute, :submitted))[k]
+    end
+    def submitted.[]=(k,v)
+      h = YAML.load(@record.send(:read_attribute, :submitted))
+      h[k]=v
+      replace(h)
+      @record.send(:write_attribute, :submitted, h.to_yaml)
+    end
+    submitted
+  end
+  def submitted=(v)
+    write_attribute(:submitted, v)
+  end
+
   def for_month=(v)
     write_attribute(:for_month, Time.parse(v.to_s).strftime("%Y/%m"))
+  end
+
+  def submitted?
+    Store.find(:all).reject {|s| s.config.nil?}.all? {|s| submitted[s.alias]}
   end
 
   def amounts_counts
@@ -49,87 +75,95 @@ class EftBatch < ActiveRecord::Base
     @locations_status_counts ||= begin
       it = {}
       it['all'] ||= {}
-      it['all'][:all] ||= [0, 0] # Valid
-      it['all'][:completed] ||= [0, 0]
-      it['all'][:in_progress] ||= [0, 0]
-      it['all'][:accepted] ||= [0, 0]
-      it['all'][:declined] ||= [0, 0]
-      it['all'][:mcvs_app] ||= [0, 0]
-      it['all'][:amex_app] ||= [0, 0]
-      it['all'][:discover_app] ||= [0, 0]
-      it['all'][:check_save_app] ||= [0, 0]
+      it['all'][:all] ||= [0, 0, 0.0] # Valid
+      it['all'][:completed] ||= [0, 0, 0.0]
+      it['all'][:not_submitted] ||= [0, 0.0]
+      it['all'][:in_progress] ||= [0, 0, 0.0]
+      it['all'][:accepted] ||= [0, 0, 0.0]
+      it['all'][:declined] ||= [0, 0, 0.0]
+      it['all'][:mcvs_app] ||= [0, 0.0]
+      it['all'][:amex_app] ||= [0, 0.0]
+      it['all'][:discover_app] ||= [0, 0.0]
+      it['all'][:check_save_app] ||= [0, 0.0]
       self.payments.reject {|pm| pm.no_eft || pm.goto_invalid.to_s != ''}.each do |pm|
         it[pm.location] ||= {}
-        it[pm.location][:all] ||= [0, 0]
-        it[pm.location][:completed] ||= [0, 0]
-        it[pm.location][:in_progress] ||= [0, 0]
-        it[pm.location][:accepted] ||= [0, 0]
-        it[pm.location][:declined] ||= [0, 0]
-        it[pm.location][:mcvs_app] ||= [0, 0]
-        it[pm.location][:amex_app] ||= [0, 0]
-        it[pm.location][:discover_app] ||= [0, 0]
-        it[pm.location][:check_save_app] ||= [0, 0]
+        it[pm.location][:all] ||= [0, 0, 0.0]
+        it[pm.location][:completed] ||= [0, 0, 0.0]
+        it[pm.location][:not_submitted] ||= [0, 0.0]
+        it[pm.location][:in_progress] ||= [0, 0, 0.0]
+        it[pm.location][:accepted] ||= [0, 0, 0.0]
+        it[pm.location][:declined] ||= [0, 0, 0.0]
+        it[pm.location][:mcvs_app] ||= [0, 0.0]
+        it[pm.location][:amex_app] ||= [0, 0.0]
+        it[pm.location][:discover_app] ||= [0, 0.0]
+        it[pm.location][:check_save_app] ||= [0, 0.0]
 
-        it[pm.location][:all][0] += 1
-        it[pm.location][:all][1] += pm.amount.to_f
-        it['all'][:all][0] += 1
-        it['all'][:all][1] += pm.amount.to_f
+        type_bit = pm.ach? ? 1 : 0
+        amount_bit = pm.amount.to_f
 
-        if pm.submitted?
-          it[pm.location][:completed][0] += 1
-          it[pm.location][:completed][1] += pm.amount.to_f
-          it['all'][:completed][0] += 1
-          it['all'][:completed][1] += pm.amount.to_f
-        end
+        it[pm.location][:all][type_bit] += 1
+        it[pm.location][:all][2] += amount_bit
+        it['all'][:all][type_bit] += 1
+        it['all'][:all][2] += amount_bit
 
-        unless pm.submitted?
-          it[pm.location][:in_progress][0] += 1
-          it[pm.location][:in_progress][1] += pm.amount.to_f
-          it['all'][:in_progress][0] += 1
-          it['all'][:in_progress][1] += pm.amount.to_f
-        end
-
-        if pm.paid?
-          it[pm.location][:accepted][0] += 1
-          it[pm.location][:accepted][1] += pm.amount.to_f
-          it['all'][:accepted][0] += 1
-          it['all'][:accepted][1] += pm.amount.to_f
+        if pm.processed?
+          it[pm.location][:completed][type_bit] += 1
+          it[pm.location][:completed][2] += amount_bit
+          it['all'][:completed][type_bit] += 1
+          it['all'][:completed][2] += amount_bit
+        else
+          if pm.ach? && !pm.ach_submitted
+            it[pm.location][:not_submitted][0] += 1
+            it[pm.location][:not_submitted][1] += amount_bit
+            it['all'][:not_submitted][0] += 1
+            it['all'][:not_submitted][1] += amount_bit
+          end
+          
+          it[pm.location][:in_progress][type_bit] += 1
+          it[pm.location][:in_progress][2] += amount_bit
+          it['all'][:in_progress][type_bit] += 1
+          it['all'][:in_progress][2] += amount_bit
         end
 
         if pm.declined?
-          it[pm.location][:declined][0] += 1
-          it[pm.location][:declined][1] += pm.amount.to_f
-          it['all'][:declined][0] += 1
-          it['all'][:declined][1] += pm.amount.to_f
+          it[pm.location][:declined][type_bit] += 1
+          it[pm.location][:declined][2] += amount_bit
+          it['all'][:declined][type_bit] += 1
+          it['all'][:declined][2] += amount_bit
         end
 
         if pm.paid?
+          it[pm.location][:accepted][type_bit] += 1
+          it[pm.location][:accepted][2] += amount_bit
+          it['all'][:accepted][type_bit] += 1
+          it['all'][:accepted][2] += amount_bit
+
           if pm.mc_vs?
             it[pm.location][:mcvs_app][0] += 1
-            it[pm.location][:mcvs_app][1] += pm.amount.to_f
+            it[pm.location][:mcvs_app][1] += amount_bit
             it['all'][:mcvs_app][0] += 1
-            it['all'][:mcvs_app][1] += pm.amount.to_f
+            it['all'][:mcvs_app][1] += amount_bit
           end
 
           if pm.amex?
             it[pm.location][:amex_app][0] += 1
-            it[pm.location][:amex_app][1] += pm.amount.to_f
+            it[pm.location][:amex_app][1] += amount_bit
             it['all'][:amex_app][0] += 1
-            it['all'][:amex_app][1] += pm.amount.to_f
+            it['all'][:amex_app][1] += amount_bit
           end
 
           if pm.discover?
             it[pm.location][:discover_app][0] += 1
-            it[pm.location][:discover_app][1] += pm.amount.to_f
+            it[pm.location][:discover_app][1] += amount_bit
             it['all'][:discover_app][0] += 1
-            it['all'][:discover_app][1] += pm.amount.to_f
+            it['all'][:discover_app][1] += amount_bit
           end
 
           if pm.ach?
             it[pm.location][:check_save_app][0] += 1
-            it[pm.location][:check_save_app][1] += pm.amount.to_f
+            it[pm.location][:check_save_app][1] += amount_bit
             it['all'][:check_save_app][0] += 1
-            it['all'][:check_save_app][1] += pm.amount.to_f
+            it['all'][:check_save_app][1] += amount_bit
           end
         end
       end

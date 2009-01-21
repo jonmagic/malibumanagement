@@ -1,6 +1,6 @@
 module CoresExtensions
   StepLevel = [0]
-  def step(description)
+  def step(description,options={},&block)
     CoresExtensions::StepLevel[0] = CoresExtensions::StepLevel[0]+1
     logit = lambda {|txt|
       begin
@@ -17,9 +17,30 @@ module CoresExtensions
       CoresExtensions::StepLevel[0] = CoresExtensions::StepLevel[0]-1
       return v
     rescue => e
-      logit.call("["+description+"] Caused Errors: {#{e}}")
+      logit.call("["+description+"] Caused Errors: {#{e}}\n#{caller[0..4].join("\n")}")
       CoresExtensions::StepLevel[0] = CoresExtensions::StepLevel[0]-1
-      return false
+      if options[:retry].is_a?(Numeric) && options[:retry] > 0
+        begin
+          puts(("  "*(CoresExtensions::StepLevel[0]+1)).to_s + "Retrying...")
+          ActionController::Base.logger.info(("  "*(CoresExtensions::StepLevel[0]+1)).to_s + "Retrying...")
+        rescue => f
+          puts f
+        end
+        step(description,options.merge(:retry => options[:retry] - 1),&block)
+      else
+        return false
+      end
+    end
+  end
+
+  def debug_step(msg, id=nil)
+    $DEBUG_CONTINUE ||= {}
+    unless $DEBUG_CONTINUE[id]
+      STDOUT << msg
+      STDOUT << " (YA = Continue to end)"
+      STDOUT.flush
+      yn = STDIN.gets
+      $DEBUG_CONTINUE[id] = true if yn.chomp == 'YA'
     end
   end
 

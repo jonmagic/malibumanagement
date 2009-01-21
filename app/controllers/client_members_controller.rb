@@ -21,18 +21,25 @@ class ClientMembersController < ApplicationController
           {'has_eft' => 1, 'goto_valid' => '--- []'}
         when 'Completed'
           {'has_eft' => 1, 'goto_valid' => '--- []', 'completed' => ''}
+        when 'Not Submitted'
+          {'has_eft' => 1, 'goto_valid' => '--- []', 'ach_submitted' => false, 'tran_type' => 'ACH'}
         when 'In Progress'
           {'has_eft' => 1, 'goto_valid' => '--- []', 'in_progress' => ''}
         when 'Accepted'
           {'has_eft' => 1, 'goto_valid' => '--- []', 'status' => 'G'}
         when 'Declined'
           {'has_eft' => 1, 'goto_valid' => '--- []', 'status' => 'D'}
+        when 'Processing Errors'
+          {'status' => 'E'}
         else
           {}
         end
         filters = filters.merge('batch_id' => bid)
         filters = filters.merge('amount' => params[:amount]) if params[:amount]
         filters = filters.merge('location' => LOCATIONS.reject {|k,v| v[:domain] != accessed_domain}.keys[0]) unless params[:domain].blank?
+        filters = filters.merge('tran_type' => params[:tran_type]) if params[:tran_type].to_s.length > 0
+        mode = (params[:dcas] == 'true') ? :dcas : :gotobilling
+        refund = (params[:refund] == 'true') ? true : false
         if params[:format] == 'csv'
           @clients = GotoTransaction.search(@query, :filters => filters)
         else
@@ -46,9 +53,9 @@ class ClientMembersController < ApplicationController
           format.csv {
             domain_name = params[:domain].blank? ? 'malibu' : LOCATIONS[LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]][:name].underscore
             send_csv(domain_name + '-' + params[:filter_by].to_s.underscore + '.csv') do |csv|
-              csv << (params[:gotoready] ? (params[:dcas] ? GotoTransaction.dcas_header_row(bid, LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]) : GotoTransaction.csv_headers) : GotoTransaction.managers_csv_headers)
-              @clients.each do |client|
-                csv << (params[:gotoready] ? (params[:dcas] ? client.to_dcas_csv_row : client.to_csv_row) : client.to_managers_csv_row)
+              csv << (params[:gotoready] ? (mode == :dcas ? GotoTransaction.dcas_header_row(bid, LOCATIONS.reject {|k,v| v[:domain] != params[:domain]}.keys[0]) : GotoTransaction.csv_headers) : GotoTransaction.managers_csv_headers)
+              @clients.reject { |c| params['cc_types'].is_a?(Array) ? !params['cc_types'].include?(c.dcas_card_type) : false }.reject {|c| refund ? !c.paid? : false}.each do |client|
+                csv << (params[:gotoready] ? (mode == :dcas ? client.to_dcas_csv_row(:refund => refund) : client.to_csv_row(:refund => refund)) : client.to_managers_csv_row)
               end
             end
           }

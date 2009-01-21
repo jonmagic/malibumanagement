@@ -52,15 +52,13 @@ logger.error "Status: #{self.instance.status}"
       #   errors.add_to_base("CANNOT re-sign this form once it is signed!") if !self.employee_sign_username.blank?
       # else
         if employee = User.authenticate(self.employee_sign_username, self.employee_sign_password, Thread.current['user'].domain)
-          if employee.is_store_admin?
-            if employee.social_security_number.blank?
-              errors.add(:social_security_number, "needs to be set in #{self.employee_sign_username}'s profile to be able to sign.")
-            else  # SIGN!
-              self.employee_signer = employee
-              self.employee_sign_hash = Digest::SHA1.hexdigest("--#{employee.social_security_number}--#{self.instance.created_at}--")
-              self.employee_sign_date = Time.now
-              self.save_status = self.save_status.to_s + " Employee signature accepted. Reload this page to see the digital fingerprint."
-            end
+          if employee.social_security_number.blank?
+            errors.add(:social_security_number, "needs to be set in #{self.employee_sign_username}'s profile to be able to sign.")
+          else  # SIGN!
+            self.employee_signer = employee
+            self.employee_sign_hash = Digest::SHA1.hexdigest("--#{employee.social_security_number}--#{self.instance.created_at}--")
+            self.employee_sign_date = Time.now
+            self.save_status = self.save_status.to_s + " Employee signature accepted. Reload this page to see the digital fingerprint."
           end
         else
           errors.add(:store_employee, "could not be validated. Please check your username and password and try again.") if !self.employee_sign_username.blank?

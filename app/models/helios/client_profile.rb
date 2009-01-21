@@ -134,22 +134,27 @@ class Helios::ClientProfile < ActiveRecord::Base
   def self.has_prepaid_membership?(id)
     self.find(id).has_prepaid_membership?
   end
-  def has_prepaid_membership?
+  def has_prepaid_membership?(datetime=nil)
+    datetime ||= Time.now
     sql = case ::RAILS_ENV
     when 'development'
-      "(Code = 'VY' OR Code = 'VY+' OR Code = 'V1M' OR Code = 'V1W') AND CType != ? AND client_no = ? AND Last_Mdt > ?"
+      "(Code = 'VY' OR Code = 'VY+' OR Code = 'V1M' OR Code = 'V1W') AND CType != ? AND CType != ? AND client_no = ? AND Last_Mdt > ?"
     when 'production'
-      "([Code] = 'VY' OR [Code] = 'VY+' OR [Code] = 'V1M' OR [Code] = 'V1W') AND CType != ? AND [client_no] = ? AND [Last_Mdt] > ?"
+      "([Code] = 'VY' OR [Code] = 'VY+' OR [Code] = 'V1M' OR [Code] = 'V1W') AND CType != ? AND CType != ? AND [client_no] = ? AND [Last_Mdt] > ?"
     end
-    mem_trans = Helios::Transact.find(:all, :conditions => [sql, '1', self.id, Time.now-47088000])
+    mem_trans = Helios::Transact.find(:all, :conditions => [sql, '1', '2', self.id, datetime-47088000])
+
     lasting = {
-      'VY'  => Time.now-36720000, # 425 days
-      'VY+' => Time.now-47088000, # 545 days
-      'V1M' => Time.now-2592000,  # 30 days
-      'V1W' => Time.now-604800    # 7 days
+      'VY'  => datetime-36720000, # 425 days
+      'VY+' => datetime-47088000, # 545 days
+      'V1M' => datetime-2592000,  # 30 days
+      'V1W' => datetime-604800    # 7 days
     }
-    mem_trans.each { |t| return true if t.Last_Mdt > lasting[t.Code] }
-    return false
+
+    mem_trans.any? do |t|
+      puts "[Transact##{t.transact_no}] #{t.Last_Mdt} > #{lasting[t.Code]} ?"
+      t.Last_Mdt > lasting[t.Code]
+    end
   end
 
   def self.fixmismatch

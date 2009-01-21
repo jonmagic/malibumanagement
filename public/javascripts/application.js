@@ -11,6 +11,8 @@ function numbersonly(e){
 function flash(txt, close_button, close_on_overlay_click, stay_open){
 	if(close_button == undefined) close_button = false;
 	if(close_on_overlay_click == undefined) close_on_overlay_click = false;
+  if(stay_open == undefined) stay_open = false;
+
 	if(close_button != false){
 		buttons = '<div id="dialog_buttons" class="dialog_buttons">\
 			<input id="dialog-button" type="button" value="'+close_button+'" onclick="Control.Modal.close();" class="dialog-button"/>\
@@ -25,8 +27,12 @@ function flash(txt, close_button, close_on_overlay_click, stay_open){
 			<div class="dialog_body">'+txt+'</div>'+buttons+
 		'</div>\
 	</div>', {fade:true, overlayCloseOnClick:close_on_overlay_click, afterOpen:after_open});
-	if(stay_open == false || (close_button == false && close_on_overlay_click == false && stay_open != false)){
-		setTimeout(function(){Control.Modal.close()}, 4500); // auto-close after 4.5 seconds
+	if(stay_open != true){
+	  if(stay_open == true){
+		  setTimeout(function(){Control.Modal.close()}, 4500); // auto-close after 4.5 seconds
+	  } else {
+		  setTimeout(function(){Control.Modal.close()}, stay_open); // wait specified amount of time
+	  }
 	}
 }
 
