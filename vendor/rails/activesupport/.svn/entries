@@ -1,0 +1,94 @@
+8
+
+dir
+254
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk/vendor/rails/activesupport
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+test
+dir
+
+Rakefile
+file
+
+
+
+
+2008-03-28T18:47:32.000000Z
+103b1850f6fef62e07e37498cc2e16c3
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+lib
+dir
+
+CHANGELOG
+file
+
+
+
+
+2008-03-28T18:47:32.000000Z
+3d1e026885fa5c371a1c281a887889e6
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+install.rb
+file
+
+
+
+
+2008-03-28T18:47:32.000000Z
+e048cbf680f86a747c75c376643ce4fc
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+MIT-LICENSE
+file
+
+
+
+
+2008-03-28T18:47:32.000000Z
+8e11d5530bab3c7732205a5febfe41f7
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+README
+file
+
+
+
+
+2008-03-28T18:47:32.000000Z
+6d5825d5dbcc4f0d3d158618837d7b23
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+

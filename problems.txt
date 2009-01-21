@@ -1,0 +1,10 @@
++ Inventory report doesn't save all line item values properly.
++ Forms still assigned but now archived should not show up in dashboard.
+
+require 'ftpfxp'
+ftp = Net::FTPFXPTLS.new
+ftp.debug_mode = true
+ftp.passive = true
+ftp.connect('ftp.dcas.net', 990)
+ftp.login('malibumc', 'ChESa5ap')
+ftp.list

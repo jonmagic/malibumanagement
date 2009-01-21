@@ -1,0 +1,239 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/jonmagic/!svn/ver/223/malibu_management/trunk/db/migrate
+END
+017_inventory_tables.rb
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/017_inventory_tables.rb
+END
+003_create_form_instances.rb
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/003_create_form_instances.rb
+END
+023_add_bulletin_board.rb
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/023_add_bulletin_board.rb
+END
+016_ppa_decimal.rb
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/016_ppa_decimal.rb
+END
+013_direct_deposit_authorization_form.rb
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/013_direct_deposit_authorization_form.rb
+END
+008_notice_of_termination_form.rb
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/008_notice_of_termination_form.rb
+END
+027_lengthen_log_data_field.rb
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/027_lengthen_log_data_field.rb
+END
+002_create_form_types.rb
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/002_create_form_types.rb
+END
+030_add_batch_locked.rb
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/030_add_batch_locked.rb
+END
+024_add_satellite_status_table.rb
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/024_add_satellite_status_table.rb
+END
+009_performance_review_form.rb
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/009_performance_review_form.rb
+END
+029_add_goto_transactions.rb
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/029_add_goto_transactions.rb
+END
+036_add_server_errors.rb
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/jonmagic/!svn/ver/132/malibu_management/trunk/db/migrate/036_add_server_errors.rb
+END
+038_warnings_reeditable.rb
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/jonmagic/!svn/ver/223/malibu_management/trunk/db/migrate/038_warnings_reeditable.rb
+END
+010_verbal_warning_form.rb
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/010_verbal_warning_form.rb
+END
+022_create_blank_forms.rb
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/022_create_blank_forms.rb
+END
+015_add_store_admin_property.rb
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/jonmagic/!svn/ver/50/malibu_management/trunk/db/migrate/015_add_store_admin_property.rb
+END
+019_add_inventory_to_all_managers.rb
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/019_add_inventory_to_all_managers.rb
+END
+039_add_informational_field.rb
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/jonmagic/!svn/ver/257/malibu_management/trunk/db/migrate/039_add_informational_field.rb
+END
+005_sales_report_form.rb
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/005_sales_report_form.rb
+END
+031_add_previous_balance.rb
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/031_add_previous_balance.rb
+END
+028_add_eft_batch.rb
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/028_add_eft_batch.rb
+END
+034_add_check_number.rb
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/034_add_check_number.rb
+END
+006_handbook_acknowledgement_form.rb
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/006_handbook_acknowledgement_form.rb
+END
+011_written_warning_form.rb
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/011_written_warning_form.rb
+END
+032_change_response_columns.rb
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/032_change_response_columns.rb
+END
+018_add_line_items.rb
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/018_add_line_items.rb
+END
+020_fix_some_columns.rb
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/020_fix_some_columns.rb
+END
+012_incident_report_form.rb
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/012_incident_report_form.rb
+END
+021_add_g_cal_columns.rb
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/021_add_g_cal_columns.rb
+END
+035_add_batch_submitted.rb
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/jonmagic/!svn/ver/54/malibu_management/trunk/db/migrate/035_add_batch_submitted.rb
+END
+001_create_base_environment.rb
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/001_create_base_environment.rb
+END
+025_paranoid_users.rb
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/025_paranoid_users.rb
+END
+033_add_date_due_recd.rb
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/033_add_date_due_recd.rb
+END
+026_add_active_resource_site_to_stores.rb
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/026_add_active_resource_site_to_stores.rb
+END
+007_time_off_request_form.rb
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/007_time_off_request_form.rb
+END
+004_manager_report_form.rb
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/004_manager_report_form.rb
+END
+014_change_integers_to_decimals.rb
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/jonmagic/!svn/ver/43/malibu_management/trunk/db/migrate/014_change_integers_to_decimals.rb
+END
+037_add_ach_submitted.rb
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/jonmagic/!svn/ver/157/malibu_management/trunk/db/migrate/037_add_ach_submitted.rb
+END

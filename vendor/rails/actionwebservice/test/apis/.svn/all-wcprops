@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionwebservice/test/apis
+END
+auto_load_api.rb
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionwebservice/test/apis/auto_load_api.rb
+END
+broken_auto_load_api.rb
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionwebservice/test/apis/broken_auto_load_api.rb
+END

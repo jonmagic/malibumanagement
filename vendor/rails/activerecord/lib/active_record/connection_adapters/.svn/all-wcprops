@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activerecord/lib/active_record/connection_adapters
+END
+sqlite_adapter.rb
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activerecord/lib/active_record/connection_adapters/sqlite_adapter.rb
+END
+abstract_adapter.rb
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activerecord/lib/active_record/connection_adapters/abstract_adapter.rb
+END
+frontbase_adapter.rb
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activerecord/lib/active_record/connection_adapters/frontbase_adapter.rb
+END
+postgresql_adapter.rb
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
+END
+mysql_adapter.rb
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activerecord/lib/active_record/connection_adapters/mysql_adapter.rb
+END
+oracle_adapter.rb
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activerecord/lib/active_record/connection_adapters/oracle_adapter.rb
+END
+firebird_adapter.rb
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activerecord/lib/active_record/connection_adapters/firebird_adapter.rb
+END
+sqlserver_adapter.rb
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activerecord/lib/active_record/connection_adapters/sqlserver_adapter.rb
+END
+sybase_adapter.rb
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activerecord/lib/active_record/connection_adapters/sybase_adapter.rb
+END
+db2_adapter.rb
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activerecord/lib/active_record/connection_adapters/db2_adapter.rb
+END
+odbc_adapter.rb
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activerecord/lib/active_record/connection_adapters/odbc_adapter.rb
+END
+openbase_adapter.rb
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activerecord/lib/active_record/connection_adapters/openbase_adapter.rb
+END

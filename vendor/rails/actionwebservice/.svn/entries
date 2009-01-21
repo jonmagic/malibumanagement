@@ -1,0 +1,121 @@
+8
+
+dir
+254
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk/vendor/rails/actionwebservice
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+test
+dir
+
+Rakefile
+file
+
+
+
+
+2008-03-28T18:47:43.000000Z
+a283a94aa622c15409b1fef1dfd6da66
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+setup.rb
+file
+
+
+
+
+2008-03-28T18:47:43.000000Z
+932b6c52330c6fa3da2ece4b188dfe0b
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+TODO
+file
+
+
+
+
+2008-03-28T18:47:43.000000Z
+3abdeb2e1fcf507edb896d8c702c6191
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+lib
+dir
+
+CHANGELOG
+file
+
+
+
+
+2008-03-28T18:47:43.000000Z
+c99551fc7d1ea1dc56055c888edd9a2f
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+install.rb
+file
+
+
+
+
+2008-03-28T18:47:43.000000Z
+c7791d0f9ffc803142739285f37e40d1
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+MIT-LICENSE
+file
+
+
+
+
+2008-03-28T18:47:43.000000Z
+bbd71e184d4a6dd00b559735c3471d30
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+README
+file
+
+
+
+
+2008-03-28T18:47:43.000000Z
+92595f1cd833430f70e99e305f42f776
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+examples
+dir
+

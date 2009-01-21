@@ -1,0 +1,52 @@
+8
+
+dir
+254
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk/vendor/rails/railties/lib/commands/performance
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+benchmarker.rb
+file
+
+
+
+
+2008-03-28T18:47:46.000000Z
+898f1f600e94cf8bb689cdd9d88712b5
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+profiler.rb
+file
+
+
+
+
+2008-03-28T18:47:46.000000Z
+a48e1dae0301479aa46f4f5c76f0e963
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+

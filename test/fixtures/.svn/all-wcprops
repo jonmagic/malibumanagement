@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/jonmagic/!svn/ver/43/malibu_management/trunk/test/fixtures
+END
+pages.yml
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/jonmagic/!svn/ver/43/malibu_management/trunk/test/fixtures/pages.yml
+END
+stores.yml
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/jonmagic/!svn/ver/43/malibu_management/trunk/test/fixtures/stores.yml
+END
+wildcard_forms.yml
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/jonmagic/!svn/ver/43/malibu_management/trunk/test/fixtures/wildcard_forms.yml
+END
+second_forms.yml
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/jonmagic/!svn/ver/43/malibu_management/trunk/test/fixtures/second_forms.yml
+END
+users.yml
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/jonmagic/!svn/ver/43/malibu_management/trunk/test/fixtures/users.yml
+END
+logs.yml
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/jonmagic/!svn/ver/43/malibu_management/trunk/test/fixtures/logs.yml
+END
+basic_forms.yml
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/jonmagic/!svn/ver/43/malibu_management/trunk/test/fixtures/basic_forms.yml
+END
+patients.yml
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/jonmagic/!svn/ver/43/malibu_management/trunk/test/fixtures/patients.yml
+END
+notes.yml
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/jonmagic/!svn/ver/43/malibu_management/trunk/test/fixtures/notes.yml
+END
+posts.yml
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/jonmagic/!svn/ver/43/malibu_management/trunk/test/fixtures/posts.yml
+END
+form_instances.yml
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/jonmagic/!svn/ver/43/malibu_management/trunk/test/fixtures/form_instances.yml
+END
+admins.yml
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/jonmagic/!svn/ver/43/malibu_management/trunk/test/fixtures/admins.yml
+END

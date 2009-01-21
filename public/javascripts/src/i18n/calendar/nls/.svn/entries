@@ -1,0 +1,115 @@
+8
+
+dir
+254
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk/public/javascripts/src/i18n/calendar/nls
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+gregorianExtras.js
+file
+
+
+
+
+2008-03-28T18:47:57.000000Z
+788a1a365710387bcc325af86dab210d
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+zh-cn
+dir
+
+zh
+dir
+
+zh-hk
+dir
+
+pt
+dir
+
+pt-br
+dir
+
+gregorian.js
+file
+
+
+
+
+2008-03-28T18:47:57.000000Z
+8c9fee6993e5b8036032335ff404c615
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+sv
+dir
+
+de
+dir
+
+ja
+dir
+
+README
+file
+
+
+
+
+2008-03-28T18:47:57.000000Z
+4c77115e7cadfc7d4fb7bd88e7b135dd
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+fi
+dir
+
+en
+dir
+
+fr
+dir
+
+es
+dir
+
+zh-tw
+dir
+
+ko
+dir
+
+nl
+dir
+
+it
+dir
+
+hu
+dir
+

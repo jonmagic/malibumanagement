@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/jonmagic/!svn/ver/180/malibu_management/trunk/app/views/eft
+END
+admin_eft.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/jonmagic/!svn/ver/167/malibu_management/trunk/app/views/eft/admin_eft.rhtml
+END
+view_batch_stats.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/jonmagic/!svn/ver/43/malibu_management/trunk/app/views/eft/view_batch_stats.rhtml
+END
+download_files.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/jonmagic/!svn/ver/180/malibu_management/trunk/app/views/eft/download_files.rhtml
+END

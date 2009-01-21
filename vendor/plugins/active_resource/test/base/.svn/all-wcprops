@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/active_resource/test/base
+END
+load_test.rb
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/active_resource/test/base/load_test.rb
+END
+custom_methods_test.rb
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/active_resource/test/base/custom_methods_test.rb
+END
+equality_test.rb
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/plugins/active_resource/test/base/equality_test.rb
+END

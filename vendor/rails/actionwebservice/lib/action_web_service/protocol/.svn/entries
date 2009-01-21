@@ -1,0 +1,79 @@
+8
+
+dir
+254
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk/vendor/rails/actionwebservice/lib/action_web_service/protocol
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+soap_protocol
+dir
+
+abstract.rb
+file
+
+
+
+
+2008-03-28T18:47:42.000000Z
+bb1c4174455cc482b23bc833d5411fd9
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+soap_protocol.rb
+file
+
+
+
+
+2008-03-28T18:47:42.000000Z
+2bc22abbd746c9bdb06f884820ab5ce0
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+xmlrpc_protocol.rb
+file
+
+
+
+
+2008-03-28T18:47:42.000000Z
+896b6a1dc33939eff4264b6da9758094
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+discovery.rb
+file
+
+
+
+
+2008-03-28T18:47:42.000000Z
+acbeabd2ab45fd54da4cd9f43560dfcb
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+

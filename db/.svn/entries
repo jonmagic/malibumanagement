@@ -1,0 +1,44 @@
+8
+
+dir
+254
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk/db
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-08-20T21:33:10.330268Z
+223
+jonmagic
+has-props
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+migrate
+dir
+
+malibu_test.db
+file
+
+
+
+
+2008-03-28T18:47:28.000000Z
+acea72c23e6b3f085b526729ae1e0cf9
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+has-props
+

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator/generators/components/web_service/templates
+END
+api_definition.rb
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator/generators/components/web_service/templates/api_definition.rb
+END
+functional_test.rb
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator/generators/components/web_service/templates/functional_test.rb
+END
+controller.rb
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/railties/lib/rails_generator/generators/components/web_service/templates/controller.rb
+END

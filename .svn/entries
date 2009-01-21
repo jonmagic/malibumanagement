@@ -1,0 +1,112 @@
+8
+
+dir
+254
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-09-29T15:42:11.157404Z
+254
+jonmagic
+has-props
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+test
+dir
+
+app
+dir
+
+log
+dir
+
+Rakefile
+file
+
+
+
+
+2008-03-28T18:47:59.000000Z
+17f2f134da4cd31ea095d5868ca89e86
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+restart.bat.example
+file
+
+
+
+
+2008-04-07T13:37:58.000000Z
+dde666ecc082c0de0986bfd96b6bfb65
+2008-04-07T16:16:56.729739Z
+109
+jonmagic
+
+components
+dir
+
+db
+dir
+
+old_scripts
+dir
+
+update.bat
+file
+
+
+
+
+2008-04-07T16:07:15.000000Z
+bb50d64ccbd2800665440e447edccb7c
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+vendor
+dir
+
+script
+dir
+
+config
+dir
+
+doc
+dir
+
+lib
+dir
+
+public
+dir
+
+runner.bat
+file
+
+
+
+
+2008-04-07T13:38:16.000000Z
+09808aefce9b685c7b668e15e5a31b53
+2008-04-07T16:18:45.635132Z
+111
+jonmagic
+

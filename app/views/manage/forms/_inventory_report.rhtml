@@ -1,0 +1,18 @@
+<% view = view.nil? ? true : view -%>
+<% f = nil if view -%>
+<table class="spacetable">
+	<thead>
+		<th>Item Name</th>
+		<th>Inventory</th>
+		<th>Actual</th>
+		<th>Difference</th>
+	</thead>
+<% @data.items.each do |item| -%>
+	<tr>
+	<td class="leftcolumn"><%= item.label %></td>
+	<td class="centercolumn lightgrey"><%= !view ? f.text_field(item.name, :value => item.actual, :size => 8) : color_amount(item.actual || 0) %></td>
+	<td class="centercolumn"><%= color_amount(item.should_be) %></td>
+	<td class="centercolumn lightgrey"><%= color_amount(item.actual.to_i - item.should_be.to_i) %></td>
+	</tr>
+<% end -%>
+</table>

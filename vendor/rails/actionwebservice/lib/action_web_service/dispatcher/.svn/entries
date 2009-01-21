@@ -1,0 +1,52 @@
+8
+
+dir
+254
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk/vendor/rails/actionwebservice/lib/action_web_service/dispatcher
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+abstract.rb
+file
+
+
+
+
+2008-03-28T18:47:42.000000Z
+ce358e8be8a204582572dff0614f9d16
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+action_controller_dispatcher.rb
+file
+
+
+
+
+2008-03-28T18:47:42.000000Z
+7aec815186285f6efbfba3eab9196b58
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+

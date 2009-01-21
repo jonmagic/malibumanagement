@@ -1,0 +1,52 @@
+8
+
+dir
+254
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk/vendor/rails/actionwebservice/examples/googlesearch/direct
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+search_controller.rb
+file
+
+
+
+
+2008-03-28T18:47:43.000000Z
+fcb5384206cc17edb8afa3457658ddff
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+google_search_api.rb
+file
+
+
+
+
+2008-03-28T18:47:43.000000Z
+19b60bbe4c1f2d3801b560ca6540334b
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+

@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/dnd
+END
+DragAndDrop.js
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/dnd/DragAndDrop.js
+END
+TreeDragAndDrop.js
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/dnd/TreeDragAndDrop.js
+END
+__package__.js
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/dnd/__package__.js
+END
+HtmlDragMove.js
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/dnd/HtmlDragMove.js
+END
+HtmlDragAndDrop.js
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/dnd/HtmlDragAndDrop.js
+END
+Sortable.js
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/dnd/Sortable.js
+END
+HtmlDragCopy.js
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/dnd/HtmlDragCopy.js
+END
+HtmlDragManager.js
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/dnd/HtmlDragManager.js
+END
+TreeDragAndDropV3.js
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/jonmagic/!svn/ver/43/malibu_management/trunk/public/javascripts/src/dnd/TreeDragAndDropV3.js
+END

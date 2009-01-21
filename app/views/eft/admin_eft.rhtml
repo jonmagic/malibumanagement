@@ -1,0 +1,139 @@
+<div id="eft">
+	<div id="eft_actions">
+		<div id="eft_actions_header" class="eft_header">
+			<h2>&nbsp;<br />Viewing <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
+		</div>
+		<form id='month_picker_form'>
+		<p>Showing for the month of: <span style="border-top:2px solid #848484; border-left:2px solid #848484; border-bottom:2px solid #FAFAFA; border-right:2px solid #FAFAFA; padding:1px 3px 3px 2px"><%= date_picker_tag('for_month', Time.parse(@for_month).strftime('%B %Y'), :display_as => "function(date){return(getMonthName(date.getMonth()) + ' ' + date.getFullYear())}") %></span>
+			<% unless @batch.locked -%>
+			<span style="margin-left:20pt;">
+			<%= link_to 'Regenerate for this month', eft_path(:action => 'regenerate_batch'), :onclick => "window.location = this.href + '?for_month=' + $('for_month').value; return false;" %>
+			<% gens = EftBatch.find(:all, :conditions => ['regenerate_now = ?', 'all']).collect {|x| Time.parse(x.for_month).month_name} -%>
+			&nbsp;<%= (gens.to_sentence + (gens.length > 1 ? ' are' : ' is') + ' currently regenerating') if !gens.blank? %>
+			</span>
+			<% end -%>
+		</p>
+		</form>
+	</div>
+	<%= observe_form('month_picker_form',
+									:frequency => 0.5,
+									:start_nil => false,
+	               	:function => 'window.location = "'+eft_path(:action => 'admin_eft')+'?for_month=" + $("for_month").value',
+									:method => :get)
+	%>
+	<div id="eft_downloads">
+		<div id="eft_downloads_header" class="eft_header">
+			<h2>&nbsp;<br />Downloadable Excel files for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
+		</div>
+		<div class="eft_left_column"><ul>
+			<li><%= link_to 'Current Batch', formatted_search_client_members_path(:format => 'csv', :filter_by => 'All', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;", :class => 'row1' %></li>
+			<li><a href="" class="row2">Still clearing</a></li>
+		</ul></div>
+		<div class="eft_right_column"><ul>
+			<li><%= link_to "Missing EFTs (#{@batch.no_eft_count})", formatted_search_client_members_path(:format => 'csv', :filter_by => 'Missing EFT', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;", :class => 'row1' %></li>
+			<li><%= link_to "Invalid EFTs (#{@batch.invalid_count})", formatted_search_client_members_path(:format => 'csv', :filter_by => 'Invalid', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;", :class => 'row2' %></li>
+		</ul></div>
+	</div>
+	<div id="eft_stats">
+		<div id="eft_stats_header" class="eft_header">
+			<h2>&nbsp;<br />Statistics for <%= Time.parse(@batch.for_month).strftime("%B %Y") %></h2>
+		</div>
+		<div class="eft_left_column">
+			<h3>EFT by $ amounts</h3>
+			<ul>
+				<% @batch.amounts_counts.each do |amount,count| -%>
+					<li>$<%= (amount.to_s == ZONE[:StandardMembershipPrice].to_s ? amount : link_to(amount, eft_path(:action => 'justify_amounts', :amount => amount), :confirm => 'Are you sure you want to reset these '+count.to_s+' memberships to $'+ZONE[:StandardMembershipPrice].to_s+'?')) %>: <%= link_to count, formatted_search_client_members_path(:format => 'csv', :filter_by => 'All', :amount => amount, :query => ''), :onclick => "window.location = this.href + '&amp;for_month=' + $('for_month').value; return false;" %></li>
+				<% end -%>
+			</ul>
+			</div>
+		</div>
+		<div class="eft_right_column">
+		  <div id="time_to_bill" style="margin-top:1em">
+		    <h3>Time to Bill</h3>
+  			<% if @batch.locked && !@batch.submitted? -%>
+          <% if params[:gotobilling] == 'ohboy' -%>
+  					<span style="display:block;float:left"><img src="/images/eft/locked.png" alt="locked" width="32px" height="32px" /></span>This payment batch is now Locked. Data cannot be regenerated. Click to <a href="javascript:void(0)" onclick="Control.Modal.open($('gotobilling_links').innerHTML)">Download Payment CSVs</a>.
+  					<div id="gotobilling_links" style="display:none">
+  						<div id="gotobilling_links_content" style="margin:2em">
+  							<ul>
+  							<% LOCATIONS.values.sort {|a,b| a[:name] <=> b[:name]}.each do |location| -%>
+  							<li><%= link_to location[:name], formatted_search_client_members_path(:format => 'csv', :gotoready => 'YES', :domain => location[:domain], :filter_by => 'Valid', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %></li>
+  							<% end -%>
+  							</ul>
+  						</div>
+  					</div>
+          <% else -%>
+    				<span style="display:block;float:left"><%= link_to image_tag('/images/eft/smtm.jpg'), "javascript:Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' />Uploading files to DCAS...</div>'); new Ajax.Updater({success:'time_to_bill'}, '/malibu/eft/submit_payments?for_month=#{@batch.for_month}', {asynchronous:true, evalScripts:true, onComplete:function(){Control.Modal.close()}}); void(0);", :confirm => "Are you sure you want to submit to DCAS?" %></span><p style="padding-left:140px">Click icon to submit.</p>
+    			<% end -%>
+  			<% elsif @batch.submitted? -%>
+  		    <h4>Files have been uploaded to DCAS.</h4>
+  			<% else %>
+  				<a style="display:block;float:left" href="<%= eft_path(:action => 'lock_batch') %>" onclick="window.location = this.href + '?for_month=' + $('for_month').value; return false;"><img src="/images/eft/unlocked.png" alt="unlocked" width="32px" height="32px" /></a><p>This payment batch is Unlocked. Data may regenerated at any time. Click the lock icon to lock this month when you're ready to submit payment files to Goto-Billing.</p>
+  			<% end -%>
+			</div>
+		</div>
+    <div style="clear:both">
+		<div class="eft_left_column">
+			<h3>By Store and Total (Card / Bank)</h3>
+			<table class="eft_stats_table">
+        <% if @batch.locked -%>
+          <thead>
+            <th>Store</th>
+            <th>Count</th>
+            <th>Completed</th>
+            <th>Not Submitted</th>
+            <th>In Progress</th>
+            <th>Accepted</th>
+            <th>Declined</th>
+            <th>MC/VS App</th>
+            <th>Amex App</th>
+            <th>Discover App</th>
+          </thead>
+          <% oddeven = 0 -%>
+          <% @batch.locations_status_counts.each do |location_code,status_counts| -%>
+  				<% next if location_code == 'all' -%>
+  				<% oddeven += 1 -%>
+  				  <tr class="<%= oddeven.even? ? 'even_row' : 'odd_row' %>">
+  				    <td><%= LOCATIONS[location_code][:name] %>:</td>
+  				    <td><%= status_counts[:all][0] %>/<%= status_counts[:all][1] %> ($<%= status_counts[:all][2].to_dollar %>)</td>
+  				    <td><%= status_counts[:completed][0] %>/<%= status_counts[:completed][1] %> ($<%= status_counts[:completed][2].to_dollar %>)</td>
+  				    <td><%= status_counts[:not_submitted][0] %> ($<%= status_counts[:not_submitted][1].to_dollar %>)</td>
+  				    <td><%= status_counts[:in_progress][0] %>/<%= status_counts[:in_progress][1] %> ($<%= status_counts[:in_progress][2].to_dollar %>)</td>
+  				    <td><%= status_counts[:accepted][0] %>/<%= status_counts[:accepted][1] %> ($<%= status_counts[:accepted][2].to_dollar %>)</td>
+  				    <td><%= status_counts[:declined][0] %>/<%= status_counts[:declined][1] %> ($<%= status_counts[:declined][2].to_dollar %>)</td>
+  				    <td><%= status_counts[:mcvs_app][0] %> ($<%= status_counts[:mcvs_app][1].to_dollar %>)</td>
+  				    <td><%= status_counts[:amex_app][0] %> ($<%= status_counts[:amex_app][1].to_dollar %>)</td>
+  				    <td><%= status_counts[:discover_app][0] %> ($<%= status_counts[:discover_app][1].to_dollar %>)</td>
+  				  </tr>
+          <% end -%>
+          <% status_counts = @batch.locations_status_counts['all'] -%>
+  				<% oddeven += 1 -%>
+				  <tr class="<%= oddeven.even? ? 'even_row' : 'odd_row' %>">
+				    <td>All Stores:</td>
+				    <td><%= status_counts[:all][0] %>/<%= status_counts[:all][1] %> ($<%= status_counts[:all][2].to_dollar %>)</td>
+				    <td><%= status_counts[:completed][0] %>/<%= status_counts[:completed][1] %> ($<%= status_counts[:completed][2].to_dollar %>)</td>
+				    <td><%= status_counts[:not_submitted][0] %> ($<%= status_counts[:not_submitted][1].to_dollar %>)</td>
+				    <td><%= status_counts[:in_progress][0] %>/<%= status_counts[:in_progress][1] %> ($<%= status_counts[:in_progress][2].to_dollar %>)</td>
+				    <td><%= status_counts[:accepted][0] %>/<%= status_counts[:accepted][1] %> ($<%= status_counts[:accepted][2].to_dollar %>)</td>
+				    <td><%= status_counts[:declined][0] %>/<%= status_counts[:declined][1] %> ($<%= status_counts[:declined][2].to_dollar %>)</td>
+				    <td><%= status_counts[:mcvs_app][0] %> ($<%= status_counts[:mcvs_app][1].to_dollar %>)</td>
+				    <td><%= status_counts[:amex_app][0] %> ($<%= status_counts[:amex_app][1].to_dollar %>)</td>
+				    <td><%= status_counts[:discover_app][0] %> ($<%= status_counts[:discover_app][1].to_dollar %>)</td>
+				  </tr>
+        <% else -%>
+				  <tr class="bold"><td>Total:</td><td><%= @batch.payments.count %> (<%= (@batch.locations_counts['all'][:valid].to_f / (@batch.locations_counts['all'][:all].to_f == 0 ? 1 : @batch.locations_counts['all'][:all].to_f) * 100).to_i %>% billable)</td></tr>
+  				<% @batch.locations_counts.each do |location_code,counts| -%>
+  				<% next if location_code == 'all' -%>
+  					<tr><td><%= LOCATIONS[location_code][:name] %>:</td>
+  						<td><%= link_to "#{counts[:valid]} valid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Valid', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %>,
+  							<%= link_to "#{counts[:invalid]} invalid", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Invalid', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %>,
+  							<%= link_to "#{counts[:no_eft]} no eft", formatted_search_client_members_path(:format => 'csv', :domain => LOCATIONS[location_code][:domain], :filter_by => 'Missing EFT', :query => ''), :onclick => "window.location = this.href + '&for_month=' + $('for_month').value; return false;" %>
+  							(<%= (counts[:valid].to_f / (counts[:all] == 0 ? 1 : counts[:all]).to_f * 100.to_f).to_i %>% billable)
+  					</td></tr>
+  				<% end -%>
+				<% end -%>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="clear"><br /></div>

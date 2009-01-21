@@ -1,0 +1,52 @@
+8
+
+dir
+254
+http://repo.sabretechllc.com/jonmagic/malibu_management/trunk/vendor/rails/actionwebservice/test/apis
+http://repo.sabretechllc.com/jonmagic
+
+
+
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+efab182b-1539-0410-a5cb-a1a1bc741398
+
+auto_load_api.rb
+file
+
+
+
+
+2008-03-28T18:47:42.000000Z
+ac560a676e964ca883ad5025b9949fb3
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+
+broken_auto_load_api.rb
+file
+
+
+
+
+2008-03-28T18:47:42.000000Z
+e1c06d85ae7b8b032bef47e42e4c08f9
+2008-03-28T14:38:02.472172Z
+43
+jonmagic
+

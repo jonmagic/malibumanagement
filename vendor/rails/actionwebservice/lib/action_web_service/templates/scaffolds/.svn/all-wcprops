@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionwebservice/lib/action_web_service/templates/scaffolds
+END
+layout.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionwebservice/lib/action_web_service/templates/scaffolds/layout.rhtml
+END
+result.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionwebservice/lib/action_web_service/templates/scaffolds/result.rhtml
+END
+methods.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionwebservice/lib/action_web_service/templates/scaffolds/methods.rhtml
+END
+parameters.rhtml
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/actionwebservice/lib/action_web_service/templates/scaffolds/parameters.rhtml
+END

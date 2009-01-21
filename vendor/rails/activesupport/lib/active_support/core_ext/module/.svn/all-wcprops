@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/module
+END
+loading.rb
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/module/loading.rb
+END
+introspection.rb
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/module/introspection.rb
+END
+inclusion.rb
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/module/inclusion.rb
+END
+attr_internal.rb
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/module/attr_internal.rb
+END
+aliasing.rb
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/module/aliasing.rb
+END
+attribute_accessors.rb
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/module/attribute_accessors.rb
+END
+attr_accessor_with_default.rb
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/module/attr_accessor_with_default.rb
+END
+delegation.rb
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/jonmagic/!svn/ver/43/malibu_management/trunk/vendor/rails/activesupport/lib/active_support/core_ext/module/delegation.rb
+END

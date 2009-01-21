@@ -1,0 +1,10 @@
+<h2><%= @form.admin_visual_identifier %></h2>
+<p>(<%= @form.form_identifier %> - <%= @form.status.as_status.word('uppercase short singular') %>)</p>
+
+<div class="form">
+<%= render :partial => @form.data_type.fromCamelCase -%>
+</div>
+
+<%= render :partial => 'manage/notes/form_notes', :locals => {:form => @form, :new_note => false} %>
+
+<p><%= link_to "Pull back to Review", admin_forms_path(:form_status => 3.as_status.text, :form_type => @form.data_type, :form_id => @form.id) %></p>

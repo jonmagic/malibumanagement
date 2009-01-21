@@ -1,0 +1,26 @@
+<% view = view.nil? ? true : view -%>
+<% f = nil if view -%>
+
+<table>
+	<tr>
+	<td class="leftcolumn"><label for="employee_name">Employee Name</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_field(:employee_name, :value => @data.employee_name) : @data.employee_name %></td>
+	</tr>
+	<tr>
+	<td class="leftcolumn"><label for="reason_for_termination">Reason For Termination</label></td>
+	<td class="rightcolumn"><%= !view ? f.text_area(:reason_for_termination, :value => @data.reason_for_termination, :rows => 5, :cols => 40) : @data.reason_for_termination %></td>
+	</tr>
+</table>
+
+<% if view or !@data.manager_signature_hash.blank? -%>
+	<p class="error_message"><%= flash[:error] %></p>
+	<p style="font-size:12pt; font-style:italic; color:blue">This form was signed<br />&nbsp;&nbsp;&nbsp;&nbsp;on <%= @form.created_at %><br />&nbsp;&nbsp;&nbsp;&nbsp;by <%= @form.data.manager_signer.friendly_name %><br />&nbsp;&nbsp;&nbsp;&nbsp;Digital Signature: <%= @form.data.manager_signature_hash %></p>
+<% else -%>
+	<p class="error_message"><%= flash[:error] %></p>
+	<p><label for="manager_sign_username">Store Manager's Username</label><br/>
+	<%= f.text_field 'manager_sign_username', :value => nil %></p>
+	<p><label for="manager_sign_password">Store Manager's Password</label><br/>
+	<%= f.password_field 'manager_sign_password', :value => nil %></p>
+<% end -%>
+
+<% @submit_text = 'Digitally Sign' -%>
