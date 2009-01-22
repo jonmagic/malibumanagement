@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+one:
+  id: 1
+  author_id: 1
+  title: God is good
+  text: For God so loved the world that he gave his only begotten so, so that whosoever believe should not perish, but have everlasting life
+two:
+  id: 2
+  author_id: 1
+  title: God is great
+  text: For all have sinned and fall short of the glory of God

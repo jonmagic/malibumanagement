@@ -1,0 +1,10 @@
+<tr id="client_listing_<%= client.id %>" class="livesearch_result client_listing listing <%= rownum.even? ? 'even' : 'odd' %>">
+	<td><%= client.new_record? ? '(NEW)' : link_to(client.Client_no, exists_helios_client_path(:id => client.id), :class => 'ajax_link') %></td>
+	<td><%= client.full_name %></td>
+	<td><%= client.Address %></td>
+	<td><%= client.home_phone %></td>
+	<td><%= client.Last_Mdt.strftime("%Y %b %d") if !client.Last_Mdt.nil? %></td>
+	<td><%= client.Member1 %> (<%= client.Member1_Beg.strftime("%Y %b %d") if !client.Member1_Beg.nil? %> - <%= client.Member1_Exp.strftime("%Y %b %d") if !client.Member1_Exp.nil? %>)</td>
+	<td><%= client.Member2 %> (<%= client.Member2_Beg.strftime("%Y %b %d") if !client.Member2_Beg.nil? %> - <%= client.Member2_Exp.strftime("%Y %b %d") if !client.Member2_Exp.nil? %>)</td>
+	<td><a href="javascript:void(0)" onclick="deleteModal(<%= client.id %>, '<%= client.full_name %>');">Destroy</a></td>
+</tr>

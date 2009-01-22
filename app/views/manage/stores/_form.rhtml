@@ -1,0 +1,65 @@
+<% form_method ||= :post %>
+<% form_for(:store, :url => submit_url, :html => {:method => form_method}) do |f| %>
+<%= error_messages_for :store %>
+<%= "Your store alias is <em>#{@store.alias}</em>." if !@user.username.blank? and error_message_on(:user, :username).blank? -%>
+<% if @store.alias.blank? or !error_message_on(:store, :alias).blank? -%>
+<p><label for="alias">Store Alias</label><br/>
+<%= f.text_field :alias %></p>
+<% else -%>
+<%= f.hidden_field :alias, :value => @store.alias %></p>
+<% end -%>
+
+  <p><label for="friendly_name">Business Friendly Name</label><br/>
+  <%= f.text_field :friendly_name %></p>
+  <p><label for="address">Address</label><br/>
+  <%= f.text_field :address %></p>
+  <p><label for="contact_person">Contact Person</label><br/>
+  <%= f.text_field :contact_person %></p>
+  <p><label for="telephone">Telephone</label><br/>
+  <%= f.text_field :telephone %></p>
+  <p><label for="gcal_url">Google Calendar (private url)</label><br/>
+ 	<%= f.text_field :gcal_url %></p>
+	<p><label for="manager_fields">Store Manager</label></p>
+	<div style="border:2px solid #999999; padding:1em 0 1em 2em; width:24em">
+  <% fields_for :user, @user do |g| %>
+    <%= error_messages_for :user %>
+		<p><label for="friendly_name">Store Manager's Full Name</label><br/>
+		<%= g.text_field :friendly_name %></p>
+
+		<p><label for="social_security_number">Social Security Number</label><br/>
+		<%= g.text_field :social_security_number, :maxsize => 9 %></p>
+
+		<p><label for="username">Store Manager's Username</label><br/>
+		<%= g.text_field :username %></p>
+
+		<p><label for="password">Password</label><br/>
+		<%= g.password_field :password %></p>
+
+		<p><label for="password_confirmation">Confirm Password</label><br/>
+		<%= g.password_field :password_confirmation %></p>
+
+		<p><label for="form_types">Manager-only Form Types</label><br/>
+			<ul>
+			<% FormType.find(:all).each do |t| -%>
+			<% unless @user.store.form_type_ids.include?(t.id.to_s) -%>
+			   <li><input type="checkbox" name="user[form_type_ids][]" value="<%= t.id %>"<%= ' checked="checked"' if @user.form_type_ids.include?(t.id) %> /><%= t.friendly_name %><%= ' (store-wide)' if @user.store.form_type_ids.include?(t.id) %></li>
+			<% end -%>
+			<% end -%>
+			</ul>
+		</p>
+  <% end -%>
+  </div>
+  <% if current_user.is_admin? -%>
+  <p><label for="form_types">Store-wide Form Types</label><br/>
+<ul>
+<% FormType.find(:all).each do |t| -%>
+   <li><input type="checkbox" name="store[form_type_ids][]" value="<%= t.id %>" <%= 'checked="checked"' if @store.form_type_ids.include?(t.id) %> /><%= t.friendly_name %></li>
+<% end -%>
+</ul>
+  <% end -%>
+  <p>
+    <%= submit_tag submit %>
+  </p>
+</div>
+<% end %>
+

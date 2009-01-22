@@ -1,0 +1,36 @@
+<h2><%= @user.friendly_name %>'s Account</h2>
+<p>Store: <%= link_to @user.store.friendly_name, store_path(@user.store) %><br />
+Username: <em><%= @user.username %></em></p>
+<p>Full Name<a href="javascript:void(0)" id="edit_friendly_name_<%= @user.id %>">(edit)</a>:<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <%= in_place_editor_field :user, 'friendly_name', {}, :rows => 1, :external_control => "edit_friendly_name_#{@user.id}", :url => {:store_id => @user.store.id, :action => 'set_user_friendly_name', :id => @user.id} %></p>
+	<p>Store Manager: 	<% form_for :user, :url => { :action => 'update', :id => @user.id }, :html => {:method => :update, :id => 'change_store_admin_status'} do |f| -%>
+		<input type="hidden" name="user[is_store_admin]" value='<%= @user.is_store_admin ? 0 : 1 %>' />
+		<input style="display:inline" type="checkbox" name="user[is_store_admin]" <%= ' checked="checked"' if @user.is_store_admin %> onchange="this.form.submit()" value='1' />
+		<%= hidden_field 'user', 'operation', :value => 'attr_update' %>
+	<% end -%>
+	</p>
+
+<% form_for :user, :url => { :action => 'update', :id => @user.id }, :html => {:method => :update} do |f| -%>
+<%= hidden_field 'user', 'operation', :value => 'attr_update' %>
+<p><label for="form_types">Explicitly Assigned Forms</label><br/>
+	<input type="hidden" name="user[form_type_ids][]" value="" />
+	<ul>
+	<% FormType.find(:all).each do |t| -%>
+	<% unless @user.store.form_type_ids.include?(t.id.to_s) -%>
+	   <li><input type="checkbox" name="user[form_type_ids][]" value="<%= t.id %>" <%= 'checked="checked"' if @user.form_type_ids.include?(t.id.to_s) %> /><%= t.friendly_name %><%= ' (store-wide)' if @user.store.form_type_ids.include?(t.id.to_s) %></li>
+	<% end -%>
+	<% end -%>
+	</ul>
+</p>
+<p><%= submit_tag 'Update' %></p>
+<% end -%>
+
+<p><%= link_to_function 'Change Password', visual_effect(:toggle_blind, :change_password_form, :duration => 0.5) %></p>
+<% form_for :user, :url => { :action => 'update', :id => @user.id }, :html => {:method => :update, :id => 'change_password_form', :style => 'display:none'} do |f| -%>
+<%= hidden_field 'user', 'operation', :value => 'changing_password' %>
+<p><label for="password">Change Password</label><br/>
+<%= f.password_field :password %></p>
+<p><label for="password_confirmation">Confirm Password</label><br/>
+<%= f.password_field :password_confirmation %></p>
+<p><%= submit_tag 'Change Password' %></p>
+<% end -%>
