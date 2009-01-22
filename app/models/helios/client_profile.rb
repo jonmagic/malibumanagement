@@ -131,8 +131,8 @@ class Helios::ClientProfile < ActiveRecord::Base
     self.attributes.reject {|k,v| [self.class.primary_key, 'F_LOC', 'UpdateAll'].include?(k)}
   end
 
-  def self.has_prepaid_membership?(id)
-    self.find(id).has_prepaid_membership?
+  def self.has_prepaid_membership?(id,datetime=nil)
+    self.find(id).has_prepaid_membership?(datetime)
   end
   def has_prepaid_membership?(datetime=nil)
     datetime ||= Time.now
