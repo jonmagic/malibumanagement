@@ -1,6 +1,0 @@
-<p><strong>Mismatch13</strong> was fixed in the following locations:</p>
-<ul>
-	<% @locations.each do |location, result| -%>
-	<li class="<%= !result['success'] ? 'warning_bullet' : 'green_bullet' %>"><%= location %> - <%= !result.has_key?('error') ? "#{result['count']} Mismatch13 errors fixed." : result['error'] %></li>
-	<% end -%>
-</ul>

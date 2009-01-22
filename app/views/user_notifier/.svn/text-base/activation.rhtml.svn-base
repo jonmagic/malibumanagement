@@ -1,3 +1,0 @@
-<%= @user.friendly_name %>, your account has been activated.
-
-<%= @url %>

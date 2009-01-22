@@ -1,5 +1,0 @@
-<%= @user.friendly_name %>, your account has been created.
-
-Visit this url to activate your account:
-
-<%= @url %>

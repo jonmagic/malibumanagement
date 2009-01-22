@@ -1,4 +1,0 @@
-<h3>Form History</h3>
-<div id="result_or_latest">
-	<%= render :partial => 'live_history' %>
-</div>

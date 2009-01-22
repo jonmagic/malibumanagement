@@ -1,1 +1,0 @@
-page.visual_effect "fade", "post_section_#{params[:id]}", :duration => 0.3

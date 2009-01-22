@@ -1,8 +1,0 @@
-<%= link_to '&lt;&lt; All Stores', stores_path %>
-<h1><%= @store.friendly_name %></h1>
-<p><%= link_to 'Edit Store', edit_store_path(@store) %></p>
-<p>Business Alias: <%= @store.alias %></p>
-<p>Address:        <%= @store.address %></p>
-<p>Assigned Forms: <%= (@store.form_types.collect {|f| f.friendly_name}).join(', ') %></p>
-<p>Google Calendar: <%= link_to "View as webpage", @store.gcal_view_url %> / <%= link_to @store.gcal_url, @store.gcal_url %></p>
-<p><%= link_to 'View/Edit Users', manage_users_path(@store.id) %></p>
