@@ -2,3 +2,4 @@ config/app_config.rb
 config/database.yml
 tmp/*
 log/*
+config/database.yml.production
