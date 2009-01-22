@@ -30,10 +30,10 @@ class Helios::Eft < ActiveRecord::Base
     sql = case ::RAILS_ENV
     when 'development'
       date_s = Time.parse(month).strftime("%Y-%m-%d")
-      "(Member1 = 'VIP' AND '"+date_s+"' >= Member1_Beg AND Member1_Exp >= '"+date_s+"') OR (Member2 = 'VIP' AND '"+date_s+"' >= Member2_Beg AND Member2_Exp >= '"+date_s+"')"
+      "(Member1 = 'VIP' AND '#{date_s}' >= Member1_Beg AND Member1_Exp >= '#{date_s}') OR (Member2 = 'VIP' AND '#{date_s}' >= Member2_Beg AND Member2_Exp >= '#{date_s}')"
     when 'production'
       date_s = Time.parse(month).strftime("%Y%m%d")
-      "([Member1] = 'VIP' AND '"+date_s+"' >= [Member1_Beg] AND [Member1_Exp] >= '"+date_s+"') OR ([Member2] = 'VIP' AND '"+date_s+"' >= [Member2_Beg] AND [Member2_Exp] >= '"+date_s+"')"
+      "([Member1] = 'VIP' AND '#{date_s}' >= [Member1_Beg] AND [Member1_Exp] >= '#{date_s}') OR ([Member2] = 'VIP' AND '#{date_s}' >= [Member2_Beg] AND [Member2_Exp] >= '#{date_s}')"
     end
     
     mems = []
@@ -41,9 +41,7 @@ class Helios::Eft < ActiveRecord::Base
       if cp.eft.nil?
         yield cp if render_nils && block_given?
       else
-        date = Time.parse(month).to_date
-        # if(!((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= date : false) && (!cp.eft.Freeze_End.nil? ? date < cp.eft.Freeze_End.to_date : false)) && ((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= date : true) && (!cp.eft.End_Date.nil? ? date < cp.eft.End_Date.to_date : true)))
-        if(!((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= (date + 1) : false) && (!cp.eft.Freeze_End.nil? ? date < cp.eft.Freeze_End.to_date : false)) && ((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= date : true) && (!cp.eft.End_Date.nil? ? date < cp.eft.End_Date.to_date : true)))
+        if(!((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= (Time.parse(month).to_date + 1) : false) && (!cp.eft.Freeze_End.nil? ? Time.parse(month).to_date < cp.eft.Freeze_End.to_date : false)) && ((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= Time.parse(month).to_date : true) && (!cp.eft.End_Date.nil? ? Time.parse(month).to_date < cp.eft.End_Date.to_date : true)))
           mems << cp
           yield cp if block_given?
         end
@@ -54,16 +52,13 @@ class Helios::Eft < ActiveRecord::Base
   end
 
   def report_membership!(date=nil) # This is to be called primarily by the commandline.
-    time ||= Time.now
-    date = time.to_date
+    date ||= Time.now
     report = ''
     sql = case ::RAILS_ENV
     when 'development'
-      date_s = date.strftime("%Y-%m-%d")
-      "Client_No = #{self.id} AND ((Member1 = 'VIP' AND '"+date_s+"' >= Member1_Beg AND Member1_Exp >= '"+date_s+"') OR (Member2 = 'VIP' AND '"+date_s+"' >= Member2_Beg AND Member2_Exp >= '"+date_s+"'))"
+      "Client_No = #{self.id} AND ((Member1 = 'VIP' AND '"+date.strftime("%Y-%m-%d")+"' >= Member1_Beg AND Member1_Exp >= '"+date.strftime("%Y-%m-%d")+"') OR (Member2 = 'VIP' AND '"+date.strftime("%Y-%m-%d")+"' >= Member2_Beg AND Member2_Exp >= '"+date.strftime("%Y-%m-%d")+"'))"
     when 'production'
-      date_s = date.strftime("%Y%m%d")
-      "[Client_No] = #{self.id} AND (([Member1] = 'VIP' AND '"+date_s+"' >= [Member1_Beg] AND [Member1_Exp] >= '"+date_s+"') OR ([Member2] = 'VIP' AND '"+date_s+"' >= [Member2_Beg] AND [Member2_Exp] >= '"+date_s+"'))"
+      "[Client_No] = #{self.id} AND (([Member1] = 'VIP' AND '"+date.strftime("%Y%m%d")+"' >= [Member1_Beg] AND [Member1_Exp] >= '"+date.strftime("%Y%m%d")+"') OR ([Member2] = 'VIP' AND '"+date.strftime("%Y%m%d")+"' >= [Member2_Beg] AND [Member2_Exp] >= '"+date.strftime("%Y%m%d")+"'))"
     end
     cp = Helios::ClientProfile.find(:first, :conditions => [sql])
     report << (cp ? "ClientProfile reports a current membership" : "ClientProfile reports no membership")
@@ -71,8 +66,8 @@ class Helios::Eft < ActiveRecord::Base
       if cp.eft.nil?
         report << ", Client has no EFT"
       else
-        if(!((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= date : false) && (!cp.eft.Freeze_End.nil? ? date < cp.eft.Freeze_End.to_date : false)) && ((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= date : true) && (!cp.eft.End_Date.nil? ? date < cp.eft.End_Date.to_date : true)))
-          if cp.has_prepaid_membership?(date)
+        if(!((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= date.to_date : false) && (!cp.eft.Freeze_End.nil? ? date.to_date < cp.eft.Freeze_End.to_date : false)) && ((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= date.to_date : true) && (!cp.eft.End_Date.nil? ? date.to_date < cp.eft.End_Date.to_date : true)))
+          if cp.has_prepaid_membership?
             report << ", but this is a one-time purchase membership!"
           else
             report << ", current time in EFT is valid to bill!"

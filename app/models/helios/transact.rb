@@ -7,8 +7,8 @@ class Helios::Transact < ActiveRecord::Base
       :adapter  => 'mysql',
       :database => 'HeliosBS',
       :host     => 'localhost',
-      :username => 'maly',
-      :password => 'booboo'
+      :username => 'root',
+      :password => ''
     )
   when 'production'
     self.establish_connection(

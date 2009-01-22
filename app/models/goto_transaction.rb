@@ -114,10 +114,6 @@ class GotoTransaction < ActiveRecord::Base
     goto_is_valid?
   end
 
-  def goto_is_invalid?
-    !goto_is_valid?
-  end
-
   begin # Financial Information
   def credit_card?
     !['C','S'].include?(account_type)
