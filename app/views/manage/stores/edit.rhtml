@@ -22,13 +22,13 @@
   <p><label for="gcal_url">Google Calendar (private url)</label><br/>
  	<%= f.text_field :gcal_url %></p>
   <% if current_user.is_admin? && APP_CONFIG[:FEATURES].include?(:forms) -%>
-  <p><label for="form_types">Assigned Form Types</label><br/>
-  <ul>
-    <% FormType.find(:all).each do |t| -%>
-      <li><input type="checkbox" name="store[form_type_ids][]" value="<%= t.id %>" <%= 'checked="checked"' if @store.form_type_ids.include?(t.id.to_s) %> /><%= t.friendly_name %></li>
-    <% end -%>
-  </ul>
-	</p>
+    <p><label for="form_types">Assigned Form Types</label><br/>
+    <ul>
+      <% FormType.find(:all).each do |t| -%>
+        <li><input type="checkbox" name="store[form_type_ids][]" value="<%= t.id %>" <%= 'checked="checked"' if @store.form_type_ids.include?(t.id.to_s) %> /><%= t.friendly_name %></li>
+      <% end -%>
+    </ul>
+  	</p>
   <% end -%>
   <p><%= submit_tag 'Update' %></p>
 <% end %>

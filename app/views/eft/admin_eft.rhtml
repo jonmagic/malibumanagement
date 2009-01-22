@@ -88,10 +88,11 @@
             <th>MC/VS App</th>
             <th>Amex App</th>
             <th>Discover App</th>
+            <th>Check/Save App</th>
           </thead>
           <% oddeven = 0 -%>
           <% @batch.locations_status_counts.each do |location_code,status_counts| -%>
-  				<% next if location_code == 'all' -%>
+  				<% next if location_code == 'all' # this comes at the end -%>
   				<% oddeven += 1 -%>
   				  <tr class="<%= oddeven.even? ? 'even_row' : 'odd_row' %>">
   				    <td><%= LOCATIONS[location_code][:name] %>:</td>
@@ -104,6 +105,7 @@
   				    <td><%= status_counts[:mcvs_app][0] %> ($<%= status_counts[:mcvs_app][1].to_dollar %>)</td>
   				    <td><%= status_counts[:amex_app][0] %> ($<%= status_counts[:amex_app][1].to_dollar %>)</td>
   				    <td><%= status_counts[:discover_app][0] %> ($<%= status_counts[:discover_app][1].to_dollar %>)</td>
+  				    <td><%= status_counts[:check_save_app][0] %> ($<%= status_counts[:check_save_app][1].to_dollar %>)</td>
   				  </tr>
           <% end -%>
           <% status_counts = @batch.locations_status_counts['all'] -%>

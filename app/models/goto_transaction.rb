@@ -481,7 +481,7 @@ class GotoTransaction < ActiveRecord::Base
   end # Validation
 
   def full_name
-    first_name.to_s + ' ' + last_name.to_s
+    "#{first_name} #{last_name}"
   end
   def get_check_number
     return check_number unless check_number.nil?

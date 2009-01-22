@@ -1,0 +1,72 @@
+1. Calculate numbers / comparisons
+2. Room for error, some days were submitted a day late. When one missed, grab from the next day that has duplicates.
+3. Allow for corrections, some numbers missing, etc.
+
+
+-- CALCULATIONS --
+Month-to-Date: compare with last year's numbers.
+
+Want to view on the screen:
+  each store individually each day...
+    probably each store has a tab:
+      month-to-date
+      Per-Employee information:
+        Sales
+        Tans
+        PPA
+9 stores plus MTD & June report
+MTD & June would have all the stores to compare
+YTD:
+  per-store
+  combined
+
+
+Total Tans
+Total Revenue
+PPA
+
+Use a high amount of caching!!
+
+
+ERROR CORRECTION: Alert for correction if:
++ there's a zero
++ there's a note on the SalesReport
+
+Manually put in the goals.
+
+
+IF it's not too complicated, have a week-to-date progression throughout the week, that resets every week.
+
+IF possible, record data in a way that it can be put into charts later on.
+
+- - - - - - - - - - - - - - - - -
+Needs:
+SalesReportCorrection model
+CachedCalculation model
+SalesReport Correction gui
+Morning calculations scheduled service
+  Able to find SR's submitted late.
+  Assumes all SR's are corrected.
+  Generates a rendered html page to cache in public/
+  Automatically Caches values per week, per month, and per year in a CachedCalculation model.
+Make SR's demand numerical correction when reviewed by Edna, if there is a note or any zeros.
+  Do this by marking it as needing correction, and if no correction exists, list on Edna's reviewing page,
+  where she can view the SR data next to Corrections fields and save the corrections.
+Allow Edna to regenerate the daily report. (perhaps list SalesReports/SalesReportCorrections created before & modified after the report was generated)
+
+
+--------------------------------
+--         PLANNING           --
+--------------------------------
+Logical Components:
+1) Report Generator
+2) Editing Corrections
+3) Report Viewing
+
+Development Procedure:
+1) Create foundation for CachedCalculations (3 hours)
+2) Create foundation for stored Reports (9 hours)
+3) Create the report Viewing (8 hours)
+4) Create the report auto-generator (without respect to corrections) (3 hours)
+5) Create the corrections layer (15 hours)
+6) Debugging (18 hours)

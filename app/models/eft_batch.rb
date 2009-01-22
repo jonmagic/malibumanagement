@@ -161,9 +161,9 @@ class EftBatch < ActiveRecord::Base
 
           if pm.ach?
             it[pm.location][:check_save_app][0] += 1
-            it[pm.location][:check_save_app][1] += pm.amount.to_f
+            it[pm.location][:check_save_app][1] += amount_bit
             it['all'][:check_save_app][0] += 1
-            it['all'][:check_save_app][1] += pm.amount.to_f
+            it['all'][:check_save_app][1] += amount_bit
           end
         end
       end
