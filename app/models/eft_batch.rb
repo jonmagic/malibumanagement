@@ -234,7 +234,7 @@ timestart = Time.now
     GotoTransaction.delete_all(['batch_id=?', self.id]) if for_location.nil? # Destroy all GotoTransactions, then recreate them. We won't allow generating after the batch has begun processing.
     Helios::Eft.memberships(for_month, true) do |cp|
       if for_location.nil?
-        unless cp.has_prepaid_membership?
+        unless cp.has_prepaid_membership?(Time.parse(for_month))
           t = GotoTransaction.new(self.id, cp)
           self.no_eft_count += 1 if cp.eft.nil?
           self.invalid_count += 1 if t.goto_is_invalid?
@@ -243,7 +243,7 @@ timestart = Time.now
       else
         if !cp.eft.nil?
           the_location = cp.eft.Location || '0'*(3-ZONE[:Location_Bits])+cp.eft.Client_No.to_s[0,ZONE[:Location_Bits]]
-          if for_location == the_location && !cp.has_prepaid_membership?
+          if for_location == the_location && !cp.has_prepaid_membership?(Time.parse(for_month))
             t = GotoTransaction.new(self.id, cp.eft)
             t.save
           end
