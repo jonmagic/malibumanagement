@@ -1,3 +1,4 @@
 @echo off
-svn update
+git fetch origin master
+git rebase origin master
 restart
