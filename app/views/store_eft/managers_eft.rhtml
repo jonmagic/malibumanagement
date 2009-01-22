@@ -21,9 +21,11 @@
 				<% if @batch.locked -%>
 				<span id="filter_1" class="filter_button" onclick="filter_selected(this)">All Billed</span>
 				<span id="filter_2" class="filter_button" onclick="filter_selected(this)">Completed</span>
-				<span id="filter_3" class="filter_button" onclick="filter_selected(this)">In Progress</span>
-				<span id="filter_4" class="filter_button" onclick="filter_selected(this)">Accepted</span>
-				<span id="filter_5" class="filter_button" onclick="filter_selected(this)">Declined</span>
+				<span id="filter_3" class="filter_button" onclick="filter_selected(this)">Not Submitted</span>
+				<span id="filter_4" class="filter_button" onclick="filter_selected(this)">In Progress</span>
+				<span id="filter_5" class="filter_button" onclick="filter_selected(this)">Accepted</span>
+				<span id="filter_6" class="filter_button" onclick="filter_selected(this)">Declined</span>
+				<span id="filter_7" class="filter_button" onclick="filter_selected(this)">Processing Errors</span>
 				<span style="font-size:10pt;float:left">
 					<a href="javascript:void(0)" onclick="unselect_buttons(); $('clients_filter_by').value = 'Invalid'; return false;">Show Invalids</a><br />
 					<a href="javascript:void(0)" onclick="unselect_buttons(); $('clients_filter_by').value = 'Missing EFT'; return false;">Show Missing EFTs</a>

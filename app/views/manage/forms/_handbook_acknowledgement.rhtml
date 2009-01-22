@@ -8,7 +8,11 @@
 
 <p class="error_message"><%= flash[:error] %></p>
 
-<p style="font-size:12pt; font-style:italic; color:blue">This form was signed<br />&nbsp;&nbsp;&nbsp;&nbsp;on <%= @form.created_at %><br />&nbsp;&nbsp;&nbsp;&nbsp;by <%= @form.data.signer.friendly_name %><br />&nbsp;&nbsp;&nbsp;&nbsp;Digital Signature: <%= @form.data.digital_signature_hash %></p>
+<% if @form.data.signer.kind_of?(User) -%>
+	<p style="font-size:12pt; font-style:italic; color:blue">This form was signed<br />&nbsp;&nbsp;&nbsp;&nbsp;on <%= @form.data.digital_signature_date %><br />&nbsp;&nbsp;&nbsp;&nbsp;by <%= @form.data.signer.friendly_name %><br />&nbsp;&nbsp;&nbsp;&nbsp;Digital Signature: <%= @form.data.digital_signature_hash %></p>
+<% else -%>
+	<p style="font-size:12pt; font-style:italic; color:orange">This form has not yet been signed by the employee!</p>
+<% end -%>
 
 <% else -%>
 

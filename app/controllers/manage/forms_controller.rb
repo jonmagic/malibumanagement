@@ -25,6 +25,7 @@ logger.error "Status: #{@form.status} // #{params[:form_status]}=#{params[:form_
       if @form.status.as_status.number != params[:form_status].as_status.number and (params[:form_status].as_status.number == 3 or params[:form_status].as_status.number == 4)
         @form.status = params[:form_status]
         @form.save
+        logger.error "Did not save. Errors: #{@form.errors.full_messages.to_sentence}" if @form.errors
         if @form.status.as_status.number == 4
           flash[:notice] = "Form &lt; #{@form.admin_visual_identifier} &gt; was archived."
           redirect_to FormInstance.find_all_by_status_number(3).count > 0 ? admin_forms_by_status_path(:form_status => 3.as_status.text) : admin_forms_by_status_path(:form_status => 2.as_status.text)

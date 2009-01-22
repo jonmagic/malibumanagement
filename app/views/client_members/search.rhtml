@@ -8,10 +8,10 @@
 		<thead>
 			<th>Client ID</th>
 			<th>Name</th>
-			<th>Charge Type</th>
+			<th>Account</th>
 			<th>Expiration</th>
 			<th>Amount</th>
-			<th>Error Messages</th>
+			<th>Message</th>
 			<th>Controls</th>
 		</thead>
 
@@ -22,7 +22,16 @@
 			<% begin %>
 				<%= render :partial => 'client_members/client_listing', :locals => {:client => client, :rownum => rownum} %>
 			<% rescue ActionView::TemplateError => e %>
-				<%= render :partial => 'client_members/client_listing', :locals => {:client => GotoTransaction.new(:first_name => 'ERROR', :last_name => 'Rendering!'), :rownum => rownum} %>
+				<% logger.error "ERROR RENDERING client ##{client.id}: #{e.inspect}" -%>
+				<tr class="livesearch_result client_listing listing <%= rownum.even? ? 'even' : 'odd' %>">
+					<td>########</td>
+					<td>ERROR Rendering!</td>
+					<td>None</td>
+					<td>N/A</td>
+					<td>0</td>
+					<td>&nbsp;</td>
+					<td>--</td>
+				</tr>
 			<% end %>
 		<% end -%>
 	<% else -%>

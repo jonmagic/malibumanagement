@@ -2,7 +2,6 @@ require 'digest/sha1'
 class Store < ActiveRecord::Base
   has_many :users, :dependent => :destroy
   has_many :admins, :class_name => 'User', :conditions => 'is_admin_user=1', :dependent => :destroy
-  has_one  :vintage_admin, :class_name => 'User', :conditions => 'username="#{self.alias}"', :dependent => :destroy
   has_many :form_instances, :dependent => :destroy
     has_many :drafts,    :class_name => 'FormInstance', :conditions => "status_number=1"
     has_many :submitted, :class_name => 'FormInstance', :conditions => "status_number=2"
@@ -44,6 +43,13 @@ class Store < ActiveRecord::Base
     stor.nil? ? nil : stor.id
   end
 
+  def location_code
+    LOCATIONS.reject {|k,v| v[:domain] != self.alias}.keys[0]
+  end
+  def config
+    @config ||= LOCATIONS[LOCATIONS.reject {|k,v| v[:domain] != self.alias}.keys[0]]
+  end
+
   def drafts_of_type(form_type)
     FormInstance.find_all_by_store_id_and_data_type_and_status_number(self.id, form_type, 'draft'.as_status.number)
   end
@@ -51,6 +57,14 @@ class Store < ActiveRecord::Base
   def forms_with_status(status)
 # logger.error "Finding by #{self.alias} (#{self.id}) and #{status} (#{status.as_status.number})."
     FormInstance.find_all_by_store_id_and_status_number(self.id, status.as_status.number)
+  end
+
+  def gcal_view_url
+    return '' unless gcal_url
+    m = gcal_url.match(Regexp.new("http://www.google.com/calendar/ical/([^\/]+)/private-([^\/]+)/basic.ics"))
+    src = m[1]
+    key = m[2]
+    "http://www.google.com/calendar/embed?src=#{src}&ctz=America/New_York&pvttk=#{key}"
   end
 
   protected

@@ -12,6 +12,7 @@ View for Date:
 	}, 0.5)
 	//]]>
 	</script>
+	<p><a href="<%= @store.gcal_view_url %>">View Google Calendar</a></p>
 </div>
 <% 4.weeks.starting(@start.beginning_of_week).each do |w| -%>
 <table class="calendar_table">

@@ -1,3 +1,7 @@
+require 'net/ftp'
+require 'fileutils'
+require 'faster_csv'
+
 class StoreEftController < ApplicationController
   layout 'store'
   before_filter :store_pre_log_in
@@ -12,6 +16,49 @@ class StoreEftController < ApplicationController
   
   def managers_eft
     restrict('allow only store admins')
+  end
+
+  def refund_clients
+    restrict('allow only store admins') or begin
+      return(render(:text => "<h4>Batch has not been locked!</h4>")) if !@batch.locked
+      txt = ''
+      next if current_store.config.nil?
+      dcas = current_store.config[:dcas]
+      # 1) Generate the file!
+      path = "EFT/#{@batch.for_month}"
+      FileUtils.mkpath(path+'/')
+      csv_name = "#{dcas[:company_user]}_refund_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
+      csv_local_filename = "#{path}/#{csv_name}"
+      @clients = GotoTransaction.search(@query, :filters => {'has_eft' => 1, 'goto_valid' => '--- []', 'client_id' => params[:client_id], 'batch_id' => @batch.id, 'location' => current_store.location_code})
+      client_count = 0
+      FasterCSV.open(csv_local_filename, "w") do |csv|
+        csv << GotoTransaction.dcas_header_row(@batch.id, current_store.location_code)
+        @clients.each do |client|
+          client_count += 1
+          csv << client.to_dcas_csv_row(:refund => true)
+        end
+      end
+
+      # 2) Upload the files!
+      if client_count > 1
+        return render(:text => "<em>ERROR == shouldn't refund more than one person at a time.</em>")
+      end
+      begin
+        ftp = Net::FTP.new(dcas[:host], dcas[:username], dcas[:password])
+        ftp.chdir(dcas[:incoming_path])
+        ftp.put(csv_local_filename, csv_name)
+        ftp.close
+        txt += "Refund submitted"
+        @clients.each do |client|
+          client.status = 'h'
+          client.save
+        end
+      rescue => e
+        logger.error "FTP (Refund) FAILED: #{e}"
+        txt += "Refund FAILED<br />"
+      end
+      render :text => "<em>#{txt}</em>"
+    end
   end
 
   private

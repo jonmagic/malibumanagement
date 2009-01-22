@@ -28,7 +28,10 @@ module HeliosPeripheral
         satellite_records = base.propogate_method(:find, record.id)
         satellite_records.each do |location,satellite_record|
           newr = satellite_record.new?
-          satellite_record.attributes = record.public_attributes
+          satellite_record.attributes = record.public_attributes.inject({}) do |h,(k,v)|
+            h[k] = v.is_a?(Time) ? v.localtime : v
+            h
+          end
           satellite_record.id = record.id
           if newr
             satellite_record.create

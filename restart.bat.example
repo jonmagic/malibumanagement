@@ -1,3 +1,4 @@
+@echo off
 net stop malibu_management5001
 net start malibu_management5001
 
