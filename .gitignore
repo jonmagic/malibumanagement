@@ -5,3 +5,4 @@ log/*
 config/app_config.rb
 config/database.yml
 config/database.yml.production
+EFT
