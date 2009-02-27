@@ -72,7 +72,7 @@ class Helios::Eft < ActiveRecord::Base
       else
         if(((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= date : true) && (!cp.eft.End_Date.nil? ? date <= cp.eft.End_Date.to_date : true)) && !((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= date : false) && (!cp.eft.Freeze_End.nil? ? date <= cp.eft.Freeze_End.to_date : false)))
           if cp.has_prepaid_membership?(datetime)
-            report << ", but this is a one-time purchase membership!"
+            report << ", but this is a prepaid membership!"
           else
             report << ", current time in EFT is valid to bill!"
           end

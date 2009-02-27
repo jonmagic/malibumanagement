@@ -162,6 +162,7 @@ class Helios::ClientProfile < ActiveRecord::Base
         et.Last_Mdt > ir.Last_Mdt
       end
     end
+    living_in_prepaid = false if in_range.empty?
     # ****
 
     return living_in_prepaid
