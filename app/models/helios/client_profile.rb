@@ -157,14 +157,14 @@ class Helios::ClientProfile < ActiveRecord::Base
     # Make sure there isn't a Code 'V' transaction AFTER all active prepaids.
     eft_trans = mem_trans.select { |t| t.Code == 'V' }
     # If we have a mem_trans later than any V transactions, then we're living in a prepaid and do NOT need to bill.
-    living_in_eft = in_range.any? do |ir|
-      eft_trans.any? do |et|
+    living_in_prepaid = in_range.all? do |ir|
+      eft_trans.all? do |et|
         et.Last_Mdt > ir.Last_Mdt
       end
     end
     # ****
 
-    return !living_in_eft
+    return living_in_prepaid
   end
 
   def self.fixmismatch
