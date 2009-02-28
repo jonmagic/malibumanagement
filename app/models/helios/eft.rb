@@ -52,6 +52,9 @@ class Helios::Eft < ActiveRecord::Base
     mems
   end
 
+  def self.report_membership!(id,datetime=nil)
+    self.find(id).report_membership!(datetime)
+  end
   def report_membership!(datetime=nil) # This is to be called primarily by the commandline.
     datetime ||= Time.now
     date = datetime.to_date
