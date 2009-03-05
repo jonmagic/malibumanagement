@@ -30,7 +30,7 @@ step("Downloading DCAS files for #{@batch.for_month}.") do
     next unless @batch.submitted[store.alias]
     next unless store.config.is_a?(Hash)
     dcas = store.config[:dcas]
-    user_suffix = dcas[:username].match(/(?:malibu|maltan|malent)(.*)(?:VT)?/)[1]
+    user_suffix = dcas[:username].match(/(?:malibu|maltan|malent)?(.*)(?:VT)?/)[1]
     store_files = []
     ftp = nil
     step("Downloading from DCAS as #{store.config[:name]}",:retry => 2) do
