@@ -42,9 +42,11 @@ class Net::FTPS::Implicit < Net::FTP
     mon_initialize
     getresp
     at_exit {
-      voidcmd("ABOR")
-      voidcmd("QUIT")
-      @sock.close
+      if @sock && !@sock.closed?
+        voidcmd("ABOR")
+        voidcmd("QUIT")
+        @sock.close
+      end
     }
   end
 
