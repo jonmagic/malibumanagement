@@ -23,7 +23,7 @@ end
 require 'fileutils'
 FileUtils.mkpath(@path + 'returns/')
 
-require 'net/ftp'
+require 'lib/ftps_implicit'
 step("Downloading DCAS files for #{@batch.for_month}.") do
   files = []
   Store.find(:all).each do |store|
@@ -42,7 +42,7 @@ step("Downloading DCAS files for #{@batch.for_month}.") do
       #   end
       # end
       # ****
-      ftp = Net::FTP.open(dcas[:host], dcas[:username], dcas[:password])
+      ftp = Net::FTPS::Implicit.open(dcas[:host], dcas[:username], dcas[:password])
       ftp.chdir(dcas[:outgoing_path])
       dfiles = ftp.list('*.csv')
       dfiles.each do |filels|

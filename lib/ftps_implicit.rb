@@ -2,7 +2,7 @@ require 'socket'
 require 'openssl'
 require 'net/ftp'
 
-class Net::FtpsImplicit < Net::FTP
+class Net::FTPS::Implicit < Net::FTP
   FTP_PORT = 990
 
   def initialize(host=nil, user=nil, passwd=nil, acct=nil)
