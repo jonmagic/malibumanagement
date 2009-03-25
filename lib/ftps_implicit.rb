@@ -1,10 +1,8 @@
-require 'net/ftptls'
+require 'socket'
+require 'openssl'
+require 'net/ftp'
 
-class OpenSSL::SSL::SSLSocket
-  alias :read_nonblock :readpartial
-end
-
-class FtpsImplicit < Net::FTP
+class Net::FtpsImplicit < Net::FTP
   FTP_PORT = 990
 
   def initialize(host=nil, user=nil, passwd=nil, acct=nil)
@@ -17,8 +15,6 @@ class FtpsImplicit < Net::FTP
   attr_accessor :data_protection
 
   def open_socket(host, port, data_socket=false)
-    puts "Opening socket to #{host}, #{port}"
-    # sleep 30 if data_socket
     tcpsock = if defined? SOCKSsocket and ENV["SOCKS_SERVER"]
       @passive = true
       SOCKSsocket.open(host, port)
@@ -26,7 +22,6 @@ class FtpsImplicit < Net::FTP
       TCPSocket.new(host, port)
     end
     if !data_socket || @data_protection == 'P'
-      # ssl_context.verify_mode = data_socket ? OpenSSL::SSL::VERIFY_NONE : OpenSSL::SSL::VERIFY_PEER
       ssl_context = OpenSSL::SSL::SSLContext.new('SSLv23')
       ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
       ssl_context.key = nil
@@ -34,13 +29,10 @@ class FtpsImplicit < Net::FTP
       ssl_context.timeout = 10
 
       sock = OpenSSL::SSL::SSLSocket.new(tcpsock, ssl_context)
-      puts "Connecting #{sock.inspect}..."
       sock.connect
-      puts "Connected."
     else
       sock = tcpsock
     end
-    # at_exit { sock.close; puts "ssl socket closed" }
     return sock
   end
   private :open_socket
@@ -49,7 +41,11 @@ class FtpsImplicit < Net::FTP
     @sock = open_socket(host, port)
     mon_initialize
     getresp
-    at_exit { puts "Quiting FTPS"; voidcmd("ABOR"); voidcmd("QUIT"); @sock.close }
+    at_exit {
+      voidcmd("ABOR")
+      voidcmd("QUIT")
+      @sock.close
+    }
   end
 
   def retrbinary(cmd, blocksize, rest_offset = nil) # :yield: data
@@ -66,7 +62,6 @@ class FtpsImplicit < Net::FTP
     timeout = 10
     starttime = Time.now
     buffer = ''
-    puts "Getting data from socket #{sock}"
     timeouts = 0
     catch :done do
       loop do
@@ -79,12 +74,11 @@ class FtpsImplicit < Net::FTP
             if sock.eof? # Socket's been closed by the client
               throw :done
             else
-              buffer << sock.read_nonblock(blocksize)
+              buffer << sock.readpartial(blocksize)
               if block_given? # we're in line-by-line mode
                 lines = buffer.split(/\r?\n/)
                 buffer = buffer =~ /\n$/ ? '' : lines.pop
                 lines.each do |line|
-                  puts "Line: #{line}"
                   yield(line)
                 end
               end
@@ -94,7 +88,6 @@ class FtpsImplicit < Net::FTP
       end
     end
     sock.close
-    puts "Data: #{buffer}"
     buffer
   end
 
