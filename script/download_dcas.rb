@@ -42,7 +42,7 @@ step("Downloading DCAS files for #{@batch.for_month}.") do
       #   end
       # end
       # ****
-      ftp = Net::FTPS::Implicit.open(dcas[:host], dcas[:username], dcas[:password])
+      ftp = (dcas[:ftps] ? Net::FTPS::Implicit : Net::FTP).open(dcas[:host], dcas[:username], dcas[:password])
       ftp.chdir(dcas[:outgoing_path])
       dfiles = ftp.list('*.csv')
       dfiles.each do |filels|
