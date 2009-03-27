@@ -2,6 +2,9 @@ require 'socket'
 require 'openssl'
 require 'net/ftp'
 
+class Net::FTPS < Net::FTP
+end
+
 class Net::FTPS::Implicit < Net::FTP
   FTP_PORT = 990
 
