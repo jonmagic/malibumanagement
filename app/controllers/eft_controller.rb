@@ -1,10 +1,6 @@
-# require 'net/ssh'
-# require 'net/sftp'
-require 'net/ftp'
+require 'lib/ftps_implicit'
 require 'fileutils'
 require 'faster_csv'
-# require 'net/sftp/operations/write'
-# Net::SFTP::Operations::Write::CHUNK_SIZE = 2048
 
 class EftController < ApplicationController
   layout 'admin'
@@ -82,7 +78,7 @@ class EftController < ApplicationController
           #   
           # end
           # ****
-          ftp = Net::FTP.new(dcas[:host], dcas[:username], dcas[:password])
+          ftp = (dcas[:ftps] ? Net::FTPS::Implicit : Net::FTP).new(dcas[:host], dcas[:username], dcas[:password])
           ftp.chdir(dcas[:incoming_path])
           ftp.put(csv_cc_local_filename, cc_csv_name)
           ftp.put(csv_ach_local_filename, ach_csv_name)
@@ -94,7 +90,7 @@ class EftController < ApplicationController
           logger.error "FTP FAILED: #{e}"
           # If failed, immediately try deleting both of the files in case one made it or one made it partially.
           begin
-            ftp = Net::FTP.new(dcas[:host], dcas[:username], dcas[:password])
+            ftp = (dcas[:ftps] ? Net::FTPS::Implicit : Net::FTP).new(dcas[:host], dcas[:username], dcas[:password])
             ftp.chdir(dcas[:incoming_path])
             ftp.delete(cc_csv_name)
             ftp.delete(ach_csv_name)

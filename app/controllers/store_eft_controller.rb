@@ -1,4 +1,4 @@
-require 'net/ftp'
+require 'lib/ftps_implicit'
 require 'fileutils'
 require 'faster_csv'
 
@@ -44,7 +44,7 @@ class StoreEftController < ApplicationController
         return render(:text => "<em>ERROR == shouldn't refund more than one person at a time.</em>")
       end
       begin
-        ftp = Net::FTP.new(dcas[:host], dcas[:username], dcas[:password])
+        ftp = (dcas[:ftps] ? Net::FTPS::Implicit : Net::FTP).new(dcas[:host], dcas[:username], dcas[:password])
         ftp.chdir(dcas[:incoming_path])
         ftp.put(csv_local_filename, csv_name)
         ftp.close
