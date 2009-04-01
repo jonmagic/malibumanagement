@@ -11,6 +11,7 @@ class Net::FTPS::Implicit < Net::FTP
   def initialize(host=nil, user=nil, passwd=nil, acct=nil)
     super
     @passive = true
+    @binary = false
     @debug_mode = true
     @data_protection = 'P'
     @data_protected = false
@@ -46,8 +47,8 @@ class Net::FTPS::Implicit < Net::FTP
     getresp
     at_exit {
       if @sock && !@sock.closed?
-        voidcmd("ABOR")
-        voidcmd("QUIT")
+        voidcmd("ABOR") rescue EOFError
+        voidcmd("QUIT") rescue EOFError
         @sock.close
       end
     }
@@ -109,6 +110,56 @@ class Net::FTPS::Implicit < Net::FTP
     end
   end
 
+  #
+  # Puts the connection into binary (image) mode, issues the given server-side
+  # command (such as "STOR myfile"), and sends the contents of the file named
+  # +file+ to the server. If the optional block is given, it also passes it
+  # the data, in chunks of +blocksize+ characters.
+  #
+  def storbinary(cmd, file, blocksize, rest_offset = nil, &block) # :yield: data
+    if rest_offset
+      file.seek(rest_offset, IO::SEEK_SET)
+    end
+    synchronize do
+      voidcmd("TYPE I")
+      conn = transfercmd(cmd, rest_offset)
+      loop do
+        buf = file.read(blocksize)
+        break if buf == nil
+        conn.write(buf)
+        yield(buf) if block
+      end
+      conn.close # closes the SSL
+      conn.io.close # closes the TCP below it
+      voidresp
+    end
+  end
+
+  #
+  # Puts the connection into ASCII (text) mode, issues the given server-side
+  # command (such as "STOR myfile"), and sends the contents of the file
+  # named +file+ to the server, one line at a time. If the optional block is
+  # given, it also passes it the lines.
+  #
+  def storlines(cmd, file, &block) # :yield: line
+    synchronize do
+      voidcmd("TYPE A")
+      conn = transfercmd(cmd)
+      loop do
+        buf = file.gets
+        break if buf == nil
+        if buf[-2, 2] != CRLF
+          buf = buf.chomp + CRLF
+        end
+        conn.write(buf)
+        yield(buf) if block
+      end
+      conn.close # closes the SSL
+      conn.io.close # closes the TCP below it
+      voidresp
+    end
+  end
+
   def transfercmd(cmd, rest_offset=nil)
     unless @data_protected
       voidcmd('PBSZ 0')
@@ -126,7 +177,7 @@ class Net::FTPS::Implicit < Net::FTP
       end
       putline(cmd)
       conn = open_socket(host, port, true)
-      resp = getresp
+      resp = getresp # Should be a 150 response
       if resp[0] != ?1
         raise FTPReplyError, resp
       end
