@@ -47,6 +47,7 @@ class StoreEftController < ApplicationController
         ftp = (dcas[:ftps] ? Net::FTPS::Implicit : Net::FTP).new(dcas[:host], dcas[:username], dcas[:password])
         ftp.chdir(dcas[:incoming_path])
         ftp.put(csv_local_filename, csv_name)
+        ftp.quit
         ftp.close
         txt += "Refund submitted"
         @clients.each do |client|

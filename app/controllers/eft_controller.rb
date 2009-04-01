@@ -82,6 +82,7 @@ class EftController < ApplicationController
           ftp.chdir(dcas[:incoming_path])
           ftp.put(csv_cc_local_filename, cc_csv_name)
           ftp.put(csv_ach_local_filename, ach_csv_name)
+          ftp.quit
           ftp.close
           txt += "#{store.config[:name]} - Uploaded<br />"
           @batch.submitted[store.alias] = true
@@ -94,6 +95,7 @@ class EftController < ApplicationController
             ftp.chdir(dcas[:incoming_path])
             ftp.delete(cc_csv_name)
             ftp.delete(ach_csv_name)
+            ftp.quit
             ftp.close
           rescue => ef
             logger.error "FTP RESCUE FAILED: #{ef}"

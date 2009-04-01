@@ -58,6 +58,7 @@ step("Downloading DCAS files for #{@batch.for_month}.") do
           end
         end
       end
+      ftp.quit
       ftp.close
     end
   end
