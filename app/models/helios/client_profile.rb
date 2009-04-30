@@ -140,10 +140,10 @@ class Helios::ClientProfile < ActiveRecord::Base
     sql = case ::RAILS_ENV
     when 'development'
       date_s = (datetime-47088000).strftime("%Y-%m-%d")
-      "(Code = 'X' OR Code = 'VX' OR Code = 'VY' OR Code = 'VY+' OR Code = 'V1M' OR Code = 'V1W') AND CType != ? AND CType != ? AND client_no = ? AND Last_Mdt > ?"
+      "(Code = 'X' OR Code = 'V' OR Code = 'VX' OR Code = 'VY' OR Code = 'VY+' OR Code = 'V1M' OR Code = 'V1W') AND CType != ? AND CType != ? AND client_no = ? AND Last_Mdt > ?"
     when 'production'
       date_s = (datetime-47088000).strftime("%Y%m%d")
-      "([Code] = 'X' OR [Code] = 'VX' OR [Code] = 'VY' OR [Code] = 'VY+' OR [Code] = 'V1M' OR [Code] = 'V1W') AND [CType] != ? AND [CType] != ? AND [client_no] = ? AND [Last_Mdt] > ?"
+      "([Code] = 'X' OR [Code] = 'V' OR [Code] = 'VX' OR [Code] = 'VY' OR [Code] = 'VY+' OR [Code] = 'V1M' OR [Code] = 'V1W') AND [CType] != ? AND [CType] != ? AND [client_no] = ? AND [Last_Mdt] > ?"
     end
     mem_trans = Helios::Transact.find(:all, :conditions => [sql, '1', '2', self.id, date_s])
 
