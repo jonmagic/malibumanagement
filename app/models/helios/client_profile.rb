@@ -136,6 +136,7 @@ class Helios::ClientProfile < ActiveRecord::Base
   end
   def has_prepaid_membership?(datetime=nil)
     datetime ||= Time.now
+    datetime = datetime.to_time
     sql = case ::RAILS_ENV
     when 'development'
       date_s = (datetime-47088000).strftime("%Y-%m-%d")

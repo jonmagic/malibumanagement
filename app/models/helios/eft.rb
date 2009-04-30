@@ -57,6 +57,7 @@ class Helios::Eft < ActiveRecord::Base
   end
   def report_membership!(datetime=nil) # This is to be called primarily by the commandline.
     datetime ||= Time.now
+    datetime = datetime.to_time
     date = datetime.to_date
     report = ''
     sql = case ::RAILS_ENV
