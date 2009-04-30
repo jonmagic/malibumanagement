@@ -140,10 +140,10 @@ class Helios::ClientProfile < ActiveRecord::Base
     sql = case ::RAILS_ENV
     when 'development'
       date_s = (datetime-47088000).strftime("%Y-%m-%d")
-      "(Code = 'X' OR Code = 'V' OR Code = 'VX' OR Code = 'VY' OR Code = 'VY+' OR Code = 'V1M' OR Code = 'V1W') AND CType != ? AND CType != ? AND client_no = ? AND Last_Mdt > ?"
+      "(Code = 'X' OR Code = 'V' OR Code = 'V199' OR Code = 'VX' OR Code = 'VY' OR Code = 'VY+' OR Code = 'V1M' OR Code = 'V1W') AND CType != ? AND CType != ? AND client_no = ? AND Last_Mdt > ?"
     when 'production'
       date_s = (datetime-47088000).strftime("%Y%m%d")
-      "([Code] = 'X' OR [Code] = 'V' OR [Code] = 'VX' OR [Code] = 'VY' OR [Code] = 'VY+' OR [Code] = 'V1M' OR [Code] = 'V1W') AND [CType] != ? AND [CType] != ? AND [client_no] = ? AND [Last_Mdt] > ?"
+      "([Code] = 'X' OR [Code] = 'V' OR [Code] = 'V199' OR [Code] = 'VX' OR [Code] = 'VY' OR [Code] = 'VY+' OR [Code] = 'V1M' OR [Code] = 'V1W') AND [CType] != ? AND [CType] != ? AND [client_no] = ? AND [Last_Mdt] > ?"
     end
     mem_trans = Helios::Transact.find(:all, :conditions => [sql, '1', '2', self.id, date_s])
 
@@ -158,7 +158,7 @@ class Helios::ClientProfile < ActiveRecord::Base
     # Gather all mem_trans that are in range (likely only one, but just in case, catch them all)
     in_range = mem_trans.select { |t| t.Code != 'V' && t.Code != 'VX' && t.Last_Mdt > lasting[t.Code] }
     # Make sure there isn't a Code 'V' transaction AFTER all active prepaids.
-    eft_trans = mem_trans.select { |t| t.Code == 'V' || t.Code == 'VX' }
+    eft_trans = mem_trans.select { |t| t.Code == 'V' || t.Code == 'VX' || t.Code == 'V199' }
     # If we have a mem_trans later than any V transactions, then we're living in a prepaid and do NOT need to bill.
     living_in_prepaid = !in_range.empty? # true if not empty, false if empty
     if living_in_prepaid && !eft_trans.empty?
