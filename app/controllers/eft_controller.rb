@@ -47,6 +47,7 @@ class EftController < ApplicationController
     restrict('allow only admins') or begin
       return(render(:text => "<h4>Batch has not been locked!</h4>")) if !@batch.locked
       txt = ''
+      failed_count = 0
       Store.find(:all).each do |store|
         next if @batch.submitted[store.alias]
         next if store.config.nil?
@@ -101,9 +102,11 @@ class EftController < ApplicationController
             logger.error "FTP RESCUE FAILED: #{ef}"
           end
           txt += "#{store.config[:name]} FAILED<br />"
+          failed_count += 1
         end
       end
-      render :text => "<h4>The following files have been uploaded:<br />#{txt}</h4>"
+      failed_msg = failed_count > 0 ? "<p>#{failed_count} store#{'s' if failed_count > 1} failed to upload. Please <a href='javascript:void(0)' onclick='window.location.reload(true)'>Reload the page</a> and click the button again.</p>" : ''
+      render :text => "<h4>The following files have been uploaded:<br />#{txt}</h4>#{failed_msg}"
     end
   end
 
