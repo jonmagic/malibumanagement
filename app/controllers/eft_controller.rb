@@ -88,7 +88,7 @@ class EftController < ApplicationController
           @batch.submitted[store.alias] = true
           @batch.save
         rescue => e
-          logger.error "FTP FAILED: #{e}"
+          logger.error "FTP FAILED: #{e}\n#{e.backtrace.join("\n")}"
           # If failed, immediately try deleting both of the files in case one made it or one made it partially.
           begin
             ftp = (dcas[:ftps] ? Net::FTPS::Implicit : Net::FTP).new(dcas[:host], dcas[:username], dcas[:password])
