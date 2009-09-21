@@ -153,7 +153,7 @@ class EftController < ApplicationController
       end
 
       #   6) Respond with the results as JSON
-      render :json => results.to_json
+      render :json => result.to_json
     end
   end
 
