@@ -49,7 +49,7 @@ class EftController < ApplicationController
 
   def submit_payments
     restrict('allow only admins') or begin
-      return(render(:json => {:error => "<h4>Batch has not been locked!</h4>"}.to_json)) if !@batch.locked && params[:testing] != 'ofcourse'
+      return(render(:json => {:error => "Batch has not been locked!"}.to_json)) if !@batch.locked && params[:incoming_path].to_s.length > 0
 
       # 1) For each location yet to be uploaded:
       #   1) Gather all clients-to-bill for this location.
@@ -69,7 +69,11 @@ class EftController < ApplicationController
         next if store.config.nil?
         dcas = store.config[:dcas]
         incoming_path = params[:incoming_path] || dcas[:incoming_path]
-        logger.info "Incoming Path set manually: #{incoming_path}" if incoming_path != dcas[:incoming_path]
+        if incoming_path != dcas[:incoming_path]
+          logger.info "Incoming Path set manually: #{incoming_path}"
+        elsif !@batch.locked
+          return(render(:json => {:error => "Batch has not been locked!"}.to_json))
+        end
 
         path = "EFT/#{@batch.for_month}"
         FileUtils.mkpath(path+'/')
