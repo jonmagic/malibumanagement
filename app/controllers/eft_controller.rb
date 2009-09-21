@@ -141,11 +141,15 @@ class EftController < ApplicationController
               result[file_key] = 'Failed during upload!'
             end
           end
+          if logged_in
+            begin
+              ftp.quit
+              ftp.close
+            rescue => e
+              logger.error "FTP FAILED DURING LOGOUT: #{e}\n#{e.backtrace.join("\n")}"
+            end
+          end
         end
-
-        # After both files have been uploaded for that store...
-        ftp.quit
-        ftp.close
       end
 
       #   6) Respond with the results as JSON
