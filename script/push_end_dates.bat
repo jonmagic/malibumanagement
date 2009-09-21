@@ -1,1 +1,1 @@
-ruby script/runner -e production script/process_returns.rb -- %1
+ruby script/runner -e production script/push_end_dates.rb -- %1

@@ -4,12 +4,12 @@
 
 updated = Helios::Eft.memberships_between("2009/12/31", "2020/01/01") do |client|
   debug_step "Begin: '#{client.First_Name} #{client.Last_Name}' (M1:#{client.Member1}, M2:#{client.Member2} Exp:#{client.Member1_Exp}#{client.Member2_Exp}, EFT.End_Date:#{client.eft.End_Date})" if ARGV.include?('--debug-step')
-  if(self.Member1 == 'VIP')
+  if(client.Member1 == 'VIP')
     client.update_attributes(
       :Member1_Exp => Time.gm('2020', '01', 1, 0, 0, 0),
       :UpdateAll => Time.now
     )
-  elsif(self.Member2 == 'VIP')
+  elsif(client.Member2 == 'VIP')
     client.update_attributes(
       :Member2_Exp => Time.gm('2020', '01', 1, 0, 0, 0),
       :UpdateAll => Time.now
