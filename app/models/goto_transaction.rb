@@ -221,7 +221,7 @@ class GotoTransaction < ActiveRecord::Base
       nil, # driver license number
       nil, # driver license state
       "#{Time.parse(batch.for_month).strftime("%y%m")}#{client_id}", # CustTraceCode
-      options[:refund] ? 'Credit' : nil, # Credit/Debit (default Debit)
+      options[:refund] ? 'Credit' : 'Debit', # Credit/Debit (default Debit)
       nil,
       2,
       3,

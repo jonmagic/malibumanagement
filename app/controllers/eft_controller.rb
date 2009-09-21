@@ -83,11 +83,11 @@ class EftController < ApplicationController
           ftp.chdir(dcas[:incoming_path])
           ftp.put(csv_cc_local_filename, cc_csv_name)
           ftp.put(csv_ach_local_filename, ach_csv_name)
+          @batch.submitted[store.alias] = true
+          @batch.save
           ftp.quit
           ftp.close
           txt += "#{store.config[:name]} - Uploaded<br />"
-          @batch.submitted[store.alias] = true
-          @batch.save
         rescue => e
           logger.error "FTP FAILED: #{e}\n#{e.backtrace.join("\n")}"
           # If failed, immediately try deleting both of the files in case one made it or one made it partially.

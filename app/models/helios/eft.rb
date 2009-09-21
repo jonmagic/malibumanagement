@@ -1,4 +1,39 @@
 class Helios::Eft < ActiveRecord::Base
+  # Properties:
+  #   Client_No: integer
+  #   Client_Name: string
+  #   First_Name: string
+  #   Last_Name: string
+  #   Acct_Type: string
+  #   Acct_No: string
+  #   Acct_Exp: string
+  #   Bank_Name: string
+  #   Bank_Phone: string
+  #   Bank_ABA: string
+  #   Monthly_Fee: decimal
+  #   Billing_Day: integer
+  #   Start_Date: datetime
+  #   End_Date: datetime
+  #   Freeze_Start: datetime
+  #   Freeze_End: datetime
+  #   Prenote_Date: datetime
+  #   EFT_Freeze: decimal
+  #   Pin_No: integer
+  #   Acct_No_Scan: string
+  #   Disabled: boolean
+  #   Last_Mdt: datetime
+  #   Monthly_Fee2: decimal
+  #   Billing_Day2: integer
+  #   Start_Date2: datetime
+  #   End_Date2: datetime
+  #   Freeze_Start2: datetime
+  #   Freeze_End2: datetime
+  #   Prenote_Date2: datetime
+  #   Print_chk: boolean
+  #   Deleted: boolean
+  #   Location: string
+  #   UpdateAll: datetime
+
   @nologging = true
 
   case ::RAILS_ENV
@@ -26,6 +61,9 @@ class Helios::Eft < ActiveRecord::Base
   
   include HeliosPeripheral
 
+  # Method: Helios::Eft.memberships
+  # Purpose: Find all memberships active and ready to bill as of a specific date
+  # Arguments: The date (string)
   def self.memberships(month, render_nils=false)
     sql = case ::RAILS_ENV
     when 'development'
@@ -34,6 +72,37 @@ class Helios::Eft < ActiveRecord::Base
     when 'production'
       date_s = Time.parse(month).strftime("%Y%m%d")
       "([Member1] = 'VIP' AND '#{date_s}' >= [Member1_Beg] AND [Member1_Exp] >= '#{date_s}') OR ([Member2] = 'VIP' AND '#{date_s}' >= [Member2_Beg] AND [Member2_Exp] >= '#{date_s}')"
+    end
+    
+    mems = []
+    Helios::ClientProfile.find(:all, :conditions => [sql]).each do |cp|
+      if cp.eft.nil?
+        yield cp if render_nils && block_given?
+      else
+        date = Time.parse(month).to_date
+        if(((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= date : true) && (!cp.eft.End_Date.nil? ? date <= cp.eft.End_Date.to_date : true)) && !((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= date : false) && (!cp.eft.Freeze_End.nil? ? date <= cp.eft.Freeze_End.to_date : false)))
+          mems << cp
+          yield cp if block_given?
+        end
+      end
+    end
+    
+    mems
+  end
+
+  # Method: Helios::Eft.memberships_between
+  # Purpose: Find all memberships active and ready to bill as of a specific date, but with an end date before another date.
+  # Arguments: Active date (string), Target end date (string)
+  def self.memberships_between(month, end_month, render_nils=false)
+    sql = case ::RAILS_ENV
+    when 'development'
+      date_s = Time.parse(month).strftime("%Y-%m-%d")
+      e_date_s = Time.parse(end_month).strftime("%Y-%m-%d")
+      "(Member1 = 'VIP' AND '#{date_s}' >= Member1_Beg AND Member1_Exp >= '#{date_s}' AND Member1_Exp < '#{e_date_s}') OR (Member2 = 'VIP' AND '#{date_s}' >= Member2_Beg AND Member2_Exp >= '#{date_s}' AND Member2_Exp < '#{e_date_s}')"
+    when 'production'
+      date_s = Time.parse(month).strftime("%Y%m%d")
+      e_date_s = Time.parse(end_month).strftime("%Y%m%d")
+      "([Member1] = 'VIP' AND '#{date_s}' >= [Member1_Beg] AND [Member1_Exp] >= '#{date_s}' AND [Member1_Exp] < '#{e_date_s}') OR ([Member2] = 'VIP' AND '#{date_s}' >= [Member2_Beg] AND [Member2_Exp] >= '#{date_s}' AND [Member2_Exp] < '#{e_date_s}')"
     end
     
     mems = []
