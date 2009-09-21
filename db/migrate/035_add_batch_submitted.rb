@@ -1,5 +1,7 @@
 class AddBatchSubmitted < ActiveRecord::Migration
   def self.up
+    # To change from an already-created string column, run:
+    # ALTER TABLE eft_batches MODIFY submitted TEXT;
     add_column :eft_batches, :submitted, :text
   end
   
