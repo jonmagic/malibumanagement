@@ -49,7 +49,7 @@ class EftController < ApplicationController
 
   def submit_payments
     restrict('allow only admins') or begin
-      return(render(:json => {:error => "Batch has not been locked!"}.to_json)) if !@batch.locked && params[:incoming_path].to_s.length > 0
+      return(render(:json => {:error => "Batch has not been locked!"}.to_json)) if !@batch.locked && params[:incoming_path].blank?
 
       # 1) For each location yet to be uploaded:
       #   1) Gather all clients-to-bill for this location.
