@@ -13,7 +13,7 @@ var repeat_billing = function(for_month, incoming_path){
   var $billing = jQuery('#time_to_bill');
   var $billing_files = jQuery('#time_to_bill ul');
   // 2) Call the action
-  jQuery.getJSON((incoming_path ? '/malibu/eft/submit_payments?for_month='+for_month+'&incoming_path='+incoming_path : '/malibu/eft/submit_payments?for_month='+for_month), function(data){
+  jQuery.getJSON((incoming_path ? '/malibu/eft/submit_payments?for_month='+for_month+'&testing=ofcourse&incoming_path='+incoming_path : '/malibu/eft/submit_payments?for_month='+for_month), function(data){
     var key, that_remain=0, store, type;
     // 3) Integrate results
     for(key in data){
