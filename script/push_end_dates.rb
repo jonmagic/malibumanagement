@@ -5,18 +5,12 @@
 updated = Helios::Eft.memberships_between("2009/12/31", "2020/01/01") do |client|
   debug_step "Begin: '#{client.First_Name} #{client.Last_Name}' (M1:#{client.Member1}, M2:#{client.Member2} Exp:#{client.Member1_Exp}#{client.Member2_Exp}, EFT.End_Date:#{client.eft.End_Date})" if ARGV.include?('--debug-step')
   if(client.Member1 == 'VIP')
-    client.update_attributes(
-      :Member1_Exp => "20200101",
-      :UpdateAll => Time.now
-    )
+    Helios::ClientProfile.connection.execute("UPDATE Client_Profile SET [Member1_Exp] = '20200101 00:00:00', [UpdateAll] = '#{Time.now.strftime("%Y%m%d %H:%M:%S")}' WHERE [Client_no] = '#{client.Client_no}'")
   elsif(client.Member2 == 'VIP')
-    client.update_attributes(
-      :Member2_Exp => "20200101",
-      :UpdateAll => Time.now
-    )
+    Helios::ClientProfile.connection.execute("UPDATE Client_Profile SET [Member2_Exp] = '20200101 00:00:00', [UpdateAll] = '#{Time.now.strftime("%Y%m%d %H:%M:%S")}' WHERE [Client_no] = '#{client.Client_no}'")
   end
   client.eft.update_attributes(
-    :End_Date => "20200101",
+    :End_Date => Time.parse("2020/01/01"),
     :UpdateAll => Time.now
   )
   debug_step "Continue?" if ARGV.include?('--debug-step')
