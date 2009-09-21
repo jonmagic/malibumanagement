@@ -63,7 +63,7 @@
   						</div>
   					</div>
           <% else -%>
-    				<span style="display:block;float:left"><%= link_to image_tag('/images/eft/smtm.jpg'), "javascript:Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' />Uploading files to DCAS...</div>'); new Ajax.Updater({success:'time_to_bill'}, '/malibu/eft/submit_payments?for_month=#{@batch.for_month}', {asynchronous:true, evalScripts:true, onComplete:function(){Control.Modal.close()}}); void(0);", :confirm => "Are you sure you want to submit to DCAS?" %></span><p style="padding-left:140px">Click icon to submit.</p>
+    				<span style="display:block;float:left"><%= link_to image_tag('/images/eft/smtm.jpg'), "javascript:Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' /><span>Uploading files to DCAS...</span></div>'); start_billing('#{@batch.for_month}', '#{params[:incoming_path]}'); void(0);", :confirm => "Are you sure you want to submit to DCAS?" %></span><p style="padding-left:140px">Click icon to submit<%= " (test mode)" if params[:incoming_path] != '' %>.</p>
     			<% end -%>
   			<% elsif @batch.submitted? -%>
   		    <h4>Files have been uploaded to DCAS.</h4>
@@ -139,3 +139,5 @@
 	</div>
 </div>
 <div class="clear"><br /></div>
+<script src="/javascripts/jquery-1.3.2.min.js"></script>
+<script src="/javascripts/eft_uploader.js"></script>

@@ -43,70 +43,110 @@ class EftController < ApplicationController
     end
   end
 
+# anything wrong, disconnect
+# record each individual file that is uploaded, not per-store
+# one-try each time, but ajax keeps retry-ing until it is done
+
   def submit_payments
     restrict('allow only admins') or begin
-      return(render(:text => "<h4>Batch has not been locked!</h4>")) if !@batch.locked
-      txt = ''
+      return(render(:json => {:error => "<h4>Batch has not been locked!</h4>"}.to_json)) if !@batch.locked
+
+      # 1) For each location yet to be uploaded:
+      #   1) Gather all clients-to-bill for this location.
+      #   2) For each file type (ach, cc) yet to be uploaded:
+      #     1) Create the file locally.
+      #     2) Log in to FTPS.
+      #     3) Create the 'uploading' folder if it's not already there.
+      #     4) Delete the same filename from the 'uploading' folder if one exists.
+      #     5) Upload the file into the 'uploading' folder.
+      #     6) If we're still connected, check the file size of the file, then move it out of 'uploading' and mark file as completed.
+      # 2) Respond with all results as JSON
+
+      result = {}
       failed_count = 0
       Store.find(:all).each do |store|
-        next if @batch.submitted[store.alias]
+        next if @batch.submitted[store.alias + '--ACH'] && @batch.submitted[store.alias + '--CC']
         next if store.config.nil?
         dcas = store.config[:dcas]
-        # 1) Generate the file!
+        incoming_path = params[:incoming_path] || dcas[:incoming_path]
+        logger.info "Incoming Path set manually: #{incoming_path}" if incoming_path != dcas[:incoming_path]
+        return(render(:json => {}.to_json))
+
         path = "EFT/#{@batch.for_month}"
         FileUtils.mkpath(path+'/')
-        cc_csv_name = "#{dcas[:company_user]}_cc_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
-        ach_csv_name = "#{dcas[:company_user]}_ach_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
-        csv_cc_local_filename = "#{path}/#{cc_csv_name}"
-        csv_ach_local_filename = "#{path}/#{ach_csv_name}"
-        @clients = GotoTransaction.search(@query, :filters => {'has_eft' => 1, 'goto_valid' => '--- []', 'batch_id' => @batch.id, 'location' => store.location_code})
-        FasterCSV.open(csv_cc_local_filename, "w") do |cc_csv|
-          cc_csv << GotoTransaction.dcas_header_row(@batch.id, store.location_code)
-        FasterCSV.open(csv_ach_local_filename, "w") do |ach_csv|
-          ach_csv << GotoTransaction.dcas_header_row(@batch.id, store.location_code)
-          @clients.each do |client|
-            ach_csv << client.to_dcas_csv_row if client.ach?
-            cc_csv << client.to_dcas_csv_row if client.credit_card?
-          end
-        end
-        end
 
-        # 2) Upload the files!
-        begin
-          # SFTP
-          # require 'net/sftp' # (install gem >= 2.0)
-          # Net::SFTP.start(dcas[:sftp_host], dcas[:username], dcas[:password]) do |sftp|
-          #   
-          # end
-          # ****
-          ftp = (dcas[:ftps] ? Net::FTPS::Implicit : Net::FTP).new(dcas[:host], dcas[:username], dcas[:password])
-          ftp.chdir(dcas[:incoming_path])
-          ftp.put(csv_cc_local_filename, cc_csv_name)
-          ftp.put(csv_ach_local_filename, ach_csv_name)
-          @batch.submitted[store.alias] = true
-          @batch.save
-          ftp.quit
-          ftp.close
-          txt += "#{store.config[:name]} - Uploaded<br />"
-        rescue => e
-          logger.error "FTP FAILED: #{e}\n#{e.backtrace.join("\n")}"
-          # If failed, immediately try deleting both of the files in case one made it or one made it partially.
+        @clients = GotoTransaction.search(@query, :filters => {'has_eft' => 1, 'goto_valid' => '--- []', 'batch_id' => @batch.id, 'location' => store.location_code})
+
+        ['ACH', 'CC'].each do |type|
+          file_key = "#{store.alias}--#{type}"
+          next if @batch.submitted[file_key]
+          # Generate the file!
+          csv_name = "#{dcas[:company_user]}_#{type.downcase}_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
+          csv_local_filename = "#{path}/#{csv_name}"
+          FasterCSV.open(csv_local_filename, "w") do |csv|
+            csv << GotoTransaction.dcas_header_row(@batch.id, store.location_code)
+            @clients.each do |client|
+              csv << client.to_dcas_csv_row if (type == 'ACH' && client.ach?) || (type == 'CC' && client.credit_card?)
+            end
+          end
+
+          # Upload the file!
+          logged_in = false
+          env_prepared = false
+
+          #   1) Log in to FTPS.
           begin
             ftp = (dcas[:ftps] ? Net::FTPS::Implicit : Net::FTP).new(dcas[:host], dcas[:username], dcas[:password])
-            ftp.chdir(dcas[:incoming_path])
-            ftp.delete(cc_csv_name)
-            ftp.delete(ach_csv_name)
-            ftp.quit
-            ftp.close
-          rescue => ef
-            logger.error "FTP RESCUE FAILED: #{ef}"
+            logged_in = true
+          rescue => e
+            logger.error "FTP LOGIN FAILED: #{e}"
+            result[file_key] = 'Failed to log in'
           end
-          txt += "#{store.config[:name]} FAILED<br />"
-          failed_count += 1
+          if logged_in
+            begin
+              # (create the incoming_path if it doesn't exist)
+              ftp.mkdir(incoming_path) unless ftp.nlst.include?(incoming_path)
+              ftp.chdir(incoming_path)
+
+              #   2) Create the 'uploading' folder if it's not already there.
+              ftp.mkdir('uploading') unless ftp.nlst.include?('uploading')
+              ftp.chdir('uploading')
+
+              #   3) Delete the same filename from the 'uploading' folder if one exists.
+              ftp.delete(csv_name) if ftp.nlst.include?(csv_name)
+              env_prepared = true
+            rescue => e
+              logger.error "FTP FAILED BEFORE UPLOAD: #{e}\n#{e.backtrace.join("\n")}"
+              result[file_key] = 'Failed before upload'
+            end
+          end
+          if env_prepared
+            begin
+              #   4) Upload the file into the 'uploading' folder.
+              ftp.put(csv_local_filename, csv_name)
+              #   5) If we're still connected, check the file size of the file, then move it out of 'uploading' and mark file as completed.
+              if ftp.nlst.include?(csv_name) && ftp.size(csv_name) == File.size(csv_local_filename)
+                ftp.move(csv_name, "../#{csv_name}")
+                @batch.submitted[file_key] = true
+                @batch.save
+                result[file_key] = "Successfully uploaded."
+              else
+                result[file_key] = "Failed to upload (just wasn't there after uploading!)"
+              end
+            rescue => e
+              logger.error "FTP FAILED DURING UPLOAD: #{e}\n#{e.backtrace.join("\n")}"
+              result[file_key] = 'Failed during upload!'
+            end
+          end
         end
+
+        # After both files have been uploaded for that store...
+        ftp.quit
+        ftp.close
       end
-      failed_msg = failed_count > 0 ? "<p>#{failed_count} store#{'s' if failed_count > 1} failed to upload. Please <a href='javascript:void(0)' onclick='window.location.reload(true)'>Reload the page</a> and click the button again.</p>" : ''
-      render :text => "<h4>The following files have been uploaded:<br />#{txt}</h4>#{failed_msg}"
+
+      #   6) Respond with the results as JSON
+      render :json => results.to_json
     end
   end
 

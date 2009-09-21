@@ -44,7 +44,7 @@ class EftBatch < ActiveRecord::Base
     def submitted.[]=(k,v)
       h = YAML.load(@record.send(:read_attribute, :submitted))
       h[k]=v
-      replace(h)
+      self.replace(h)
       @record.send(:write_attribute, :submitted, h.to_yaml)
     end
     submitted
