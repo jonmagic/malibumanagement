@@ -5,7 +5,7 @@ var start_billing = function(for_month, incoming_path){
   // 1) Setup
   //  Everything goes in the #time_to_bill div.
   var $billing = jQuery('#time_to_bill');
-  if($billing.find('ul').length===0) $billing.append("<ul></ul>");
+  if(jQuery('#time_to_bill ul').length===0) $billing.append("<ul></ul>");
   jQuery('div.loading-dialog span').text("Uploading files to DCAS...");
   repeat_billing(for_month, incoming_path);
 };
