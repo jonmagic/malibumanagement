@@ -35,6 +35,8 @@ var repeat_billing = function(for_month, incoming_path){
     if(that_remain > 0){
       $billing.find('h3').text("Retry uploading "+that_remain+" files to DCAS...");
       repeat_billing(for_month);
+    }else{
+      Control.Modal.close();
     }
   });
 };

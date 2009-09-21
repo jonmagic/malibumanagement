@@ -70,7 +70,6 @@ class EftController < ApplicationController
         dcas = store.config[:dcas]
         incoming_path = params[:incoming_path] || dcas[:incoming_path]
         logger.info "Incoming Path set manually: #{incoming_path}" if incoming_path != dcas[:incoming_path]
-        return(render(:json => {}.to_json))
 
         path = "EFT/#{@batch.for_month}"
         FileUtils.mkpath(path+'/')
