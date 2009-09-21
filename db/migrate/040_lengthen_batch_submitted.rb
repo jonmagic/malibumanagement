@@ -1,6 +1,6 @@
 class LengthenBatchSubmitted < ActiveRecord::Migration
   def self.up
-    change_column :eft_batches, :submitted, :text, :default => "--- {}\n\n"
+    change_column :eft_batches, :submitted, :text
   end
   
   def self.down

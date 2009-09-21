@@ -36,7 +36,7 @@ class EftBatch < ActiveRecord::Base
   end
 
   def submitted
-    submitted = YAML.load(read_attribute(:submitted))
+    submitted = (YAML.load(read_attribute(:submitted)) || {}) rescue {}
     submitted.instance_variable_set(:@record, self)
     def submitted.[](k)
       YAML.load(@record.send(:read_attribute, :submitted))[k]
