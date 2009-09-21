@@ -1,6 +1,6 @@
 class AddBatchSubmitted < ActiveRecord::Migration
   def self.up
-    add_column :eft_batches, :submitted, :string, :default => "--- {}\n\n"
+    add_column :eft_batches, :submitted, :text
   end
   
   def self.down
