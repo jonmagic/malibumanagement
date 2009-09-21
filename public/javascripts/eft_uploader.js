@@ -34,7 +34,7 @@ var repeat_billing = function(for_month, incoming_path){
     // 4) repeat from #2 if some remain
     if(that_remain > 0){
       $billing.find('h3').text("Retry uploading "+that_remain+" files to DCAS...");
-      repeat_billing(for_month);
+      repeat_billing(for_month, incoming_path);
     }else{
       Control.Modal.close();
     }
