@@ -42,6 +42,8 @@ clients.each do |client_id|
           :UpdateAll => Time.now
         ) if eft
       end
+    else
+      puts "Client #{client_id} is not prepaid. Use 'YA' to continue to the next prepaid without prompt."
     end
   end
 end
