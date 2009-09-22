@@ -27,10 +27,11 @@ clients.each do |client_id|
       client = report.instance_variable_get(:@client)
       prepaid = report.instance_variable_get(:@prepaid)
       eft = report.instance_variable_get(:@eft)
-      vip_expire_date = prepaid.Last_Mdt + ((prepaid.Code == 'VY' ? 425 : 545) * 24*60*60).to_date.to_time # number of days following.
+      vip_expire_date = (prepaid.Last_Mdt + ((prepaid.Code == 'VY' ? 425 : 545) * 24*60*60)).to_date.to_time # number of days following.
       msg = "\n#{report}\nChange: #{client.Member1 == 'VIP' ? 'client.Member1_Exp' : 'client.Member2_Exp'}=#{vip_expire_date.strftime("%Y-%m-%d")}"
       msg << ", EFT.End_Date=#{prepaid.Last_Mdt.to_time.strftime("%Y-%m-%d")}" if eft
       confirm_step msg, 'fix-end-date' do
+        $CONFIRM_CONTINUE['begin-next'] = false
         count_skipped -= 1
         count_updated += 1
         if(client.Member1 == 'VIP')
@@ -46,7 +47,7 @@ clients.each do |client_id|
     else
       count_skipped -= 1
       count_not_prepaid += 1
-      puts "Client #{client_id} is not prepaid. Use 'YA' to continue to the next prepaid without prompt."
+      puts "Client #{client_id} is not prepaid.#{" Use 'YA' to continue to the next prepaid without prompt." if $CONFIRM_CONTINUE['begin-next']!='Y'}"
     end
   end
 end
