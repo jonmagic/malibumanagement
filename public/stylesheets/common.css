@@ -450,9 +450,9 @@ th.calendar_day {
 .clear {clear:both;}
 
 li.file_upload_status span.failed {
-  background-image: url(/images/upload_failed.png);
+  background-image: url(/images/icons/cancel.png);
 }
 
 li.file_upload_status span.uploaded {
-  background-image: url(/images/upload_success.png);
+  background-image: url(/images/icons/accept.png);
 }
