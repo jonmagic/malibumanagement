@@ -36,13 +36,13 @@ var repeat_billing = function(for_month, incoming_path){
       var key = stores[i].key;
       var store = stores[i].store;
       var type = stores[i].type;
-      var data = stores[i].data;
+      var msg = stores[i].data;
       if(jQuery("#upload_status_"+key).length===0){
-        $billing_files.append("<li class='file_upload_status'>"+store.charAt(0).toUpperCase()+store.substr(1)+" ("+type+") - <span id='upload_status_"+key+"'>"+data[key]+"</span></li>");
+        $billing_files.append("<li class='file_upload_status'>"+store.charAt(0).toUpperCase()+store.substr(1)+" ("+type+") - <span id='upload_status_"+key+"'>"+msg+"</span></li>");
       }else{
-        jQuery("#upload_status_"+key).text(data[key]);
+        jQuery("#upload_status_"+key).text(msg);
       }
-      if(data[key].split(' ')[0] == "Failed"){
+      if(msg.split(' ')[0] == "Failed"){
         jQuery("#upload_status_"+key).addClass('failed');
         that_remain = that_remain + 1; // if first word is "Failed"
       }else{
