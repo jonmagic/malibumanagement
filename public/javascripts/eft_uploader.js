@@ -24,7 +24,7 @@ var repeat_billing = function(for_month, incoming_path){
       if(key == 'error'){
         alert(data[key]);
       }else{
-        stores.push({'store':key.split('--')[0], 'key':key.split('--')[1], 'data':data[key]});
+        stores.push({'store':key.split('--')[0], 'type':key.split('--')[1], 'key':key, 'data':data[key]});
       }
     }
     stores.sort(function(a,b){
