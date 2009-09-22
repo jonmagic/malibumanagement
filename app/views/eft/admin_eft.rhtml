@@ -69,7 +69,7 @@
   			<% elsif @batch.submitted? -%>
   		    <h4>Files have been uploaded to DCAS.</h4>
   			<% else %>
-  				<a style="display:block;float:left" href="<%= eft_path(:action => 'lock_batch') %>" onclick="window.location = this.href + '?for_month=' + jQuery('#for_month').val(); return false;"><img src="/images/eft/unlocked.png" alt="unlocked" width="32px" height="32px" /></a><p>This payment batch is Unlocked. Data may regenerated at any time. Click the lock icon to lock this month when you're ready to submit payment files to Goto-Billing.</p>
+  				<a style="display:block;float:left" href="<%= eft_path(:action => 'lock_batch') %>" onclick="window.location = this.href + '?for_month=' + jQuery('#for_month').val(); return false;"><img src="/images/eft/unlocked.png" alt="unlocked" width="32px" height="32px" /></a><p>This payment batch is Unlocked. Data may be regenerated at any time. Click the lock icon to lock this month when you're ready to submit payment files to Goto-Billing.</p>
   			<% end -%>
 			</div>
 		</div>

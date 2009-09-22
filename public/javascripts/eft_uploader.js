@@ -35,7 +35,7 @@ var repeat_billing = function(for_month, incoming_path){
           jQuery("#upload_status_"+key).addClass('failed');
           that_remain = that_remain + 1; // if first word is "Failed"
         }else{
-          jQuery("#upload_status_"+key).addClass('uploaded');
+          jQuery("#upload_status_"+key).removeClass('failed').addClass('uploaded');
         }
       }
     }
