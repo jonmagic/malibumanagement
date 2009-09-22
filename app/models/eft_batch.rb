@@ -58,7 +58,7 @@ class EftBatch < ActiveRecord::Base
   end
 
   def submitted?
-    Store.find(:all).reject {|s| s.config.nil?}.all? {|s| submitted[s.alias+'--CC'] && submitted[s.alias+'--EFT']}
+    Store.find(:all).reject {|s| s.config.nil?}.all? {|s| submitted[s.alias+'--CC'] && submitted[s.alias+'--ACH']}
   end
 
   def amounts_counts
