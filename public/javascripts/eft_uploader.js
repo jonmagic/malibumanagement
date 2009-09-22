@@ -9,6 +9,7 @@ var start_billing = function(for_month, incoming_path){
   $billing.find('p').remove();
   if(jQuery('#time_to_bill ul').length===0) $billing.append("<ul></ul>");
   jQuery('div.loading-dialog span').text("Uploading files to DCAS...");
+  $billing.find('h3').text("Uploading files to DCAS...");
   repeat_billing(for_month, incoming_path);
 };
 var repeat_billing = function(for_month, incoming_path){
