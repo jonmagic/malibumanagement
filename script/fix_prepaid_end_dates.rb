@@ -18,10 +18,11 @@ count_updated = 0
 count_skipped = 0
 
 puts "Filtering through #{clients.length} clients."
-clients.each do |client|
-  confirm_step "Begin next client? (#{client.Client_no})", 'begin-next' do
-    report = client.report_membership!
+clients.each do |client_id|
+  confirm_step "Begin next client? (#{client_id})", 'begin-next' do
+    report = Helios::ClientProfile.report_membership!(client_id,Time.parse("2009-12-31"))
     if report =~ /prepaid/
+      client = report.instance_variable_get(:@client)
       prepaid = report.instance_variable_get(:@prepaid)
       eft = report.instance_variable_get(:@eft)
       vip_expire_date = prepaid.Last_Mdt + ((prepaid.Code == 'VY' ? 425 : 545) * 24*60*60).to_date.to_time # number of days following.
