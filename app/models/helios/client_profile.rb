@@ -237,7 +237,7 @@ class Helios::ClientProfile < ActiveRecord::Base
     date = datetime.to_date
     report = ''
     cp = nil
-    cp = self if ((self.Member1 == 'VIP' && self.Member1_Beg < date && self.Member1_Exp >= date) || (self.Member2 == 'VIP' && self.Member2_Beg < date && self.Member2_Exp >= date))
+    cp = self if ((self.Member1 == 'VIP' && self.Member1_Beg < datetime && self.Member1_Exp >= datetime) || (self.Member2 == 'VIP' && self.Member2_Beg < datetime && self.Member2_Exp >= datetime))
     report << (cp ? "ClientProfile reports a current membership" : "ClientProfile reports no membership")
     if cp
       report.instance_variable_set(:@client, cp)
