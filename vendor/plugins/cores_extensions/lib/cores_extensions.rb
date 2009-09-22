@@ -44,10 +44,11 @@ module CoresExtensions
     end
   end
 
-  def confirm_step(msg, id=nil)
+  def confirm_step(msg, cid=nil)
+    cid ||= msg
     $CONFIRM_CONTINUE ||= {}
-    yn = if $CONFIRM_CONTINUE[id]
-      $CONFIRM_CONTINUE[id]
+    yn = if $CONFIRM_CONTINUE[cid]
+      $CONFIRM_CONTINUE[cid]
     else
       STDOUT << msg
       STDOUT << " (Y=Continue, S=Skip one, YA=Continue to end, SA=Skip all)"
@@ -58,12 +59,12 @@ module CoresExtensions
     when 'Y'
       yield
     when 'YA'
-      $CONFIRM_CONTINUE[id] = 'Y'
+      $CONFIRM_CONTINUE[cid] = 'Y'
       yield
     when 'S'
       nil
     when 'SA'
-      $CONFIRM_CONTINUE[id] = 'N'
+      $CONFIRM_CONTINUE[cid] = 'N'
       nil
     end
   end

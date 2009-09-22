@@ -13,29 +13,34 @@ end
 
 clients = Helios::Transact.find(:all, :conditions => [sql, '1', '2', old_date_s])
 
+count_updated = 0
+count_skipped = 0
+
 clients.each do |client|
-  report = client.report_membership!
-  if report =~ /prepaid/
-    prepaid = report.instance_variable_get(:@prepaid)
-    confirm_step "#{report}\nChange: #{client.Member1 == 'VIP' ? 'client.Member1_Exp' : 'client.Member2_Exp'}=#{prepaid.Last_Mdt}", '' do
-      
+  confirm_step "Begin next client? (#{client.Client_no})", 'begin-next' do
+    report = client.report_membership!
+    if report =~ /prepaid/
+      prepaid = report.instance_variable_get(:@prepaid)
+      eft = report.instance_variable_get(:@eft)
+      vip_expire_date = prepaid.Last_Mdt + ((prepaid.Code == 'VY' ? 425 : 545) * 24*60*60).to_date.to_time # number of days following.
+      msg = "\n#{report}\nChange: #{client.Member1 == 'VIP' ? 'client.Member1_Exp' : 'client.Member2_Exp'}=#{vip_expire_date.strftime("%Y-%m-%d")}"
+      msg << ", EFT.End_Date=#{prepaid.Last_Mdt.to_time.strftime("%Y-%m-%d")}" if eft
+      count_skipped += 1
+      confirm_step msg, 'fix-end-date' do
+        count_skipped -= 1
+        count_updated += 1
+        if(client.Member1 == 'VIP')
+          Helios::ClientProfile.connection.execute("UPDATE Client_Profile SET [Member1_Exp] = '#{vip_expire_date.strftime("%Y-%m-%d %H:%M:%S")}', [UpdateAll] = '#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}' WHERE [Client_no] = '#{client.Client_no}'")
+        elsif(client.Member2 == 'VIP')
+          Helios::ClientProfile.connection.execute("UPDATE Client_Profile SET [Member2_Exp] = '#{vip_expire_date.strftime("%Y%m%d %H:%M:%S")}', [UpdateAll] = '#{Time.now.strftime("%Y%m%d %H:%M:%S")}' WHERE [Client_no] = '#{client.Client_no}'")
+        end
+        client.eft.update_attributes(
+          :End_Date => prepaid.Last_Mdt.to_time,
+          :UpdateAll => Time.now
+        ) if eft
+      end
     end
   end
 end
-
-
-# updated = Helios::Eft.memberships_between("2009/12/31", "2020/01/01") do |client|
-#   # confirm_step "Begin: '#{client.First_Name} #{client.Last_Name}' (M1:#{client.Member1}, M2:#{client.Member2} Exp:#{client.Member1_Exp}#{client.Member2_Exp}, EFT.End_Date:#{client.eft.End_Date})" if ARGV.include?('--debug-step')
-#   if(client.Member1 == 'VIP')
-#     Helios::ClientProfile.connection.execute("UPDATE Client_Profile SET [Member1_Exp] = '20200101 00:00:00', [UpdateAll] = '#{Time.now.strftime("%Y%m%d %H:%M:%S")}' WHERE [Client_no] = '#{client.Client_no}'")
-#   elsif(client.Member2 == 'VIP')
-#     Helios::ClientProfile.connection.execute("UPDATE Client_Profile SET [Member2_Exp] = '20200101 00:00:00', [UpdateAll] = '#{Time.now.strftime("%Y%m%d %H:%M:%S")}' WHERE [Client_no] = '#{client.Client_no}'")
-#   end
-#   client.eft.update_attributes(
-#     :End_Date => Time.parse("2020/01/01"),
-#     :UpdateAll => Time.now
-#   )
-#   debug_step "Continue?" if ARGV.include?('--debug-step')
-# end
 
 puts "Done: #{count_updated} Updated, #{count_skipped} Skipped."
