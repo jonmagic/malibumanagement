@@ -132,7 +132,7 @@ class EftController < ApplicationController
                 ftp.rename(csv_name, "../#{csv_name}")
                 @batch.submitted[file_key] = true
                 @batch.save
-                result[file_key] = "Successfully uploaded."
+                result[file_key] = "Uploaded."
               else
                 result[file_key] = "Failed to upload (just wasn't there after uploading!)"
               end

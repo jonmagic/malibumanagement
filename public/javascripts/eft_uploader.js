@@ -21,10 +21,10 @@ var repeat_billing = function(for_month, incoming_path){
       if(key == 'error'){
         alert(data[key]);
       }else{
-        // type = data[key].split('--')[1];
-        // store = data[key].split('--')[0];
+        type = data[key].split('--')[1];
+        store = data[key].split('--')[0];
         if($billing_files.find("#upload_"+key).length===0){
-          $billing_files.append("<li>"+key+"<span id='upload_status_"+key+"'>"+data[key]+"</span></li>");
+          $billing_files.append("<li class='file_upload_status'>"+store.charAt(0).toUpperCase()+store.substr(1)+" ("+type+") - <span id='upload_status_"+key+"'>"+data[key]+"</span></li>");
         }else{
           $billing_files.find("#upload_status_"+key).text(data[key]);
         }
