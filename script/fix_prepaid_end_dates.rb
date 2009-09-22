@@ -19,6 +19,7 @@ count_skipped = 0
 
 puts "Filtering through #{clients.length} clients."
 clients.each do |client_id|
+  count_skipped += 1
   confirm_step "Begin next client? (#{client_id})", 'begin-next' do
     report = Helios::ClientProfile.report_membership!(client_id,Time.parse("2009-12-31"))
     if report =~ /prepaid/
@@ -28,7 +29,6 @@ clients.each do |client_id|
       vip_expire_date = prepaid.Last_Mdt + ((prepaid.Code == 'VY' ? 425 : 545) * 24*60*60).to_date.to_time # number of days following.
       msg = "\n#{report}\nChange: #{client.Member1 == 'VIP' ? 'client.Member1_Exp' : 'client.Member2_Exp'}=#{vip_expire_date.strftime("%Y-%m-%d")}"
       msg << ", EFT.End_Date=#{prepaid.Last_Mdt.to_time.strftime("%Y-%m-%d")}" if eft
-      count_skipped += 1
       confirm_step msg, 'fix-end-date' do
         count_skipped -= 1
         count_updated += 1
@@ -43,9 +43,11 @@ clients.each do |client_id|
         ) if eft
       end
     else
+      count_skipped -= 1
+      count_not_prepaid += 1
       puts "Client #{client_id} is not prepaid. Use 'YA' to continue to the next prepaid without prompt."
     end
   end
 end
 
-puts "Done: #{count_updated} Updated, #{count_skipped} Skipped."
+puts "Done: #{count_updated} Updated, #{count_not_prepaid} not Prepaid, #{count_skipped} Skipped."
