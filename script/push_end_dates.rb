@@ -3,8 +3,11 @@
 # This file is to be run in the context of the application: To run, use ./script/runner
 
 updated = Helios::Eft.memberships_between("2009/12/31", "2020/01/01") do |client|
-  unless client.has_prepaid_membership?(Time.parse("2009/12/31"))
-    confirm_step("Update '#{client.First_Name} #{client.Last_Name}' (M1:#{client.Member1}, M2:#{client.Member2} Exp:#{client.Member1_Exp}#{client.Member2_Exp}, EFT.End_Date:#{client.eft.End_Date})") do
+  report = client.report_membership!(Time.parse("2009-12-31"))
+  if report =~ /prepaid/
+    puts "Skipped prepaid member #{client.Client_no}"
+  else
+    confirm_step("#{client.Client_no}: #{report}\n#{client.Member1 == 'VIP' ? 'client.Member1_Exp' : 'client.Member2_Exp'},EFT.End_Date='2020-01-01' (was:#{client.Member1_Exp}#{client.Member2_Exp}, eft:#{client.eft.End_Date}))") do
       if(client.Member1 == 'VIP')
         Helios::ClientProfile.connection.execute("UPDATE Client_Profile SET [Member1_Exp] = '20200101 00:00:00', [UpdateAll] = '#{Time.now.strftime("%Y%m%d %H:%M:%S")}' WHERE [Client_no] = '#{client.Client_no}'")
       elsif(client.Member2 == 'VIP')
