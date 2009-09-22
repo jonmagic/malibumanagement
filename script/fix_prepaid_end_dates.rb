@@ -5,10 +5,10 @@
 sql = case ::RAILS_ENV
 when 'development'
   old_date_s = "2008-07-04" # this is 545 days before 12/31/2009
-  "(Code = 'V' OR Code = 'V199' OR Code = 'VX' OR Code = 'VY' OR Code = 'VY+' OR Code = 'V1M' OR Code = 'V1W') AND CType != ? AND CType != ? AND Last_Mdt > ?"
+  "(Code = 'VY' OR Code = 'VY+') AND CType != ? AND CType != ? AND Last_Mdt > ?"
 when 'production'
   old_date_s = "20080704" # this is 545 days before 12/31/2009
-  "([Code] = 'V' OR [Code] = 'V199' OR [Code] = 'VX' OR [Code] = 'VY' OR [Code] = 'VY+' OR [Code] = 'V1M' OR [Code] = 'V1W') AND [CType] != ? AND [CType] != ? AND [Last_Mdt] > ?"
+  "([Code] = 'VY' OR [Code] = 'VY+') AND [CType] != ? AND [CType] != ? AND [Last_Mdt] > ?"
 end
 
 clients = Helios::Transact.find(:all, :conditions => [sql, '1', '2', old_date_s])
@@ -16,6 +16,7 @@ clients = Helios::Transact.find(:all, :conditions => [sql, '1', '2', old_date_s]
 count_updated = 0
 count_skipped = 0
 
+puts "Filtering through #{clients.length} clients."
 clients.each do |client|
   confirm_step "Begin next client? (#{client.Client_no})", 'begin-next' do
     report = client.report_membership!
