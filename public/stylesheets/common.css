@@ -450,11 +450,13 @@ th.calendar_day {
 .clear {clear:both;}
 
 li.file_upload_status.failed {
-  background-image: url(/images/icons/cancel.png);
+  padding-left:20px;
+  background-image:url(/images/icons/cancel.png);
   background-repeat:none;
 }
 
 li.file_upload_status.uploaded {
+  padding-left:20px;
   background-image:url(/images/icons/accept.png);
   background-repeat:none;
 }
