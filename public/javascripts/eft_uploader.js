@@ -24,7 +24,7 @@ var repeat_billing = function(for_month, incoming_path){
       if(key == 'error'){
         alert(data[key]);
       }else{
-        stores.push({'store':key.split('--')[0], 'type':key.split('--')[1], 'key':key, 'data':data[key]});
+        stores.push({'key':key, 'msg':data[key]});
       }
     }
     stores.sort(function(a,b){
@@ -34,19 +34,19 @@ var repeat_billing = function(for_month, incoming_path){
     });
     for(i in stores){
       var key = stores[i].key;
-      var store = stores[i].store;
-      var type = stores[i].type;
-      var msg = stores[i].data;
+      var store = key.split('--')[0];
+      var type = key.split('--')[1];
+      var msg = stores[i].msg;
       if(jQuery("#upload_status_"+key).length===0){
         $billing_files.append("<li class='file_upload_status'>"+store.charAt(0).toUpperCase()+store.substr(1)+" ("+type+") - <span id='upload_status_"+key+"'>"+msg+"</span></li>");
       }else{
         jQuery("#upload_status_"+key).text(msg);
       }
       if(msg.split(' ')[0] == "Failed"){
-        jQuery("#upload_status_"+key).addClass('failed');
+        jQuery("#upload_status_"+key).parent().addClass('failed');
         that_remain = that_remain + 1; // if first word is "Failed"
       }else{
-        jQuery("#upload_status_"+key).removeClass('failed').addClass('uploaded');
+        jQuery("#upload_status_"+key).parent().removeClass('failed').addClass('uploaded');
       }
     }
     // 4) repeat from #2 if some remain

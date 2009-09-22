@@ -449,10 +449,12 @@ th.calendar_day {
 .floatleft {float:left;}
 .clear {clear:both;}
 
-li.file_upload_status span.failed {
+li.file_upload_status.failed {
   background-image: url(/images/icons/cancel.png);
+  background-repeat:none;
 }
 
-li.file_upload_status span.uploaded {
-  background-image: url(/images/icons/accept.png);
+li.file_upload_status.uploaded {
+  background-image:url(/images/icons/accept.png);
+  background-repeat:none;
 }
