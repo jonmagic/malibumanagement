@@ -122,9 +122,10 @@ class Helios::Eft < ActiveRecord::Base
   end
 
   def self.report_membership!(id,datetime=nil)
-    self.find(id).report_membership!(datetime)
+    Helios::ClientProfile.report_membership!(id,datetime)
   end
   def report_membership!(datetime=nil) # This is to be called primarily by the commandline.
+    return Helios::ClientProfile.report_membership!(self.id,datetime)
     datetime ||= Time.now
     datetime = datetime.to_time
     date = datetime.to_date

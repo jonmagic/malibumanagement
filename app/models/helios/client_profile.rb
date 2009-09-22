@@ -228,6 +228,42 @@ class Helios::ClientProfile < ActiveRecord::Base
     self.attributes.reject {|k,v| [self.class.primary_key, 'F_LOC', 'UpdateAll'].include?(k)}
   end
 
+  def self.report_membership!(id,datetime=nil) # This is to be called primarily by the commandline.
+    self.find(id).report_membership!(datetime)
+  end
+  def report_membership!(datetime=nil)
+    datetime ||= Time.now
+    datetime = datetime.to_time
+    date = datetime.to_date
+    report = ''
+    cp = nil
+    cp = self if ((self.Member1 == 'VIP' && self.Member1_Beg < date && self.Member1_Exp >= date) || (self.Member2 == 'VIP' && self.Member2_Beg < date && self.Member2_Exp >= date))
+    report << (cp ? "ClientProfile reports a current membership" : "ClientProfile reports no membership")
+    if cp
+      report.instance_variable_set(:@client, cp)
+      if cp.eft.nil?
+        report << ", Client has no EFT"
+        if prepaid = cp.has_prepaid_membership?(datetime)
+          report.instance_variable_set(:@prepaid, prepaid)
+          report << ", but this is a prepaid membership -- #{prepaid.Code} bought on #{prepaid.Last_Mdt}!"
+        end
+      else
+        report.instance_variable_set(:@eft, cp.eft)
+        if(((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= date : true) && (!cp.eft.End_Date.nil? ? date <= cp.eft.End_Date.to_date : true)) && !((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= date : false) && (!cp.eft.Freeze_End.nil? ? date <= cp.eft.Freeze_End.to_date : false)))
+          if prepaid = cp.has_prepaid_membership?(datetime)
+            report.instance_variable_set(:@prepaid, prepaid)
+            report << ", but this is a prepaid membership -- #{prepaid.Code} bought on #{prepaid.Last_Mdt}!"
+          else
+            report << ", current time in EFT is valid to bill!"
+          end
+        else
+          report << ", current time in EFT is FROZEN!"
+        end
+      end
+    end
+    report
+  end
+
   def self.has_prepaid_membership?(id,datetime=nil)
     self.find(id).has_prepaid_membership?(datetime)
   end
@@ -253,7 +289,7 @@ class Helios::ClientProfile < ActiveRecord::Base
 
     # **** Check for a later 'V' transaction
     # Gather all mem_trans that are in range (likely only one, but just in case, catch them all)
-    in_range = mem_trans.select { |t| t.Code != 'V' && t.Code != 'VX' && t.Code != 'V199' && t.Last_Mdt > lasting[t.Code] }
+    in_range = mem_trans.select { |t| t.Code != 'V' && t.Code != 'VX' && t.Code != 'V199' && t.Last_Mdt > lasting[t.Code] }.sort {|a,b| a.Last_Mdt <=> b.Last_Mdt}
     # Make sure there isn't a Code 'V' transaction AFTER all active prepaids.
     eft_trans = mem_trans.select { |t| t.Code == 'V' || t.Code == 'VX' || t.Code == 'V199' }
     # If we have a mem_trans later than any V transactions, then we're living in a prepaid and do NOT need to bill.
@@ -267,7 +303,8 @@ class Helios::ClientProfile < ActiveRecord::Base
     end
     # ****
 
-    return living_in_prepaid
+    # If membership, return the most recently purchased prepaid membership
+    return living_in_prepaid ? in_range.last : false
   end
 
   def self.fixmismatch

@@ -44,6 +44,30 @@ module CoresExtensions
     end
   end
 
+  def confirm_step(msg, id=nil)
+    $CONFIRM_CONTINUE ||= {}
+    yn = if $CONFIRM_CONTINUE[id]
+      $CONFIRM_CONTINUE[id]
+    else
+      STDOUT << msg
+      STDOUT << " (Y=Continue, S=Skip one, YA=Continue to end, SA=Skip all)"
+      STDOUT.flush
+      STDIN.gets.chomp
+    end
+    return case yn
+    when 'Y'
+      yield
+    when 'YA'
+      $CONFIRM_CONTINUE[id] = 'Y'
+      yield
+    when 'S'
+      nil
+    when 'SA'
+      $CONFIRM_CONTINUE[id] = 'N'
+      nil
+    end
+  end
+
   def with(*objects)
     yield  *objects
     return *objects
