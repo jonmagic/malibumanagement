@@ -107,16 +107,15 @@ class EftController < ApplicationController
           end
           if logged_in
             begin
-              # (create the incoming_path if it doesn't exist)
-              ftp.mkdir(incoming_path) unless ftp.nlst.include?(incoming_path)
-              ftp.chdir(incoming_path)
-
               #   2) Create the 'uploading' folder if it's not already there.
               ftp.mkdir('uploading') unless ftp.nlst.include?('uploading')
+              # (create the incoming_path if it doesn't exist)
+              ftp.mkdir(incoming_path) unless ftp.nlst.include?(incoming_path)
+
               ftp.chdir('uploading')
 
               #   3) Delete the same filename from the 'uploading' folder if one exists.
-              ftp.delete(csv_name) if ftp.nlst.include?(csv_name)
+              ftp.delete("*.csv")
               env_prepared = true
             rescue => e
               logger.error "FTP FAILED BEFORE UPLOAD: #{e}\n#{e.backtrace.join("\n")}"
@@ -129,7 +128,7 @@ class EftController < ApplicationController
               ftp.put(csv_local_filename, csv_name)
               #   5) If we're still connected, check the file size of the file, then move it out of 'uploading' and mark file as completed.
               if ftp.nlst.include?(csv_name) && ftp.size(csv_name) == File.size(csv_local_filename)
-                ftp.rename(csv_name, "../#{csv_name}")
+                ftp.rename(csv_name, "../#{incoming_path}/#{csv_name}")
                 @batch.submitted[file_key] = true
                 @batch.save
                 result[file_key] = "Uploaded."
