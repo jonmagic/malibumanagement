@@ -115,7 +115,10 @@ class EftController < ApplicationController
               ftp.chdir('uploading')
 
               #   3) Delete the same filename from the 'uploading' folder if one exists.
-              ftp.delete("*.csv")
+              ftp.nlst.select {|f| f =~ /\.csv$/i}.each do |file|
+                ftp.delete(file)
+              end
+
               env_prepared = true
             rescue => e
               logger.error "FTP FAILED BEFORE UPLOAD: #{e}\n#{e.backtrace.join("\n")}"
