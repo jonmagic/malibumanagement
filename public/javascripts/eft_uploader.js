@@ -17,16 +17,14 @@ var repeat_billing = function(for_month, incoming_path){
   // 2) Call the action
   jQuery.getJSON((incoming_path ? '/malibu/eft/submit_payments?for_month='+for_month+'&incoming_path='+incoming_path : '/malibu/eft/submit_payments?for_month='+for_month), function(data){
     console.log(data);
-    var key, that_remain=0, store, type, stores=[], msgs=[];
+    var key, that_remain=0, stores=[], msgs=[];
     // 3) Integrate results
     // jQuery('#time_to_bill ul li').remove();
     for(key in data){
       if(key == 'error'){
         alert(data[key]);
       }else{
-        type = key.split('--')[1];
-        store = key.split('--')[0];
-        stores.push({store:store, key:key, data:data[key]});
+        stores.push({'store':key.split('--')[0], 'key':key.split('--')[1], 'data':data[key]});
       }
     }
     stores.sort(function(a,b){
@@ -34,10 +32,10 @@ var repeat_billing = function(for_month, incoming_path){
       else if(a.key < b.key) return -1;
       else return 0;
     });
-    for(result in stores){
-      var key = result.key;
-      var store = result.store;
-      var data = result.data;
+    for(i in stores){
+      var key = stores[i].key;
+      var store = stores[i].store;
+      var data = stores[i].data;
       if(jQuery("#upload_status_"+key).length===0){
         $billing_files.append("<li class='file_upload_status'>"+store.charAt(0).toUpperCase()+store.substr(1)+" ("+type+") - <span id='upload_status_"+key+"'>"+data[key]+"</span></li>");
       }else{
