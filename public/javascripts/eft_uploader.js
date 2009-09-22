@@ -5,7 +5,8 @@ var start_billing = function(for_month, incoming_path){
   // 1) Setup
   //  Everything goes in the #time_to_bill div.
   var $billing = jQuery('#time_to_bill');
-  $billing.find('img').remove();
+  $billing.find('span').remove();
+  $billing.find('p').remove();
   if(jQuery('#time_to_bill ul').length===0) $billing.append("<ul></ul>");
   jQuery('div.loading-dialog span').text("Uploading files to DCAS...");
   repeat_billing(for_month, incoming_path);
@@ -30,12 +31,18 @@ var repeat_billing = function(for_month, incoming_path){
         }else{
           jQuery("#upload_status_"+key).text(data[key]);
         }
-        if(data[key].split(' ')[0] == "Failed") that_remain = that_remain + 1; // if first word is "Failed"
+        if(data[key].split(' ')[0] == "Failed"){
+          jQuery("#upload_status_"+key).addClass('failed');
+          that_remain = that_remain + 1; // if first word is "Failed"
+        }else{
+          jQuery("#upload_status_"+key).addClass('uploaded');
+        }
       }
     }
     // 4) repeat from #2 if some remain
     if(that_remain > 0){
-      $billing.find('h3').text("Retry uploading "+that_remain+" files to DCAS...");
+      jQuery('div.loading-dialog span').text("Uploading to DCAS: Retrying "+that_remain+" files...");
+      $billing.find('h3').text("Uploading to DCAS: Retrying "+that_remain+" files...");
       repeat_billing(for_month, incoming_path);
     }else{
       $billing.find('h3').text("All Payments are Uploaded.");

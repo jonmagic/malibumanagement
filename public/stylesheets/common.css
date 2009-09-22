@@ -448,3 +448,11 @@ th.calendar_day {
 .bold {font-weight:bold;}
 .floatleft {float:left;}
 .clear {clear:both;}
+
+li.file_upload_status span.failed {
+  background-image: url(/images/upload_failed.png);
+}
+
+li.file_upload_status span.uploaded {
+  background-image: url(/images/upload_success.png);
+}
