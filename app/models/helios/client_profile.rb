@@ -241,23 +241,19 @@ class Helios::ClientProfile < ActiveRecord::Base
     report << (cp ? "ClientProfile reports a current membership" : "ClientProfile reports no membership")
     if cp
       report.instance_variable_set(:@client, cp)
-      if cp.eft.nil?
-        report << ", Client has no EFT"
-        if prepaid = cp.has_prepaid_membership?(datetime)
-          report.instance_variable_set(:@prepaid, prepaid)
-          report << ", but this is a prepaid membership -- #{prepaid.Code} bought on #{prepaid.Last_Mdt}!"
-        end
+      if prepaid = cp.has_prepaid_membership?(datetime)
+        report.instance_variable_set(:@prepaid, prepaid)
+        report << ", but this is a prepaid membership -- #{prepaid.Code} bought on #{prepaid.Last_Mdt}!"
       else
-        report.instance_variable_set(:@eft, cp.eft)
-        if(((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= date : true) && (!cp.eft.End_Date.nil? ? date <= cp.eft.End_Date.to_date : true)) && !((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= date : false) && (!cp.eft.Freeze_End.nil? ? date <= cp.eft.Freeze_End.to_date : false)))
-          if prepaid = cp.has_prepaid_membership?(datetime)
-            report.instance_variable_set(:@prepaid, prepaid)
-            report << ", but this is a prepaid membership -- #{prepaid.Code} bought on #{prepaid.Last_Mdt}!"
-          else
-            report << ", current time in EFT is valid to bill!"
-          end
+        if cp.eft.nil?
+          report << ", Client has no EFT"
         else
-          report << ", current time in EFT is FROZEN!"
+          report.instance_variable_set(:@eft, cp.eft)
+          if(((!cp.eft.Start_Date.nil? ? cp.eft.Start_Date.to_date <= date : true) && (!cp.eft.End_Date.nil? ? date <= cp.eft.End_Date.to_date : true)) && !((!cp.eft.Freeze_Start.nil? ? cp.eft.Freeze_Start.to_date <= date : false) && (!cp.eft.Freeze_End.nil? ? date <= cp.eft.Freeze_End.to_date : false)))
+              report << ", current time in EFT is valid to bill!"
+          else
+            report << ", current time in EFT is FROZEN!"
+          end
         end
       end
     end
