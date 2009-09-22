@@ -20,7 +20,6 @@ var repeat_billing = function(for_month, incoming_path){
     console.log(data);
     var key, that_remain=0, stores=[], msgs=[];
     // 3) Integrate results
-    // jQuery('#time_to_bill ul li').remove();
     for(key in data){
       if(data.hasOwnProperty(key)){
         if(key == 'error'){
