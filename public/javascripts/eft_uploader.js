@@ -35,6 +35,7 @@ var repeat_billing = function(for_month, incoming_path){
     for(i in stores){
       var key = stores[i].key;
       var store = stores[i].store;
+      var type = stores[i].type;
       var data = stores[i].data;
       if(jQuery("#upload_status_"+key).length===0){
         $billing_files.append("<li class='file_upload_status'>"+store.charAt(0).toUpperCase()+store.substr(1)+" ("+type+") - <span id='upload_status_"+key+"'>"+data[key]+"</span></li>");
