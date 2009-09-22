@@ -26,18 +26,28 @@ var repeat_billing = function(for_month, incoming_path){
       }else{
         type = key.split('--')[1];
         store = key.split('--')[0];
-        stores.push(store);
-        if(jQuery("#upload_status_"+key).length===0){
-          $billing_files.append("<li class='file_upload_status'>"+store.charAt(0).toUpperCase()+store.substr(1)+" ("+type+") - <span id='upload_status_"+key+"'>"+data[key]+"</span></li>");
-        }else{
-          jQuery("#upload_status_"+key).text(data[key]);
-        }
-        if(data[key].split(' ')[0] == "Failed"){
-          jQuery("#upload_status_"+key).addClass('failed');
-          that_remain = that_remain + 1; // if first word is "Failed"
-        }else{
-          jQuery("#upload_status_"+key).removeClass('failed').addClass('uploaded');
-        }
+        stores.push({store:store, key:key, data:data[key]});
+      }
+    }
+    stores.sort(function(a,b){
+      if(a.key > b.key) return 1;
+      else if(a.key < b.key) return -1;
+      else return 0;
+    });
+    for(result in stores){
+      var key = result.key;
+      var store = result.store;
+      var data = result.data;
+      if(jQuery("#upload_status_"+key).length===0){
+        $billing_files.append("<li class='file_upload_status'>"+store.charAt(0).toUpperCase()+store.substr(1)+" ("+type+") - <span id='upload_status_"+key+"'>"+data[key]+"</span></li>");
+      }else{
+        jQuery("#upload_status_"+key).text(data[key]);
+      }
+      if(data[key].split(' ')[0] == "Failed"){
+        jQuery("#upload_status_"+key).addClass('failed');
+        that_remain = that_remain + 1; // if first word is "Failed"
+      }else{
+        jQuery("#upload_status_"+key).removeClass('failed').addClass('uploaded');
       }
     }
     // 4) repeat from #2 if some remain
