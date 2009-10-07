@@ -36,13 +36,13 @@ class EftBatch < ActiveRecord::Base
   end
 
   def submitted
-    submitted = YAML.load(read_attribute(:submitted)) || {}
+    submitted = YAML.load(read_attribute(:submitted) || '--- {}') || {}
     submitted.instance_variable_set(:@record, self)
     def submitted.[](k)
-      (YAML.load(@record.send(:read_attribute, :submitted)) || {})[k]
+      (YAML.load(@record.send(:read_attribute, :submitted) || '--- {}') || {})[k]
     end
     def submitted.[]=(k,v)
-      h = (YAML.load(@record.send(:read_attribute, :submitted)) || {})
+      h = (YAML.load(@record.send(:read_attribute, :submitted) || '--- {}') || {})
       h[k]=v
       self.replace(h)
       @record.send(:write_attribute, :submitted, h.to_yaml)
