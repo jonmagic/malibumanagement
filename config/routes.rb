@@ -24,6 +24,8 @@ ActionController::Routing::Routes.draw do |map|
 
   if APP_CONFIG[:FEATURES].include?(:forms)
     map.admin_dashboard                 '/malibu',        :controller => 'manage/forms',   :action => 'index'
+  elsif APP_CONFIG[:FEATURES].include?(:master_inventory)
+    map.admin_dashboard                 '/malibu',        :controller => 'master_inventory',   :action => 'index'
   elsif APP_CONFIG[:FEATURES].include?(:open_helios)
     map.admin_dashboard                 '/malibu',        :controller => 'helios',   :action => 'index'
   elsif APP_CONFIG[:FEATURES].include?(:work_schedules)
@@ -34,6 +36,7 @@ ActionController::Routing::Routes.draw do |map|
   map.admin_schedule '/malibu/work_schedule/:store_alias', :controller => 'manage/stores', :action => 'work_schedule'
   map.admin_bulletin '/malibu/bulletin_board', :controller => 'stores', :action => 'bulletin_board'
   map.resources :posts, :name_prefix => 'admin_', :path_prefix => '/malibu/bulletin_board', :collection => { :live_search => :any, :search => :any }, :member => {:attachment => :get}
+  map.resources :master_inventory, :path_prefix => '/malibu'
   map.resources :helios_clients, :path_prefix => '/malibu/helios', :collection => {:live_search => :any, :search => :any}, :member => { :exists => :any }
   map.resources :client_members, :path_prefix => '/malibu/helios', :collection => {:live_search => :any, :search => :any}, :member => { :remove_vip => :any, :reload_eft => :any }
 

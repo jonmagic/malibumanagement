@@ -60,6 +60,7 @@
 							<li><%= tab_link_to 2.as_status.word('uppercase short singular') + (!FormInstance.find_all_by_status_number(2).blank? ? " (#{FormInstance.find_all_by_status_number(2).count})" : ''), admin_forms_by_status_path(2.as_status.text), :class => "#{2.as_status}_count" %></li>
 							<li><%= tab_link_to 3.as_status.word('uppercase short singular') + (!FormInstance.find_all_by_status_number(3).blank? ? " (#{FormInstance.find_all_by_status_number(3).count})" : ''), admin_forms_by_status_path(3.as_status.text), :class => "#{3.as_status}_count" %></li>
 							<li><%= tab_link_to 4.as_status.word('uppercase short singular'), admin_forms_by_status_path(4.as_status.text) %></li>
+							
 						<% else -%>
 							<% if APP_CONFIG[:FEATURES].include?(:stores) && APP_CONFIG[:FEATURES].include?(:forms) -%>
 								<li><%= tab_link_to "My Account", admin_account_path %></li>
@@ -77,6 +78,9 @@
 						<% if APP_CONFIG[:FEATURES].include?(:bulletin_board) -%>
 							<li><%= tab_link_to 'Bulletin Board', admin_bulletin_path %></li>
 						<% end -%>
+						<% if APP_CONFIG[:FEATURES].include?(:master_inventory) -%>
+							<li><%= tab_link_to 'Master Inventory', "/malibu/master_inventory/" %></li>
+						<% end -%>						
 						<% if APP_CONFIG[:FEATURES].include?(:open_helios) -%>
 							<li><%= tab_link_to 'OpenHelios', open_helios_path %></li>
 						<% end -%>
