@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 39) do
+ActiveRecord::Schema.define(:version => 42) do
 
   create_table "admins", :force => true do |t|
     t.column "username",               :string
@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(:version => 39) do
     t.column "regenerate_now",        :string
     t.column "last_total_regenerate", :datetime
     t.column "locked",                :boolean,  :default => false
-    t.column "submitted",             :string,   :default => "--- {}\n\n"
+    t.column "submitted",             :text
   end
 
   create_table "form_instances", :force => true do |t|
@@ -157,6 +157,26 @@ ActiveRecord::Schema.define(:version => 39) do
     t.column "store_needs",                     :text
     t.column "inventory_items_error",           :string
     t.column "action_plan_to_correct_problems", :string
+  end
+
+  create_table "master_inventory_items", :force => true do |t|
+    t.column "master_inventory_report_id", :integer
+    t.column "store_name",                 :string
+    t.column "inventory_code",             :string
+    t.column "quantity",                   :integer
+  end
+
+  create_table "master_inventory_price_list_items", :force => true do |t|
+    t.column "inventory_code", :string
+    t.column "description",    :string
+    t.column "cost_price",     :decimal,  :precision => 8, :scale => 2
+    t.column "retail_price",   :decimal,  :precision => 8, :scale => 2
+    t.column "created_at",     :datetime
+  end
+
+  create_table "master_inventory_reports", :force => true do |t|
+    t.column "created_at",             :datetime
+    t.column "needs_inventory_pulled", :string
   end
 
   create_table "notes", :force => true do |t|

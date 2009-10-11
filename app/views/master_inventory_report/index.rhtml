@@ -1,0 +1,17 @@
+<h2>Master Inventory</h2>
+<p>Select a report date from the drop down menu.
+  <select>
+    <option value=""></option>
+    <% @master_inventory_reports.each do |report| %>
+      <option value="<%= report.id %>"><%= report.created_at.humanize_date %></option>
+    <% end %>
+  </select>
+</p>
+<div id="price_list" class="jqmWindow"></div>
+<div id="prepare_report" class="hide">
+  <h3><a href="javascript:void(0);" class="run">Run the report</a></h3>
+</div>
+<br /><br /><br /><br />
+<hr />
+<p>You should never have to use this, but here is the master inventory price list just in case.</p>
+<h3><a href="/malibu/master_inventory_price_list_items/" target="_blank">Master Inventory Price List</a></h3>

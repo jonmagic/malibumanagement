@@ -1,5 +1,8 @@
+require 'httparty'
 require 'digest/sha1'
+
 class Store < ActiveRecord::Base
+  include HTTParty
   has_many :users, :dependent => :destroy
   has_many :admins, :class_name => 'User', :conditions => 'is_admin_user=1', :dependent => :destroy
   has_many :form_instances, :dependent => :destroy
@@ -65,6 +68,10 @@ class Store < ActiveRecord::Base
     src = m[1]
     key = m[2]
     "http://www.google.com/calendar/embed?src=#{src}&ctz=America/New_York&pvttk=#{key}"
+  end
+  
+  def pull_inventory
+    Store.get('http://'+self.ar_site+'/inventories.xml')
   end
 
   protected

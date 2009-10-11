@@ -1,0 +1,78 @@
+<% if @items.length > 0 %>
+  <p class="instructions"><b>Instructions:</b> Enter in any missing values. They will automatically be saved when you enter them. <a href="javascript:void(0);" class="close"><b>Click Here</b></a> when you are done.</p>
+    <table>
+      <thead>
+        <tr><td>Inventory Code</td><td>Description</td><td>Cost Price</td><td>Retail Price</td><td>Delete</td></tr>
+      </thead>
+      <tbody>
+        <% @items.each do |item| %>
+          <tr>
+            <td><%= item.inventory_code %></td>
+            <td><%= item.description %></td>
+            <td>
+              <% form_for(:item, :url => "/malibu/master_inventory_price_list_items/#{item.id}") do |f| %>
+                <input type="hidden" value="PUT" name="_method" />
+                <%= f.text_field :cost_price, :value => number_to_currency(item.cost_price, :unit => "") %>
+              <% end %>
+            </td>
+            <td>
+              <% form_for(:item, :url => "/malibu/master_inventory_price_list_items/#{item.id}") do |f| %>
+                <input type="hidden" value="PUT" name="_method" />
+                <%= f.text_field :retail_price, :value => number_to_currency(item.retail_price, :unit => "") %>
+              <% end %>
+            </td>
+            <td>
+              <% form_for(:item, :url => "/malibu/master_inventory_price_list_items/#{item.id}") do |f| %>
+                <input type="hidden" value="DELETE" name="_method" />
+                <a class="delete" href="javascript:void(0);"><img src="/images/icons/delete.png" /></a>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <script>
+    // make the form look prettier
+    $("tbody td:nth-child(1)").addClass("border")
+    $("tbody td:nth-child(2)").addClass("border")
+    $("tbody td:nth-child(3)").addClass("border")
+    $("tbody tr:last").css({"border-bottom":"3px solid #ff80d7"})
+    // close window button
+
+    // ajax submit my forms
+    $("input").each(function(){
+      var input = $(this);
+      var form = input.parent();
+      var row = form.parent("td");
+      input.typeWatch({
+        callback: function(){
+          form.ajaxSubmit(function(){row.effect("highlight", {}, 2000)})
+        },
+        wait: 1000,
+        highlight: true,
+        captureLength: 2
+      });
+    });
+    // delete row
+    $("a.delete").bind("click", function(){
+      var link = $(this);
+      var form = link.parent();
+      var row = link.parent().parent().parent();
+      form.ajaxSubmit(function(){row.remove()})
+    });
+    // close modal
+    $("a.close").bind("click", function(){
+      var url = "/malibu/master_inventory_report/"+$("select").val()+"/master_inventory_price_list_items/"
+      // get the price list url
+      $.get(url, function(data){
+        // if there is still missing prices
+        if(data){
+        // otherwise do this
+        }else{
+          $("div#price_list").jqmHide();
+          $("div#prepare_report").slideDown(500);
+        };
+      });
+    });
+  </script>
+<% end %>

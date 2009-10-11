@@ -35,3 +35,7 @@ table.calendar_table {
 	border-left: 1px solid black;
 	padding: 0 5px;
 }
+
+#toolbar {
+  display:none;
+}

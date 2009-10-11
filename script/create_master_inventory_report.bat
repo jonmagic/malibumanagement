@@ -1,0 +1,1 @@
+ruby script/runner -e production script/create_master_inventory_report.rb

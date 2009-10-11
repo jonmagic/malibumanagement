@@ -9,17 +9,46 @@
 		<%= stylesheet_link_tag 'common' %>
 		<%= stylesheet_link_tag 'tabs' %>
 		<%= stylesheet_link_tag 'print', :media => "print" %>
-		<%= stylesheet_link_tag 'date-picker' %>
-		<%= javascript_include_tag 'application' %>
-    <%= javascript_include_tag 'jquery-1.3.2.min.js' if @use_jquery || @only_jquery %>
-		<%= javascript_include_tag 'prototype' unless @only_jquery %>
-		<%= javascript_include_tag 'effects' %>
-		<%= javascript_include_tag 'control.modal.js' %>
-		<%= javascript_include_tag 'form_effects' %>
-		<%= javascript_include_tag 'controls' %>
-		<%= javascript_include_tag 'dragdrop' %>
-		<%= javascript_include_tag 'date_picker' %>
-		<%= javascript_include_tag 'rounded' %>
+		<%= stylesheet_link_tag 'jqModal' %>
+    <%= javascript_include_tag 'jquery-1.3.2.min.js' %>
+    <%= javascript_include_tag 'jqModal.js' %>
+    <%= javascript_include_tag 'jquery-ui-1.7.2.custom.min.js' %>
+    <%= javascript_include_tag 'jquery.form.js' %>
+    <%= javascript_include_tag 'jquery.typewatch.js' %>
+    <style>
+      div#price_list {padding:1em;}
+      table {width:100%;border-collapse: collapse;}
+      table thead {background-color:#ff80d7;}
+      table tr {margin:0;padding:0;border-bottom:1px solid #eee;}
+      table td {padding:3px 5px;}
+      .border {border-right:3px solid #ff80d7;}
+      .hide {display:none;}
+    </style>
+		<script>
+      $(document).ready(function() {
+        // when they select a report
+        $("div#price_list").jqm({modal: true})
+        $('select').bind("change", function(){
+          var url = "/malibu/master_inventory_report/"+$(this).val()+"/master_inventory_price_list_items/"
+          // get the price list url
+          $.get(url, function(data){
+            // if there is data pull up a price list modal
+            if(data){
+              $("div#price_list").append(data);
+              $("div#price_list").jqmShow();
+            // otherwise do this
+            }else{
+              $("div#prepare_report").slideDown(500);
+            };
+          });
+        });
+        // run the report button
+        $("a.run").bind("click", function(){
+          var url = "/malibu/master_inventory_report/"+$("select").val();
+          window.open(url);
+        });
+      });
+    </script>
 	</head>
 	<body>
 		<div id="wrapper">

@@ -1,0 +1,65 @@
+<table>
+  <thead>
+    <tr>
+      <td>Code</td>
+      <td>Description</td>
+      <td>Cost</td>
+      <td>Retail</td>
+      <td></td>
+      <% @stores.each do |store| %>
+        <td class="center"><b><%= store.alias %></b></td>
+      <% end %>
+      <td>Totals</td>
+    </tr>
+  </thead>
+  <tbody>
+    <% @items.each do |item| %>
+      <tr>
+        <td rowspan="3"><%= item["Code"] %></td>
+        <td rowspan="3"><%= item["Description"] %></td>
+        <td rowspan="3"><%= number_to_currency(item["Cost"]) %></td>
+        <td rowspan="3"><%= number_to_currency(item["Retail"]) %></td>
+        <td>Quantity</td>
+        <% @stores.each do |store| %>
+          <td class="center"><%= item[store.alias]["Quantity"] %></td>
+        <% end %>
+        <td class="totals"><%= item["Total Quantity"] %></td>
+      </tr>
+      <tr>
+        <td>Cost</td>
+        <% @stores.each do |store| %>
+          <td class="center"><%= number_to_currency(item[store.alias]["Cost"]) %></td>
+        <% end %>
+        <td class="totals"><%= number_to_currency(item["Total Cost"]) %></td>
+      </tr>
+      <tr>
+        <td>Retail</td>
+        <% @stores.each do |store| %>
+          <td class="center"><%= number_to_currency(item[store.alias]["Retail"]) %></td>
+        <% end %>
+        <td class="totals"><%= number_to_currency(item["Total Retail"]) %></td>
+      </tr>
+    <% end %>
+    <tr class="footer">
+      <td colspan="5">Total sum of Quantity</td>
+      <% @stores.each do |store| %>
+        <td class="center"><%= @footer[store.alias]["Total Quantity"] %></td>
+      <% end %>
+      <td><%= @total_quantity %></td>
+    </tr>
+    <tr class="footer">
+      <td colspan="5">Total sum of Cost</td>
+      <% @stores.each do |store| %>
+        <td class="center"><%= number_to_currency(@footer[store.alias]["Total Cost"]) %></td>
+      <% end %>
+      <td><%= number_to_currency(@total_cost) %></td>
+    </tr>
+    <tr class="footer">
+      <td colspan="5">Total sum of Retail</td>
+      <% @stores.each do |store| %>
+        <td class="center"><%= number_to_currency(@footer[store.alias]["Total Retail"]) %></td>
+      <% end %>
+      <td><%= number_to_currency(@total_retail) %></td>
+    </tr>
+  </tbody>
+</table>
