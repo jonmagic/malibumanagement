@@ -62,8 +62,10 @@ class EftController < ApplicationController
       #     6) If we're still connected, check the file size of the file, then move it out of 'uploading' and mark file as completed.
       # 2) Respond with all results as JSON
 
+      # limit to 5 file attempts before returning to AJAX. AJAX should immediately call this action back to continue.
+      attempt_count = 0
+
       result = {}
-      failed_count = 0
       Store.find(:all).each do |store|
         @batch.reload
         next if @batch.submitted[store.alias + '--ACH'] && @batch.submitted[store.alias + '--CC']
@@ -85,6 +87,11 @@ class EftController < ApplicationController
           file_key = "#{store.alias}--#{type}"
           @batch.reload
           next if @batch.submitted[file_key]
+          if attempt_count == 5
+            result[file_key] = 'Waiting...'
+            next
+          end
+          attempt_count += 1
           @batch.submitted[file_key] = 'uploading'
           @batch.save
           # Generate the file!
