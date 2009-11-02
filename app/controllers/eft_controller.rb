@@ -65,6 +65,7 @@ class EftController < ApplicationController
       result = {}
       failed_count = 0
       Store.find(:all).each do |store|
+        @batch.reload
         next if @batch.submitted[store.alias + '--ACH'] && @batch.submitted[store.alias + '--CC']
         next if store.config.nil?
         dcas = store.config[:dcas]
@@ -82,7 +83,10 @@ class EftController < ApplicationController
 
         ['ACH', 'CC'].each do |type|
           file_key = "#{store.alias}--#{type}"
+          @batch.reload
           next if @batch.submitted[file_key]
+          @batch.submitted[file_key] = 'uploading'
+          @batch.save
           # Generate the file!
           csv_name = "#{dcas[:company_user]}_#{type.downcase}_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
           csv_local_filename = "#{path}/#{csv_name}"
@@ -101,9 +105,13 @@ class EftController < ApplicationController
           begin
             ftp = (dcas[:ftps] ? Net::FTPS::Implicit : Net::FTP).new(dcas[:host], dcas[:username], dcas[:password])
             logged_in = true
+            logger.info "Logged in as #{dcas[:username]}."
           rescue => e
             logger.error "FTP LOGIN FAILED: #{e}"
             result[file_key] = 'Failed to log in'
+            @batch.reload
+            @batch.submitted[file_key] = false
+            @batch.save
           end
           if logged_in
             begin
@@ -123,6 +131,10 @@ class EftController < ApplicationController
             rescue => e
               logger.error "FTP FAILED BEFORE UPLOAD: #{e}\n#{e.backtrace.join("\n")}"
               result[file_key] = 'Failed before upload'
+              logger.info "."
+              @batch.reload
+              @batch.submitted[file_key] = false
+              @batch.save
             end
           end
           if env_prepared
@@ -132,6 +144,7 @@ class EftController < ApplicationController
               #   5) If we're still connected, check the file size of the file, then move it out of 'uploading' and mark file as completed.
               if ftp.nlst.include?(csv_name) && ftp.size(csv_name) == File.size(csv_local_filename)
                 ftp.rename(csv_name, "../#{incoming_path}/#{csv_name}")
+                @batch.reload
                 @batch.submitted[file_key] = true
                 @batch.save
                 result[file_key] = "Uploaded."
@@ -141,6 +154,9 @@ class EftController < ApplicationController
             rescue => e
               logger.error "FTP FAILED DURING UPLOAD: #{e}\n#{e.backtrace.join("\n")}"
               result[file_key] = 'Failed during upload!'
+              @batch.reload
+              @batch.submitted[file_key] = false
+              @batch.save
             end
           end
           if logged_in
