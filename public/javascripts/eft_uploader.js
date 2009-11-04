@@ -18,7 +18,7 @@ var repeat_billing = function(for_month, incoming_path){
   // 2) Call the action
   jQuery.getJSON((incoming_path ? '/malibu/eft/submit_payments?for_month='+for_month+'&incoming_path='+incoming_path : '/malibu/eft/submit_payments?for_month='+for_month), function(data){
     console.log(data);
-    var key, that_remain=0, stores=[], msgs=[];
+    var key, that_remain=0, stores=[], msgs=[], store, type, msg;
     // 3) Integrate results
     for(key in data){
       if(data.hasOwnProperty(key)){
@@ -36,20 +36,22 @@ var repeat_billing = function(for_month, incoming_path){
     });
     for(i in stores){
       if(stores.hasOwnProperty(i)){
-        var key = stores[i].key;
-        var store = key.split('--')[0];
-        var type = key.split('--')[1];
-        var msg = stores[i].msg;
+        key = stores[i].key;
+        store = key.split('--')[0];
+        type = key.split('--')[1];
+        msg = stores[i].msg;
         if(jQuery("#upload_status_"+key).length===0){
           $billing_files.append("<li class='file_upload_status'>"+store.charAt(0).toUpperCase()+store.substr(1)+" ("+type+") - <span id='upload_status_"+key+"'>"+msg+"</span></li>");
         }else{
           jQuery("#upload_status_"+key).text(msg);
         }
-        if(msg.split(' ')[0] == "Failed"){
+        if(msg.split(' ')[0] === "Failed"){
           jQuery("#upload_status_"+key).parent().addClass('failed');
           that_remain = that_remain + 1; // if first word is "Failed"
-        }else{
+        }else if(msg === "Uploaded."){
           jQuery("#upload_status_"+key).parent().removeClass('failed').addClass('uploaded');
+        }else{
+          that_remain = that_remain + 1; // files that weren't even tried yet.
         }
       }
     }
