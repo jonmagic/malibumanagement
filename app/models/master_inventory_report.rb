@@ -12,13 +12,10 @@ class MasterInventoryReport < ActiveRecord::Base
   end
   
   def pull_inventory_for_stores
-    try = 0
-    if self.needs_inventory_pulled != "" && try < 30
+    (1..8).each do |loop|
       pull
       self.save
-      try += 1
-    else
-      self.destroy
+      sleep 30
     end
   end
   

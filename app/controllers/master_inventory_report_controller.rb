@@ -1,7 +1,7 @@
 class MasterInventoryReportController < ApplicationController
 
   def index
-    @master_inventory_reports = MasterInventoryReport.find(:all)
+    @master_inventory_reports = MasterInventoryReport.find(:all, :order => "created_at DESC")
   end
   
   def show
@@ -10,14 +10,15 @@ class MasterInventoryReportController < ApplicationController
   end
   
   def edit
+    mir = MasterInventoryReport.find(params[:id])
     headers['Content-Type'] = "application/vnd.ms-excel"
-    headers['Content-Disposition'] = 'attachment; filename="report.xls"'
+    headers['Content-Disposition'] = 'attachment; filename="master_inventory_report #{mir.created_at.humanize}.xls"'
     headers['Cache-Control'] = ''
     build_report(params[:id])
     render :layout => false
   end
 
-  protected
+  private
   
     def build_report(report_id)
       @report = MasterInventoryReport.find(report_id)
