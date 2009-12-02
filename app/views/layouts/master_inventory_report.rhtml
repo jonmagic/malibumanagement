@@ -27,7 +27,12 @@
 		<script>
       $(document).ready(function() {
         // when they select a report
-        $("div#price_list").jqm({modal: true})
+        $("div#price_list").dialog({
+          autoOpen: false,
+          height: 600,
+          width: 800,
+          modal: true
+        });
         $('select').bind("change", function(){
           var url = "/malibu/master_inventory_report/"+$(this).val()+"/master_inventory_price_list_items/"
           // get the price list url
@@ -35,7 +40,7 @@
             // if there is data pull up a price list modal
             if(data){
               $("div#price_list").append(data);
-              $("div#price_list").jqmShow();
+              $("div#price_list").dialog('open');
             // otherwise do this
             }else{
               $("div#prepare_report").slideDown(500);

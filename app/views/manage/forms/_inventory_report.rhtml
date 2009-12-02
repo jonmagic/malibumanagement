@@ -3,11 +3,12 @@
 <table class="spacetable">
 	<thead>
 		<th>Item Name</th>
-		<th>Inventory</th>
-		<th>Actual</th>
+		<th>Employee Entered</th>
+		<th>Computer Says</th>
 		<th>Difference</th>
 	</thead>
-<% @data.items.each do |item| -%>
+<% @items = @data.items.sort_by(&:label) %>
+<% @items.each do |item| -%>
 	<tr>
 	<td class="leftcolumn"><%= item.label %></td>
 	<td class="centercolumn lightgrey"><%= !view ? f.text_field(item.name, :value => item.actual, :size => 8) : color_amount(item.actual || 0) %></td>
