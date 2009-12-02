@@ -85,7 +85,7 @@
       form.ajaxSubmit(function(){row.remove()});
     });
     // close modal
-    $("a.close").bind("click", function(){
+    $("a.ui-dialog-titlebar-close").bind("click", function(){
       var url = "/malibu/master_inventory_report/"+$("select").val()+"/master_inventory_price_list_items/"
       // get the price list url
       $.get(url, function(data){
