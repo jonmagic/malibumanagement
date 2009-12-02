@@ -1,36 +1,37 @@
 <% if @items.length > 0 %>
-  <p class="instructions"><b>Instructions:</b> Enter in any missing values. They will automatically be saved when you enter them. <a href="javascript:void(0);" class="close"><b>Click Here</b></a> when you are done.</p>
-    <table>
-      <thead>
-        <tr><td>Inventory Code</td><td>Description</td><td>Cost Price</td><td>Retail Price</td><td>Delete</td></tr>
-      </thead>
-      <tbody>
-        <% @items.each do |item| %>
-          <tr>
-            <td><%= item.inventory_code %></td>
-            <td><%= item.description %></td>
-            <td>
-              <% form_for(:item, :url => "/malibu/master_inventory_price_list_items/#{item.id}") do |f| %>
-                <input type="hidden" value="PUT" name="_method" />
-                <%= f.text_field :cost_price, :value => number_to_currency(item.cost_price, :unit => "") %>
-              <% end %>
-            </td>
-            <td>
-              <% form_for(:item, :url => "/malibu/master_inventory_price_list_items/#{item.id}") do |f| %>
-                <input type="hidden" value="PUT" name="_method" />
-                <%= f.text_field :retail_price, :value => number_to_currency(item.retail_price, :unit => "") %>
-              <% end %>
-            </td>
-            <td>
-              <% form_for(:item, :url => "/malibu/master_inventory_price_list_items/#{item.id}") do |f| %>
-                <input type="hidden" value="DELETE" name="_method" />
-                <a class="delete" href="javascript:void(0);"><img src="/images/icons/delete.png" /></a>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+  <p class="instructions"><b>Instructions:</b> Enter in any missing values. They will automatically be saved when you enter them.</p>
+  <br />
+  <table>
+    <thead>
+      <tr><td>Inventory Code</td><td>Description</td><td>Cost Price</td><td>Retail Price</td><td>Delete</td></tr>
+    </thead>
+    <tbody>
+      <% @items.each do |item| %>
+        <tr>
+          <td><%= item.inventory_code %></td>
+          <td><%= item.description %></td>
+          <td>
+            <% form_for(:item, :url => "/malibu/master_inventory_price_list_items/#{item.id}") do |f| %>
+              <input type="hidden" value="PUT" name="_method" />
+              <%= f.text_field :cost_price, :value => number_to_currency(item.cost_price, :unit => "") %>
+            <% end %>
+          </td>
+          <td>
+            <% form_for(:item, :url => "/malibu/master_inventory_price_list_items/#{item.id}") do |f| %>
+              <input type="hidden" value="PUT" name="_method" />
+              <%= f.text_field :retail_price, :value => number_to_currency(item.retail_price, :unit => "") %>
+            <% end %>
+          </td>
+          <td>
+            <% form_for(:item, :url => "/malibu/master_inventory_price_list_items/#{item.id}") do |f| %>
+              <input type="hidden" value="DELETE" name="_method" />
+              <a class="delete" href="javascript:void(0);"><img src="/images/icons/delete.png" /></a>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
   <script>
     // make the form look prettier
     $("tbody td:nth-child(1)").addClass("border")
@@ -58,7 +59,7 @@
       var link = $(this);
       var form = link.parent();
       var row = link.parent().parent().parent();
-      form.ajaxSubmit(function(){row.remove()})
+      form.ajaxSubmit(function(){row.remove()});
     });
     // close modal
     $("a.close").bind("click", function(){
@@ -69,7 +70,7 @@
         if(data){
         // otherwise do this
         }else{
-          $("div#price_list").jqmHide();
+          $("div#price_list").dialog('close');
           $("div#prepare_report").slideDown(500);
         };
       });
