@@ -41,19 +41,42 @@
     // close window button
 
     // ajax submit my forms
-    $("input").each(function(){
-      var input = $(this);
-      var form = input.parent();
-      var row = form.parent("td");
-      input.typeWatch({
-        callback: function(){
-          form.ajaxSubmit(function(){row.effect("highlight", {}, 2000)})
-        },
-        wait: 1000,
-        highlight: true,
-        captureLength: 2
-      });
-    });
+    // $("input").each(function(){
+    //   var input = $(this);
+    //   var form = input.parent();
+    //   var row = form.parent("td");
+    //   input.typeWatch({
+    //     callback: function(){
+    //       form.ajaxSubmit(function(){row.effect("highlight", {}, 2000)})
+    //     },
+    //     wait: 1000,
+    //     highlight: true,
+    //     captureLength: 2
+    //   });
+    // });
+    // make enter do tab
+    textboxes = $('input[type="text"]');
+    if ($.browser.mozilla) { 
+      $(textboxes).keypress(checkForEnter); 
+    } else {
+      $(textboxes).keydown(checkForEnter);
+    }
+    function checkForEnter (event) {
+      if (event.keyCode == 13) {
+        var input = $(this);
+        var form = input.parent();
+        var row = form.parent("td");
+        form.ajaxSubmit(function(){row.effect("highlight", {}, 2000)})
+        currentBoxNumber = textboxes.index(this);
+        if (textboxes[currentBoxNumber + 1] != null) {
+          nextBox = textboxes[currentBoxNumber + 1]
+          nextBox.focus(); 
+          nextBox.select();
+        }
+        event.preventDefault();
+        return false;
+      }  
+    }
     // delete row
     $("a.delete").bind("click", function(){
       var link = $(this);
