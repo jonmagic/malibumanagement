@@ -63,3 +63,4 @@ require 'autologger'
 class ActiveRecord::Base
   include Autologger
 end
+require 'dcas'

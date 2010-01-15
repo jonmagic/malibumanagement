@@ -57,9 +57,35 @@ class EftBatch < ActiveRecord::Base
     write_attribute(:for_month, Time.parse(v.to_s).strftime("%Y/%m"))
   end
 
-  def submitted?
-    Store.find(:all).reject {|s| s.config.nil?}.all? {|s| submitted[s.alias+'--CC'] && submitted[s.alias+'--ACH']}
+  def submitted?(store=nil)
+    if store
+      submitted[store.alias+'--cc.csv'] && submitted[store.alias+'--ach.csv']
+    else
+      Store.find(:all).reject {|s| s.config.nil?}.all? {|store| submitted[store.alias+'--cc.csv'] && submitted[store.alias+'--ach.csv']}
+    end
   end
+
+  # Methods specifically for DCAS submitting
+    def submit_locked?(filename)
+      reload
+      !!submitted[filename]
+    end
+
+    def submit_lock!(filename)
+      submitted[filename] = 'uploading'
+      save
+    end
+
+    def submit_finished!(filename)
+      submitted[filename] = true
+      save
+    end
+
+    def submit_failed!(filename)
+      submitted[filename] = false
+      save
+    end
+  # *******
 
   def amounts_counts
     @amounts_counts ||= begin

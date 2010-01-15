@@ -166,8 +166,8 @@ class GotoTransaction < ActiveRecord::Base
     [
       'HD',
       LOCATIONS[location][:dcas][:company_alias],
-      LOCATIONS[location][:dcas][:company_user],
-      LOCATIONS[location][:dcas][:company_pass],
+      LOCATIONS[location][:dcas][:company_username],
+      LOCATIONS[location][:dcas][:company_password],
       'Check' # Invoice/Customer/Check/Image
     ]
   end

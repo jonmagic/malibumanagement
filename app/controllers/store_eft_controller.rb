@@ -27,7 +27,7 @@ class StoreEftController < ApplicationController
       # 1) Generate the file!
       path = "EFT/#{@batch.for_month}"
       FileUtils.mkpath(path+'/')
-      csv_name = "#{dcas[:company_user]}_refund_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
+      csv_name = "#{dcas[:company_username]}_refund_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
       csv_local_filename = "#{path}/#{csv_name}"
       @clients = GotoTransaction.search(@query, :filters => {'has_eft' => 1, 'goto_valid' => '--- []', 'client_id' => params[:client_id], 'batch_id' => @batch.id, 'location' => current_store.location_code})
       client_count = 0

@@ -62,120 +62,67 @@ class EftController < ApplicationController
       #     6) If we're still connected, check the file size of the file, then move it out of 'uploading' and mark file as completed.
       # 2) Respond with all results as JSON
 
+      FileUtils.mkpath("EFT/#{@batch.for_month}/")
       # limit to 5 file attempts before returning to AJAX. AJAX should immediately call this action back to continue.
       attempt_count = 0
 
       result = {}
       Store.find(:all).each do |store|
         @batch.reload
-        next if @batch.submitted[store.alias + '--ACH'] && @batch.submitted[store.alias + '--CC']
-        next if store.config.nil?
+        return(render(:json => result.merge(:error => "Batch was unlocked in the middle of submitting!").to_json)) unless @batch.locked
+        next if @batch.submitted?(store) || store.config.nil?
         dcas = store.config[:dcas]
-        incoming_path = params[:incoming_path] || dcas[:incoming_path]
-        if incoming_path != dcas[:incoming_path]
-          logger.info "Incoming Path set manually: #{incoming_path}"
-        elsif !@batch.locked
-          return(render(:json => {:error => "Batch has not been locked!"}.to_json))
-        end
+        # Verify that ALL of the required information is present.
+        next unless dcas[:username] && dcas[:password] && dcas[:company_alias] && dcas[:company_username] && dcas[:company_password]
 
-        path = "EFT/#{@batch.for_month}"
-        FileUtils.mkpath(path+'/')
+        # Set up DCAS for uploading
+        dcas_client = DCAS::Client.new(
+                   :username => dcas[:username],
+                   :password => dcas[:password],
+                   :company_alias => dcas[:company_alias],
+                   :company_username => dcas[:company_username],
+                   :company_password => dcas[:company_password],
+                   :cache_location => "EFT/#{@batch.for_month}"
+                  )
 
-        @clients = GotoTransaction.search(@query, :filters => {'has_eft' => 1, 'goto_valid' => '--- []', 'batch_id' => @batch.id, 'location' => store.location_code})
+        topay = GotoTransaction.search(@query, :filters => {'has_eft' => 1, 'goto_valid' => '--- []', 'batch_id' => @batch.id, 'location' => store.location_code})
 
-        ['ACH', 'CC'].each do |type|
-          file_key = "#{store.alias}--#{type}"
-          @batch.reload
-          next if @batch.submitted[file_key]
-          if attempt_count == 5
-            result[file_key] = 'Waiting...'
-            next
+        # Create the payment batches
+        cc_batch = dcas_client.new_batch(Time.parse(@batch.for_month).strftime("%y%m"))
+        ach_batch = dcas_client.new_batch(Time.parse(@batch.for_month).strftime("%y%m"))
+        # And populate them
+        topay.each do |payment|
+          # csv << client.to_dcas_csv_row if (type == 'ACH' && client.ach?) || (type == 'CC' && client.credit_card?)
+          # ACH: client_id, client_name, amount, account_type, routing_number, account_number, check_number
+          #  CC: client_id, client_name, amount, card_type, credit_card_number, expiration
+          if payment.ach?
+            ach_batch << DCAS::AchPayment.new(
+                           payment.client_id, payment.name_on_card, payment.amount,
+                           payment.dcas_bank_account_type, payment.bank_routing_number,
+                           payment.bank_account_number, payment.get_check_number
+                         )
+          else
+            cc_batch  << DCAS::CreditCardPayment.new(
+                           payment.client_id, payment.name_on_card,
+                           payment.amount, payment.dcas_card_type, payment.credit_card_number,
+                           payment.expiration.nil? ? nil : (payment.expiration[0,2] + '/20' + payment.expiration[2,2])
+                         )
           end
+        end
+        
+        # Submit the batches
+        result[ach_batch.filename] = 'Waiting...' if attempt_count == 5
+        begin # ACH batch submit
+          result[ach_batch.filename] = dcas_client.submit_batch!(ach_batch, @batch) ? 'Uploaded.' : 'Failed.'
           attempt_count += 1
-          @batch.submitted[file_key] = 'uploading'
-          @batch.save
-          # Generate the file!
-          csv_name = "#{dcas[:company_user]}_#{type.downcase}_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
-          csv_local_filename = "#{path}/#{csv_name}"
-          FasterCSV.open(csv_local_filename, "w") do |csv|
-            csv << GotoTransaction.dcas_header_row(@batch.id, store.location_code)
-            @clients.each do |client|
-              csv << client.to_dcas_csv_row if (type == 'ACH' && client.ach?) || (type == 'CC' && client.credit_card?)
-            end
-          end
+        end unless attempt_count == 5
+        result[cc_batch.filename] = 'Waiting...' if attempt_count == 5
+        begin # CC batch submit
+          result[cc_batch.filename] = dcas_client.submit_batch!(cc_batch, @batch) ? 'Uploaded.' : 'Failed.'
+          attempt_count += 1
+        end unless attempt_count == 5
 
-          # Upload the file!
-          logged_in = false
-          env_prepared = false
-
-          #   1) Log in to FTPS.
-          begin
-            ftp = (dcas[:ftps] ? Net::FTPS::Implicit : Net::FTP).new(dcas[:host], dcas[:username], dcas[:password])
-            logged_in = true
-            logger.info "Logged in as #{dcas[:username]}."
-          rescue => e
-            logger.error "FTP LOGIN FAILED: #{e}"
-            result[file_key] = 'Failed to log in'
-            @batch.reload
-            @batch.submitted[file_key] = false
-            @batch.save
-          end
-          if logged_in
-            begin
-              #   2) Create the 'uploading' folder if it's not already there.
-              ftp.mkdir('uploading') unless ftp.nlst.include?('uploading')
-              # (create the incoming_path if it doesn't exist)
-              ftp.mkdir(incoming_path) unless ftp.nlst.include?(incoming_path)
-
-              ftp.chdir('uploading')
-
-              #   3) Delete the same filename from the 'uploading' folder if one exists.
-              ftp.nlst.select {|f| f =~ /\.csv$/i}.each do |file|
-                ftp.delete(file)
-              end
-
-              env_prepared = true
-            rescue => e
-              logger.error "FTP FAILED BEFORE UPLOAD: #{e}\n#{e.backtrace.join("\n")}"
-              result[file_key] = 'Failed before upload'
-              logger.info "."
-              @batch.reload
-              @batch.submitted[file_key] = false
-              @batch.save
-            end
-          end
-          if env_prepared
-            begin
-              #   4) Upload the file into the 'uploading' folder.
-              ftp.put(csv_local_filename, csv_name)
-              #   5) If we're still connected, check the file size of the file, then move it out of 'uploading' and mark file as completed.
-              if ftp.nlst.include?(csv_name) && ftp.size(csv_name) == File.size(csv_local_filename)
-                ftp.rename(csv_name, "../#{incoming_path}/#{csv_name}")
-                @batch.reload
-                @batch.submitted[file_key] = true
-                @batch.save
-                result[file_key] = "Uploaded."
-              else
-                result[file_key] = "Failed to upload (just wasn't there after uploading!)"
-              end
-            rescue => e
-              logger.error "FTP FAILED DURING UPLOAD: #{e}\n#{e.backtrace.join("\n")}"
-              result[file_key] = 'Failed during upload!'
-              @batch.reload
-              @batch.submitted[file_key] = false
-              @batch.save
-            end
-          end
-          if logged_in
-            begin
-              ftp.quit
-              ftp.close
-            rescue => e
-              logger.error "FTP FAILED DURING LOGOUT: #{e}\n#{e.backtrace.join("\n")}"
-            end
-          end
-        end
-      end
+      end # end Store.each
 
       #   6) Respond with the results as JSON
       render :json => result.to_json
