@@ -27,7 +27,7 @@ require 'lib/ftps_implicit'
 step("Downloading DCAS files for #{@batch.for_month}.") do
   files = []
   Store.find(:all).each do |store|
-    next unless @batch.submitted[store.alias+'--cc.csv'] || @batch.submitted[store.alias+'--ach.csv']
+    next if @batch.submitted?(store).nil? # skip entirely if no files were submitted for this store
     next unless store.config.is_a?(Hash)
     dcas = store.config[:dcas]
     user_suffix = dcas[:username].match(/(?:malibu|maltan|malent)?(.*)(?:VT)?/)[1]

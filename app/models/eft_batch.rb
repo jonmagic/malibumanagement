@@ -57,11 +57,19 @@ class EftBatch < ActiveRecord::Base
     write_attribute(:for_month, Time.parse(v.to_s).strftime("%Y/%m"))
   end
 
+  # If given a store, returns:
+  #   + true if both files have been submitted
+  #   + false if one file has been submitted
+  #   + nil if neither file has been submitted
+  # If NOT given a store, returns:
+  #   + true if ALL files for ALL stores have been submitted
+  #   + false otherwise
   def submitted?(store=nil)
     if store
-      submitted[store.alias+'--cc.csv'] && submitted[store.alias+'--ach.csv']
+      (submitted[store.alias+'--cc.csv'] || submitted[store.alias+'--ach.csv']) ?
+        (submitted[store.alias+'--cc.csv'] && submitted[store.alias+'--ach.csv']) : nil
     else
-      Store.find(:all).reject {|s| s.config.nil?}.all? {|store| submitted[store.alias+'--cc.csv'] && submitted[store.alias+'--ach.csv']}
+      Store.find(:all).select {|s| s.config }.all? {|store| submitted?(store) }
     end
   end
 
