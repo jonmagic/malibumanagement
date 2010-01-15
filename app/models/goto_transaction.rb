@@ -195,7 +195,7 @@ class GotoTransaction < ActiveRecord::Base
       "#{Time.parse(batch.for_month).strftime("%y%m")}#{client_id}", # CustTraceCode
       nil, # image name
       nil, # back image name
-      options[:refund] ? 'Credit' : nil, # Credit/Debit (default Debit)
+      options[:refund] ? 'Credit' : 'Debit', # Credit/Debit (default Debit)
       nil, # Internal Account Number: date (in 4 digits: YYMM) + client id
       dcas_bank_account_type,
       #, nil, # ECC - Default Entry Class Code (??)

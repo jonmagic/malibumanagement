@@ -69,15 +69,15 @@ require 'csv'
 step("Reading return files into MySQL") do
   all_files = Dir.open(@path + 'returns/').collect.sort
   # There are 5 different kinds of files to deal with.
-  # 1) Create (disregard): /create\d+/
+  # 1) Create (disregard): /create\d+/ - probably BEING created, then is renamed?
   # 2) Initial CA answers: /#{filename}_\d+_CA.CSV/
   # 3) Final CC answers:   /#{filename}_\d+_CC.CSV/
   # 4) Final CA answers:   Returns#{filename}.csv
   # 5) Entire file rejected: exact same filename back, with a message (ex. "9099 Logon Failed")
-  create_files = all_files.reject {|f| f !~ /^create\d+$/}
-  ach_processed = all_files.reject {|f| f !~ /_\d+_CA\.[cC][sS][vV]$/}
-  final_cc = all_files.reject {|f| f !~ /_\d+_CC\.[cC][sS][vV]$/}
-  final_ach = all_files.reject {|f| f !~ /_Returns.*_\d+\.[cC][sS][vV]$/}
+  create_files = all_files.select {|f| f =~ /^create\d+$/}
+  ach_processed = all_files.select {|f| f =~ /_\d+_CA\.[cC][sS][vV]$/}
+  final_cc = all_files.select {|f| f =~ /_\d+_CC\.[cC][sS][vV]$/}
+  final_ach = all_files.select {|f| f =~ /_Returns.*_\d+\.[cC][sS][vV]$/}
   leftover_files = all_files - create_files - ach_processed - final_cc - final_ach
 
   step("Processing Credit Card responses") do
