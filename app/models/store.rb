@@ -52,6 +52,15 @@ class Store < ActiveRecord::Base
   def config
     @config ||= LOCATIONS[LOCATIONS.reject {|k,v| v[:domain] != self.alias}.keys[0]]
   end
+  def dcas
+    @dcas_client ||= DCAS::Client.new(
+     :username => config[:dcas][:username],
+     :password => config[:dcas][:password],
+     :company_alias => config[:dcas][:company_alias],
+     :company_username => config[:dcas][:company_username],
+     :company_password => config[:dcas][:company_password]
+    )
+  end
 
   def drafts_of_type(form_type)
     FormInstance.find_all_by_store_id_and_data_type_and_status_number(self.id, form_type, 'draft'.as_status.number)

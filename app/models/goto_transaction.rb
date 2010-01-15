@@ -229,6 +229,11 @@ class GotoTransaction < ActiveRecord::Base
       nil
     ]
   end
+  def to_dcas_payment
+    ach? ?
+      DCAS::AchPayment.new( client_id, name_on_card, amount, dcas_bank_account_type, bank_routing_number, bank_account_number, get_check_number ) :
+      DCAS::CreditCardPayment.new( client_id, name_on_card, amount, dcas_card_type, credit_card_number, expiration.nil? ? nil : (expiration[0,2] + '/20' + expiration[2,2]) )
+  end
 
   def to_csv_row(options={})
     [

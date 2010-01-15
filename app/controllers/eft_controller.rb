@@ -51,80 +51,45 @@ class EftController < ApplicationController
     restrict('allow only admins') or begin
       return(render(:json => {:error => "Batch has not been locked!"}.to_json)) if !@batch.locked && params[:incoming_path].blank?
 
-      # 1) For each location yet to be uploaded:
-      #   1) Gather all clients-to-bill for this location.
-      #   2) For each file type (ach, cc) yet to be uploaded:
-      #     1) Create the file locally.
-      #     2) Log in to FTPS.
-      #     3) Create the 'uploading' folder if it's not already there.
-      #     4) Delete the same filename from the 'uploading' folder if one exists.
-      #     5) Upload the file into the 'uploading' folder.
-      #     6) If we're still connected, check the file size of the file, then move it out of 'uploading' and mark file as completed.
-      # 2) Respond with all results as JSON
-
       FileUtils.mkpath("EFT/#{@batch.for_month}/")
       # limit to 5 file attempts before returning to AJAX. AJAX should immediately call this action back to continue.
       attempt_count = 0
 
       result = {}
       Store.find(:all).each do |store|
+        next if attempt_count == 5
         @batch.reload
         return(render(:json => result.merge(:error => "Batch was unlocked in the middle of submitting!").to_json)) unless @batch.locked
         next if @batch.submitted?(store) || store.config.nil?
-        dcas = store.config[:dcas]
         # Verify that ALL of the required information is present.
-        next unless dcas[:username] && dcas[:password] && dcas[:company_alias] && dcas[:company_username] && dcas[:company_password]
+        next unless store.config[:dcas][:username] && store.config[:dcas][:password] && store.config[:dcas][:company_alias] && store.config[:dcas][:company_username] && store.config[:dcas][:company_password]
+        store.dcas.cache_location = "EFT/#{@batch.for_month}"
 
-        # Set up DCAS for uploading
-        dcas_client = DCAS::Client.new(
-                   :username => dcas[:username],
-                   :password => dcas[:password],
-                   :company_alias => dcas[:company_alias],
-                   :company_username => dcas[:company_username],
-                   :company_password => dcas[:company_password],
-                   :cache_location => "EFT/#{@batch.for_month}"
-                  )
-
+        # Get all of the payments we need to run
         topay = GotoTransaction.search(@query, :filters => {'has_eft' => 1, 'goto_valid' => '--- []', 'batch_id' => @batch.id, 'location' => store.location_code})
 
         # Create the payment batches
-        cc_batch = dcas_client.new_batch(Time.parse(@batch.for_month).strftime("%y%m"))
-        ach_batch = dcas_client.new_batch(Time.parse(@batch.for_month).strftime("%y%m"))
+        cc_batch = store.dcas.new_batch(Time.parse(@batch.for_month).strftime("%y%m"))
+        ach_batch = store.dcas.new_batch(Time.parse(@batch.for_month).strftime("%y%m"))
         # And populate them
-        topay.each do |payment|
-          # csv << client.to_dcas_csv_row if (type == 'ACH' && client.ach?) || (type == 'CC' && client.credit_card?)
-          # ACH: client_id, client_name, amount, account_type, routing_number, account_number, check_number
-          #  CC: client_id, client_name, amount, card_type, credit_card_number, expiration
-          if payment.ach?
-            ach_batch << DCAS::AchPayment.new(
-                           payment.client_id, payment.name_on_card, payment.amount,
-                           payment.dcas_bank_account_type, payment.bank_routing_number,
-                           payment.bank_account_number, payment.get_check_number
-                         )
-          else
-            cc_batch  << DCAS::CreditCardPayment.new(
-                           payment.client_id, payment.name_on_card,
-                           payment.amount, payment.dcas_card_type, payment.credit_card_number,
-                           payment.expiration.nil? ? nil : (payment.expiration[0,2] + '/20' + payment.expiration[2,2])
-                         )
-          end
+        topay.each do |txn|
+          (txn.ach? ? ach_batch : cc_batch) << txn.to_dcas_payment
         end
-        
+
         # Submit the batches
         result[ach_batch.filename] = 'Waiting...' if attempt_count == 5
         begin # ACH batch submit
-          result[ach_batch.filename] = dcas_client.submit_batch!(ach_batch, @batch) ? 'Uploaded.' : 'Failed.'
+          result[ach_batch.filename] = store.dcas.submit_batch!(ach_batch, @batch) ? 'Uploaded.' : 'Failed.'
           attempt_count += 1
-        end unless attempt_count == 5
+        end unless attempt_count == 5 || @batch.submit_locked?(ach_batch.filename)
         result[cc_batch.filename] = 'Waiting...' if attempt_count == 5
         begin # CC batch submit
-          result[cc_batch.filename] = dcas_client.submit_batch!(cc_batch, @batch) ? 'Uploaded.' : 'Failed.'
+          result[cc_batch.filename] = store.dcas.submit_batch!(cc_batch, @batch) ? 'Uploaded.' : 'Failed.'
           attempt_count += 1
-        end unless attempt_count == 5
+        end unless attempt_count == 5 || @batch.submit_locked?(cc_batch.filename)
 
       end # end Store.each
 
-      #   6) Respond with the results as JSON
       render :json => result.to_json
     end
   end
