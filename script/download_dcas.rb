@@ -23,7 +23,7 @@ end
 require 'fileutils'
 FileUtils.mkpath(@path + 'returns/')
 
-require 'lib/ftps_implicit'
+require 'net/ftps_implicit' # Should pull this straight from dcas-ruby.
 step("Downloading DCAS files for #{@batch.for_month}.") do
   files = []
   Store.find(:all).each do |store|

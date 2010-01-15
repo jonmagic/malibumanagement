@@ -1,4 +1,4 @@
-require 'lib/ftps_implicit'
+require 'net/ftps_implicit'
 require 'fileutils'
 require 'faster_csv'
 
