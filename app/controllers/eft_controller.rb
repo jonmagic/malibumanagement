@@ -59,7 +59,6 @@ class EftController < ApplicationController
       Store.find(:all).each do |store|
         next if attempt_count == 5
         @batch.reload
-        return(render(:json => result.merge(:error => "Batch was unlocked in the middle of submitting!").to_json)) unless @batch.locked
         next if @batch.submitted?(store) || store.config.nil?
         # Verify that ALL of the required information is present.
         next unless store.config[:dcas][:username] && store.config[:dcas][:password] && store.config[:dcas][:company_alias] && store.config[:dcas][:company_username] && store.config[:dcas][:company_password]
@@ -69,7 +68,7 @@ class EftController < ApplicationController
         if store.dcas.outgoing_bucket != DCAS::DEFAULT_OUTGOING_BUCKET
           logger.info "Outgoing Bucket set manually: #{store.dcas.outgoing_bucket}"
         elsif !@batch.locked
-          return(render(:json => {:error => "Batch has not been locked!"}.to_json))
+          return(render(:json => result.merge(:error => "Batch was unlocked in the middle of submitting!").to_json)) unless @batch.locked || params[:outgoing_bucket]
         end
 
         # Get all of the payments we need to run

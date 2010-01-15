@@ -51,7 +51,7 @@
 		<div class="eft_right_column">
 		  <div id="time_to_bill" style="margin-top:1em">
 		    <h3>Time to Bill</h3>
-  			<% if !@batch.submitted? && (params[:testing] == 'ofcourse' || @batch.locked) -%>
+  			<% if !@batch.submitted? && (params[:pretend_batch_locked] == 'true' || @batch.locked) -%>
           <% if params[:gotobilling] == 'ohboy' -%>
   					<span style="display:block;float:left"><img src="/images/eft/locked.png" alt="locked" width="32px" height="32px" /></span>This payment batch is now Locked. Data cannot be regenerated. Click to <a href="javascript:void(0)" onclick="Control.Modal.open(jQuery('#gotobilling_links').html())">Download Payment CSVs</a>.
   					<div id="gotobilling_links" style="display:none">
