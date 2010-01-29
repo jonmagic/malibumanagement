@@ -23,13 +23,9 @@ class EftController < ApplicationController
     restrict('allow only admins') or begin
       if params[:free_dcas_lock].to_s == 'true'
         Store.find(:all).each do |store|
-          next unless store.config[:dcas][:username] && store.config[:dcas][:password] && store.config[:dcas][:company_alias] && store.config[:dcas][:company_username] && store.config[:dcas][:company_password]
-          store.dcas.cache_location = "EFT/#{@batch.for_month}"
-
-          cc_batch = store.dcas.new_batch(Time.parse(@batch.for_month).strftime("%y%m"))
-          ach_batch = store.dcas.new_batch(Time.parse(@batch.for_month).strftime("%y%m"))
-          @batch.submitted[ach_batch.filename] = false unless @batch.submitted[ach_batch.filename] == true
-          @batch.submitted[cc_batch.filename] = false unless @batch.submitted[cc_batch.filename] == true
+          @batch.submitted.each_key do |key|
+            @batch.submitted[key] = false if @batch.submitted[key] == 'uploading'
+          end
         end
         @batch.save
       end
