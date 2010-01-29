@@ -20,7 +20,20 @@ class EftController < ApplicationController
   end
   
   def admin_eft
-    restrict('allow only admins')
+    restrict('allow only admins') or begin
+      if params[:free_dcas_lock].to_s == 'true'
+        Store.find(:all).each do |store|
+          next unless store.config[:dcas][:username] && store.config[:dcas][:password] && store.config[:dcas][:company_alias] && store.config[:dcas][:company_username] && store.config[:dcas][:company_password]
+          store.dcas.cache_location = "EFT/#{@batch.for_month}"
+
+          cc_batch = store.dcas.new_batch(Time.parse(@batch.for_month).strftime("%y%m"))
+          ach_batch = store.dcas.new_batch(Time.parse(@batch.for_month).strftime("%y%m"))
+          @batch.submitted[ach_batch.filename] = false unless @batch.submitted[ach_batch.filename] == true
+          @batch.submitted[cc_batch.filename] = false unless @batch.submitted[cc_batch.filename] == true
+        end
+        @batch.save
+      end
+    end
   end
   
   def justify_amounts
@@ -85,11 +98,6 @@ class EftController < ApplicationController
 
         # Submit the batches
         result[ach_batch.filename] = 'Waiting...' if attempt_count == 5
-        if params[:free_dcas_lock].to_s != ''
-          submitted[ach_batch.filename] = false
-          submitted[cc_batch.filename] = false
-          save
-        end
 
         begin # ACH batch submit
           result[ach_batch.filename] = store.dcas.submit_batch!(ach_batch, @batch) ? 'Uploaded.' : 'Failed.'

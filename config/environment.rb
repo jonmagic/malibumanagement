@@ -64,5 +64,5 @@ class ActiveRecord::Base
   include Autologger
 end
 
-gem 'dcas-ruby', '= 0.3.4'
+gem 'dcas-ruby', '= 0.3.5'
 require 'dcas'
