@@ -86,7 +86,8 @@ class EftController < ApplicationController
         # Submit the batches
         result[ach_batch.filename] = 'Waiting...' if attempt_count == 5
         if params[:free_dcas_lock].to_s != ''
-          submitted[filename] = false
+          submitted[ach_batch.filename] = false
+          submitted[cc_batch.filename] = false
           save
         end
 
