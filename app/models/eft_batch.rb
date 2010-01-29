@@ -66,8 +66,8 @@ class EftBatch < ActiveRecord::Base
   #   + false otherwise
   def submitted?(store=nil)
     if store
-      (submitted[store.alias+'_creditcardpayment.csv'] || submitted[store.alias+'_achpayment.csv']) ?
-        (submitted[store.alias+'_creditcardpayment.csv'] && submitted[store.alias+'_achpayment.csv']) : nil
+      (submitted[store.config[:dcas][:company_username]+'_creditcardpayment.csv'] || submitted[store.config[:dcas][:company_username]+'_achpayment.csv']) ?
+        (submitted[store.config[:dcas][:company_username]+'_creditcardpayment.csv'] && submitted[store.config[:dcas][:company_username]+'_achpayment.csv']) : nil
     else
       Store.find(:all).select {|s| s.config }.all? {|store| submitted?(store) }
     end
