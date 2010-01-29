@@ -50,6 +50,7 @@ class EftController < ApplicationController
   def submit_payments
     restrict('allow only admins') or begin
       return(render(:json => {:error => "Batch has not been locked!"}.to_json)) if !@batch.locked && params[:outgoing_bucket].blank?
+      
 
       FileUtils.mkpath("EFT/#{@batch.for_month}/")
       # limit to 5 file attempts before returning to AJAX. AJAX should immediately call this action back to continue.
@@ -84,6 +85,11 @@ class EftController < ApplicationController
 
         # Submit the batches
         result[ach_batch.filename] = 'Waiting...' if attempt_count == 5
+        if params[:free_dcas_lock].to_s != ''
+          submitted[filename] = false
+          save
+        end
+
         begin # ACH batch submit
           result[ach_batch.filename] = store.dcas.submit_batch!(ach_batch, @batch) ? 'Uploaded.' : 'Failed.'
           attempt_count += 1
