@@ -18,7 +18,7 @@ var repeat_billing = function(for_month, outgoing_bucket){
   // 2) Call the action
   jQuery.getJSON((outgoing_bucket ? '/malibu/eft/submit_payments?for_month='+for_month+'&outgoing_bucket='+outgoing_bucket : '/malibu/eft/submit_payments?for_month='+for_month), function(data){
     console.log(data);
-    var key, that_remain=0, stores=[], msgs=[], store, msg;
+    var key, that_remain=0, stores=[], msgs=[], store, type, msg;
     // 3) Integrate results
     for(key in data){
       if(data.hasOwnProperty(key)){
@@ -37,10 +37,11 @@ var repeat_billing = function(for_month, outgoing_bucket){
     for(i in stores){
       if(stores.hasOwnProperty(i)){
         key = stores[i].key;
-        store = key.split('--')[0];
+        store = key.split('_')[0];
+        type = key.split('_')[1];
         msg = stores[i].msg;
         if(jQuery("#upload_status_"+key).length===0){
-          $billing_files.append("<li class='file_upload_status'>"+store.charAt(0).toUpperCase()+store.substr(1)+" - <span id='upload_status_"+key+"'>"+msg+"</span></li>");
+          $billing_files.append("<li class='file_upload_status'>"+store.charAt(0).toUpperCase()+store.substr(1)+" ("+type+")"+" - <span id='upload_status_"+key+"'>"+msg+"</span></li>");
         }else{
           jQuery("#upload_status_"+key).text(msg);
         }

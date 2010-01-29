@@ -78,6 +78,13 @@ class EftController < ApplicationController
           return(render(:json => result.merge(:error => "Batch was unlocked in the middle of submitting!").to_json)) unless @batch.locked || params[:outgoing_bucket]
         end
 
+        # Skip early if we can.
+        if @batch.submit_locked?(store.config[:dcas][:company_username]+'_achpayment.csv') && @batch.submit_locked?(store.config[:dcas][:company_username]+'_creditcardpayment.csv')
+          result[store.config[:dcas][:company_username]+'_achpayment.csv'] = 'Skipped.'
+          result[store.config[:dcas][:company_username]+'_creditcardpayment.csv'] = 'Skipped.'
+          next
+        end
+
         # Get all of the payments we need to run
         topay = GotoTransaction.search(@query, :filters => {'has_eft' => 1, 'goto_valid' => '--- []', 'batch_id' => @batch.id, 'location' => store.location_code})
 
@@ -91,11 +98,19 @@ class EftController < ApplicationController
 
         # Submit the batches
         begin # ACH batch submit
-          result[ach_batch.filename] = @batch.submit_locked?(ach_batch.filename) ? 'Skipped.' : (store.dcas.submit_batch!(ach_batch, @batch) ? 'Uploaded.' : 'Failed.')
-        end unless ach_batch.payments.empty?
+          if @batch.submit_locked?(ach_batch.filename) || ach_batch.payments.empty?
+            result[ach_batch.filename] = 'Skipped.'
+          else
+            result[ach_batch.filename] = store.dcas.submit_batch!(ach_batch, @batch) ? 'Uploaded.' : 'Failed.'
+          end
+        end
         begin # CC batch submit
-          result[cc_batch.filename] = @batch.submit_locked?(cc_batch.filename) ? 'Skipped.' : (store.dcas.submit_batch!(cc_batch, @batch) ? 'Uploaded.' : 'Failed.')
-        end unless cc_batch.payments.empty?
+          if @batch.submit_locked?(cc_batch.filename) || cc_batch.payments.empty?
+            result[cc_batch.filename] = 'Skipped.'
+          else
+            result[cc_batch.filename] = store.dcas.submit_batch!(cc_batch, @batch) ? 'Uploaded.' : 'Failed.'
+          end
+        end
 
       end # end Store.each
 
