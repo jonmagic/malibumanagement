@@ -62,12 +62,9 @@ class EftController < ApplicationController
       
 
       FileUtils.mkpath("EFT/#{@batch.for_month}/")
-      # limit to 5 file attempts before returning to AJAX. AJAX should immediately call this action back to continue.
-      attempt_count = 0
 
       result = {}
       Store.find(:all).each do |store|
-        next if attempt_count == 5
         @batch.reload
         next if @batch.submitted?(store) || store.config.nil?
         # Verify that ALL of the required information is present.
@@ -93,17 +90,12 @@ class EftController < ApplicationController
         end
 
         # Submit the batches
-        result[ach_batch.filename] = 'Waiting...' if attempt_count == 5
-
         begin # ACH batch submit
           result[ach_batch.filename] = store.dcas.submit_batch!(ach_batch, @batch) ? 'Uploaded.' : 'Failed.'
-          attempt_count += 1
-        end unless attempt_count == 5 || @batch.submit_locked?(ach_batch.filename)
-        result[cc_batch.filename] = 'Waiting...' if attempt_count == 5
+        end unless @batch.submit_locked?(ach_batch.filename)
         begin # CC batch submit
           result[cc_batch.filename] = store.dcas.submit_batch!(cc_batch, @batch) ? 'Uploaded.' : 'Failed.'
-          attempt_count += 1
-        end unless attempt_count == 5 || @batch.submit_locked?(cc_batch.filename)
+        end unless @batch.submit_locked?(cc_batch.filename)
 
       end # end Store.each
 
