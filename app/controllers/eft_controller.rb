@@ -91,11 +91,11 @@ class EftController < ApplicationController
 
         # Submit the batches
         begin # ACH batch submit
-          result[ach_batch.filename] = store.dcas.submit_batch!(ach_batch, @batch) ? 'Uploaded.' : 'Failed.'
-        end unless @batch.submit_locked?(ach_batch.filename)
+          result[ach_batch.filename] = @batch.submit_locked?(ach_batch.filename) ? 'Skipped.' : (store.dcas.submit_batch!(ach_batch, @batch) ? 'Uploaded.' : 'Failed.')
+        end unless ach_batch.payments.empty?
         begin # CC batch submit
-          result[cc_batch.filename] = store.dcas.submit_batch!(cc_batch, @batch) ? 'Uploaded.' : 'Failed.'
-        end unless @batch.submit_locked?(cc_batch.filename)
+          result[cc_batch.filename] = @batch.submit_locked?(cc_batch.filename) ? 'Skipped.' : (store.dcas.submit_batch!(cc_batch, @batch) ? 'Uploaded.' : 'Failed.')
+        end unless cc_batch.payments.empty?
 
       end # end Store.each
 
