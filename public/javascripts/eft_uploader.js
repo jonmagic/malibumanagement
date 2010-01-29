@@ -47,7 +47,7 @@ var repeat_billing = function(for_month, outgoing_bucket){
         if(msg.split(' ')[0] === "Failed"){
           jQuery("#upload_status_"+key).parent().addClass('failed');
           that_remain = that_remain + 1; // if first word is "Failed"
-        }else if(msg === "Uploaded."){
+        }else if(msg === "Uploaded." || msg === "Skipped."){
           jQuery("#upload_status_"+key).parent().removeClass('failed').addClass('uploaded');
         }else{
           that_remain = that_remain + 1; // files that weren't even tried yet.
