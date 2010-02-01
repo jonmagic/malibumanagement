@@ -45,7 +45,7 @@ class StoreEftController < ApplicationController
       end
       begin
         ftp = (dcas[:ftps] ? Net::FTPS::Implicit : Net::FTP).new(dcas[:host], dcas[:username], dcas[:password])
-        ftp.chdir(dcas[:outgoing_bucket])
+        ftp.chdir(dcas[:incoming_bucket])
         ftp.put(csv_local_filename, csv_name)
         ftp.quit
         ftp.close

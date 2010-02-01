@@ -68,7 +68,7 @@
               <p><strong>! TEST MODE !</strong></p>
               <% if @batch.submitted? %><p><strong>All stores are marked as uploaded.</strong></p><% end %>
             <% end %>
-    				<span style="display:block;float:left"><%= link_to image_tag('/images/eft/smtm.jpg'), "javascript:Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' /><span>Uploading files to DCAS...</span></div>'); start_billing('#{@batch.for_month}', '#{params[:outgoing_bucket]}'); void(0);", :confirm => "Are you sure you want to submit to DCAS?" %></span><p style="padding-left:140px">Click icon to submit<%= " (test mode)" if params[:outgoing_bucket].to_s != '' %>.</p>
+    				<span style="display:block;float:left"><%= link_to image_tag('/images/eft/smtm.jpg'), "javascript:Control.Modal.open('<div class=\\'loading-dialog\\'><img src=\\'/images/ajax-loader.gif\\' valign=\\'middle\\' /><span>Uploading files to DCAS...</span></div>'); start_billing('#{@batch.for_month}', '#{params[:incoming_bucket]}'); void(0);", :confirm => "Are you sure you want to submit to DCAS?" %></span><p style="padding-left:140px">Click icon to submit<%= " (test mode)" if params[:incoming_bucket].to_s != '' %>.</p>
     			<% end -%>
   			<% elsif @batch.submitted? -%>
   		    <h4>Files have been uploaded to DCAS.</h4>

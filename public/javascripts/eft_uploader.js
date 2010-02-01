@@ -1,7 +1,7 @@
 // Functions: start_billing & repeat_billing
 // Purpose: Repeatedly request that the eft files are uploaded, until they are all successfully uploaded.
 // Method: Call the submit_payments action, receive the results (json), and then call it again if there are any left undone.
-var start_billing = function(for_month, outgoing_bucket){
+var start_billing = function(for_month, incoming_bucket){
   // 1) Setup
   //  Everything goes in the #time_to_bill div.
   var $billing = jQuery('#time_to_bill');
@@ -10,13 +10,13 @@ var start_billing = function(for_month, outgoing_bucket){
   if(jQuery('#time_to_bill ul').length===0) $billing.append("<ul></ul>");
   jQuery('div.loading-dialog span').text("Uploading files to DCAS...");
   $billing.find('h3').text("Uploading files to DCAS...");
-  repeat_billing(for_month, outgoing_bucket);
+  repeat_billing(for_month, incoming_bucket);
 };
-var repeat_billing = function(for_month, outgoing_bucket){
+var repeat_billing = function(for_month, incoming_bucket){
   var $billing = jQuery('#time_to_bill');
   var $billing_files = jQuery('#time_to_bill ul');
   // 2) Call the action
-  jQuery.getJSON((outgoing_bucket ? '/malibu/eft/submit_payments?for_month='+for_month+'&outgoing_bucket='+outgoing_bucket : '/malibu/eft/submit_payments?for_month='+for_month), function(data){
+  jQuery.getJSON((incoming_bucket ? '/malibu/eft/submit_payments?for_month='+for_month+'&incoming_bucket='+incoming_bucket : '/malibu/eft/submit_payments?for_month='+for_month), function(data){
     console.log(data);
     var key, that_remain=0, stores=[], msgs=[], store, type, msg;
     // 3) Integrate results
@@ -59,7 +59,7 @@ var repeat_billing = function(for_month, outgoing_bucket){
     if(that_remain > 0){
       jQuery('div.loading-dialog span').text("Uploading to DCAS: Retrying "+that_remain+" files...");
       $billing.find('h3').text("Uploading to DCAS: Retrying "+that_remain+" files...");
-      repeat_billing(for_month, outgoing_bucket);
+      repeat_billing(for_month, incoming_bucket);
     }else{
       $billing.find('h3').text("All Payments are Uploaded.");
       Control.Modal.close();

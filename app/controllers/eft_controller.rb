@@ -58,7 +58,7 @@ class EftController < ApplicationController
 
   def submit_payments
     restrict('allow only admins') or begin
-      return(render(:json => {:error => "Batch has not been locked!"}.to_json)) if !@batch.locked && params[:outgoing_bucket].blank?
+      return(render(:json => {:error => "Batch has not been locked!"}.to_json)) if !@batch.locked && params[:incoming_bucket].blank?
       
 
       FileUtils.mkpath("EFT/#{@batch.for_month}/")
@@ -70,12 +70,12 @@ class EftController < ApplicationController
         # Verify that ALL of the required information is present.
         next unless store.config[:dcas][:username] && store.config[:dcas][:password] && store.config[:dcas][:company_alias] && store.config[:dcas][:company_username] && store.config[:dcas][:company_password]
         store.dcas.cache_location = "EFT/#{@batch.for_month}"
-        store.dcas.incoming_bucket = params[:outgoing_bucket] if params[:outgoing_bucket]
+        store.dcas.incoming_bucket = params[:incoming_bucket] if params[:incoming_bucket]
 
-        if store.dcas.incoming_bucket != DCAS::DEFAULT_OUTGOING_BUCKET
-          logger.info "Outgoing Bucket set manually: #{store.dcas.incoming_bucket}"
+        if store.dcas.incoming_bucket != DCAS::DEFAULT_INCOMING_BUCKET
+          logger.info "Incoming Bucket set manually: #{store.dcas.incoming_bucket}"
         elsif !@batch.locked
-          return(render(:json => result.merge(:error => "Batch was unlocked in the middle of submitting!").to_json)) unless @batch.locked || params[:outgoing_bucket]
+          return(render(:json => result.merge(:error => "Batch was unlocked in the middle of submitting!").to_json)) unless @batch.locked || params[:incoming_bucket]
         end
 
         # Skip early if we can.
