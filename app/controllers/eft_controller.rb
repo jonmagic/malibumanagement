@@ -70,10 +70,10 @@ class EftController < ApplicationController
         # Verify that ALL of the required information is present.
         next unless store.config[:dcas][:username] && store.config[:dcas][:password] && store.config[:dcas][:company_alias] && store.config[:dcas][:company_username] && store.config[:dcas][:company_password]
         store.dcas.cache_location = "EFT/#{@batch.for_month}"
-        store.dcas.outgoing_bucket = params[:outgoing_bucket] if params[:outgoing_bucket]
+        store.dcas.incoming_bucket = params[:outgoing_bucket] if params[:outgoing_bucket]
 
-        if store.dcas.outgoing_bucket != DCAS::DEFAULT_OUTGOING_BUCKET
-          logger.info "Outgoing Bucket set manually: #{store.dcas.outgoing_bucket}"
+        if store.dcas.incoming_bucket != DCAS::DEFAULT_OUTGOING_BUCKET
+          logger.info "Outgoing Bucket set manually: #{store.dcas.incoming_bucket}"
         elsif !@batch.locked
           return(render(:json => result.merge(:error => "Batch was unlocked in the middle of submitting!").to_json)) unless @batch.locked || params[:outgoing_bucket]
         end
