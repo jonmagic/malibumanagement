@@ -17,7 +17,7 @@ module CoresExtensions
       CoresExtensions::StepLevel[0] = CoresExtensions::StepLevel[0]-1
       return v
     rescue => e
-      logit.call("["+description+"] Caused Errors: {#{e}}\n#{caller[0..4].join("\n")}")
+      logit.call("["+description+"] Caused Errors: {#{e}}\n#{e.backtrace[0..4].join("\n")}")
       CoresExtensions::StepLevel[0] = CoresExtensions::StepLevel[0]-1
       if options[:retry].is_a?(Numeric) && options[:retry] > 0
         begin
