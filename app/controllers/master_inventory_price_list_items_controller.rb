@@ -5,11 +5,11 @@ class MasterInventoryPriceListItemsController < ApplicationController
     if params[:master_inventory_report_id]
       # renders a page for editing only missing items
       @items = MasterInventoryPriceListItem.items_missing_prices(params[:master_inventory_report_id])
-      @items = @items.sort_by(&:description)
+      @items = @items.sort_by {|item| item.description.to_s }
     else
       # renders a page for editing the entire list
       @items = MasterInventoryPriceListItem.find(:all)
-      @items = @items.sort_by(&:description)
+      @items = @items.sort_by {|item| item.description.to_s }
       render :layout => 'master_inventory_price_list'
     end
   end
